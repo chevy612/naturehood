@@ -6,7 +6,6 @@ export default function Bar(){
             <ul className="flex gap-6 justify-center">
                 <li>
                     <Link href="/about">about</Link>   
-                    <Link href="/">home</Link>
                 </li>
             </ul>
         </nav>
