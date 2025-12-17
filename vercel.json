@@ -1,5 +1,14 @@
 {
-  "buildCommand": "cd my-app && npm run build",
-  "outputDirectory": "my-app/.next",
-  "installCommand": "cd my-app && npm install"
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url"
+  },
+  "regions": ["iad1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
 }
