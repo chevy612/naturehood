@@ -1,12 +1,10 @@
 import Bar from "./navigation/navigation.js";
+import Clock from "./components/clock.js";
 import naturehoodLogo from '../public/naturehood.svg';
 
 import Link from "next/link";
 
-const founder = {
-  name: "Chevy Cheung",
-  role: "Co-Founder & CEO"
-}
+
 
 export default function Page() {
   return (
@@ -18,8 +16,10 @@ export default function Page() {
       height={200} 
       />
 
-      <h1>Sport.  Nature.  Lifestyle.</h1>
+      <h1>Athlete's Lifestyle.</h1>
+      
       <Bar />
+      <Clock />
     </div>
 
     
