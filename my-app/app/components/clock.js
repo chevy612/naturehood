@@ -1,15 +1,14 @@
 "use client";
-import {useState, useEffect} from "react";
+import { useEffect, useState } from "react";
 
-function useTime(){
-  const [time, setTime] = useState(() => new Date().toLocaleTimeString());
+function useTime() {
+  const [time, setTime] = useState(null);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
-    }, 1000);
-
-    return () => clearInterval(intervalId);
+    const tick = () => setTime(new Date().toLocaleTimeString());
+    tick(); // set immediately after mount
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, []);
 
   return time;
@@ -17,11 +16,17 @@ function useTime(){
 
 export default function Clock() {
   const time = useTime();
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const [timeZone, setTimeZone] = useState("");
+
+  useEffect(() => {
+    setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  }, []);
+
+  if (!time) return <p suppressHydrationWarning>--:--:--</p>;
 
   return (
-    <div >
-      <p>{time} {timeZone}</p>
+    <div>
+      <p suppressHydrationWarning>{time} {timeZone}</p>
     </div>
   );
 }

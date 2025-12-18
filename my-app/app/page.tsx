@@ -1,6 +1,7 @@
 import Bar from "./navigation/navigation.js";
 import Clock from "./components/clock.js";
-import naturehoodLogo from '../public/naturehood.svg';
+import EmailSubscribe from "./components/email.js";
+
 
 import Link from "next/link";
 
@@ -19,6 +20,7 @@ export default function Page() {
       <h1>Athlete's Lifestyle.</h1>
       
       <Bar />
+      <EmailSubscribe />
       <Clock />
     </div>
 
