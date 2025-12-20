@@ -1,14 +1,11 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f5f5f5;
-  --foreground: #d61919;
-}
+
 
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000;
+    --background: #141115;
     --foreground: #ededed;
   }
 }
@@ -16,5 +13,16 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif; 
 }
+
+h1{
+  font-family: var(--font-switzer), Arial, Helvetica, sans-serif;
+  font-size: large;
+}
+h2, h3, h4, h5, h6 {
+  font-family: sans-serif;
+}
+
+
+

@@ -17,7 +17,7 @@ export default function Page() {
       height={200} 
       />
 
-      <h1>Athlete's Lifestyle.</h1>
+      <h1 className="--font--switzer">Athlete's Lifestyle.</h1>
       
       <Bar />
       <EmailSubscribe />
