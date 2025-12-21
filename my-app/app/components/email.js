@@ -38,12 +38,12 @@ export default function EmailSubscribe() {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="h-10 border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white-500"
+          className="input-primary"
         />
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="h-10 w-25 px-1 bg-green-500 text-black py-2 hover:bg-green-300 hover:text-green-950 disabled:opacity-50"
+          className="btn-primary"
         >
           {loading ? "Submitting..." : "Confirm"}
         </button>
