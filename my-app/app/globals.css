@@ -17,10 +17,10 @@ body {
 }
 
 h1{
-  font-family: var(--font-switzer), Arial, Helvetica, sans-serif;
-  font-size: large;
+  font-family: sans-serif;
+  font-size: 2rem;
 }
-h2, h3, h4, h5, h6 {
+h2, h3, h4, h5, h6, p {
   font-family: sans-serif;
 }
 
@@ -47,6 +47,7 @@ h2, h3, h4, h5, h6 {
 
   }
 }
+
 
 
 
