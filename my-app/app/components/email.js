@@ -30,25 +30,25 @@ export default function EmailSubscribe() {
   };
 
   return (
-    <div className="flex flex-col gap-2 max-w-sm">
-        <p>Subscribe to our newsletter:</p>
-      <div className="flex flex-row gap-2 ">
+    <div className="w-full max-w-md mx-auto px-4 sm:px-0 flex flex-col gap-3 mb-6">
+      <p className="text-sm sm:text-base">Subscribe to our newsletter:</p>
+      <div className="flex flex-row items-center gap-2">
         <input
           type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="input-primary"
+          className="input-primary w-2/3 sm:flex-1 sm:w-auto min-w-0"
         />
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="btn-primary"
+          className="btn-primary inline-flex items-center justify-center py-2.5 px-5 shrink-0 text-sm" 
         >
           {loading ? "Submitting..." : "Confirm"}
         </button>
       </div>
-      {message && <p className="text-sm text-gray-600">{message}</p>}
+      {message && <p className="text-xs sm:text-sm text-gray-600">{message}</p>}
     </div>
   );
 }
