@@ -1,20 +1,18 @@
+
 import Clock from "./components/clock.js";
 import EmailSubscribe from "./components/email.js";
+import StickyBar from "./navigation/sticky";
+
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6">
-      <img
-        src="/naturehood.svg"
-        alt="NATUREHOOD Logo"
-        width={350}
-        height={200}
-      />
-
-      <h1>Athlete's Lifestyle.</h1>
-
-      <EmailSubscribe />
-      <Clock />
-    </div>
+      <div className="min-h-screen flex flex-col justify-start gap-6">
+        <StickyBar />
+        <EmailSubscribe />
+        <Clock />
+      </div>
   );
 }
+
+{/* hero section */}
+{/* about section */}

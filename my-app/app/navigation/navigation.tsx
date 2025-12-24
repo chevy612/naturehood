@@ -81,25 +81,18 @@ export default function Navbar() {
       {/* Overlay + Slide Panel*/}
       <div
         className={[
-          "fixed inset-0 z-50 bg-black/70 transition-opacity duration-200",
-          open ? "opacity-0-pointer-events-auto" : "opacity-0 pointer-events-none",
+          "fixed inset-0 bg-black/70 transition-opacity duration-200",
+          open ? "z-60 opacity-100 pointer-events-auto" : "z-0 opacity-0 pointer-events-none",
         ].join(" ")}
         aria-hidden={!open}
+        onClick={() => setOpen(false)}
       >
-        {/*Overlay */}
-        <div
-          className={[
-            "absolute inset-0 bg-background transition-opacity duration-300",
-            open ? "opacity-100" : "opacity-0",
-          ].join(" ")}
-          onClick={() => setOpen(false)}
-        />
-        
         {/* Side menu */}
         <aside
           ref={menuRef}
+          onClick={(e) => e.stopPropagation()}
           className={[
-            "fixed top-0 right-0 z-50 h-full w-64 max-w-[85vw] bg-[#141115] shadow-lg",
+            "fixed top-0 right-0 z-70 h-full w-64 max-w-[85vw] bg-[#141115] shadow-lg",
             "transition-transform duration-300 ease-in-out",
             open ? "translate-x-0" : "translate-x-full",
           ].join(" ")}
