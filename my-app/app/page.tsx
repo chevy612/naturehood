@@ -8,6 +8,7 @@ export default function Page() {
   return (
       <div className="min-h-screen flex flex-col justify-start gap-6">
         <StickyBar />
+        <HeroSection />
         <EmailSubscribe />
         <Clock />
       </div>
@@ -15,4 +16,11 @@ export default function Page() {
 }
 
 {/* hero section */}
+function HeroSection(){
+  return (
+    <section className="mx-auto w-full max-w-6xl h-[70vh] min-h-[520px]">
+      <img src ='/image/Colin BW.png' alt= 'Hero Image' className="h-full w-full object-cover"/>
+    </section>
+  )
+}
 {/* about section */}
