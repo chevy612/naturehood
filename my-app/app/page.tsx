@@ -19,8 +19,7 @@ export default function Page() {
 function HeroSection(){
   return (
     <section className="mx-auto w-full max-w-6xl h-[70vh] min-h-[520px]">
-      <img src ='/image/Colin BW.png' alt= 'Hero Image' className="h-full w-full object-cover"/>
+      <img src ='/image/Colin BW.webp' alt= 'Hero Image' className="h-full w-full object-cover"/>
     </section>
   )
 }
-{/* about section */}
