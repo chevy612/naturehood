@@ -16,11 +16,22 @@ body {
   font-family: Arial, Helvetica, sans-serif; 
 }
 
-h1{
+h1 {
   font-family: sans-serif;
-  font-size: 2rem;
+  @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-[750] leading-tight mb-4 md:mb-6;
 }
-h2, h3, h4, h5, h6, p {
+
+h2 {
+  font-family: sans-serif;
+  @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-[750] leading-tight mb-4 md:mb-6;
+}
+
+h3 {
+  font-family: sans-serif;
+  @apply text-xl sm:text-2xl md:text-3xl font-mono font-bold leading-tight mb-3;
+}
+
+h4, h5, h6, p {
   font-family: sans-serif;
 }
 

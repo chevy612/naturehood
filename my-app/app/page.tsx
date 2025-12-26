@@ -20,12 +20,22 @@ export default function Page() {
 function HeroSection() {
   return (
     <>
-    <section className="mx-0 my-0 mb-0 w-full flex">
+    <section className="mx-0 my-0 mb-0 w-full flex relative">
       <img
         src="/image/Colin BW.webp"
         alt="Hero Image"
-        className=" object-cover w-full h-[600px] md:h-[900px]"
+        className=" object-cover w-full h-[500px] md:h-[900px] opacity-50"
       />
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 lg:gap-8 mb-4 w-full max-w-7xl">
+          <div className="text-center "><p className="font-extrabold text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap">Performance</p></div>
+          <div className="text-center "><p className="font-extrabold text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap">Storytelling</p></div>
+          <div className="text-center "><p className="font-extrabold text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap">Opportunity</p></div>
+        </div>
+        <h2 className="text-center whitespace-nowrap text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
+          All in one place.
+        </h2>
+      </div>
     </section>
     </>
   );
@@ -37,7 +47,7 @@ function HeroSection() {
     return (
       <>
       <section className="flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-10 lg:px-40 py-8 md:py-10">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-mono font-[750] mb-4 md:mb-6 leading-tight">
+        <h1>
           {title}
         </h1>
         <p className="text-base sm:text-lg md:text-xl font-mono font-medium max-w-4xl px-2">
@@ -72,7 +82,7 @@ function HeroSection() {
 
     return (
       <section className="px-4 sm:px-6 md:px-10 lg:px-40 py-12 md:py-16">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-mono font-[750] mb-8 md:mb-12 text-center">
+        <h2 className="text-center">
           How We Work
         </h2>
         
@@ -90,7 +100,7 @@ function HeroSection() {
               
               {/* Content */}
               <div className="flex flex-col gap-3">
-                <h3 className="text-xl sm:text-2xl font-mono font-bold">
+                <h3>
                   {step.title}
                 </h3>
                 <p className="text-sm sm:text-base font-mono font-medium text-gray-700 leading-relaxed">
