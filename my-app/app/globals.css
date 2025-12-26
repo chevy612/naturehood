@@ -46,7 +46,7 @@ h4, h5, h6, p {
   }
 
   .btn-primary {
-    @apply rounded-sm px-2 bg-green-500 text-black hover:bg-green-300 hover:text-green-950 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply rounded-sm px-2 bg-green-500 text-white hover:bg-green-300 hover:text-green-950 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .input-primary{
