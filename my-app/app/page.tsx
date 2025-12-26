@@ -2,6 +2,7 @@ import Clock from "./components/clock.js";
 import EmailSubscribe from "./components/email.js";
 import StickyBar from "./navigation/sticky";
 import HeroSection from "./components/hero";
+import { IntroSection } from "./components/content";
 
 export default function Page() {
   return (
@@ -17,21 +18,7 @@ export default function Page() {
 
 
 
-function IntroSection() {
-  const title = "ATHLETES as BRANDS";
-  const description =
-    "We work closely with athletes to develop professional sport and lifestyle content. This empowers athletes to compete not only on the track, but also in the digital space—where visibility creates opportunity.";
-  return (
-    <>
-      <section className="flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-10 lg:px-40 py-8 md:py-10">
-        <h1>{title}</h1>
-        <p className="text-base sm:text-lg md:text-xl font-mono font-medium max-w-4xl px-2">
-          {description}
-        </p>
-      </section>
-    </>
-  );
-}
+
 
 function BusinessModel() {
   const steps = [
