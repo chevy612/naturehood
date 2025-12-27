@@ -74,14 +74,14 @@ export function HorizontalScroll({ items }: HorizontalScrollProps) {
       </div>
 
       {/* Navigation dots */}
-      <div className="flex justify-center gap-2 mt-6">
+      <div className="flex justify-center gap-5 mt-6">
         {items.map((_, index) => (
           <button
             key={index}
             onClick={() => scrollToIndex(index)}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
               currentIndex === index 
-                ? 'bg-green-500 w-8' 
+                ? 'bg-gray-100 ring-2 hover:bg-gray-500 ring-gray-100' 
                 : 'bg-gray-400 hover:bg-gray-500'
             }`}
             aria-label={`Go to slide ${index + 1}`}
