@@ -3,6 +3,7 @@ import EmailSubscribe from "./components/email.js";
 import StickyBar from "./navigation/sticky";
 import HeroSection from "./components/hero";
 import { IntroSection } from "./components/content";
+import MediaContentBlock from "./components/MediaContentBlock.example";
 
 export default function Page() {
   return (
@@ -10,7 +11,8 @@ export default function Page() {
       <StickyBar />
       <HeroSection />
       <IntroSection />
-      <BusinessModel />
+      <MediaContentBlock />
+      <HowWeWorkSection />
       <EmailSubscribe />
     </div>
   );
@@ -20,27 +22,28 @@ export default function Page() {
 
 
 
-function BusinessModel() {
+function HowWeWorkSection() {
   const steps = [
     {
       number: "1",
-      title: "Start by creating",
+      title: "Athletes as Brands",
+      subtitle:"Bulid audience through storytelling",
       description:
-        "We collaborate with athletes who are committed to performance and storytelling. Together, we create high-quality sport and lifestyle content that reflects their identity, discipline, and journey.",
+        "We help athletes develop content and personal branding that reflects their performance, mindset, and journey—turning visibility into long-term value, without distracting from training.",
       image: "/image/athlete-partnership.webp", // Replace with your actual image path
     },
     {
       number: "2",
-      title: "Audience & Positioning",
-      description:
-        "Through consistent content and strategic branding, athletes grow a clearly defined audience—one that extends beyond sport and into culture, lifestyle, and performance-driven communities.",
+      title: "Athletes x Business",
+      subtitle:"Authentic collaborations that create value",
+      description:"We match athletes with businesses that align with their audience and values, creating authentic collaborations that benefit both sides—athletes get paid, brands get meaningful exposure.",
       image: "/image/audience-positioning.webp", // Replace with your actual image path
     },
     {
       number: "3",
-      title: "Brand Collaboration",
-      description:
-        "We connect athletes with businesses whose products or services naturally align with their audience. Campaigns are designed to be authentic, performance-driven, and story-led—rather than traditional advertising.",
+      title: "Growing with Intention",
+      subtitle:"A long-term system, built step by step",
+      description:"Naturehood is a growing ecosystem. We start with community and storytelling, then scale into technology and tools that support performance, visibility, and sustainable athlete careers.",
       image: "/image/brand-collaboration.webp", // Replace with your actual image path
     },
   ];
