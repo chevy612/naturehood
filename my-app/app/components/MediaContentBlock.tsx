@@ -33,19 +33,19 @@ export default function MediaContentBlock({
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-10 lg:px-40 py-8 md:py-1 rounded-lg shadow-lg">
+    <section className="w-full px-4 sm:px-6 md:px-10 lg:px-40 py-8 md:py-1 rounded-lg">
       {/* Title */}
-      <h1 className="justify-start">{title}</h1>
+      <h2 className="justify-start">{title}</h2>
 
       {/* Subtitle with Button */}
-      <div className="flex items-center justify-between gap-4 mb-6 md:mb-8">
-        <h2 className="mb-0 flex-1">{subtitle}</h2>
+      <div className="flex flex-row items-center justify-between gap-4 mb-6 md:mb-8">
+        <h3 className="flex-1 truncate whitespace-nowrap mx-auto my-auto leading-none">{subtitle}</h3>
         <button
           onClick={handleButtonClick}
-          className="btn-primary p-2 sm:p-3  text-black rounded-full transition-colors"
+          className="btn-primary p-1 sm:p-3 rounded-full flex items-center justify-center transition-colors shrink-0"
           aria-label={buttonText}
         >
-          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+          <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7" />
         </button>
       </div>
 

@@ -28,7 +28,7 @@ h2 {
 
 h3 {
   font-family: sans-serif;
-  @apply text-xl sm:text-2xl md:text-3xl font-mono font-bold leading-tight mb-3;
+  @apply text-base sm:text-lg md:text-3xl font-black leading-tight mb-3;
 }
 
 h4, h5, h6, p {
