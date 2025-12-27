@@ -33,29 +33,29 @@ export default function MediaContentBlock({
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-10 lg:px-40 py-8 md:py-1 rounded-lg">
+    <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 rounded-lg shadow-md">
       {/* Title */}
-      <h2 className="justify-start">{title}</h2>
+      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-3 sm:mb-4 md:mb-5">{title}</h2>
 
       {/* Subtitle with Button */}
-      <div className="flex flex-row items-center justify-between gap-4 mb-6 md:mb-8">
-        <h3 className="flex-1 truncate whitespace-nowrap mx-auto my-auto leading-none">{subtitle}</h3>
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-5 md:mb-6">
+        <h3 className="flex-1 truncate whitespace-nowrap leading-none text-sm sm:text-base md:text-lg lg:text-xl">{subtitle}</h3>
         <button
           onClick={handleButtonClick}
-          className="btn-primary p-1 sm:p-3 rounded-full flex items-center justify-center transition-colors shrink-0"
+          className="btn-primary p-2 sm:p-2.5 md:p-3 rounded-full flex items-center justify-center transition-colors shrink-0 hover:scale-110"
           aria-label={buttonText}
         >
-          <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
         </button>
       </div>
 
       {/* Media Content */}
-      <div className="w-full mb-6 md:mb-8 rounded-lg overflow-hidden">
+      <div className="w-full mb-4 sm:mb-5 md:mb-6 lg:mb-8 rounded-md sm:rounded-lg overflow-hidden">
         {mediaType === "video" ? (
           <video
             src={mediaSrc}
             controls
-            className="w-full h-auto max-h-[600px] object-cover"
+            className="w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px] object-cover"
             aria-label={mediaAlt}
           >
             Your browser does not support the video tag.
@@ -64,14 +64,14 @@ export default function MediaContentBlock({
           <img
             src={mediaSrc}
             alt={mediaAlt}
-            className="w-full h-auto max-h-[600px] object-cover"
+            className="w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px] object-cover"
           />
         )}
       </div>
 
       {/* Description */}
-      <div className="text-center max-w-4xl mx-auto">
-        <p className="text-base sm:text-lg md:text-xl leading-relaxed">
+      <div className="text-left sm:text-center">
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">
           {description}
         </p>
       </div>
