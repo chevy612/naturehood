@@ -37,7 +37,7 @@ function HowWeWorkSection() {
     {
       number: "2",
       title: "Athletes x Business",
-      subtitle: "Authentic collaborations that create value",
+      subtitle: "Create value through collaboration",
       description:
         "We match athletes with businesses that align with their audience and values, creating authentic collaborations that benefit both sides—athletes get paid, brands get meaningful exposure.",
       image: "/image/business.webp",
