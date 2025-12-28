@@ -35,11 +35,11 @@ export default function MediaContentBlock({
   return (
     <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 rounded-lg shadow-md">
       {/* Title */}
-      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-3 sm:mb-4 md:mb-5">{title}</h2>
+      <h2 className="mb-3 sm:mb-4 md:mb-5">{title}</h2>
 
       {/* Subtitle with Button */}
       <div className="flex flex-row items-center justify-between gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-5 md:mb-6">
-        <h3 className="flex-1 truncate whitespace-nowrap leading-none text-sm sm:text-base md:text-lg lg:text-xl">{subtitle}</h3>
+        <h3 className="flex-1 truncate whitespace-nowrap leading-none text-sm sm:text-base md:text-lg">{subtitle}</h3>
         <button
           onClick={handleButtonClick}
           className="btn-primary p-2 sm:p-2.5 md:p-3 rounded-full flex items-center justify-center transition-colors shrink-0 hover:scale-110"

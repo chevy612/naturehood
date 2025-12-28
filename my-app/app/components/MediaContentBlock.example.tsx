@@ -2,7 +2,7 @@
 // Example usage of MediaContentBlock component
 import MediaContentBlock from "./MediaContentBlock";
 
-export default function ExamplePage() {
+export default function HowWeWorkSection() {
   return (
     <div>
       {/* Example with Image */}

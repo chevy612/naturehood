@@ -30,7 +30,7 @@ function HowWeWorkSection() {
       subtitle: "Build audience through storytelling",
       description:
         "We help athletes develop content and personal branding that reflects their performance, mindset, and journey—turning visibility into long-term value, without distracting from training.",
-      image: "/image/athlete-partnership.webp",
+      image: "/image/brand.webp",
       buttonText: "Learn more",
       buttonLink: "#",
     },
@@ -40,7 +40,7 @@ function HowWeWorkSection() {
       subtitle: "Authentic collaborations that create value",
       description:
         "We match athletes with businesses that align with their audience and values, creating authentic collaborations that benefit both sides—athletes get paid, brands get meaningful exposure.",
-      image: "/image/audience-positioning.webp",
+      image: "/image/business.webp",
       buttonText: "Learn more",
       buttonLink: "#",
     },
@@ -50,17 +50,17 @@ function HowWeWorkSection() {
       subtitle: "A long-term system, built step by step",
       description:
         "Naturehood is a growing ecosystem. We start with community and storytelling, then scale into technology and tools that support performance, visibility, and sustainable athlete careers.",
-      image: "/image/brand-collaboration.webp",
+      image: "/image/future.webp",
       buttonText: "Learn more",
       buttonLink: "#",
     },
   ];
 
   return (
-    <section className="px-4 sm:px-6 md:px-10 lg:px-40 py-12 md:py-16">
+    <section className="px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
       <h1 className="text-center">How We Work</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-5 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8 md:gap-8 lg:gap-8 xl:gap-10">
         {steps.map((step) => (
           <MediaContentBlock
             key={step.number}
