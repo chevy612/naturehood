@@ -48,33 +48,37 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header className="flex flex-row items-center justify-between bg-background">
-      {/* Logo */}
-      <div className="flex items-center justify-between px-0 ml-3">
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/icon.svg" alt="Logo" width={60} height={60} priority />
-        </Link>
-      </div>
-
-      {/* Right side icons */}
-      <div className="flex items-center gap-4 mr-3" ref={menuRef}>
-        {/* Shop */}
-        <Link href="/account" className="icon-button" aria-label="Account">
-          <User className="h-5 w-5" />
-        </Link>
-        {/* Menu */}
-        <Link href="/cart" className="icon-button" aria-label="Shop">
-          <ShoppingBag className="h-5 w-5" />
-        </Link>
+    <header className="sticky top-0 z-50 flex flex-row items-center justify-between bg-[#141115] h-16 sm:h-18 md:h-22 px-2 sm:px-3 md:px-4">
+      {/* Left side - Menu toggle and Logo */}
+      <div className="flex items-center gap-2 sm:gap-2 md:gap-3">
         {/* Menu toggle */}
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="icon-button"
+          className="icon-button p-2 sm:p-3 opacity-70"
           aria-label="Menu"
           aria-expanded={open}
         >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {open ? <X className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" /> : <Menu className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />}
+        </button>
+        
+        {/* Logo */}
+        <Link href="/" className="flex items-center">
+          <Image 
+            src="/naturehood.svg" 
+            alt="Logo" 
+            width={160} 
+            height={64} 
+            priority 
+            className="w-32 h-auto sm:w-40 md:w-44 lg:w-48"
+          />
+        </Link>
+      </div>
+
+      {/* Right side - Sign up button */}
+      <div className="flex items-center mr-3 sm:mr-4 md:mr-6">
+        <button className="btn btn-primary py-1.5 sm:py-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">
+          Sign Up
         </button>
       </div>
 
@@ -92,32 +96,32 @@ export default function Navbar() {
           ref={menuRef}
           onClick={(e) => e.stopPropagation()}
           className={[
-            "fixed top-0 right-0 z-70 h-full w-64 max-w-[85vw] bg-[#141115] shadow-lg",
+            "fixed top-0 left-0 z-70 h-full w-56 sm:w-64 md:w-72 max-w-[85vw] bg-[#141115] shadow-lg",
             "transition-transform duration-300 ease-in-out",
-            open ? "translate-x-0" : "translate-x-full",
+            open ? "translate-x-0" : "-translate-x-full",
           ].join(" ")}
           role="dialog"
           aria-modal="true"
         >
           {/* Menu header */}
-          <div className="flex items-center justify-end gap-4 mr-3 mt-3 ">
+          <div className="flex items-center justify-start gap-2 sm:gap-4 ml-2 sm:ml-3 mt-2 sm:mt-3">
             {/* Close button */}
             <button
               onClick={() => setOpen(false)}
-              className="icon-button"
+              className="icon-button p-1.5 sm:p-2"
               aria-label="Close menu"
             >
-              <X />
+              <X className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
           </div>
           {/* Menu items */}
-          <nav className="px-2 mr-3 mt-10">
-            <ul className="space-y-1 ">
+          <nav className="px-2 ml-2 sm:ml-3 mt-6 sm:mt-8 md:mt-10">
+            <ul className="space-y-1">
               {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="block w-full rounded-md px-3 py-2 text-base font-medium  hover:bg-green-400"
+                    className="block w-full rounded-md px-2 sm:px-3 py-2 sm:py-2.5 text-sm sm:text-base font-medium hover:bg-green-400 transition-colors"
                     onClick={() => setOpen(false)}
                   >
                     <span>{item.label}</span>

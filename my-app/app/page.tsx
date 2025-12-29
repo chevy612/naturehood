@@ -4,12 +4,11 @@ import StickyBar from "./navigation/sticky";
 import HeroSection from "./components/hero";
 import { IntroSection } from "./components/content";
 import MediaContentBlock from "./components/MediaContentBlock";
-import MediaContentBlockExample from "./components/MediaContentBlock.example";
+
 
 export default function Page() {
   return (
     <div className="min-h-screen flex flex-col justify-start gap-6">
-      <StickyBar />
       <HeroSection />
       <IntroSection />
       <HowWeWorkSection />
