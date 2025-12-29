@@ -4,10 +4,9 @@ import { useState, useRef, useEffect } from "react";
 export function IntroSection() {
   const title = "Redefining Athlete";
   const content = [
-    "Naturehood is a community-led project built to rethink how athletes are valued in today's world.",
-    "Competitive athletes invest years into training, discipline, and performance, yet their value is often measured by results alone. Outside of medals and rankings, many athletes struggle to sustain their careers or communicate their story beyond the sport.",
-    "Naturehood exists to change that.",
-    "We believe athletes are more than results. Their journey, mindset, and daily commitment carry cultural, creative, and commercial value when told with intention."
+    "Naturehood is a community-led project built to challenge how athletes are valued in today’s world.\n\n\nCompetitive athletes dedicate years to training, discipline, and performance—yet their value is often reduced to results, rankings, or medals alone.",
+    "Outside competition, many athletes struggle to sustain their careers or express who they are beyond the sport.\n\n\nTheir effort, mindset, and daily commitment remain largely unseen—despite shaping culture, inspiring others, and driving influence far beyond the field of play.",
+    "Naturehood exists to change that.\n\n\nWe believe athletes are more than results. Their journey, identity, and way of living carry cultural, creative, and commercial value—when told with intention.\n\n\n\This is where performance meets storytelling.\n\n\nThis is how athlete value is redefined."
   ]
 
   return (

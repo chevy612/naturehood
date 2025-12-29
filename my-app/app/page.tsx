@@ -71,6 +71,7 @@ function HowWeWorkSection() {
             description={step.description}
             buttonText={step.buttonText}
             buttonLink={step.buttonLink}
+            reverseLayout={parseInt(step.number) % 2 === 0}
           />
         ))}
       </div>
