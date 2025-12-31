@@ -5,6 +5,19 @@ import HeroSection from "./components/hero";
 import { IntroSection } from "./components/content";
 import MediaContentBlock from "./components/MediaContentBlock";
 
+import { supabase } from "@/lib/supabase";
+import { checkSupabaseConnection, getUserEmails } from '@/lib/checkConnection'
+
+// Check connection
+const result = await checkSupabaseConnection()
+if (result.success) {
+  console.log('User emails:', result.data)
+}
+
+// Or get emails directly
+const emails = await getUserEmails()
+
+
 
 export default function Page() {
   return (
