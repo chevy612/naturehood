@@ -77,9 +77,9 @@ export default function Navbar() {
 
       {/* Right side - Sign up button */}
       <div className="flex items-center mr-3 sm:mr-4 md:mr-6">
-        <button className="btn btn-primary py-1.5 sm:py-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">
+        <Link href="./signup" className="btn btn-primary py-1.5 sm:py-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">
           Sign Up
-        </button>
+        </Link>
       </div>
 
       {/* Overlay + Slide Panel*/}
