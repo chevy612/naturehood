@@ -1,10 +1,8 @@
 import Clock from "./landing_page/clock.js";
 import EmailSubscribe from "./landing_page/email";
-import StickyBar from "./navigation/sticky";
 import HeroSection from "./landing_page/hero";
 import { IntroSection } from "./landing_page/content";
 import MediaContentBlock from "./landing_page/MediaContentBlock";
-import { SignUpForm } from "./auth/sign-up-form";
 import { checkSupabaseConnection, getUserEmails } from '@/lib/checkConnection'
 
 // Check connection
