@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 function useTime() {
-  const [time, setTime] = useState(null);
+  const [time, setTime] = useState<string | null>(null);
 
   useEffect(() => {
     const tick = () => setTime(new Date().toLocaleTimeString());
@@ -16,7 +16,7 @@ function useTime() {
 
 export default function Clock() {
   const time = useTime();
-  const [timeZone, setTimeZone] = useState("");
+  const [timeZone, setTimeZone] = useState<string>("");
 
   useEffect(() => {
     setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);

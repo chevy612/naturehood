@@ -1,13 +1,17 @@
 
 
 export default function HeroSection() {
+  const videoURL = "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/hero.mp4";
   return (
     <>
       <section className="mx-0 my-0 mb-0 w-full flex relative">
-        <img
-          src="/image/Colin BW.webp"
-          alt="Hero Image"
-          className=" object-cover w-full h-[500px] md:h-[900px] opacity-50"
+        <video
+          src={videoURL}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="object-cover w-full h-[500px] md:h-[900px] opacity-50"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
           <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 lg:gap-8 mx-auto w-full max-w-7xl">

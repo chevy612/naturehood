@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 export default function EmailSubscribe() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
 
   const handleSubmit = async () => {
     if (!email) {

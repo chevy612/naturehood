@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/landing_page/email.js", "app/landing_page/clock.js"  ],
+, "app/components/email.js", "app/components/clock.js"  ],
   "exclude": ["node_modules"]
 }

@@ -1,8 +1,8 @@
-import Clock from "./landing_page/clock.js";
-import EmailSubscribe from "./landing_page/email";
-import HeroSection from "./landing_page/hero";
-import { IntroSection } from "./landing_page/content";
-import MediaContentBlock from "./landing_page/MediaContentBlock";
+import Clock from "./components/clock";
+import EmailSubscribe from "./components/email";
+import HeroSection from "./components/hero";
+import { IntroSection } from "./components/content";
+import MediaContentBlock from "./components/MediaContentBlock";
 import { checkSupabaseConnection, getUserEmails } from '@/lib/checkConnection'
 
 // Check connection
