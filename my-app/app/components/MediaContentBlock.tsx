@@ -65,8 +65,13 @@ export default function MediaContentBlock({
           {mediaType === "video" ? (
             <video
               src={mediaSrc}
-              controls
-              className="w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px] object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+              disablePictureInPicture
+              disableRemotePlayback
+              className="w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px] object-cover pointer-events-none"
               aria-label={mediaAlt}
             >
               Your browser does not support the video tag.

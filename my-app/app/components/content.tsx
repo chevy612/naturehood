@@ -102,7 +102,14 @@ export function HorizontalScroll({ items }: HorizontalScrollProps) {
 }
 
 function HowWeWorkSection() {
-  const steps = [
+  const steps: Array<{
+    number: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    image?: string;
+    video?: string;
+  }> = [
     {
       number: "1",
       title: "Athletes as Brands",
@@ -124,6 +131,7 @@ function HowWeWorkSection() {
       subtitle:"A long-term system, built step by step",
       description:"Naturehood is a growing ecosystem. We start with community and storytelling, then scale into technology and tools that support performance, visibility, and sustainable athlete careers.",
       image: "/image/brand-collaboration.webp", // Replace with your actual image path
+      video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/future.mp4"
     },
   ];
 
@@ -134,13 +142,28 @@ function HowWeWorkSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
         {steps.map((step) => (
           <div key={step.number} className="flex flex-col gap-4">
-            {/* Image */}
+            {/* Media (Image or Video) */}
             <div className="w-full aspect-square overflow-hidden rounded-lg bg-gray-200">
-              <img
-                src={step.image}
-                alt={step.title}
-                className="w-full h-full object-cover"
-              />
+              {step.video ? (
+                <video
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  controls
+                  preload="metadata"
+                >
+                  <source src={step.video} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <img
+                  src={step.image}
+                  alt={step.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
 
             {/* Content */}

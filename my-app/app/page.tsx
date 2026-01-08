@@ -40,6 +40,7 @@ function HowWeWorkSection() {
       description:
         "We help athletes develop content and personal branding that reflects their performance, mindset, and journey—turning visibility into long-term value, without distracting from training.",
       image: "/image/brand.webp",
+      video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/athlete.mp4",
       buttonText: "Learn more",
       buttonLink: "#",
     },
@@ -60,6 +61,7 @@ function HowWeWorkSection() {
       description:
         "Naturehood is a growing ecosystem. We start with community and storytelling, then scale into technology and tools that support performance, visibility, and sustainable athlete careers.",
       image: "/image/future.webp",
+      video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/future.mp4",
       buttonText: "Learn more",
       buttonLink: "#",
     },
@@ -75,8 +77,8 @@ function HowWeWorkSection() {
             key={step.number}
             title={step.title}
             subtitle={step.subtitle}
-            mediaType="image"
-            mediaSrc={step.image}
+            mediaType={step.video ? "video" : "image"}
+            mediaSrc={step.video ? step.video : step.image!}
             mediaAlt={step.title}
             description={step.description}
             buttonText={step.buttonText}
