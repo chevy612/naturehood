@@ -49,8 +49,14 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 flex flex-row items-center justify-between bg-[#141115] h-16 sm:h-18 md:h-22 px-2 sm:px-3 md:px-4">
+<<<<<<< HEAD
       {/* Left side - Menu toggle */}
       <div className="flex items-center">
+=======
+      {/* Left side - Menu toggle and Logo */}
+      <div className="flex items-center gap-2 sm:gap-2 md:gap-3">
+        {/* Menu toggle */}
+>>>>>>> 7a9937d14e3d55973890e4611c6b3831970b0921
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -60,10 +66,15 @@ export default function Navbar() {
         >
           {open ? <X className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" /> : <Menu className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />}
         </button>
+<<<<<<< HEAD
       </div>
 
       {/* Center - Logo */}
       <div className="absolute left-1/2 transform -translate-x-1/2">
+=======
+        
+        {/* Logo */}
+>>>>>>> 7a9937d14e3d55973890e4611c6b3831970b0921
         <Link href="/" className="flex items-center">
           <Image 
             src="/naturehood.svg" 
