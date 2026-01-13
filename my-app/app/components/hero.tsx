@@ -2,28 +2,18 @@
 
 export default function HeroSection() {
   const videoURL = "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/hero.mp4";
-<<<<<<< HEAD
   const isDevelopment = process.env.NODE_ENV === 'development';
   
-=======
->>>>>>> 7a9937d14e3d55973890e4611c6b3831970b0921
   return (
     <>
       <section className="mx-0 my-0 mb-0 w-full flex relative">
         <video
           src={videoURL}
-<<<<<<< HEAD
           autoPlay={!isDevelopment}
           loop
           muted
           playsInline
           controls={isDevelopment}
-=======
-          autoPlay
-          loop
-          muted
-          playsInline
->>>>>>> 7a9937d14e3d55973890e4611c6b3831970b0921
           className="object-cover w-full h-[500px] md:h-[900px] opacity-50"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4">

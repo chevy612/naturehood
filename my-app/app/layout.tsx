@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
-<<<<<<< HEAD
 import ConditionalLayout from "./components/ConditionalLayout"
-=======
-import Navbar from "./components/navigation"
-import Footer from "./components/footer"
->>>>>>> 7a9937d14e3d55973890e4611c6b3831970b0921
 
 import "./globals.css";
 
@@ -43,15 +38,9 @@ export default function RootLayout({
       <body
         className={`${switzer.variable} antialiased`}
       >
-<<<<<<< HEAD
         <ConditionalLayout>
           {children}
         </ConditionalLayout>
-=======
-        <Navbar />
-        {children}
-        <Footer />
->>>>>>> 7a9937d14e3d55973890e4611c6b3831970b0921
       </body>
     </html>
   );
