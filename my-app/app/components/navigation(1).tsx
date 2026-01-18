@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, User, ShoppingBag, X } from "lucide-react";
-import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -15,27 +14,7 @@ const navItems = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
-
-  // Check if user is logged in
-  useEffect(() => {
-    const supabase = createClient();
-    
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    
-    getUser();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   //Close on outside click
   useEffect(() => {
@@ -97,20 +76,11 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {/* Right side - Sign up button or Username */}
+      {/* Right side - Sign up button */}
       <div className="flex items-center mr-3 sm:mr-4 md:mr-6">
-        {user ? (
-          <div className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            <span className="text-xs sm:text-sm md:text-base font-medium">
-              {user.email?.split('@')[0]}
-            </span>
-          </div>
-        ) : (
-          <Link href="/signup" className="btn btn-primary py-1.5 sm:py-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">
-            Sign Up
-          </Link>
-        )}
+        <Link href="../signup/" className="btn btn-primary py-1.5 sm:py-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">
+          Sign Up
+        </Link>
       </div>
 
       {/* Overlay + Slide Panel*/}

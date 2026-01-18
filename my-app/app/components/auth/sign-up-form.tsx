@@ -24,14 +24,36 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   const [username, setUsername] = useState('')
   const [isBusiness, setIsBusiness] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setEmail(value)
+    if (value && !validateEmail(value)) {
+      setEmailError('Please enter a valid email address')
+    } else {
+      setEmailError(null)
+    }
+  }
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address')
+      setIsLoading(false)
+      return
+    }
 
     if (password !== repeatPassword) {
       setError('Passwords do not match')
@@ -40,15 +62,26 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          // For development: auto-confirm users without email verification
+          // Remove this in production
+          data: {
+            email_confirm: true
+          }
         },
       })
-      if (error) throw error
-      router.push('./signup/success')
+      
+      if (error) {
+        console.error('Signup error:', error)
+        throw error
+      }
+      
+      console.log('Signup successful:', data)
+      router.push('/signup/success')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -57,25 +90,25 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   }
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card className="bg-[#141115] border-gray-600">
-        <CardHeader className="px-12 py-8">
+    <div className={cn('flex flex-col gap-6 w-full max-w-md mx-auto px-4', className)} {...props}>
+      <Card className="bg-[#141115] border-gray-600 w-full">
+        <CardHeader className="px-6 py-6">
           {/* Logo inside the card */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-2">
             <Image 
               src="/naturehood.svg" 
               alt="Naturehood" 
-              width={400} 
-              height={80}
+              width={280} 
+              height={50}
               priority
-              className="w-full"
+              className="w-50 max-w-[300px]"
             />
           </div>
           <CardDescription>Sign up to share your progress with friends</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center px-12  py-0 pb-8">
+        <CardContent className="flex flex-col items-center px-6 py-0 pb-6">
           <form onSubmit={handleSignUp} className="w-full">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {/* Facebook Login Button */}
               <Button 
                 type="button"
@@ -88,7 +121,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
-                Log in with Facebook
+                Sign up with Facebook
               </Button>
 
               {/* OR Divider */}
@@ -109,9 +142,10 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   placeholder="Email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className=" border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
+                  onChange={handleEmailChange}
+                  className={`w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm ${emailError ? 'border-red-500' : ''}`}
                 />
+                {emailError && <p className="text-xs text-red-500 mt-1">{emailError}</p>}
               </div>
 
               {/* Password Field */}
@@ -123,7 +157,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
+                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
                 />
               </div>
 
@@ -136,7 +170,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   required
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
-                  className="border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
+                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
                 />
               </div>
 
@@ -149,7 +183,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
+                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
                 />
               </div>
 

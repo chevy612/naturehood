@@ -22,11 +22,16 @@ export default function Clock() {
     setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   }, []);
 
-  if (!time) return <p suppressHydrationWarning>--:--:--</p>;
+  if (!time) return <p suppressHydrationWarning className="text-6xl font-bold">--:--:--</p>;
 
   return (
-    <div>
-      <p suppressHydrationWarning>{time} {timeZone}</p>
+    <div className="flex flex-col items-center justify-center gap-4">
+      <p suppressHydrationWarning className="text-6xl md:text-8xl font-bold text-white">
+        {time}
+      </p>
+      <p className="text-xl md:text-2xl text-gray-400">
+        {timeZone}
+      </p>
     </div>
   );
 }

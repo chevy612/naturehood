@@ -18,7 +18,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  const [email, setEmail] = useState('')
+  const [emailOrUsername, setEmailOrUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -32,12 +32,12 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: emailOrUsername,
         password,
       })
       if (error) throw error
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push('/protected')
+      // Redirect to home page after successful login
+      router.push('/home')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -46,25 +46,25 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   }
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card className="bg-[#141115] border-gray-600">
-        <CardHeader className="px-12 py-8">
+    <div className={cn('flex flex-col gap-6 w-full max-w-md mx-auto px-4', className)} {...props}>
+      <Card className="bg-[#141115] border-gray-600 w-full">
+        <CardHeader className="px-6 py-6">
           {/* Logo inside the card */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-2">
             <Image 
               src="/naturehood.svg" 
               alt="Naturehood" 
-              width={400} 
-              height={80}
+              width={280} 
+              height={50}
               priority
-              className="w-full"
+              className="w-50 max-w-[300px]"
             />
           </div>
           <CardDescription>Login to your account</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center px-12 pb-8">
+        <CardContent className="flex flex-col items-center px-6 py-0 pb-6">
           <form onSubmit={handleLogin} className="w-full">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {/* Facebook Login Button */}
               <Button 
                 type="button"
@@ -77,7 +77,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
-                Log in with Facebook
+                Sign in with Facebook
               </Button>
 
               {/* OR Divider */}
@@ -90,16 +90,16 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 </div>
               </div>
 
-              {/* Email Field */}
+              {/* Email or Username Field */}
               <div className="grid gap-2">
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
+                  id="emailOrUsername"
+                  type="text"
+                  placeholder="Email or Username"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
+                  value={emailOrUsername}
+                  onChange={(e) => setEmailOrUsername(e.target.value)}
+                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
                 />
               </div>
 
@@ -112,7 +112,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
+                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
                 />
               </div>
 
@@ -127,6 +127,12 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="text-blue-500 hover:text-blue-400 underline underline-offset-4">
                 Sign up
+              </Link>
+            </div>
+            <div className="mt-2 text-center text-sm">
+              <Link href="/home" className="text-gray-400 hover:text-gray-300 flex items-center justify-center gap-1">
+                Explore without login
+                <span className="text-lg">›</span>
               </Link>
             </div>
           </form>
