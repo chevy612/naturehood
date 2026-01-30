@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, User, ShoppingBag, X } from "lucide-react";
+import { Menu, User, ShoppingBag, X, LogOut } from "lucide-react";
 import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -16,7 +17,10 @@ const navItems = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
 
   // Check if user is logged in
   useEffect(() => {
@@ -49,14 +53,36 @@ export default function Navbar() {
     return () => window.removeEventListener("mousedown", onClick);
   }, [open]);
 
+  //Close user menu on outside click
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (!userMenuOpen) return;
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    window.addEventListener("mousedown", onClick);
+    return () => window.removeEventListener("mousedown", onClick);
+  }, [userMenuOpen]);
+
   //Close on ESC Key
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setUserMenuOpen(false);
+      }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setUserMenuOpen(false);
+    router.push('/');
+  };
 
   // lock body scroll when open
   useEffect(() => {
@@ -100,11 +126,39 @@ export default function Navbar() {
       {/* Right side - Sign up button or Username */}
       <div className="flex items-center mr-3 sm:mr-4 md:mr-6">
         {user ? (
-          <div className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            <span className="text-xs sm:text-sm md:text-base font-medium">
-              {user.email?.split('@')[0]}
-            </span>
+          <div 
+            ref={userMenuRef}
+            className="relative"
+            onMouseEnter={() => setUserMenuOpen(true)}
+            onMouseLeave={() => setUserMenuOpen(false)}
+          >
+            <button
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-800 transition-colors cursor-pointer"
+              aria-label="User menu"
+              aria-expanded={userMenuOpen}
+            >
+              <User className="h-5 w-5" />
+              <span className="text-xs sm:text-sm md:text-base font-medium">
+                {user.email?.split('@')[0]}
+              </span>
+            </button>
+            
+            {/* Dropdown menu */}
+            <div
+              className={[
+                "absolute right-0 mt-2 w-48 bg-[#1a1618] rounded-md shadow-lg border border-gray-700 transition-all duration-200",
+                userMenuOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
+              ].join(" ")}
+            >
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 w-full px-4 py-3 text-sm text-left hover:bg-gray-800 rounded-md transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Sign Out</span>
+              </button>
+            </div>
           </div>
         ) : (
           <Link href="/signup" className="btn btn-primary py-1.5 sm:py-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">
