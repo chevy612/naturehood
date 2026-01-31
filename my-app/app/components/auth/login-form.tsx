@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/client'
+import { loginUser } from '@/app/login/actions'
 import { Button } from './ui/button'
 import {
   Card,
@@ -26,20 +26,24 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: emailOrUsername,
-        password,
+      // Call server action
+      const result = await loginUser({
+        emailOrUsername,
+        password
       })
-      if (error) throw error
-      // Redirect to home page after successful login
-      router.push('/home')
+      
+      if (result.error) {
+        setError(result.error)
+      } else {
+        // Login successful, redirect to home page
+        router.push('/home')
+      }
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred')
     } finally {
       setIsLoading(false)
     }
@@ -127,12 +131,6 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="text-blue-500 hover:text-blue-400 underline underline-offset-4">
                 Sign up
-              </Link>
-            </div>
-            <div className="mt-2 text-center text-sm">
-              <Link href="/home" className="text-gray-400 hover:text-gray-300 flex items-center justify-center gap-1">
-                Explore without login
-                <span className="text-lg">›</span>
               </Link>
             </div>
           </form>

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/client'
+import { signUpNewUser } from '@/app/signup/actions'
 import { Button } from "./ui/button"
 import {
   Card,
@@ -45,10 +45,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
+    setEmailError(null)
 
+    // Client-side validation
     if (!validateEmail(email)) {
       setEmailError('Please enter a valid email address')
       setIsLoading(false)
@@ -61,29 +62,30 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
       return
     }
 
+    if (!username || username.trim().length < 3) {
+      setError('Username must be at least 3 characters long')
+      setIsLoading(false)
+      return
+    }
+
     try {
-      const { data, error } = await supabase.auth.signUp({
+      // Call server action
+      const result = await signUpNewUser({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          // For development: auto-confirm users without email verification
-          // Remove this in production
-          data: {
-            email_confirm: true
-          }
-        },
+        repeatPassword,
+        username,
+        isBusiness
       })
       
-      if (error) {
-        console.error('Signup error:', error)
-        throw error
+      if (result.error) {
+        setError(result.error)
+      } else {
+        // Signup successful, redirect to success page
+        router.push('/signup/success')
       }
-      
-      console.log('Signup successful:', data)
-      router.push('/signup/success')
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred')
     } finally {
       setIsLoading(false)
     }

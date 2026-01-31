@@ -1,14 +1,25 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 
-export async function signUpNewUser(formData: FormData) {
+interface SignUpData {
+  email: string
+  password: string
+  repeatPassword: string
+  username: string
+  isBusiness: boolean
+}
+
+export async function signUpNewUser(data: SignUpData) {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const repeatPassword = formData.get('repeatPassword') as string
+  const { email, password, repeatPassword, username, isBusiness } = data
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return { error: 'Please enter a valid email address' }
+  }
 
   // Validate passwords match
   if (password !== repeatPassword) {
@@ -20,19 +31,67 @@ export async function signUpNewUser(formData: FormData) {
     return { error: 'Password must be at least 6 characters long' }
   }
 
-  // Sign up the user
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/protected`,
-    },
-  })
-
-  if (error) {
-    return { error: error.message }
+  // Validate username
+  if (!username || username.trim().length < 3) {
+    return { error: 'Username must be at least 3 characters long' }
   }
 
-  // Redirect to success page
-  redirect('/auth/sign-up-success')
+  try {
+    // Check if username already exists (use count to bypass RLS)
+    const { count, error: checkError } = await supabase
+      .from('profiles')
+      .select('username', { count: 'exact', head: true })
+      .eq('username', username.trim())
+
+    if (checkError) {
+      console.error('Error checking username:', checkError)
+      return { error: 'Unable to verify username availability' }
+    }
+
+    if (count && count > 0) {
+      return { error: 'Username is already taken. Please choose another one.' }
+    }
+
+    // Sign up the user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+        // Store username and business status in user metadata
+        data: {
+          username: username.trim(),
+          is_business: isBusiness,
+          email_confirm: true
+        }
+      },
+    })
+
+    if (authError) {
+      return { error: authError.message }
+    }
+
+    // If signup successful and we have a user ID, create profile entry
+    if (authData.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          username: username.trim(),
+          is_business: isBusiness,
+          email: email,
+          updated_at: new Date().toISOString(),
+        })
+      
+      if (profileError) {
+        console.error('Profile creation error:', profileError)
+        // Don't return error here - user is created, profile can be added later
+      }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Unexpected signup error:', error)
+    return { error: 'An unexpected error occurred during signup' }
+  }
 }

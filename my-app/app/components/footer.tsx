@@ -33,7 +33,7 @@ export default function Footer() {
             <h4 className="text-lg md:text-xl font-mono font-semibold">Connect</h4>
             <div className="flex flex-col space-y-2">
               <a 
-                href="mailto:contact@naturehood.com" 
+                href="mailto:team@naturehoodofficial.com" 
                 className="text-gray-300 hover:text-white transition-colors font-mono text-sm md:text-base"
               >
                 contact@naturehood.com
