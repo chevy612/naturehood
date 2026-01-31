@@ -21,6 +21,7 @@ export default function HowWeWorkSection() {
       description:
         "We match athletes with businesses that align with their audience and values, creating authentic collaborations that benefit both sides—athletes get paid, brands get meaningful exposure.",
       image: "/image/business.webp",
+      video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/business.mp4",
       buttonText: "Learn more",
       buttonLink: "#",
     },
