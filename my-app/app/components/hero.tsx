@@ -18,19 +18,27 @@ export default function HeroSection() {
         />
         <div className="absolute inset-0 flex flex-col justify-start pt-[125px] md:pt-[225px] px-5">
           <div className="text-left mx-auto w-full max-w-7xl space-y-4 md:space-y-6">
-            <h1 className="max-w-full md:max-w-5xl">
+            <h1 className="max-w-full md:max-w-4xl">
               The platform connect athletes and brands.
             </h1>
-            <p className="text-gray-300 text-sm sm:text-base md:text-lg lg:text-xl max-w-xs sm:max-w-sm md:max-w-3xl leading-relaxed">
+            <p className="text-gray-300 font-normal text-sm sm:text-base md:text-lg lg:text-xl max-w-xs sm:max-w-sm md:max-w-xl leading-relaxed">
               Build meaningful collaborations. Athletes earn through their identity. Brands gain authentic exposure.
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-1/3 flex flex-col items-center justify-start">
-          <Link href="/signup">
-            <button className="btn btn-primary mt-6 sm:mt-8 md:mt-10 text-sm sm:text-base md:text-lg px-4 text-amber-">
-              Join Us Now
-            </button>
-          </Link>
+          <div className="absolute bottom-70 left-0 right-0 flex flex-col items-center justify-center">
+            <p className="text-sm text-gray-400 font-medium mb-3">You are</p>
+            <div className="flex items-center justify-center space-x-4">
+              <Link href="/signup?role=athlete">
+                <button className="btn btn-primary w-44 text-sm sm:text-base md:text-lg">
+                  an Athlete
+                </button>
+              </Link>
+              <Link href="/signup?role=brand">
+                <button className="btn btn-second w-44 text-sm sm:text-base md:text-lg">
+                  a Brand
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
