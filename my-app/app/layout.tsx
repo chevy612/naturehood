@@ -22,7 +22,7 @@ const switzer = localFont({
 
 export const metadata: Metadata = {
   title: "NATUREHOOD",
-  description: "Connecting People with Athletes",
+  description: "A platform designed to connect athletes and brands in Hong Kong.",
   icons: {
     icon: "/icon.svg"
   }
@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${switzer.variable} antialiased`}
+        className={`${geistSans.variable} ${switzer.variable} antialiased`}
       >
         <ConditionalLayout>
           {children}

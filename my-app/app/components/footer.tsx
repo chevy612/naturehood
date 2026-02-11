@@ -6,23 +6,23 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-2xl md:text-3xl font-mono font-bold">NATUREHOOD</h3>
-            <p className="text-sm md:text-base text-gray-300 font-mono">
-              Connecting People with Athletes
+            <h3 className="text-2xl md:text-3xl font-bold">NATUREHOOD</h3>
+            <p className="text-sm md:text-base text-gray-300">
+              Connecting Athlete and Brands
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg md:text-xl font-mono font-semibold">Quick Links</h4>
+            <h4 className="text-lg md:text-xl font-semibold">Quick Links</h4>
             <nav className="flex flex-col space-y-2">
-              <a href="/" className="text-gray-300 hover:text-white transition-colors font-mono text-sm md:text-base">
+              <a href="/" className="text-gray-300 hover:text-white transition-colors text-sm md:text-base">
                 Home
               </a>
-              <a href="/about" className="text-gray-300 hover:text-white transition-colors font-mono text-sm md:text-base">
+              <a href="/about" className="text-gray-300 hover:text-white transition-colors text-sm md:text-base">
                 About
               </a>
-              <a href="/team" className="text-gray-300 hover:text-white transition-colors font-mono text-sm md:text-base">
+              <a href="/team" className="text-gray-300 hover:text-white transition-colors text-sm md:text-base">
                 Team
               </a>
             </nav>
@@ -30,13 +30,13 @@ export default function Footer() {
 
           {/* Contact/Social */}
           <div className="space-y-4">
-            <h4 className="text-lg md:text-xl font-mono font-semibold">Connect</h4>
+            <h4 className="text-lg md:text-xl font-semibold">Connect</h4>
             <div className="flex flex-col space-y-2">
               <a 
                 href="mailto:team@naturehoodofficial.com" 
-                className="text-gray-300 hover:text-white transition-colors font-mono text-sm md:text-base"
+                className="text-gray-300 hover:text-white transition-colors text-sm md:text-base"
               >
-                contact@naturehood.com
+                team@naturehood.com
               </a>
               <div className="flex space-x-4 mt-4">
                 {/* Add social media icons here as needed */}
@@ -66,14 +66,14 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-6 md:pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-400 font-mono text-center md:text-left">
+            <p className="text-sm text-gray-400 text-center md:text-left">
               © {new Date().getFullYear()} NATUREHOOD. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors font-mono">
+              <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors font-mono">
+              <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">
                 Terms of Service
               </a>
             </div>

@@ -99,14 +99,15 @@ export function MediaContentBlock({
   
   return (
     <section className="w-full py-8">
-      {/* Title */}
-      <h3 className="flex-1 truncate whitespace-nowrap leading-none text-sm sm:text-base md:text-lg">{title}</h3>
-      <h2 className="mb-6">{subtitle}</h2>
-
       {/* Content Layout - stacked on mobile, side-by-side on larger screens */}
       <div className={`flex flex-col ${reverseLayout ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-8`}>
-        {/* Left Side: Description and Button */}
+        {/* Text Content Side */}
         <div className="flex flex-col lg:w-1/2">
+          {/* Title and Subtitle */}
+          <h3 className="truncate whitespace-nowrap leading-none text-sm sm:text-base md:text-lg mb-1">{title}</h3>
+          <h2 className="mb-2">{subtitle}</h2>
+          
+          {/* Description */}
           <div className="flex flex-row items-center justify-between gap-4">
             <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">
@@ -123,7 +124,7 @@ export function MediaContentBlock({
           </div>
         </div>
 
-        {/* Right Side: Media Content */}
+        {/* Media Content Side */}
         <div className="w-full lg:w-1/2 overflow-hidden">
           {mediaType === "video" ? (
             <video
