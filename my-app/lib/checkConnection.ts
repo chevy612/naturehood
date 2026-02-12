@@ -40,13 +40,19 @@ export async function checkSupabaseConnection() {
  * @returns Array of user email strings
  */
 export async function getUserEmails() {
-  const { data, error } = await supabase
-    .from('user')
-    .select('user_email')
-  
-  if (error) {
-    throw new Error(`Failed to fetch user emails: ${error.message}`)
+  try {
+    const { data, error } = await supabase
+      .from('user')
+      .select('user_email')
+    
+    if (error) {
+      console.error('Failed to fetch user emails:', error.message)
+      return []
+    }
+    
+    return data?.map(user => user.user_email) || []
+  } catch (err) {
+    console.error('Error fetching user emails:', err instanceof Error ? err.message : 'Unknown error')
+    return []
   }
-  
-  return data?.map(user => user.user_email) || []
 }

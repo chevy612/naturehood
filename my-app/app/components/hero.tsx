@@ -25,16 +25,16 @@ export default function HeroSection() {
               Build meaningful collaborations. Athletes earn through their identity. Brands gain authentic exposure.
             </p>
           </div>
-          <div className="absolute bottom-70 left-0 right-0 flex flex-col items-center justify-center">
-            <p className="text-sm text-gray-400 font-medium mb-3">You are</p>
-            <div className="flex items-center justify-center space-x-4">
+          <div className="mx-auto w-full max-w-7xl mt-8 sm:mt-12 md:mt-16 lg:mt-20 flex flex-col items-center justify-center">
+            <label className="text-sm text-gray-400 font-light mb-3">Sign up as</label>
+            <div className="flex justify-center space-x-4 sm:space-x-5 md:space-x-6 px-4 sm:px-0 my-1">
               <Link href="/signup?role=athlete">
-                <button className="btn btn-primary w-44 text-sm sm:text-base md:text-lg">
+                <button className="btn btn-primary h-7 sm:h-9 md:h-10 lg:h-12 w-24 sm:w-32 md:w-40 lg:w-48 text-xs sm:text-sm md:text-base lg:text-lg shadow-md hover:shadow-lg transition-shadow duration-150 font-inter">
                   an Athlete
                 </button>
               </Link>
               <Link href="/signup?role=brand">
-                <button className="btn btn-second w-44 text-sm sm:text-base md:text-lg">
+                <button className="btn btn-second h-7 sm:h-9 md:h-10 lg:h-12 w-24 sm:w-32 md:w-40 lg:w-48 text-xs sm:text-sm md:text-base lg:text-lg shadow-md hover:shadow-lg transition-shadow duration-150 font-inter bg-optical-white">
                   a Brand
                 </button>
               </Link>

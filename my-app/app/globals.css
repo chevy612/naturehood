@@ -65,31 +65,28 @@ h3 {
 p {
   @apply text-sm sm:text-base md:text-lg leading-relaxed mb-4;
 }
-
+label {
+  @apply text-sm sm:text-base md:text-lg font-medium mb-2;
+}
 /* =========================
    Component layer
    ========================= */
 
 @layer components {
   .btn {
-    @apply h-10 min-w-5 py-2 px-3 rounded-lg font-light transition-colors duration-200 flex items-center justify-center text-center;
+    @apply h-10 min-w-5 py-2 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center text-center;
     font-family: 'Inter', var(--font-geist-sans), Arial, Helvetica, sans-serif;
   }
 
-  .btn:focus,
-  .btn:focus-visible {
-    @apply outline-none ring-2 ring-green-500;
-  }
-
   .btn-primary {
-    @apply rounded-sm px-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-center hover:opacity-90;
+    @apply rounded-sm px-2 disabled:opacity-50 font-bold disabled:cursor-not-allowed flex items-center justify-center text-center hover:opacity-90;
     background-color: var(--third-color);
     color: var(--background);
     
   }
 
   .btn-second {
-    @apply rounded-sm px-2 bg-foreground text-background border border-transparent hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-center focus:outline-none focus:ring-2 focus:ring-green-500;
+    @apply rounded-sm px-2 bg-gray-700 text-foreground font-bold border border-transparent hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-center focus:outline-none focus:ring-2 focus:ring-green-500;
   }
 
   .input-primary{
