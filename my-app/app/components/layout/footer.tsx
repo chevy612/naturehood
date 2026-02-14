@@ -89,7 +89,7 @@ export default function Footer() {
           <div>
             <h3
               className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.display }}
+              style={{ fontFamily: tokens.font.heading }}
             >
               Product
             </h3>
@@ -112,7 +112,7 @@ export default function Footer() {
           <div>
             <h3
               className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.display }}
+              style={{ fontFamily: tokens.font.heading }}
             >
               Company
             </h3>
@@ -135,7 +135,7 @@ export default function Footer() {
           <div>
             <h3
               className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.display }}
+              style={{ fontFamily: tokens.font.heading }}
             >
               Resources
             </h3>
@@ -158,7 +158,7 @@ export default function Footer() {
           <div>
             <h3
               className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.display }}
+              style={{ fontFamily: tokens.font.heading }}
             >
               Legal
             </h3>
