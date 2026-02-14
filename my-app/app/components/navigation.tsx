@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Menu, User, ShoppingBag, X, LogOut } from "lucide-react";
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { ButtonAccent } from '@/app/components/basic/basic';
+
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -161,8 +163,10 @@ export default function Navbar() {
             </div>
           </div>
         ) : (
-          <Link href="/signup" className="btn btn-primary py-1.5 sm:py-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">
-            Sign Up
+          <Link href="/signup">
+            <ButtonAccent>
+              Join us
+            </ButtonAccent>
           </Link>
         )}
       </div>

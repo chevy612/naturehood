@@ -1,185 +1,314 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+/* ============================================================
+   NATUREHOODOFFICIAL — globals.css
+   Stack: Next.js + Tailwind CSS v4 + TypeScript
+   Design System v3: Inter (headings) + DM Sans (body/UI)
+   ============================================================ */
+
 @import "tailwindcss";
-@import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
+/* ── DESIGN TOKENS ─────────────────────────────────────────── */
 :root {
-  --background: #141115;
-  --foreground: #f5f5f5;
+  /* Fonts
+     Headings use Inter (loaded via next/font in layout.tsx)
+     UI/Body uses DM Sans (loaded via next/font in layout.tsx)
+     Future: DM Sans → Aktiv Grotesk when license acquired */
+  --font-heading: var(--font-inter);    /* next/font variable */
+  --font-ui: var(--font-dm);            /* next/font variable */
+
+  /* NatureHood Color Palette */
+  --color-ink: #141115;
+  --color-cloud: #F5F5F5;
+  --color-surface-1: #1E1B1F;
+  --color-surface-2: #2A272C;
+  --color-border: #3A373C;
+  --color-muted: #E8E8E8;
+  --color-text-sec: #6B6870;
+  --color-disabled: #A09EA3;
+  --color-accent: #C8F04D;
+  --color-warning: #F5A623;
+  --color-error: #FF4D4D;
+  --color-info: #4DA6FF;
+  --color-white: #FFFFFF;
+
+  /* Legacy color system (for compatibility) */
+  --background: var(--color-ink);
+  --foreground: var(--color-cloud);
   --radius: 0.625rem;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
   --third-color: #0CF574;
-  --fourth-color: #424242;
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif; 
+/* ── BASE RESET ────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    background: var(--color-ink);
+  }
+
+  body {
+    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+    background-color: var(--color-cloud);
+  }
+
+  /* Headings always use Inter */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+
+  h1 {
+    font-size: clamp(2.375rem, 5.5vw, 3.75rem); /* 38-60px */
+    font-weight: 700;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: clamp(1.625rem, 4vw, 2.5rem); /* 26-40px */
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 3vw, 1.75rem); /* 20-28px */
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--color-text-sec);
+  }
+
+  /* Remove list styles on nav/ui lists */
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+  }
+
+  /* Focus ring — accessible, on-brand */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* Images */
+  img, video {
+    max-width: 100%;
+    display: block;
+  }
+
+  /* Anchor reset */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Button reset */
+  button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font: inherit;
+  }
+
+  /* Input / textarea / select reset */
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+    border: none;
+    outline: none;
+    background: transparent;
+  }
 }
 
-html {
-  background: #141115;
-}
-
-h1 {
-  @apply text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal leading-tight mb-4 md:mb-6;
-}
-
-h2 {
-  @apply text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 md:mb-6;
-}
-
-h3 {
-  @apply text-base sm:text-lg md:text-xl font-black leading-tight mb-3;
-}
-p {
-  @apply text-sm sm:text-base md:text-lg leading-relaxed mb-4;
-}
-label {
-  @apply text-sm sm:text-base md:text-lg font-medium mb-2;
-}
-/* =========================
-   Component layer
-   ========================= */
-
+/* ── TYPOGRAPHY UTILITIES ──────────────────────────────────── */
+/*
+  Use these class names directly in your JSX.
+  They map to the approved NatureHood type scale from designer spec.
+*/
 @layer components {
+
+  /* — Headings (Inter) — */
+  .nh-hero {
+    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-size: clamp(3.25rem, 9vw, 6rem);   /* 52–96px */
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .nh-h1 {
+    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-size: clamp(2.375rem, 5.5vw, 3.75rem); /* 38–60px */
+    font-weight: 700;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+  }
+
+  .nh-h2 {
+    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-size: clamp(1.625rem, 4vw, 2.5rem);    /* 26–40px */
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+
+  .nh-h3 {
+    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);    /* 20–28px */
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  /* — Body (DM Sans) — */
+  .nh-label {
+    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
+    font-size: 0.625rem;   /* 10px */
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-sec);
+  }
+
+  .nh-body {
+    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
+    font-size: 1rem;          /* 16px */
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--color-text-sec);
+  }
+
+  .nh-small {
+    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
+    font-size: 0.8125rem;     /* 13px */
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--color-text-sec);
+  }
+
+  .nh-caption {
+    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
+    font-size: 0.6875rem;  /* 11px */
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--color-disabled);
+  }
+
+  /* — Legacy Button Styles (for backward compatibility) — */
   .btn {
-    @apply h-10 min-w-5 py-2 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center text-center;
-    font-family: 'Inter', var(--font-geist-sans), Arial, Helvetica, sans-serif;
+    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
+    height: 2.5rem;
+    min-width: 1.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: color 0.2s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 
   .btn-primary {
-    @apply rounded-sm px-2 disabled:opacity-50 font-bold disabled:cursor-not-allowed flex items-center justify-center text-center hover:opacity-90;
+    border-radius: 0.125rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     background-color: var(--third-color);
     color: var(--background);
-    
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .btn-second {
-    @apply rounded-sm px-2 bg-gray-700 text-foreground font-bold border border-transparent hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-center focus:outline-none focus:ring-2 focus:ring-green-500;
+    border-radius: 0.125rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    background-color: rgb(55, 65, 81);
+    color: var(--foreground);
+    font-weight: 700;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 
-  .input-primary{
-    @apply h-10 border px-4 py-2 rounded-none focus:outline-none focus:outline-none focus:ring-2 focus:ring-white text-gray-500 bg-transparent placeholder:text-gray-600;
+  .btn-second:hover {
+    background-color: rgb(75, 85, 99);
   }
 
-  .icon-button{
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-green-950
-
+  .btn-second:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
-}
 
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+  .btn-second:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(34, 197, 94);
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .input-primary {
+    height: 2.5rem;
+    border: 1px solid currentColor;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    color: rgb(107, 114, 128);
+    background: transparent;
+  }
+
+  .input-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px white;
+  }
+
+  .input-primary::placeholder {
+    color: rgb(75, 85, 99);
+  }
+
+  .icon-button {
+    display: inline-flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+  }
+
+  .icon-button:hover {
+    background-color: rgb(20, 83, 45);
   }
 }
-

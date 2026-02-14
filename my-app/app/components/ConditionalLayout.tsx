@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "./navigation";
-import Footer from "./footer";
+import Navigation from "./layout/navigation";
+import Footer from "./layout/footer";
 
 export default function ConditionalLayout({
   children,
@@ -10,12 +10,16 @@ export default function ConditionalLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
+  // Hide navigation and footer on auth pages
   const hideLayout = pathname?.startsWith("/signup") || pathname?.startsWith("/login");
 
   return (
     <>
-      {!hideLayout && <Navbar />}
-      {children}
+      {!hideLayout && <Navigation />}
+      <main className="min-h-screen">
+        {children}
+      </main>
       {!hideLayout && <Footer />}
     </>
   );
