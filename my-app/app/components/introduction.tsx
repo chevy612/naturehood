@@ -1,21 +1,61 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { ReadableText, ButtonGhost, ButtonSecondary, Prose } from "./basic/basic";
+import Link from "next/link";
 
 export function IntroSection() {
-  const title = "Redefining Athlete";
+  const title = "What is Naturehood?";
   const content = [
-    "Naturehood is a community-led project built to challenge how athletes are valued in today’s world.\n\n\nCompetitive athletes dedicate years to training, discipline, and performance—yet their value is often reduced to results, rankings, or medals alone.",
+    "Naturehood is a community-led project built to challenge how athletes are valued in today's world.\n\n\nCompetitive athletes dedicate years to training, discipline, and performance—yet their value is often reduced to results, rankings, or medals alone.",
     "Outside competition, many athletes struggle to sustain their careers or express who they are beyond the sport.\n\n\nTheir effort, mindset, and daily commitment remain largely unseen—despite shaping culture, inspiring others, and driving influence far beyond the field of play.",
     "Naturehood exists to change that.\n\n\nWe believe athletes are more than results. Their journey, identity, and way of living carry cultural, creative, and commercial value—when told with intention.\n\n\n\This is where performance meets storytelling.\n\n\nThis is how athlete value is redefined."
   ]
 
   return (
-    <>
-      <section className="flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-10 lg:px-40 py-8 md:py-10">
-        <h1>{title}</h1>
-        <HorizontalScroll items={content} />
-      </section>
-    </>
+      <div className="w-full">
+      {/* Section Header */}
+      <div className="py-12 sm:py-16 md:py-20 bg-[#f5f5f5]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+          <div className="text-center">
+            <p
+              className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#6B6870] mb-4"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Introduction
+            </p>
+            <h2
+              className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#141115] mb-6"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                lineHeight: "1.1",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              What is Naturehood
+            </h2>
+          </div>
+          
+          <div className="flex justify-center">
+            <div className="max-w-[55ch] text-left">
+              <Prose 
+                className="mb-8"
+                >
+                Naturehood is a platform that connects athletes and brands.
+                We don't just introduce them — we plan, research, and produce the collaboration from start to finish.
+                From creative direction to content production, we build projects that serve both the athlete's identity and the brand's goals.
+
+              </Prose>
+            </div>
+          </div>
+          
+          <div className="flex justify-center">
+            <Link href="/about">
+              <ButtonSecondary>Meet us</ButtonSecondary>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

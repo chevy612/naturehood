@@ -35,6 +35,41 @@ export const tokens = {
     sectionSm: "py-8 sm:py-10 md:py-12 lg:py-16",
     container: "px-4 sm:px-6 md:px-8 lg:px-12",
   },
+  // TEXT SPACING SYSTEM - for optimal readability
+  textSpacing: {
+    // Line Height (vertical rhythm)
+    lineHeight: {
+      tight: "1.1",      // Headings, display text
+      snug: "1.3",       // Subheadings, short paragraphs
+      normal: "1.6",     // Body text, optimal for reading
+      relaxed: "1.75",   // Long-form content, articles
+      loose: "2.0",      // Special cases, captions with breathing room
+    },
+    // Paragraph Spacing (gap between paragraphs)
+    paragraph: {
+      tight: "0.75rem",   // 12px - compact layouts
+      normal: "1rem",     // 16px - standard spacing
+      relaxed: "1.5rem",  // 24px - editorial content
+      loose: "2rem",      // 32px - landing pages
+    },
+    // Letter Spacing (tracking)
+    letterSpacing: {
+      tighter: "-0.02em",  // Large headings (hero, h1)
+      tight: "-0.015em",   // Medium headings (h2)
+      normal: "-0.01em",   // Small headings (h3, h4)
+      wide: "0.05em",      // Subtle tracking for UI text
+      wider: "0.1em",      // Small labels
+      widest: "0.3em",     // Uppercase labels, tags
+    },
+    // Section Spacing (between major content blocks)
+    section: {
+      xs: "2rem",    // 32px
+      sm: "3rem",    // 48px
+      md: "4rem",    // 64px
+      lg: "6rem",    // 96px
+      xl: "8rem",    // 128px
+    },
+  },
   typography: {
     // Hero - Inter 900 ExtraBold
     hero: {
@@ -43,30 +78,34 @@ export const tokens = {
       fontWeight: "900",
       lineHeight: "0.95",
       letterSpacing: "-0.02em",
+      marginBottom: "1.5rem",
     },
     // H1 - Inter 700 Bold
     h1: {
       fontFamily: "'Inter', sans-serif",
       fontSize: "clamp(38px, 5vw, 60px)",
       fontWeight: "700",
-      lineHeight: "1.0",
+      lineHeight: "1.1",
       letterSpacing: "-0.02em",
+      marginBottom: "1.25rem",
     },
     // H2 - Inter 700 Bold
     h2: {
       fontFamily: "'Inter', sans-serif",
       fontSize: "clamp(26px, 4vw, 40px)",
       fontWeight: "700",
-      lineHeight: "1.05",
+      lineHeight: "1.2",
       letterSpacing: "-0.015em",
+      marginBottom: "1rem",
     },
     // H3 - Inter 600 SemiBold
     h3: {
       fontFamily: "'Inter', sans-serif",
       fontSize: "clamp(20px, 3vw, 28px)",
       fontWeight: "600",
-      lineHeight: "1.1",
+      lineHeight: "1.3",
       letterSpacing: "-0.01em",
+      marginBottom: "0.75rem",
     },
     // Label - DM Sans 600, 0.3em, uppercase
     label: {
@@ -75,6 +114,7 @@ export const tokens = {
       fontWeight: "600",
       letterSpacing: "0.3em",
       textTransform: "uppercase" as const,
+      lineHeight: "1.4",
     },
     // Body - DM Sans 400
     body: {
@@ -82,20 +122,35 @@ export const tokens = {
       fontSize: "16px",
       fontWeight: "400",
       lineHeight: "1.75",
+      letterSpacing: "0",
+      marginBottom: "1rem",
+    },
+    // Body Large - For introductory paragraphs
+    bodyLarge: {
+      fontFamily: "'DM Sans', sans-serif",
+      fontSize: "18px",
+      fontWeight: "400",
+      lineHeight: "1.75",
+      letterSpacing: "0",
+      marginBottom: "1.25rem",
     },
     // Small - DM Sans 400, 13px
     small: {
       fontFamily: "'DM Sans', sans-serif",
       fontSize: "13px",
       fontWeight: "400",
-      lineHeight: "1.65",
+      lineHeight: "1.6",
+      letterSpacing: "0",
+      marginBottom: "0.75rem",
     },
     // Caption - DM Sans 400, 11px
     caption: {
       fontFamily: "'DM Sans', sans-serif",
       fontSize: "11px",
       fontWeight: "400",
+      lineHeight: "1.5",
       letterSpacing: "0.06em",
+      marginBottom: "0.5rem",
     },
   },
   // Responsive utility classes
@@ -137,6 +192,8 @@ interface ButtonBaseProps {
   disabled?: boolean;
   fullWidth?: boolean;
   variant?: "white" | "black";
+  className?: string;
+  type?: "button" | "submit" | "reset";
 }
 
 interface ButtonIconProps {
@@ -294,22 +351,24 @@ interface FeatureCardProps {
 // 1. BUTTON — PRIMARY
 //    Use: Main CTA, hero sections, key actions
 // ─────────────────────────────────────────────
-export function ButtonPrimary({ children, onClick, disabled, fullWidth }: ButtonBaseProps) {
+export function ButtonPrimary({ children, onClick, disabled, fullWidth, className = "", type = "button" }: ButtonBaseProps) {
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`
         group relative inline-flex items-center justify-center gap-2
         bg-[#141115] text-[#C8F04D]
-        px-8 py-4
-        text-sm font-semibold tracking-widest uppercase
+        px-5 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4
+        text-xs sm:text-sm font-semibold tracking-widest uppercase
         overflow-hidden
         transition-all duration-300 ease-out
         hover:bg-[#1E1B1F]
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
+        ${className}
       `}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
@@ -325,24 +384,26 @@ export function ButtonPrimary({ children, onClick, disabled, fullWidth }: Button
 // 2. BUTTON — SECONDARY (outline)
 //    Use: Alternative actions, less priority
 // ─────────────────────────────────────────────
-export function ButtonSecondary({ children, onClick, disabled, fullWidth, variant = "black" }: ButtonBaseProps) {
+export function ButtonSecondary({ children, onClick, disabled, fullWidth, variant = "black", className = "", type = "button" }: ButtonBaseProps) {
   const isWhite = variant === "white";
-  
+
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`
         group relative inline-flex items-center justify-center gap-2
         border ${isWhite ? "border-[#E8E8E8] text-[#E8E8E8]" : "border-[#141115] text-[#141115]"} bg-transparent
-        px-8 py-4
-        text-sm font-semibold tracking-widest uppercase
+        px-5 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4
+        text-xs sm:text-sm font-semibold tracking-widest uppercase
         overflow-hidden
         transition-all duration-300 ease-out
         ${isWhite ? "hover:bg-[#E8E8E8] hover:text-[#141115]" : "hover:bg-[#141115] hover:text-[#C8F04D]"}
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
+        ${className}
       `}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
@@ -356,19 +417,21 @@ export function ButtonSecondary({ children, onClick, disabled, fullWidth, varian
 // 3. BUTTON — GHOST (minimal)
 //    Use: Nav links, tertiary actions, text CTAs
 // ─────────────────────────────────────────────
-export function ButtonGhost({ children, onClick, disabled }: ButtonBaseProps) {
+export function ButtonGhost({ children, onClick, disabled, className = "", type = "button" }: ButtonBaseProps) {
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
-      className="
+      className={`
         group inline-flex items-center gap-2
         text-sm font-semibold tracking-wider uppercase text-[#141115]
         relative pb-0.5
         transition-all duration-200
         hover:text-[#C8F04D]
         disabled:opacity-40 disabled:cursor-not-allowed
-      "
+        ${className}
+      `}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {children}
@@ -382,21 +445,23 @@ export function ButtonGhost({ children, onClick, disabled }: ButtonBaseProps) {
 // 4. BUTTON — ACCENT (lime pop)
 //    Use: Hero primary CTA, "Apply Now", "Join"
 // ─────────────────────────────────────────────
-export function ButtonAccent({ children, onClick, disabled, fullWidth }: ButtonBaseProps) {
+export function ButtonAccent({ children, onClick, disabled, fullWidth, className = "", type = "button" }: ButtonBaseProps) {
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`
         group relative inline-flex items-center justify-center gap-2
         bg-[#C8F04D] text-[#141115]
-        px-8 py-4
-        text-sm font-bold tracking-widest uppercase
+        px-4 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4
+        text-xs sm:text-sm font-bold tracking-widest uppercase
         transition-all duration-300 ease-out
         hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#C8F04D]/30
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
+        ${className}
       `}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
@@ -1296,6 +1361,247 @@ function SectionLabel({ children }: SectionLabelProps) {
       </p>
       <span className="flex-1 h-px bg-[#E8E8E8]" />
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// SPACING COMPONENTS - Auto-apply readability rules
+// ─────────────────────────────────────────────
+
+interface ProseProps {
+  children: ReactNode;
+  className?: string;
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "readable";
+}
+
+/**
+ * Prose - For long-form content with automatic spacing
+ * Applies optimal line-height, paragraph spacing, and max-width
+ */
+export function Prose({ children, className = "", maxWidth = "readable" }: ProseProps) {
+  const maxWidthClasses = {
+    sm: "max-w-[45ch]",      // ~45 characters
+    md: "max-w-[65ch]",      // ~65 characters (optimal)
+    lg: "max-w-[75ch]",      // ~75 characters
+    xl: "max-w-[85ch]",      // ~85 characters
+    readable: "max-w-[65ch]", // Default optimal reading width
+  };
+
+  return (
+    <div
+      className={`prose-content ${maxWidthClasses[maxWidth]} ${className}`}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      <style jsx>{`
+        .prose-content {
+          font-size: 1rem;
+          line-height: 1.75;
+          color: #6B6870;
+        }
+        .prose-content > * + * {
+          margin-top: 1rem;
+        }
+        .prose-content h2 {
+          margin-top: 2rem;
+          margin-bottom: 1rem;
+          color: #141115;
+        }
+        .prose-content h3 {
+          margin-top: 1.5rem;
+          margin-bottom: 0.75rem;
+          color: #141115;
+        }
+        .prose-content p {
+          margin-bottom: 1rem;
+        }
+        .prose-content ul, .prose-content ol {
+          margin-top: 1rem;
+          margin-bottom: 1rem;
+          padding-left: 1.5rem;
+        }
+        .prose-content li + li {
+          margin-top: 0.5rem;
+        }
+      `}</style>
+      {children}
+    </div>
+  );
+}
+
+interface TextBlockProps {
+  children: ReactNode;
+  spacing?: "tight" | "normal" | "relaxed" | "loose";
+  className?: string;
+}
+
+/**
+ * TextBlock - Container with automatic paragraph spacing
+ * Use for multiple paragraphs or text elements
+ */
+export function TextBlock({ children, spacing = "normal", className = "" }: TextBlockProps) {
+  const spacingClasses = {
+    tight: "space-y-3",      // 12px
+    normal: "space-y-4",     // 16px
+    relaxed: "space-y-6",    // 24px
+    loose: "space-y-8",      // 32px
+  };
+
+  return (
+    <div className={`${spacingClasses[spacing]} ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+interface ReadableTextProps {
+  children: ReactNode;
+  size?: "sm" | "base" | "lg";
+  className?: string;
+}
+
+/**
+ * ReadableText - Optimized paragraph component
+ * Applies perfect line-height and max-width automatically
+ */
+export function ReadableText({ children, size = "base", className = "" }: ReadableTextProps) {
+  const sizes = {
+    sm: { fontSize: "0.875rem", lineHeight: "1.6", maxWidth: "60ch" },      // 14px
+    base: { fontSize: "1rem", lineHeight: "1.75", maxWidth: "65ch" },       // 16px
+    lg: { fontSize: "1.125rem", lineHeight: "1.75", maxWidth: "70ch" },     // 18px
+  };
+
+  return (
+    <p
+      className={className}
+      style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: sizes[size].fontSize,
+        lineHeight: sizes[size].lineHeight,
+        maxWidth: sizes[size].maxWidth,
+        color: "#6B6870",
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+// ─────────────────────────────────────────────
+// EMAIL BANNER / CTA
+// ─────────────────────────────────────────────
+
+interface EmailBannerProps {
+  title?: string;
+  subtitle?: string;
+  placeholder?: string;
+  buttonText?: string;
+  onSubmit?: (email: string) => void | Promise<void>;
+  variant?: "dark" | "light";
+}
+
+/**
+ * EmailBanner - Newsletter subscription CTA banner
+ * Use: Landing page email capture, newsletter signup
+ */
+export function EmailBanner({
+  title = "Stay updated",
+  subtitle = "Get the latest news and updates delivered to your inbox",
+  placeholder = "Enter your email",
+  buttonText = "Subscribe",
+  onSubmit,
+  variant = "dark",
+}: EmailBannerProps) {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      setMessage("Please enter a valid email.");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      if (onSubmit) {
+        await onSubmit(email);
+      }
+      setMessage("Thanks for subscribing!");
+      setEmail("");
+    } catch (error) {
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isDark = variant === "dark";
+
+  return (
+    <Section className={isDark ? "bg-[#141115]" : "bg-[#F5F5F5]"}>
+      <Container>
+        <div className="max-w-2xl mx-auto text-center">
+          <h2
+            className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${isDark ? "text-white" : "text-[#141115]"}`}
+            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: "-0.02em" }}
+          >
+            {title}
+          </h2>
+          {subtitle && (
+            <p
+              className={`text-base sm:text-lg mb-8 ${isDark ? "text-white/70" : "text-[#6B6870]"}`}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {subtitle}
+            </p>
+          )}
+
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={placeholder}
+              className={`
+                flex-1 px-6 py-4 text-base outline-none transition-all duration-200
+                ${isDark
+                  ? "bg-white/10 text-white placeholder:text-white/50 border-2 border-white/20 focus:border-[#C8F04D]"
+                  : "bg-white text-[#141115] placeholder:text-[#6B6870] border-2 border-[#E8E8E8] focus:border-[#141115]"
+                }
+              `}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              disabled={loading}
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="
+                px-8 py-4 bg-[#C8F04D] text-[#141115] font-semibold
+                uppercase tracking-wider text-sm
+                hover:bg-[#b8e038] transition-colors duration-200
+                disabled:opacity-50 disabled:cursor-not-allowed
+              "
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {loading ? "Submitting..." : buttonText}
+            </button>
+          </form>
+
+          {message && (
+            <p
+              className={`mt-4 text-sm ${isDark ? "text-white/80" : "text-[#6B6870]"}`}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {message}
+            </p>
+          )}
+        </div>
+      </Container>
+    </Section>
   );
 }
 

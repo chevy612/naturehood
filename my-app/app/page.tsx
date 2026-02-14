@@ -1,8 +1,8 @@
 import Clock from "./components/clock";
-import EmailSubscribe from "./components/email";
-import HeroSection from "./components/hero";
+import EmailSubscribe from "./components/email";  
+import { default as HeroSection } from "@/app/components/sections/Hero";
 import { IntroSection } from "./components/introduction";
-import HowWeWorkSection from "./components/content";
+import HowWeWorkSection from "./components/sections/HowWeWork";
 
 
 export default function Page() {

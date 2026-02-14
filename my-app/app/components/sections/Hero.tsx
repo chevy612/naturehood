@@ -12,12 +12,12 @@ export default function HeroSection() {
       videoControls={false}
       primaryCTA={
         <div className="flex flex-col items-center w-full sm:w-auto gap-4">
-          <div className="flex flex-row gap-4">
-            <Link href="/signup?role=athlete">
-              <ButtonPrimary>Join as Athlete</ButtonPrimary>
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <Link href="/signup?role=athlete" className="w-full sm:w-auto">
+              <ButtonPrimary className="w-full sm:w-auto">Join as Athlete</ButtonPrimary>
             </Link>
-            <Link href="/signup?role=brand">
-              <ButtonSecondary variant='white'>Partner with us</ButtonSecondary>
+            <Link href="/signup?role=brand" className="w-full sm:w-auto">
+              <ButtonSecondary variant='white' className="w-full sm:w-auto">Partner with us</ButtonSecondary>
             </Link>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { signUpNewUser } from '@/app/signup/actions'
-import { Button } from "./ui/button"
+import { InputField, Checkbox, ButtonPrimary } from '@/app/components/basic/basic'
 import {
   Card,
   CardContent,
@@ -10,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/card'
-import { Input } from './ui/input'
-import { Label } from './ui/label'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -97,10 +95,10 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         <CardHeader className="px-6 py-6">
           {/* Logo inside the card */}
           <div className="flex justify-center mb-2">
-            <Image 
-              src="/naturehood.svg" 
-              alt="Naturehood" 
-              width={280} 
+            <Image
+              src="/naturehood.svg"
+              alt="Naturehood"
+              width={280}
               height={50}
               priority
               className="w-50 max-w-[300px]"
@@ -110,84 +108,57 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         </CardHeader>
         <CardContent className="flex flex-col items-center px-6 py-0 pb-6">
           <form onSubmit={handleSignUp} className="w-full">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-6">
               {/* Email Field */}
-              <div className="grid gap-2">
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  required
-                  value={email}
-                  onChange={handleEmailChange}
-                  className={`w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm ${emailError ? 'border-red-500' : ''}`}
-                />
-                {emailError && <p className="text-xs text-red-500 mt-1">{emailError}</p>}
-              </div>
+              <InputField
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={handleEmailChange}
+                error={emailError || undefined}
+              />
 
               {/* Password Field */}
-              <div className="grid gap-2">
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
-                />
-              </div>
+              <InputField
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
 
               {/* Repeat Password Field */}
-              <div className="grid gap-2">
-                <Input
-                  id="repeat-password"
-                  type="password"
-                  placeholder="Repeat Password"
-                  required
-                  value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
-                />
-              </div>
+              <InputField
+                type="password"
+                placeholder="Repeat Password"
+                value={repeatPassword}
+                onChange={(e) => setRepeatPassword(e.target.value)}
+              />
 
               {/* Username Field */}
-              <div className="grid gap-2">
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Username"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full h-10 border-gray-600 bg-[#2a2a2a] rounded-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 text-sm"
-                />
-              </div>
+              <InputField
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
 
               {error && <p className="text-sm text-red-500">{error}</p>}
-              
+
               {/* Business Checkbox */}
-              <div className="flex items-center gap-2">
-                <input
-                  id="business"
-                  type="checkbox"
-                  checked={isBusiness}
-                  onChange={(e) => setIsBusiness(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 cursor-pointer accent-blue-600"
-                />
-                <Label htmlFor="business" className="cursor-pointer text-sm text-foreground">
-                  Sign up as business
-                </Label>
-              </div>
+              <Checkbox
+                label="Sign up as business"
+                checked={isBusiness}
+                onChange={(e) => setIsBusiness(e.target.checked)}
+              />
 
               {/* Sign Up Button */}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? 'Creating an account...' : 'Sign up'}
-              </Button>
+              </ButtonPrimary>
             </div>
-            <div className="mt-4 text-center text-sm text-foreground">
+            <div className="mt-6 text-center text-sm text-white/80">
               Already have an account?{' '}
-              <Link href="/login" className="text-blue-500 hover:text-blue-400 underline underline-offset-4">
+              <Link href="/login" className="text-[#C8F04D] hover:text-[#b8e038] underline underline-offset-4">
                 Login
               </Link>
             </div>
