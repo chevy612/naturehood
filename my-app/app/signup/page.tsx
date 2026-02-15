@@ -22,15 +22,24 @@ function SignUpContent() {
   };
 
   const handleBrandSubmit = async (data: any) => {
-    const result = await signUpBrand(data);
+    console.log('handleBrandSubmit called with data:', data);
+    
+    try {
+      const result = await signUpBrand(data);
+      console.log('signUpBrand result:', result);
 
-    if (result.error) {
-      alert(result.error);
-      return;
+      if (result.error) {
+        console.error('Brand submission error:', result.error);
+        alert(result.error);
+        return;
+      }
+
+      // Form will show success state automatically
+      console.log('Brand inquiry submitted successfully');
+    } catch (error) {
+      console.error('Unexpected error in handleBrandSubmit:', error);
+      alert('An unexpected error occurred. Please try again.');
     }
-
-    // Form will show success state automatically
-    console.log('Brand inquiry submitted successfully');
   };
 
   if (role === 'brand') {

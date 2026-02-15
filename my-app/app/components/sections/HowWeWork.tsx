@@ -19,8 +19,8 @@ const HOW_WE_WORK_STEPS = [
       "We help athletes develop content and personal branding that reflects their performance, mindset, and journey—turning visibility into long-term value, without distracting from training.",
     video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/athlete.mp4",
     image: "/image/brand.webp",
-    buttonText: "Learn More",
-    buttonLink: "#athletes",
+    buttonText: "Sign Up",
+    buttonLink: "signup?role=athlete",
   },
   {
     number: "02",
@@ -32,7 +32,7 @@ const HOW_WE_WORK_STEPS = [
     video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/business.mp4",
     image: "/image/business.webp",
     buttonText: "Explore Partnerships",
-    buttonLink: "#partnerships",
+    buttonLink: "business",
   },
   {
     number: "03",
@@ -44,7 +44,7 @@ const HOW_WE_WORK_STEPS = [
     video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/future.mp4",
     image: "/image/future.webp",
     buttonText: "Our Vision",
-    buttonLink: "#vision",
+    buttonLink: "",
   },
 ];
 

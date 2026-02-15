@@ -69,11 +69,9 @@ export function AthleteSignUpForm({
   const [submitted, setSubmitted] = useState(false);
 
   const sports = [
-    { value: "trail-running", label: "Trail Running" },
+    { value: "track & field", label: "Track & Field" },
+    { value: "trail running", label: "Trail Running"},
     { value: "climbing", label: "Climbing / Bouldering" },
-    { value: "cycling", label: "Cycling / Mountain Biking" },
-    { value: "surfing", label: "Surfing" },
-    { value: "skiing", label: "Skiing / Snowboarding" },
     { value: "yoga", label: "Yoga / Wellness" },
     { value: "crossfit", label: "CrossFit / Fitness" },
     { value: "other", label: "Other" },
@@ -420,20 +418,28 @@ export function BrandSignUpForm({
   const validate = (): Partial<Record<keyof BrandFormData, string>> => {
     const e: Partial<Record<keyof BrandFormData, string>> = {};
     if (!form.companyName.trim()) e.companyName = "Company name required";
-    if (!form.contactName.trim()) e.contactName = "Contact name required";
     if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Valid email required";
-    if (!form.industry) e.industry = "Please select your industry";
     if (!form.projectIdea.trim()) e.projectIdea = "Please describe your project idea";
     return e;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Debug: Log form data and validation
+    console.log('Brand form submission started');
+    console.log('Form data:', form);
+    
     const validationErrors = validate();
+    console.log('Validation errors:', validationErrors);
+    
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
+      console.log('Form submission blocked by validation errors');
       return;
     }
+    
+    console.log('Brand form validation passed, calling onSubmit...');
     setSubmitted(true);
     onSubmit?.(form);
   };
@@ -477,7 +483,7 @@ export function BrandSignUpForm({
             className="text-[13px] text-[#6B6870]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Watch for an email from partnerships@naturehood.com
+            Watch for an email from team@naturehood.com
           </p>
         </div>
       </div>
@@ -499,7 +505,7 @@ export function BrandSignUpForm({
             className="text-[48px] md:text-[60px] font-bold text-[#141115] leading-none mb-4"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            Partner with NatureHood
+            Partner with Naturehood
           </h1>
           <p
             className="text-[15px] text-[#6B6870] leading-relaxed max-w-lg"
@@ -531,17 +537,6 @@ export function BrandSignUpForm({
                 required
               />
               <InputLight
-                label="Contact Name"
-                name="contactName"
-                value={form.contactName}
-                onChange={setField("contactName")}
-                error={errors.contactName}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InputLight
                 label="Email"
                 type="email"
                 name="email"
@@ -549,14 +544,6 @@ export function BrandSignUpForm({
                 onChange={setField("email")}
                 error={errors.email}
                 required
-              />
-              <InputLight
-                label="Phone"
-                type="tel"
-                name="phone"
-                value={form.phone}
-                onChange={setField("phone")}
-                placeholder="+1 (555) 123-4567"
               />
             </div>
 
@@ -567,26 +554,6 @@ export function BrandSignUpForm({
               onChange={setField("website")}
               placeholder="https://yourbrand.com"
             />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <SelectLight
-                label="Industry"
-                name="industry"
-                options={industries}
-                value={form.industry}
-                onChange={setField("industry")}
-                placeholder="Select industry"
-                error={errors.industry}
-              />
-              <SelectLight
-                label="Team Size"
-                name="teamSize"
-                options={teamSizes}
-                value={form.teamSize}
-                onChange={setField("teamSize")}
-                placeholder="Select team size"
-              />
-            </div>
           </div>
 
           {/* Project Details */}
@@ -607,15 +574,6 @@ export function BrandSignUpForm({
               rows={6}
               placeholder="Describe the creative project you have in mind. What type of content are you looking to create? Which sports/athletes are you interested in?"
               required
-            />
-
-            <TextAreaLight
-              label="Campaign Goals"
-              name="goals"
-              value={form.goals}
-              onChange={setField("goals")}
-              rows={4}
-              placeholder="What are your key objectives? (e.g., brand awareness, product launch, community engagement)"
             />
 
             <InputLight
@@ -688,7 +646,7 @@ export function BrandSignUpForm({
               className="mt-4 text-center text-[11px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Our partnerships team will respond within 24 hours
+              Our team will respond within 24 hours
             </p>
           </div>
         </form>

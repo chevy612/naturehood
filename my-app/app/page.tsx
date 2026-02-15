@@ -1,6 +1,6 @@
 import Clock from "./components/clock";
 import EmailSubscribe from "./components/email";  
-import { default as HeroSection } from "@/app/components/sections/Hero";
+import HeroSection from "./components/sections/Hero";
 import { IntroSection } from "./components/introduction";
 import HowWeWorkSection from "./components/sections/HowWeWork";
 
