@@ -2,6 +2,66 @@
 
 import { createClient } from '@/lib/supabase/server'
 
+// ─────────────────────────────────────────────
+// QUICK SIGN UP
+// ─────────────────────────────────────────────
+
+interface QuickSignUpData {
+  fullName: string
+  email: string
+  role: 'athlete' | 'brand'
+  agreeTerms: boolean
+  receiveNews: boolean
+}
+
+export async function quickSignUp(data: QuickSignUpData) {
+  const supabase = await createClient()
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(data.email)) {
+    return { error: 'Please enter a valid email address' }
+  }
+
+  if (!data.fullName.trim()) {
+    return { error: 'Please enter your full name' }
+  }
+
+  if (!data.agreeTerms) {
+    return { error: 'You must agree to the Terms of Service' }
+  }
+
+  try {
+    const { error: insertError } = await supabase
+      .from('quick_signups')
+      .insert({
+        full_name: data.fullName.trim(),
+        email: data.email.trim().toLowerCase(),
+        role: data.role,
+        agree_terms: data.agreeTerms,
+        receive_news: data.receiveNews,
+      })
+
+    if (insertError) {
+      console.error('Quick signup error:', insertError)
+
+      if (insertError.code === '23505') {
+        return { error: 'This email is already registered.' }
+      }
+
+      return { error: 'Failed to sign up. Please try again.' }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Unexpected error:', error)
+    return { error: 'An unexpected error occurred' }
+  }
+}
+
+// ─────────────────────────────────────────────
+// EXISTING SIGN UP ACTIONS
+// ─────────────────────────────────────────────
+
 interface SignUpData {
   email: string
   password: string

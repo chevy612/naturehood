@@ -31,7 +31,7 @@ const HOW_WE_WORK_STEPS = [
       "We match athletes with businesses that align with their audience and values, creating authentic collaborations that benefit both sides—athletes get paid, brands get meaningful exposure.",
     video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/business.mp4",
     image: "/image/business.webp",
-    buttonText: "Explore Partnerships",
+    buttonText: "Explore Our Services",
     buttonLink: "business",
   },
   {

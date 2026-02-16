@@ -195,7 +195,7 @@ export default function BusinessPage() {
             className="text-[10px] font-semibold tracking-[0.35em] uppercase text-[#6B6870] mb-4"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Brand Partnership
+            Our Services
           </p>
           <h1
             className="text-[#141115] mb-5"
@@ -207,7 +207,7 @@ export default function BusinessPage() {
               letterSpacing: "-0.02em",
             }}
           >
-            Partner with NatureHood
+            Marketing with Naturehood
           </h1>
           <p
             className="text-[16px] leading-relaxed text-[#6B6870] max-w-[520px] mx-auto"
@@ -352,13 +352,13 @@ export default function BusinessPage() {
                 </div>
               </FormSection>
 
-              {/* Partnership Goals */}
+              {/* Project Goals */}
               <FormSection
-                title="Partnership Goals"
+                title="Marketing Goals"
                 description="What are you looking to achieve?"
               >
                 <FormCheckboxGroup
-                  label="What type of partnerships interest you?"
+                  label="What type of marketing services interest you?"
                   name="partnershipTypes"
                   options={partnershipTypeOptions}
                   selected={form.partnershipTypes}

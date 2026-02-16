@@ -191,7 +191,7 @@ export default function Footer() {
               className="text-xs text-[#6B6870] text-center md:text-right"
               style={{ fontFamily: tokens.font.body }}
             >
-              Made with 🌿 in Hong Kong
+              Made in Hong Kong
             </p>
           </div>
         </div>

@@ -17,7 +17,7 @@ export default function HeroSection() {
               <ButtonPrimary className="w-full sm:w-auto">Join as Athlete</ButtonPrimary>
             </Link>
             <Link href="/signup?role=brand" className="w-full sm:w-auto">
-              <ButtonSecondary variant='white' className="w-full sm:w-auto">Partner with us</ButtonSecondary>
+              <ButtonSecondary variant='white' className="w-full sm:w-auto">Join as Brand</ButtonSecondary>
             </Link>
           </div>
         </div>

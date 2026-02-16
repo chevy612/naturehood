@@ -40,7 +40,7 @@ export function IntroSection() {
               <Prose 
                 className="mb-8"
                 >
-                Naturehood is a platform that connects athletes and brands.
+                Naturehood is a startup that connects athletes and brands.
                 We don't just introduce them — we plan, research, and produce the collaboration from start to finish.
                 From creative direction to content production, we build projects that serve both the athlete's identity and the brand's goals.
 

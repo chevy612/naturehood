@@ -1,25 +1,26 @@
 "use client";
 
 import { EmailBanner } from "./basic/basic";
+import { createClient } from "@/lib/supabase/client";
 
 export default function EmailSubscribe() {
   const handleEmailSubmit = async (email: string) => {
-    // Example API call (replace with your own endpoint)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const supabase = createClient();
 
-    // You can add actual API logic here, e.g.:
-    // await fetch('/api/subscribe', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ email }),
-    // });
+    const { error } = await supabase
+      .from("subscribed_email")
+      .insert({ email });
 
-    console.log("Email submitted:", email);
+    if (error) {
+      console.error("Subscription error:", error.message);
+      throw new Error(error.message);
+    }
   };
 
   return (
     <EmailBanner
       title="Join the Naturehood community"
-      subtitle="Get exclusive updates on athlete collaborations, brand partnerships, and platform news"
+      subtitle="Get exclusive updates on athlete collaborations, brand partnerships, and product news"
       placeholder="Enter your email"
       buttonText="Subscribe"
       onSubmit={handleEmailSubmit}

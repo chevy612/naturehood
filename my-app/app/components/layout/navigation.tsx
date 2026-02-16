@@ -179,7 +179,7 @@ export default function Navigation() {
                 </div>
               ) : (
                 <Link href="/signup">
-                  <ButtonAccent>Join Us</ButtonAccent>
+                  <ButtonAccent>Sign Up</ButtonAccent>
                 </Link>
               )}
             </div>
@@ -250,7 +250,7 @@ export default function Navigation() {
             {!user && (
               <div className="mt-8 pt-6 border-t border-[#3A373C]">
                 <Link href="/signup" onClick={closeMobileMenu}>
-                  <ButtonAccent fullWidth>Join Us</ButtonAccent>
+                  <ButtonAccent fullWidth>Sign Up</ButtonAccent>
                 </Link>
               </div>
             )}
