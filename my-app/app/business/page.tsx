@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useState, ChangeEvent } from "react";
-import { Container, tokens } from "@/app/components/basic/basic";
+import { Container, tokens } from "@/app/components/ui";
 import {
   FormInput,
   FormSelect,

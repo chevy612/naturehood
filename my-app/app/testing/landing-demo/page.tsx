@@ -15,7 +15,7 @@ import {
   TextBlock,
   ReadableText,
   tokens,
-} from '@/app/components/basic/basic';
+} from '@/app/components/ui';
 import HowWeWorkSection from '@/app/components/sections/HowWeWork';
 import { Zap, Users, TrendingUp, Shield, Award, Target, CheckCircle2, XCircle } from 'lucide-react';
 

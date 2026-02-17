@@ -1,6 +1,6 @@
 "use client";
 
-import { EmailBanner } from "./basic/basic";
+import { CTAEmailCapture } from "@/app/components/layout/email";
 import { createClient } from "@/lib/supabase/client";
 
 export default function EmailSubscribe() {
@@ -18,13 +18,10 @@ export default function EmailSubscribe() {
   };
 
   return (
-    <EmailBanner
-      title="Join the Naturehood community"
-      subtitle="Get exclusive updates on athlete collaborations, brand partnerships, and product news"
+    <CTAEmailCapture
+      headline="Join the Naturehood community"
+      subtext="Get exclusive updates on athlete collaborations, brand partnerships, and product news"
       placeholder="Enter your email"
-      buttonText="Subscribe"
-      onSubmit={handleEmailSubmit}
-      variant="dark"
     />
   );
 }

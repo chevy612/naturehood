@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { ReadableText, ButtonGhost, ButtonSecondary, Prose } from "./basic/basic";
+import { ReadableText, ButtonGhost, ButtonSecondary, Prose } from "@/app/components/ui";
 import Link from "next/link";
 
 export function IntroSection() {

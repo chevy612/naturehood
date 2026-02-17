@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Section, ReadableText, Stack, tokens } from "@/app/components/basic/basic";
+import { Container, Section, ReadableText, Stack, tokens } from "@/app/components/ui";
 
 export default function AboutPage() {
   return (

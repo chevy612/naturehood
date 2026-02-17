@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Section, ReadableText, Stack, tokens } from "@/app/components/basic/basic";
+import { Container, Section, ReadableText, Stack, tokens } from "@/app/components/ui";
 import { MediaImage, MediaSplit, MediaGrid } from "@/app/components/media";
 
 // ─────────────────────────────────────────────

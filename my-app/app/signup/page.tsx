@@ -2,7 +2,7 @@
 
 import { useState, ChangeEvent } from "react";
 import Link from "next/link";
-import { SuccessModal } from "@/app/components/basic/basic";
+import { SuccessModal } from "@/app/components/ui/notification";
 import { quickSignUp } from "./actions";
 
 // ─────────────────────────────────────────────

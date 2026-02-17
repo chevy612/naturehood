@@ -6,8 +6,8 @@ import Image from "next/image";
 import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Container, ButtonAccent, ButtonGhost } from '@/app/components/basic/basic';
-import { tokens } from '@/app/components/basic/basic';
+import { Container, ButtonAccent} from '@/app/components/ui';
+import { tokens } from '@/app/components/ui/tokens';
 
 // ─────────────────────────────────────────────
 // NAVIGATION ITEMS

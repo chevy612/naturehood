@@ -1,4 +1,4 @@
-import NatureHoodComponentPreview from '@/app/components/basic/basic'
+import NatureHoodComponentPreview from '@/app/components/ui/old/basic'
 
 export default function TestingPage() {
   return <NatureHoodComponentPreview />

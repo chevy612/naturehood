@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { signUpNewUser } from '@/app/signup/actions'
-import { InputField, Checkbox, ButtonPrimary } from '@/app/components/basic/basic'
+import { InputField, Checkbox, ButtonPrimary } from '@/app/components/ui'
 import {
   Card,
   CardContent,

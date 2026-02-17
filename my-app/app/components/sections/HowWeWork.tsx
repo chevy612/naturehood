@@ -1,7 +1,6 @@
 "use client";
 
 import MediaContentBlock from "@/app/components/MediaContentBlock";
-import { ReadableText } from "../basic/basic";
 
 // ─────────────────────────────────────────────
 // HOW WE WORK SECTION - Content & Component
@@ -94,21 +93,3 @@ export default function HowWeWorkSection() {
   );
 }
 
-// ─────────────────────────────────────────────
-// USAGE EXAMPLE
-// ─────────────────────────────────────────────
-/*
-Import and use in your page:
-
-import HowWeWorkSection from '@/app/components/sections/HowWeWork';
-
-export default function HomePage() {
-  return (
-    <main>
-      <HeroSection />
-      <HowWeWorkSection />
-      <CTASection />
-    </main>
-  );
-}
-*/

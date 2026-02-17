@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Container, ButtonGhost } from '@/app/components/basic/basic';
-import { tokens } from '@/app/components/basic/basic';
+import { Container} from '@/app/components/ui/container';
+import { tokens } from '@/app/components/ui/tokens';
 import { Instagram, Twitter, Linkedin, Facebook } from "lucide-react";
 
 // ─────────────────────────────────────────────
