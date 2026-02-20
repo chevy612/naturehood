@@ -43,7 +43,7 @@ const HOW_WE_WORK_STEPS = [
     video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/future.mp4",
     image: "/image/future.webp",
     buttonText: "Our Vision",
-    buttonLink: "",
+    buttonLink: "about",
   },
 ];
 
