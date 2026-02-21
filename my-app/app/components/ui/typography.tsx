@@ -12,7 +12,11 @@ interface ProseProps {
   maxWidth?: "sm" | "md" | "lg" | "xl" | "readable";
 }
 
-export function Prose({ children, className = "", maxWidth = "readable" }: ProseProps) {
+export function Prose({
+  children,
+  className = "",
+  maxWidth = "readable",
+}: ProseProps) {
   const maxWidthClasses = {
     sm: "max-w-[45ch]",
     md: "max-w-[65ch]",
@@ -30,7 +34,7 @@ export function Prose({ children, className = "", maxWidth = "readable" }: Prose
         .prose-content {
           font-size: 1rem;
           line-height: 1.75;
-          color: #6B6870;
+          color: #6b6870;
         }
         .prose-content > * + * {
           margin-top: 1rem;
@@ -48,7 +52,8 @@ export function Prose({ children, className = "", maxWidth = "readable" }: Prose
         .prose-content p {
           margin-bottom: 1rem;
         }
-        .prose-content ul, .prose-content ol {
+        .prose-content ul,
+        .prose-content ol {
           margin-top: 1rem;
           margin-bottom: 1rem;
           padding-left: 1.5rem;
@@ -72,7 +77,11 @@ interface TextBlockProps {
   className?: string;
 }
 
-export function TextBlock({ children, spacing = "normal", className = "" }: TextBlockProps) {
+export function TextBlock({
+  children,
+  spacing = "normal",
+  className = "",
+}: TextBlockProps) {
   const spacingClasses = {
     tight: "space-y-3",
     normal: "space-y-4",
@@ -81,9 +90,7 @@ export function TextBlock({ children, spacing = "normal", className = "" }: Text
   };
 
   return (
-    <div className={`${spacingClasses[spacing]} ${className}`}>
-      {children}
-    </div>
+    <div className={`${spacingClasses[spacing]} ${className}`}>{children}</div>
   );
 }
 
@@ -97,7 +104,11 @@ interface ReadableTextProps {
   className?: string;
 }
 
-export function ReadableText({ children, size = "base", className = "" }: ReadableTextProps) {
+export function ReadableText({
+  children,
+  size = "base",
+  className = "",
+}: ReadableTextProps) {
   const sizes = {
     sm: { fontSize: "0.875rem", lineHeight: "1.6", maxWidth: "60ch" },
     base: { fontSize: "1rem", lineHeight: "1.75", maxWidth: "65ch" },
@@ -116,6 +127,24 @@ export function ReadableText({ children, size = "base", className = "" }: Readab
       }}
     >
       {children}
+    </p>
+  );
+}
+
+//Section Header//
+interface SectionHeaderProps {
+  content: ReactNode;
+  className?: string;
+  color?: "green" | "gray";
+}
+
+export function SectionHeader({ content, className = "" ,color = "gray"}: SectionHeaderProps) {
+  return (
+    <p
+      className={`text-[10px] font-semibold tracking-[0.35em] uppercase mb-4 ${color === "green" ? "text-[#C8F04D]" : "text-[#6B6870]"} ${className}`}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {content}
     </p>
   );
 }

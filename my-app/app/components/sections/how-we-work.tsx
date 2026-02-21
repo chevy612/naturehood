@@ -1,6 +1,7 @@
 "use client";
 
-import MediaContentBlock from "@/app/components/MediaContentBlock";
+import MediaContentBlock from "./components/media-content-block";
+import { SectionHeader } from "../ui/typography";
 
 // ─────────────────────────────────────────────
 // HOW WE WORK SECTION - Content & Component
@@ -53,12 +54,7 @@ export default function HowWeWorkSection() {
     <div className="w-full">
       {/* Section Header */}
       <div className="text-center py-12 sm:py-16 md:py-20 px-4 bg-[#E8E8E8]">
-        <p
-          className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#6B6870] mb-4"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Our Process
-        </p>
+        <SectionHeader content="Our Process" />
         <h1
           className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#141115] mb-2"
           style={{

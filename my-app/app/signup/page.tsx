@@ -3,7 +3,7 @@
 import { useState, ChangeEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { SuccessModal, ButtonAccent, InputDark, SelectDark, CheckboxDark } from "@/app/components/ui";
+import { SuccessModal, ButtonAccent, InputDark, SelectDark, CheckboxDark, ButtonSubmit } from "@/app/components/ui";
 import { quickSignUp } from "./actions";
 
 // ─────────────────────────────────────────────
@@ -38,7 +38,7 @@ export default function SignUpPage() {
   const [errors, setErrors] = useState<
     Partial<Record<keyof SignUpFormData, string>>
   >({});
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -64,7 +64,7 @@ export default function SignUpPage() {
       return;
     }
 
-    setLoading(true);
+    setSubmitting(true);
     setServerError("");
 
     try {
@@ -79,7 +79,7 @@ export default function SignUpPage() {
     } catch {
       setServerError("Something went wrong. Please try again.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -216,18 +216,11 @@ export default function SignUpPage() {
             )}
 
             {/* Submit */}
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {loading ? "Signing up..." : "Sign Up"}
-              </button>
-            </div>
+            <ButtonSubmit submitting={submitting} label="Sign Up"/>
 
-            {/* Footer link */}
+              
+            {/* Footer link - Hidden for now */}
+            {/* 
             <p
               className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -240,6 +233,8 @@ export default function SignUpPage() {
                 Log in
               </Link>
             </p>
+            */}
+            
           </form>
         </div>
       </div>

@@ -1,9 +1,4 @@
-import Clock from "./components/clock";
-import EmailSubscribe from "./components/email";  
-import HeroSection from "./components/sections/Hero";
-import { IntroSection } from "./components/introduction";
-import HowWeWorkSection from "./components/sections/HowWeWork";
-
+import { HeroSection, IntroSection, HowWeWorkSection, EmailSubscribe } from "@/app/components/sections";
 
 export default function Page() {
   return (

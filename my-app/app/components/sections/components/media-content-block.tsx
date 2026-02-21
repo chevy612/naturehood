@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { ReadableText } from "./ui/typography";
+import { ReadableText } from "../../ui/typography";
 
 interface MediaContentBlockProps {
   // Content

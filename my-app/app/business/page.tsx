@@ -6,7 +6,9 @@
 // ============================================================
 
 import { useState, ChangeEvent } from "react";
-import { Container, tokens } from "@/app/components/ui";
+import { Container, ButtonTab, ButtonSubmit } from "@/app/components/ui";
+import { InfoBox } from "@/app/components/ui/notification";
+import {SectionHeader} from "@/app/components/ui/typography";
 import {
   FormInput,
   FormSelect,
@@ -178,7 +180,7 @@ export default function BusinessPage() {
             className="text-[13px] text-[#6B6870]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Watch for an email from partnerships@naturehood.com
+            Watch for an email from team@naturehood.com
           </p>
         </div>
       </div>
@@ -191,27 +193,18 @@ export default function BusinessPage() {
       <Container>
         {/* Hero */}
         <div className="text-center max-w-[640px] mx-auto pt-16 pb-12 md:pt-24 md:pb-16">
-          <p
-            className="text-[10px] font-semibold tracking-[0.35em] uppercase text-[#6B6870] mb-4"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Our Services
-          </p>
+            <SectionHeader content="Our Services" />
           <h1
             className="text-[#141115] mb-5"
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: "clamp(38px, 5vw, 56px)",
-              fontWeight: 700,
-              lineHeight: 1.0,
-              letterSpacing: "-0.02em",
             }}
           >
             Marketing with Naturehood
           </h1>
           <p
-            className="text-[16px] leading-relaxed text-[#6B6870] max-w-[520px] mx-auto"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            className="leading-relaxed max-w-[520px] mx-auto"
           >
             Connect with athletes who align with your brand values.
             Let's build creative campaigns that resonate.
@@ -220,28 +213,12 @@ export default function BusinessPage() {
 
         {/* Tab Navigation */}
         <div className="flex flex-col sm:flex-row gap-[2px] bg-[#E8E8E8] p-[2px] mb-12 max-w-[600px] mx-auto">
-          <button
-            onClick={() => setActiveTab("apply")}
-            className={`flex-1 px-6 py-4 text-[11px] font-semibold tracking-[0.2em] uppercase transition-all duration-200 ${
-              activeTab === "apply"
-                ? "bg-[#141115] text-[#C8F04D]"
-                : "bg-white text-[#6B6870] hover:text-[#141115]"
-            }`}
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
+          <ButtonTab active={activeTab === "apply"} onClick={() => setActiveTab("apply")}>
             Submit Application
-          </button>
-          <button
-            onClick={() => setActiveTab("meeting")}
-            className={`flex-1 px-6 py-4 text-[11px] font-semibold tracking-[0.2em] uppercase transition-all duration-200 ${
-              activeTab === "meeting"
-                ? "bg-[#141115] text-[#C8F04D]"
-                : "bg-white text-[#6B6870] hover:text-[#141115]"
-            }`}
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
+          </ButtonTab>
+          <ButtonTab active={activeTab === "meeting"} onClick={() => setActiveTab("meeting")}>
             Book a Meeting
-          </button>
+          </ButtonTab>
         </div>
 
         {/* ════════════════════════════════════════════
@@ -250,18 +227,10 @@ export default function BusinessPage() {
         {activeTab === "apply" && (
           <div className="max-w-[680px] mx-auto pb-20 animate-fadeIn">
             {/* Info box */}
-            <div
-              className="border px-5 py-4 mb-8 text-[12px] leading-relaxed"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                backgroundColor: "rgba(200, 240, 77, 0.1)",
-                borderColor: "rgba(200, 240, 77, 0.35)",
-                color: "#141115",
-              }}
-            >
+            <InfoBox className="mb-8">
               <strong>Takes ~5 minutes.</strong> We'll review your application
               and reach out within 24 hours.
-            </div>
+            </InfoBox>
 
             <form onSubmit={handleSubmit}>
               {/* Company Information */}
@@ -406,31 +375,7 @@ export default function BusinessPage() {
               </FormSection>
 
               {/* Submit */}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {submitting ? "Submitting..." : "Submit Application"}
-                {!submitting && (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    className="transition-transform group-hover:translate-x-1"
-                  >
-                    <path
-                      d="M1 7h12M8 2l5 5-5 5"
-                      stroke="#141115"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-              </button>
+              <ButtonSubmit submitting={submitting} />
             </form>
           </div>
         )}

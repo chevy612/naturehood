@@ -70,36 +70,7 @@ interface SignUpData {
   isBusiness: boolean
 }
 
-interface AthleteSignUpData {
-  fullName: string;
-  email: string;
-  phone: string;
-  sport: string;
-  instagram: string;
-  followers: string;
-  location: string;
-  yearsExperience: string;
-  projectIdea: string;
-  portfolio: string;
-  availability: string;
-  hearAboutUs: string;
-}
 
-interface BrandSignUpData {
-  companyName: string;
-  contactName: string;
-  email: string;
-  phone: string;
-  website: string;
-  industry: string;
-  teamSize: string;
-  budget: string;
-  timeline: string;
-  projectIdea: string;
-  goals: string;
-  targetAudience: string;
-  feedback: string;
-}
 
 interface BrandPartnershipData {
   companyName: string;
@@ -117,97 +88,9 @@ interface BrandPartnershipData {
   additionalInfo: string;
 }
 
-export async function signUpAthlete(data: AthleteSignUpData) {
-  const supabase = await createClient()
 
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(data.email)) {
-    return { error: 'Please enter a valid email address' }
-  }
 
-  try {
-    // For now, just store the application data
-    // You can extend this to create auth user later
-    const { error: insertError } = await supabase
-      .from('athlete_applications')
-      .insert({
-        full_name: data.fullName,
-        email: data.email,
-        phone: data.phone,
-        sport: data.sport,
-        instagram: data.instagram,
-        followers: data.followers,
-        location: data.location,
-        years_experience: data.yearsExperience,
-        project_idea: data.projectIdea,
-        portfolio: data.portfolio,
-        availability: data.availability,
-        hear_about_us: data.hearAboutUs,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-      })
 
-    if (insertError) {
-      console.error('Athlete application error:', insertError)
-      return { error: 'Failed to submit application. Please try again.' }
-    }
-
-    return { success: true }
-  } catch (error) {
-    console.error('Unexpected error:', error)
-    return { error: 'An unexpected error occurred' }
-  }
-}
-
-export async function signUpBrand(data: BrandSignUpData) {
-  console.log('signUpBrand action called with:', data);
-  
-  const supabase = await createClient()
-
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(data.email)) {
-    console.log('Email validation failed:', data.email);
-    return { error: 'Please enter a valid email address' }
-  }
-
-  try {
-    console.log('Attempting to insert into brand_applications table...');
-    
-    // Store the brand partnership inquiry
-    const { error: insertError } = await supabase
-      .from('brand_applications')
-      .insert({
-        company_name: data.companyName,
-        contact_name: data.contactName,
-        email: data.email,
-        phone: data.phone,
-        website: data.website,
-        industry: data.industry,
-        team_size: data.teamSize,
-        budget: data.budget,
-        timeline: data.timeline,
-        project_idea: data.projectIdea,
-        goals: data.goals,
-        target_audience: data.targetAudience,
-        feedback: data.feedback,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-      })
-
-    if (insertError) {
-      console.error('Brand application error:', insertError)
-      return { error: 'Failed to submit inquiry. Please try again.' }
-    }
-
-    console.log('Brand application submitted successfully');
-    return { success: true }
-  } catch (error) {
-    console.error('Unexpected error:', error)
-    return { error: 'An unexpected error occurred' }
-  }
-}
 
 export async function submitBrandPartnership(data: BrandPartnershipData) {
   const supabase = await createClient()

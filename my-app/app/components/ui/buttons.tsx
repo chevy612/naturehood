@@ -186,3 +186,55 @@ export function ButtonIcon({ icon, onClick, label, variant = "outline" }: Button
     </button>
   );
 }
+
+// ─────────────────────────────────────────────
+// BUTTON — TAB (segmented control item)
+//    Use: Tab bars, segmented controls
+// ─────────────────────────────────────────────
+
+interface ButtonTabProps {
+  children: ReactNode;
+  active: boolean;
+  onClick: () => void;
+}
+
+export function ButtonTab({ children, active, onClick }: ButtonTabProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 px-6 py-4 text-[11px] font-semibold tracking-[0.2em] uppercase transition-all duration-200 ${
+        active
+          ? "bg-[#141115] text-[#C8F04D]"
+          : "bg-white text-[#6B6870] hover:text-[#141115]"
+      }`}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// BUTTON - SUBMIT (for forms)
+// ─────────────────────────────────────────────
+
+interface ButtonSubmitProps {
+  submitting?: boolean;
+  label?: string;
+  showArrow?: boolean;
+  className?: string;
+}
+
+export function ButtonSubmit({ submitting = false, label = "Submit Application", showArrow = false, className = "" }: ButtonSubmitProps) {
+  return (
+    <button
+      type="submit"
+      disabled={submitting}
+      className={`w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {submitting ? "Submitting..." : label}
+      {!submitting && showArrow && <Arrow dark />}
+    </button>
+  );
+}

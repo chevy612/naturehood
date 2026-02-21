@@ -81,3 +81,29 @@ export function SuccessModal({
     </div>
   );
 }
+
+// ─────────────────────────────────────────────
+// Info box
+// ─────────────────────────────────────────────
+
+interface InfoBoxProps {
+  color?: "green" | "red";
+  className?: string;
+  children: React.ReactNode;
+}
+
+export function InfoBox({ color = "green", children, className = "" }: InfoBoxProps) {
+  const colors = {
+    green: "bg-[#C8F04D]/15 border-[#C8F04D]/30 text-[#141115]",
+    red: "bg-[#FF6B6B]/15 border-[#FF6B6B]/30 text-[#141115]",
+  };
+
+  return (
+    <div
+      className={`border px-5 py-4 text-[12px] leading-relaxed ${colors[color]} ${className}`}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {children}
+    </div>
+  );
+}
