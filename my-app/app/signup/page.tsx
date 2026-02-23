@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { SuccessModal, ButtonAccent, InputDark, SelectDark, CheckboxDark, ButtonSubmit } from "@/app/components/ui";
@@ -22,7 +22,7 @@ interface SignUpFormData {
 // SIGN UP PAGE
 // ─────────────────────────────────────────────
 
-export default function SignUpPage() {
+function SignUpForm() {
   const searchParams = useSearchParams();
   const roleParam = searchParams.get("role");
   const initialRole: "athlete" | "brand" = roleParam === "brand" ? "brand" : "athlete";
@@ -242,3 +242,10 @@ export default function SignUpPage() {
   );
 }
 
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignUpForm />
+    </Suspense>
+  );
+}
