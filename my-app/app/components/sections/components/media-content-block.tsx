@@ -203,7 +203,7 @@ export default function MediaContentBlock({
 <MediaContentBlock
   eyebrow="Step 01"
   title="Create Your Profile"
-  description="Join NatureHood in minutes. Build your athlete profile, showcase your achievements, and connect with brands that align with your values and goals."
+  description="Join Naturehood in minutes. Build your athlete profile, showcase your achievements, and connect with brands that align with your values and goals."
   mediaType="video"
   mediaSrc="/path/to/video.mp4"
   buttonText="Get Started"

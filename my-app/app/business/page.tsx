@@ -173,7 +173,7 @@ export default function BusinessPage() {
             className="text-[15px] text-[#6B6870] leading-relaxed mb-8"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Thanks for your interest in partnering with NatureHood. We'll review
+            Thanks for your interest in partnering with Naturehood. We'll review
             your application and get back to you within 48 hours.
           </p>
           <p
@@ -411,7 +411,7 @@ export default function BusinessPage() {
               >
                 Prefer to discuss your partnership goals directly? Schedule a
                 30-minute intro call with our partnerships team. We'll explore
-                how NatureHood can help you connect with the right athletes for
+                how Naturehood can help you connect with the right athletes for
                 your brand.
               </p>
 

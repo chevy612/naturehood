@@ -931,7 +931,7 @@ export function CTAApplicationForm({ title, subtitle, onSubmit }: CTAApplication
         <Checkbox
           checked={form.terms}
           onChange={setCheckbox("terms")}
-          label="I agree to the NatureHood Terms of Service and Privacy Policy"
+          label="I agree to the Naturehood Terms of Service and Privacy Policy"
         />
         {errors.terms && <p className="text-xs text-red-500 -mt-6">{errors.terms}</p>}
         <ButtonAccent onClick={handleSubmit} fullWidth>
@@ -1576,7 +1576,7 @@ export function SuccessModal({
 // PREVIEW PAGE — remove in production
 // Place at: app/design-system/page.tsx
 // ─────────────────────────────────────────────
-export default function NatureHoodComponentPreview() {
+export default function NaturehoodComponentPreview() {
   const [checked, setChecked] = useState<boolean>(false);
   const [inputVal, setInputVal] = useState<string>("");
 
@@ -1596,7 +1596,7 @@ export default function NatureHoodComponentPreview() {
           className="text-xs font-semibold uppercase tracking-[0.3em] text-[#6B6870] mb-3"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          NatureHoodOfficial
+          NaturehoodOfficial
         </p>
         <h1
           className="text-5xl md:text-6xl font-bold text-[#141115] leading-none"
@@ -1615,7 +1615,7 @@ export default function NatureHoodComponentPreview() {
           <div className="flex flex-wrap gap-4 items-center">
             <ButtonPrimary>Apply Now</ButtonPrimary>
             <ButtonSecondary>Learn More</ButtonSecondary>
-            <ButtonAccent>Join NatureHood</ButtonAccent>
+            <ButtonAccent>Join Naturehood</ButtonAccent>
             <ButtonGhost>View Projects</ButtonGhost>
             <ButtonIcon
               label="Close"

@@ -2,30 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Container} from '@/app/components/ui/container';
 import { tokens } from '@/app/components/ui/tokens';
-import { Instagram, Twitter, Linkedin, Facebook } from "lucide-react";
+import { Instagram, Twitter, Linkedin, Facebook, Youtube } from "lucide-react";
 
 // ─────────────────────────────────────────────
 // FOOTER LINKS
 // ─────────────────────────────────────────────
 const footerLinks = {
-  product: [
-    { label: "Features", href: "/features" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "How It Works", href: "/how-it-works" },
-    { label: "Case Studies", href: "/case-studies" },
-  ],
-  company: [
-    { label: "About", href: "/about" },
-    { label: "Team", href: "/team" },
-    { label: "Careers", href: "/careers" },
-    { label: "Contact", href: "/contact" },
-  ],
-  resources: [
-    { label: "Blog", href: "/blog" },
-    { label: "Help Center", href: "/help" },
-    { label: "Community", href: "/community" },
-    { label: "Partners", href: "/partners" },
-  ],
   legal: [
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
@@ -34,10 +16,9 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Instagram, href: "https://instagram.com/naturehood", label: "Instagram" },
-  { icon: Twitter, href: "https://twitter.com/naturehood", label: "Twitter" },
+  { icon: Instagram, href: "https://instagram.com/naturehood.official", label: "Instagram" },
+  { icon: Youtube, href: "https://youtube.com/naturehood", label: "YouTube" },
   { icon: Linkedin, href: "https://linkedin.com/company/naturehood", label: "LinkedIn" },
-  { icon: Facebook, href: "https://facebook.com/naturehood", label: "Facebook" },
 ];
 
 export default function Footer() {
@@ -54,7 +35,7 @@ export default function Footer() {
             <Link href="/" className="inline-block mb-4">
               <Image
                 src="/naturehood.svg"
-                alt="NatureHood"
+                alt="Naturehood"
                 width={160}
                 height={64}
                 className="w-40 h-auto"
@@ -65,7 +46,7 @@ export default function Footer() {
               style={{ fontFamily: tokens.font.body }}
             >
               Connecting athletes and brands through authentic partnerships.
-              Build your legacy with NatureHood.
+              Build your legacy with Naturehood.
             </p>
 
             {/* Social Links */}
@@ -86,6 +67,7 @@ export default function Footer() {
           </div>
 
           {/* Product Links */}
+          {/*}
           <div>
             <h3
               className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
@@ -109,6 +91,7 @@ export default function Footer() {
           </div>
 
           {/* Company Links */}
+          {/*
           <div>
             <h3
               className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
@@ -132,6 +115,7 @@ export default function Footer() {
           </div>
 
           {/* Resources Links */}
+          {/*
           <div>
             <h3
               className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
@@ -152,7 +136,8 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> 
+    
 
           {/* Legal Links */}
           <div>
@@ -185,7 +170,7 @@ export default function Footer() {
               className="text-xs text-[#6B6870] text-center md:text-left"
               style={{ fontFamily: tokens.font.body }}
             >
-              © {currentYear} NatureHood. All rights reserved.
+              © {currentYear} Naturehood. All rights reserved.
             </p>
             <p
               className="text-xs text-[#6B6870] text-center md:text-right"

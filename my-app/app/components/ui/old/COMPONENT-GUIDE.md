@@ -1,4 +1,4 @@
-# NatureHood Component Library - Quick Reference
+# Naturehood Component Library - Quick Reference
 
 ## 🎯 Overview
 This component library provides everything you need to build responsive landing pages quickly without repetitive styling.
@@ -221,7 +221,7 @@ Electric lime for hero CTAs.
 
 ```tsx
 <ButtonAccent fullWidth>
-  Join NatureHood
+  Join Naturehood
 </ButtonAccent>
 ```
 

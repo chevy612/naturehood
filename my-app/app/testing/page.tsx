@@ -1,5 +1,5 @@
-import NatureHoodComponentPreview from '@/app/components/ui/old/basic'
+import NaturehoodComponentPreview from '@/app/components/ui/old/basic'
 
 export default function TestingPage() {
-  return <NatureHoodComponentPreview />
+  return <NaturehoodComponentPreview />
 }

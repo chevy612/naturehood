@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, DM_Sans } from "next/font/google";
 import ConditionalLayout from "./components/ConditionalLayout";
+import CookieBanner from "./components/ui/cookie-banner";
 
 import "./globals.css";
 
-// NatureHood Design System Fonts
+// Naturehood Design System Fonts
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
         <ConditionalLayout>
           {children}
         </ConditionalLayout>
+        <CookieBanner />
       </body>
     </html>
   );

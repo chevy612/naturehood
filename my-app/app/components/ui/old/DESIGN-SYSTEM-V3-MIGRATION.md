@@ -249,7 +249,7 @@ import {
 import { tokens } from '@/app/components/basic/basic';
 
 <h1 style={tokens.typography.hero}>
-  NatureHood
+  Naturehood
 </h1>
 
 <p style={tokens.typography.body}>

@@ -131,7 +131,7 @@ export function AthleteSignUpForm({
             className="text-[32px] font-bold text-white mb-4"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            Welcome to NatureHood
+            Welcome to Naturehood
           </h2>
           <p
             className="text-[15px] text-[#6B6870] leading-relaxed mb-8"
@@ -166,7 +166,7 @@ export function AthleteSignUpForm({
             className="text-[48px] md:text-[60px] font-bold text-white leading-none mb-4"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            Join NatureHood
+            Join Naturehood
           </h1>
           <p
             className="text-[15px] text-[#6B6870] leading-relaxed max-w-lg"
@@ -325,7 +325,7 @@ export function AthleteSignUpForm({
           {/* How did you hear */}
           <div className="space-y-6 pt-6 border-t border-[#3A373C]">
             <InputDark
-              label="How did you hear about NatureHood?"
+              label="How did you hear about Naturehood?"
               name="hearAboutUs"
               value={form.hearAboutUs}
               onChange={setField("hearAboutUs")}
@@ -629,7 +629,7 @@ export function BrandSignUpForm({
               value={form.feedback}
               onChange={setField("feedback")}
               rows={4}
-              placeholder="Any suggestions or feedback about our platform? What would make NatureHood more valuable for brands like yours?"
+              placeholder="Any suggestions or feedback about our platform? What would make Naturehood more valuable for brands like yours?"
             />
           </div>
 

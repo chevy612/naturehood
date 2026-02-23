@@ -15,7 +15,7 @@
   --font-heading: var(--font-inter);    /* next/font variable */
   --font-ui: var(--font-dm);            /* next/font variable */
 
-  /* NatureHood Color Palette */
+  /* Naturehood Color Palette */
   --color-ink: #141115;
   --color-cloud: #F5F5F5;
   --color-surface-1: #1E1B1F;
@@ -70,7 +70,7 @@
   }
 
   h1 {
-    font-size: clamp(2.375rem, 5.5vw, 3.75rem); /* 38-60px */
+    font-size: clamp(2.375rem, 5vw, 3.75rem); /* 38-60px */
     font-weight: 700;
     line-height: 1.0;
     letter-spacing: -0.02em;
@@ -145,7 +145,7 @@
 /* ── TYPOGRAPHY UTILITIES ──────────────────────────────────── */
 /*
   Use these class names directly in your JSX.
-  They map to the approved NatureHood type scale from designer spec.
+  They map to the approved Naturehood type scale from designer spec.
 */
 @layer components {
 

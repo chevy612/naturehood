@@ -12,12 +12,16 @@ import { tokens } from '@/app/components/ui/tokens';
 // ─────────────────────────────────────────────
 // NAVIGATION ITEMS
 // ─────────────────────────────────────────────
-const navItems = [
+const allNavItems = [
   { label: "Home", href: "/" },
-  { label: "Athletes", href: "/athlete" },
+  { label: "Athletes", href: "/athlete", hideInProd: true },
   { label: "Brands", href: "/business" },
-  { label: "About us", href: "/about" },
+  { label: "About us", href: "/about", hideInProd: true },
 ];
+
+const navItems = process.env.NODE_ENV === "production"
+  ? allNavItems.filter((item) => !item.hideInProd)
+  : allNavItems;
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -115,7 +119,7 @@ export default function Navigation() {
             <Link href="/" className="flex items-center lg:mr-12">
               <Image
                 src="/naturehood.svg"
-                alt="NatureHood"
+                alt="Naturehood"
                 width={160}
                 height={64}
                 priority
@@ -212,7 +216,7 @@ export default function Navigation() {
           <div className="flex items-center justify-between p-4 border-b border-[#3A373C]">
             <Image
               src="/naturehood.svg"
-              alt="NatureHood"
+              alt="Naturehood"
               width={120}
               height={48}
               className="w-32"

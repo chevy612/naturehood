@@ -6,3 +6,4 @@ export * from "./inputs";
 export * from "./tags";
 export * from "./tokens";
 export * from "./notification";
+export * from "./profile-card";

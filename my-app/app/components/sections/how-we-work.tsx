@@ -40,10 +40,10 @@ const HOW_WE_WORK_STEPS = [
     title: "Growing with Intention",
     subtitle: "A long-term system, built step by step",
     description:
-      "NatureHood is a growing startup. We start with creative projects, then scale into technology and tools that accerelate the sport economy in Hong Kong and beyond.",
+      "Naturehood is a growing startup. We start with creative projects, then scale into technology and tools that accerelate the sport economy in Hong Kong and beyond.",
     video: "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/future.mp4",
     image: "/image/future.webp",
-    buttonText: "Our Vision",
+    buttonText: "More About Us",
     buttonLink: "about",
   },
 ];

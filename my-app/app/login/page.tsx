@@ -54,7 +54,7 @@ export default function LoginPage() {
             className="text-[15px] text-[#6B6870] leading-relaxed"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Sign in to your NatureHood account to continue.
+            Sign in to your Naturehood account to continue.
           </p>
         </div>
 

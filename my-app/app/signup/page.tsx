@@ -95,7 +95,7 @@ export default function SignUpPage() {
     <>
       {showSuccess && (
         <SuccessModal
-          title="Welcome to NatureHood"
+          title="Welcome to Naturehood"
           message="You're all set! We'll be in touch with updates and opportunities tailored to your profile."
           onClose={() => setShowSuccess(false)}
           variant="dark"
@@ -166,7 +166,7 @@ export default function SignUpPage() {
               <CheckboxDark
                 label={
                   <>
-                    I agree to the NatureHood{" "}
+                    I agree to the Naturehood{" "}
                     <Link
                       href="/terms"
                       className="text-[#C8F04D] hover:underline"
@@ -194,7 +194,7 @@ export default function SignUpPage() {
               />
 
               <CheckboxDark
-                label="I'd like to receive news, updates, and opportunities from NatureHood"
+                label="I'd like to receive news, updates, and opportunities from Naturehood"
                 checked={form.receiveNews}
                 onChange={(e) =>
                   setForm((prev) => ({
