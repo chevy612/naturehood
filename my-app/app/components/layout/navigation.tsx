@@ -12,16 +12,11 @@ import { tokens } from '@/app/components/ui/tokens';
 // ─────────────────────────────────────────────
 // NAVIGATION ITEMS
 // ─────────────────────────────────────────────
-const allNavItems = [
+const navItems = [
   { label: "Home", href: "/" },
-  { label: "Athletes", href: "/athlete", hideInProd: true },
   { label: "Brands", href: "/business" },
-  { label: "About us", href: "/about", hideInProd: true },
+  { label: "About us", href: "/about" },
 ];
-
-const navItems = process.env.NODE_ENV === "production"
-  ? allNavItems.filter((item) => !item.hideInProd)
-  : allNavItems;
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

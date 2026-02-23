@@ -83,7 +83,7 @@ export function ProfileCard({
   const hasSocial = linkedinUrl || instagramUrl;
 
   const cardBase = clsx(
-    "transition-all duration-300 rounded-2xl",
+    "transition-all duration-300",
     isDark
       ? "bg-[#2A272C] border border-[#3A373C] hover:border-[#C8F04D]/30 shadow-md"
       : "bg-white border border-[#E8E8E8] hover:border-[#141115]/20 shadow-sm",

@@ -6,18 +6,22 @@ interface CTAEmailCaptureProps {
   headline?: string;
   subtext?: string;
   placeholder?: string;
+  onSubmit?: (email: string) => Promise<void>;
 }
 
 export function CTAEmailCapture({
   headline,
   subtext,
   placeholder = "Your email",
+  onSubmit,
 }: CTAEmailCaptureProps) {
   const [email, setEmail] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  const handleSubmit = (): void => {
-    if (email) setSubmitted(true);
+  const handleSubmit = async (): Promise<void> => {
+    if (!email) return;
+    if (onSubmit) await onSubmit(email);
+    setSubmitted(true);
   };
 
   return (

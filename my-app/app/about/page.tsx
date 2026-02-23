@@ -42,14 +42,14 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="flex flex-col gap-4 max-w-3xl mx-auto">
+          <div className="flex flex-col gap-10 max-w-3xl mx-auto">
             <ProfileCard
               layout="horizontal"
               mode="dark"
               role={["Sprinter", "Content"]}
               name="Colin Cheung"
               description={'I’ve been running track since I was 10, and it’s become a core part of who I am. I founded Naturehood to help athletes (including myself) build personal brands so they can earn what they deserve and sustain a long-term career outside the 9–5 path.'}
-              photo="/image/colin-color.png"
+              photo="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/founders/colin-color.png"
             />
             <ProfileCard
               layout="horizontal"
@@ -57,7 +57,7 @@ export default function AboutPage() {
               name="Chevy Cheung"
               role={["Sprinter", "Tech"]}
               description={'I was motivated to start Naturehood after something that happened during my internship at an investment bank. I told my manager I was a sprinter, and he asked, “Can you make money from that?” That question stayed with me. It showed how undervalued sport is in Hong Kong — and it became the reason I started building a platform that helps athletes create real commercial opportunities.'}
-              photo="/image/chevy-color.webp"
+              photo="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/founders/chevy-color.webp"
             />
             <ProfileCard
               layout="horizontal"
@@ -65,6 +65,7 @@ export default function AboutPage() {
               name="Justin Choi"
               role={["Runner", "Business"]}
               description={'I’m a sports lover, and I’ve seen that many sports communities in Hong Kong aren’t very engaging or well-structured. I enjoy taking on challenges, so I founded Naturehood to help change that. Since launching last year, the more my team and I have built, the more meaningful this project has become. My hope is that Naturehood will create real impact for local athletes and sports communities.'}
+              photo="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/founders/justin-color.png"
             />
           </div>
         </Container>
@@ -75,7 +76,7 @@ export default function AboutPage() {
       <Section className="relative overflow-hidden py-16 sm:py-20">
         {/* Background image */}
         <Image
-          src="/image/candy-color-graded.jpg"
+          src="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/backgrounds/candy-run.jpg"
           alt=""
           fill
           className="object-cover"

@@ -17,8 +17,8 @@ const footerLinks = {
 
 const socialLinks = [
   { icon: Instagram, href: "https://instagram.com/naturehood.official", label: "Instagram" },
-  { icon: Youtube, href: "https://youtube.com/naturehood", label: "YouTube" },
-  { icon: Linkedin, href: "https://linkedin.com/company/naturehood", label: "LinkedIn" },
+  { icon: Youtube, href: "https://www.youtube.com/@naturehood.official", label: "YouTube" },
+  { icon: Linkedin, href: "https://linkedin.com/company/naturehood-official", label: "LinkedIn" },
 ];
 
 export default function Footer() {

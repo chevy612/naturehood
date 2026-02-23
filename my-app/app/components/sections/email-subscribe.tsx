@@ -22,6 +22,7 @@ export default function EmailSubscribe() {
       headline="Join the Naturehood community"
       subtext="Get exclusive updates on athlete collaborations, brand partnerships, and product news"
       placeholder="Enter your email"
+      onSubmit={handleEmailSubmit}
     />
   );
 }
