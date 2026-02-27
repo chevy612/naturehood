@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 interface QuickSignUpData {
   fullName: string
   email: string
-  role: 'athlete' | 'brand'
+  role: 'athlete' | 'brand' | 'other'
   agreeTerms: boolean
   receiveNews: boolean
 }
