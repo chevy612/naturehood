@@ -1,6 +1,8 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { Resend } from 'resend'
 
 // ─────────────────────────────────────────────
 // QUICK SIGN UP
@@ -134,6 +136,145 @@ export async function submitBrandPartnership(data: BrandPartnershipData) {
     console.error('Unexpected error:', error)
     return { error: 'An unexpected error occurred' }
   }
+}
+
+// ─────────────────────────────────────────────
+// OTP SIGN UP FLOW
+// ─────────────────────────────────────────────
+
+interface InitiateSignUpData {
+  fullName: string
+  email: string
+  role: 'athlete' | 'brand' | 'other'
+  receiveNews: boolean
+  agreeTerms: boolean
+}
+
+export async function initiateSignUp(data: InitiateSignUpData) {
+  const admin = createAdminClient()
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(data.email)) {
+    return { error: 'Please enter a valid email address' }
+  }
+  if (!data.fullName.trim()) {
+    return { error: 'Please enter your full name' }
+  }
+  if (!data.agreeTerms) {
+    return { error: 'You must agree to the Terms of Service' }
+  }
+
+  const email = data.email.trim().toLowerCase()
+  const code = Math.floor(100000 + Math.random() * 900000).toString()
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
+
+  // Remove any existing codes for this email and insert the new one
+  await admin.from('otp_codes').delete().eq('email', email)
+  const { error: insertError } = await admin
+    .from('otp_codes')
+    .insert({ email, code, expires_at: expiresAt })
+
+  if (insertError) {
+    console.error('OTP insert error:', insertError)
+    return { error: 'Failed to generate verification code. Please try again.' }
+  }
+
+  // Send via Resend
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const { error: emailError } = await resend.emails.send({
+    from: 'Naturehood <onboarding@resend.dev>',
+    to: email,
+    subject: 'Your Naturehood verification code',
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #141115;">Verify your email</h2>
+        <p style="color: #444;">Enter this code to continue creating your Naturehood account:</p>
+        <div style="font-size: 40px; font-weight: bold; letter-spacing: 0.2em; color: #141115; margin: 24px 0;">${code}</div>
+        <p style="color: #888; font-size: 13px;">This code expires in 10 minutes. If you didn't request this, you can ignore this email.</p>
+      </div>
+    `,
+  })
+
+  if (emailError) {
+    console.error('Email send error:', emailError)
+    return { error: 'Failed to send verification email. Please try again.' }
+  }
+
+  return { success: true }
+}
+
+export async function verifySignUpOtp(email: string, token: string) {
+  const admin = createAdminClient()
+
+  const normalizedEmail = email.trim().toLowerCase()
+  const normalizedToken = token.trim()
+
+  const { data: record, error: queryError } = await admin
+    .from('otp_codes')
+    .select('id')
+    .eq('email', normalizedEmail)
+    .eq('code', normalizedToken)
+    .eq('used', false)
+    .gt('expires_at', new Date().toISOString())
+    .single()
+
+  if (queryError || !record) {
+    return { error: 'Invalid or expired code. Please try again.' }
+  }
+
+  await admin.from('otp_codes').update({ used: true }).eq('id', record.id)
+
+  return { success: true }
+}
+
+interface SetPasswordData {
+  email: string
+  password: string
+  confirmPassword: string
+  fullName: string
+  role: 'athlete' | 'brand' | 'other'
+}
+
+export async function setUserPassword(data: SetPasswordData) {
+  const supabase = await createClient()
+
+  if (data.password !== data.confirmPassword) {
+    return { error: 'Passwords do not match' }
+  }
+  if (data.password.length < 8) {
+    return { error: 'Password must be at least 8 characters' }
+  }
+
+  const email = data.email.trim().toLowerCase()
+
+  const { data: authData, error: signUpError } = await supabase.auth.signUp({
+    email,
+    password: data.password,
+    options: {
+      data: {
+        full_name: data.fullName,
+        role: data.role,
+      },
+    },
+  })
+
+  if (signUpError) {
+    console.error('Sign up error:', signUpError)
+    return { error: signUpError.message }
+  }
+
+  if (!authData.user) {
+    return { error: 'Failed to create account. Please try again.' }
+  }
+
+  await supabase.from('profiles').upsert({
+    id: authData.user.id,
+    email,
+    is_business: data.role === 'brand',
+    updated_at: new Date().toISOString(),
+  })
+
+  return { success: true }
 }
 
 export async function signUpNewUser(data: SignUpData) {

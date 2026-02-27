@@ -2,9 +2,9 @@
 
 import { useState, ChangeEvent, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { SuccessModal, ButtonAccent, InputDark, SelectDark, CheckboxDark, ButtonSubmit } from "@/app/components/ui";
-import { quickSignUp } from "./actions";
+import { useRouter, useSearchParams } from "next/navigation";
+import { InputDark, SelectDark, CheckboxDark, ButtonSubmit } from "@/app/components/ui";
+import { initiateSignUp } from "./actions";
 
 // ─────────────────────────────────────────────
 // TYPES
@@ -23,6 +23,7 @@ interface SignUpFormData {
 // ─────────────────────────────────────────────
 
 function SignUpForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const roleParam = searchParams.get("role");
   const initialRole: "athlete" | "brand" | "other" = roleParam === "brand" ? "brand" : roleParam === "other" ? "other" : "athlete";
@@ -39,7 +40,6 @@ function SignUpForm() {
     Partial<Record<keyof SignUpFormData, string>>
   >({});
   const [submitting, setSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
 
   const roles = [
@@ -69,14 +69,20 @@ function SignUpForm() {
     setServerError("");
 
     try {
-      const result = await quickSignUp(form);
+      const result = await initiateSignUp(form);
 
       if (result.error) {
         setServerError(result.error);
         return;
       }
 
-      setShowSuccess(true);
+      const params = new URLSearchParams({
+        email: form.email,
+        name: form.fullName,
+        role: form.role,
+        newsletter: String(form.receiveNews),
+      });
+      router.push(`/signup/verify?${params.toString()}`);
     } catch {
       setServerError("Something went wrong. Please try again.");
     } finally {
@@ -94,15 +100,6 @@ function SignUpForm() {
 
   return (
     <>
-      {showSuccess && (
-        <SuccessModal
-          title="Welcome to Naturehood"
-          message="You're all set! We'll be in touch with updates and opportunities tailored to your profile."
-          onClose={() => setShowSuccess(false)}
-          variant="dark"
-        />
-      )}
-
       <div className="min-h-screen bg-[#141115] flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-md">
           {/* Header */}
@@ -220,22 +217,15 @@ function SignUpForm() {
             <ButtonSubmit submitting={submitting} label="Sign Up"/>
 
               
-            {/* Footer link - Hidden for now */}
-            {/* 
             <p
               className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-[#C8F04D] hover:underline"
-              >
+              <Link href="/login" className="text-[#C8F04D] hover:underline">
                 Log in
               </Link>
             </p>
-            */}
-            
           </form>
         </div>
       </div>
