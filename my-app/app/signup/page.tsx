@@ -13,7 +13,7 @@ import { quickSignUp } from "./actions";
 interface SignUpFormData {
   fullName: string;
   email: string;
-  role: "athlete" | "brand";
+  role: "athlete" | "brand"| "other";
   agreeTerms: boolean;
   receiveNews: boolean;
 }
@@ -25,7 +25,7 @@ interface SignUpFormData {
 function SignUpForm() {
   const searchParams = useSearchParams();
   const roleParam = searchParams.get("role");
-  const initialRole: "athlete" | "brand" = roleParam === "brand" ? "brand" : "athlete";
+  const initialRole: "athlete" | "brand" | "other" = roleParam === "brand" ? "brand" : roleParam === "other" ? "other" : "athlete";
 
   const [form, setForm] = useState<SignUpFormData>({
     fullName: "",
@@ -45,6 +45,7 @@ function SignUpForm() {
   const roles = [
     { value: "athlete", label: "Athlete" },
     { value: "brand", label: "Brand" },
+    { value: "other", label: "Other / Just Exploring" }
   ];
 
   const validate = (): Partial<Record<keyof SignUpFormData, string>> => {

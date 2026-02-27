@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "Naturehood Official",
   description: "Connecting athletes and brands through authentic partnerships.",
   icons: {
-    icon: "/image/metadata.png",
+    icon: "/icon.svg",
   },
   openGraph: {
     title: "Naturehood Official",
