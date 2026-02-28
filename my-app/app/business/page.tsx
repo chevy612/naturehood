@@ -16,7 +16,7 @@ import {
   FormCheckboxGroup,
   FormSection,
 } from "@/app/components/forms/form-ui";
-import { submitBrandPartnership } from "@/app/signup/actions";
+import { submitBrandPartnership } from "@/app/business/action";
 
 // ─────────────────────────────────────────────────────────────
 // FORM DATA MODEL
