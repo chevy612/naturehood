@@ -2,30 +2,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { RESERVED_SLUGS } from '@/lib/username'
 import { PillTag } from '@/app/components/ui/tags'
-
-// ─────────────────────────────────────────────
-// AVATAR
-// ─────────────────────────────────────────────
-
-function Avatar({ name }: { name: string }) {
-  const initials = name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-
-  return (
-    <div className="relative w-24 h-24 rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#C8F04D] bg-[#C8F04D]">
-      <span
-        className="text-2xl font-bold select-none text-[#141115]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
-      >
-        {initials}
-      </span>
-    </div>
-  )
-}
+import { Avatar } from '@/app/components/platform/Avatar'
 
 // ─────────────────────────────────────────────
 // ROLE LABEL
@@ -68,7 +45,7 @@ export default async function PublicProfilePage({
 
         {/* Avatar */}
         <div className="flex justify-center mb-5">
-          <Avatar name={name} />
+          <Avatar name={name} size="lg" />
         </div>
 
         {/* Name */}

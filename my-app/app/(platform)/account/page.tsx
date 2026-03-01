@@ -2,33 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { PillTag } from '@/app/components/ui/tags'
+import { Avatar } from '@/app/components/platform/Avatar'
 import DashboardEditForm from './DashboardEditForm'
 import { signOut } from './actions'
-
-// ─────────────────────────────────────────────
-// AVATAR — initials fallback, lime ring
-// Pattern from ProfileCard component
-// ─────────────────────────────────────────────
-
-function Avatar({ name }: { name: string }) {
-  const initials = name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-
-  return (
-    <div className="relative w-24 h-24 rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#C8F04D] bg-[#C8F04D]">
-      <span
-        className="text-xl font-bold select-none text-[#141115]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
-      >
-        {initials}
-      </span>
-    </div>
-  )
-}
 
 // ─────────────────────────────────────────────
 // ROLE LABEL
@@ -50,16 +26,25 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('name, username, bio, role')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: trainingLogs }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('name, username, bio, role')
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('training_logs')
+      .select('id, title, logged_date, duration_minutes, workout_log, is_public')
+      .eq('user_id', user.id)
+      .order('logged_date', { ascending: false })
+      .limit(20),
+  ])
 
   const name = profile?.name ?? user.email?.split('@')[0] ?? 'Member'
   const username = profile?.username ?? ''
   const bio = profile?.bio ?? ''
   const role = profile?.role ?? null
+  const logs = trainingLogs ?? []
 
   return (
     <div className="min-h-screen bg-[#141115] px-6 py-10">
@@ -71,7 +56,7 @@ export default async function DashboardPage() {
             className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Dashboard
+            Account
           </p>
           <form action={signOut}>
             <button
@@ -89,7 +74,7 @@ export default async function DashboardPage() {
 
           {/* ── Left: Profile summary ── */}
           <div className="flex flex-col items-center md:items-start gap-4 md:w-56 shrink-0">
-            <Avatar name={name} />
+            <Avatar name={name} size="lg" />
 
             <div className="text-center md:text-left">
               <h1
@@ -120,15 +105,83 @@ export default async function DashboardPage() {
             )}
           </div>
 
-          {/* ── Right: Edit form ── */}
-          <div className="flex-1">
-            <h2
-              className="text-[13px] font-semibold text-white mb-6"
-              style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
-            >
-              Edit Profile
-            </h2>
-            <DashboardEditForm initialName={name} initialUsername={username} initialBio={bio} />
+          {/* ── Right: Edit form + training history ── */}
+          <div className="flex-1 space-y-12">
+
+            {/* Edit Profile */}
+            <div>
+              <h2
+                className="text-[13px] font-semibold text-white mb-6"
+                style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+              >
+                Edit Profile
+              </h2>
+              <DashboardEditForm initialName={name} initialUsername={username} initialBio={bio} />
+            </div>
+
+            {/* My Training */}
+            <div>
+              <h2
+                className="text-[13px] font-semibold text-white mb-4"
+                style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+              >
+                My Training
+              </h2>
+
+              {logs.length === 0 ? (
+                <p
+                  className="text-[13px] text-[#6B6870]"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  No workouts logged yet.{' '}
+                  <Link href="/record" className="text-[#C8F04D] hover:underline">
+                    Log your first workout →
+                  </Link>
+                </p>
+              ) : (
+                <div className="flex flex-col divide-y divide-[#3A373C]">
+                  {logs.map((log) => (
+                    <div key={log.id} className="py-4">
+                      <div className="flex items-start justify-between gap-4 mb-1">
+                        <p
+                          className="text-[14px] font-semibold text-white leading-snug"
+                          style={{ fontFamily: "'Inter', sans-serif" }}
+                        >
+                          {log.title}
+                        </p>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {!log.is_public && (
+                            <PillTag label="Private" variant="ghost-dark" size="sm" />
+                          )}
+                          {log.duration_minutes && (
+                            <PillTag label={`${log.duration_minutes} min`} variant="ghost-green" size="sm" />
+                          )}
+                        </div>
+                      </div>
+                      <p
+                        className="text-[12px] text-[#6B6870] mb-2"
+                        style={{ fontFamily: "'DM Sans', sans-serif" }}
+                      >
+                        {new Date(log.logged_date + 'T00:00:00').toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', year: 'numeric'
+                        })}
+                      </p>
+                      {log.workout_log && (
+                        <p
+                          className="text-[12px] text-[#6B6870] leading-relaxed whitespace-pre-line"
+                          style={{ fontFamily: "'DM Sans', sans-serif" }}
+                        >
+                          {log.workout_log.length > 200
+                            ? log.workout_log.slice(0, 200).trimEnd() + '…'
+                            : log.workout_log}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
 
         </div>
