@@ -54,13 +54,13 @@ export default async function PublicProfilePage({
   const supabase = await createClient()
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, bio, role')
+    .select('name, username, bio, role')
     .eq('username', username)
     .maybeSingle()
 
   if (!profile) notFound()
 
-  const name = profile.full_name ?? username
+  const name = profile.name ?? username
 
   return (
     <div className="min-h-screen bg-[#141115] flex items-center justify-center px-6 py-16">

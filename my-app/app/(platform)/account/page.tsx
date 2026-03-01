@@ -52,11 +52,11 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, bio, role, is_business')
+    .select('name, username, bio, role')
     .eq('id', user.id)
     .single()
 
-  const name = profile?.full_name ?? user.email?.split('@')[0] ?? 'Member'
+  const name = profile?.name ?? user.email?.split('@')[0] ?? 'Member'
   const username = profile?.username ?? ''
   const bio = profile?.bio ?? ''
   const role = profile?.role ?? null
@@ -128,7 +128,7 @@ export default async function DashboardPage() {
             >
               Edit Profile
             </h2>
-            <DashboardEditForm initialUsername={username} initialBio={bio} />
+            <DashboardEditForm initialName={name} initialUsername={username} initialBio={bio} />
           </div>
 
         </div>

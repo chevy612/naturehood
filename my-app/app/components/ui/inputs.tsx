@@ -374,6 +374,60 @@ export function SelectDark({
   );
 }
 
+export function TextAreaDark({
+  label,
+  name,
+  value,
+  onChange,
+  placeholder,
+  rows = 4,
+  error,
+  required,
+}: {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  rows?: number;
+  error?: string;
+  required?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label
+        htmlFor={name}
+        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        {label} {required && <span className="text-[#C8F04D]">*</span>}
+      </label>
+      <textarea
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        rows={rows}
+        className={`w-full bg-[#1E1B1F] border p-3 text-[15px] text-white placeholder:text-[#3A373C] outline-none resize-none transition-colors duration-200 ${
+          error
+            ? "border-[#FF4D4D] focus:border-[#FF4D4D]"
+            : "border-[#3A373C] focus:border-[#C8F04D]"
+        }`}
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      />
+      {error && (
+        <p
+          className="text-[11px] text-[#FF4D4D]"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function CheckboxDark({
   label,
   checked,

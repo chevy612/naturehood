@@ -9,6 +9,7 @@ export async function updateProfile(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const name = (formData.get('name') as string ?? '').trim()
   const newUsername = (formData.get('username') as string ?? '').trim().toLowerCase()
   const bio = (formData.get('bio') as string ?? '').trim()
 
@@ -34,7 +35,7 @@ export async function updateProfile(formData: FormData) {
 
   const { error } = await supabase
     .from('profiles')
-    .update({ username: newUsername, bio, updated_at: new Date().toISOString() })
+    .update({ name, username: newUsername, bio, updated_at: new Date().toISOString() })
     .eq('id', user.id)
 
   if (error) {
