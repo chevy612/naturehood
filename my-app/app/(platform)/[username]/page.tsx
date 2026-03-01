@@ -1,0 +1,116 @@
+import { notFound } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { RESERVED_SLUGS } from '@/lib/username'
+import { PillTag } from '@/app/components/ui/tags'
+
+// ─────────────────────────────────────────────
+// AVATAR
+// ─────────────────────────────────────────────
+
+function Avatar({ name }: { name: string }) {
+  const initials = name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+
+  return (
+    <div className="relative w-24 h-24 rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#C8F04D] bg-[#C8F04D]">
+      <span
+        className="text-2xl font-bold select-none text-[#141115]"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
+        {initials}
+      </span>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// ROLE LABEL
+// ─────────────────────────────────────────────
+
+function roleLabel(role: string | null): string {
+  if (role === 'brand') return 'Brand'
+  if (role === 'other') return 'Explorer'
+  return 'Athlete'
+}
+
+// ─────────────────────────────────────────────
+// PUBLIC PROFILE PAGE
+// ─────────────────────────────────────────────
+
+export default async function PublicProfilePage({
+  params,
+}: {
+  params: Promise<{ username: string }>
+}) {
+  const { username } = await params
+
+  // Guard reserved slugs before any DB query
+  if (RESERVED_SLUGS.has(username)) notFound()
+
+  const supabase = await createClient()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, username, bio, role')
+    .eq('username', username)
+    .maybeSingle()
+
+  if (!profile) notFound()
+
+  const name = profile.full_name ?? username
+
+  return (
+    <div className="min-h-screen bg-[#141115] flex items-center justify-center px-6 py-16">
+      <div className="w-full max-w-sm text-center">
+
+        {/* Avatar */}
+        <div className="flex justify-center mb-5">
+          <Avatar name={name} />
+        </div>
+
+        {/* Name */}
+        <h1
+          className="text-[28px] font-bold text-white leading-tight mb-1"
+          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+        >
+          {name}
+        </h1>
+
+        {/* Username */}
+        <p
+          className="text-sm text-[#6B6870] mb-4"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          @{profile.username}
+        </p>
+
+        {/* Role badge */}
+        <div className="flex justify-center mb-6">
+          <PillTag label={roleLabel(profile.role)} size="sm" variant="ghost-green" />
+        </div>
+
+        {/* Bio */}
+        {profile.bio && (
+          <p
+            className="text-[15px] text-[#A09EA3] leading-relaxed"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {profile.bio}
+          </p>
+        )}
+
+        {/* Footer */}
+        <p
+          className="mt-10 text-[11px] text-[#3A373C] uppercase tracking-[0.2em]"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Member of Naturehood
+        </p>
+
+      </div>
+    </div>
+  )
+}

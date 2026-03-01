@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Clock from '../components/clock'
+import Clock from '@/app/components/clock'
 
 export default async function HomePage() {
   const supabase = await createClient()

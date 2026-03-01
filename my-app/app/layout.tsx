@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, DM_Sans } from "next/font/google";
-import ConditionalLayout from "./components/ConditionalLayout";
 import CookieBanner from "./components/ui/cookie-banner";
 
 import "./globals.css";
@@ -60,9 +59,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${dmSans.variable} antialiased`}
       >
-        <ConditionalLayout>
-          {children}
-        </ConditionalLayout>
+        {children}
         <CookieBanner />
       </body>
     </html>

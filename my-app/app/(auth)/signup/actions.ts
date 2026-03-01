@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { generateUniqueUsername } from '@/lib/username'
 import { Resend } from 'resend'
 import { otpEmailHtml } from '@/app/components/email-template'
 
@@ -130,9 +131,14 @@ export async function setUserPassword(data: SetPasswordData) {
     return { error: 'Failed to create account. Please try again.' }
   }
 
+  const username = await generateUniqueUsername(data.fullName)
+
   await supabase.from('profiles').upsert({
     id: authData.user.id,
     email,
+    full_name: data.fullName,
+    role: data.role,
+    username,
     is_business: data.role === 'brand',
     updated_at: new Date().toISOString(),
   })
