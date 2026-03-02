@@ -19,21 +19,35 @@ export default async function HomePage({
   const from = (page - 1) * PAGE_SIZE
   const to = from + PAGE_SIZE - 1
 
+  // Step 1: fetch public training logs
   const { data: logs } = await supabase
     .from('training_logs')
-    .select(`
-      id,
-      title,
-      logged_date,
-      duration_minutes,
-      workout_log,
-      profiles ( name, username )
-    `)
+    .select('id, title, logged_date, duration_minutes, workout_log, user_id')
     .eq('is_public', true)
     .order('created_at', { ascending: false })
     .range(from, to)
 
-  const feed = logs ?? []
+  const logList = logs ?? []
+
+  // Step 2: fetch profiles for those users (two-step because the FK goes through
+  // auth.users, so PostgREST can't auto-join training_logs → profiles)
+  const userIds = [...new Set(logList.map((l) => l.user_id))]
+  const { data: profilesData } = userIds.length > 0
+    ? await supabase
+        .from('profiles')
+        .select('id, name, username')
+        .in('id', userIds)
+    : { data: [] }
+
+  const profileMap = Object.fromEntries(
+    (profilesData ?? []).map((p) => [p.id, { name: p.name, username: p.username }])
+  )
+
+  // Merge profiles into logs
+  const feed = logList.map((log) => ({
+    ...log,
+    profiles: profileMap[log.user_id] ?? null,
+  }))
   const hasMore = feed.length === PAGE_SIZE
 
   return (

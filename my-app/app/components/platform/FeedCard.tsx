@@ -15,8 +15,7 @@ type FeedLog = {
   logged_date: string
   duration_minutes: number | null
   workout_log: string | null
-  // Supabase returns joined rows as an array when the FK is via auth.users
-  profiles: ProfileRow | ProfileRow[] | null
+  profiles: ProfileRow | null
 }
 
 function formatDate(dateStr: string): string {
@@ -25,7 +24,7 @@ function formatDate(dateStr: string): string {
 }
 
 export function FeedCard({ log }: { log: FeedLog }) {
-  const profile = Array.isArray(log.profiles) ? log.profiles[0] ?? null : log.profiles
+  const profile = log.profiles
   const displayName = profile?.name ?? profile?.username ?? 'Member'
   const username = profile?.username ?? null
 
