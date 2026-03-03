@@ -53,7 +53,7 @@ export async function initiateSignUp(data: SignUpFormData) {
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const { error: emailError } = await resend.emails.send({
-    from: 'Naturehood <onboarding@resend.dev>',
+    from: process.env.RESEND_FROM_EMAIL ?? 'Naturehood <onboarding@resend.dev>',
     to: email,
     subject: 'Your Naturehood verification code',
     html: otpEmailHtml(code),
