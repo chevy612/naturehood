@@ -60,7 +60,7 @@ export async function initiateSignUp(data: SignUpFormData) {
   })
 
   if (emailError) {
-    console.error('Email send error:', emailError)
+    console.error('Resend email error:', JSON.stringify(emailError, null, 2))
     return { error: 'Failed to send verification email. Please try again.' }
   }
 
