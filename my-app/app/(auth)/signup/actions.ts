@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { generateUniqueUsername } from '@/lib/username'
+import { randomInt } from 'crypto'
 import { Resend } from 'resend'
 import { otpEmailHtml } from '@/app/components/email-template'
 
@@ -38,16 +39,29 @@ export async function initiateSignUp(data: SignUpFormData) {
   }
 
   const email = data.email.trim().toLowerCase()
-  const code = Math.floor(100000 + Math.random() * 900000).toString()
+
+  const { data: existingProfile } = await admin
+    .from('profiles')
+    .select('id')
+    .eq('email', email)
+    .maybeSingle()
+
+  if (existingProfile) {
+    return { error: 'An account with this email already exists. Please log in.' }
+  }
+
+  const code = randomInt(100000, 1000000).toString()
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
 
-  await admin.from('otp_codes').delete().eq('email', email)
-  const { error: insertError } = await admin
+  const { error: upsertError } = await admin
     .from('otp_codes')
-    .insert({ email, code, expires_at: expiresAt })
+    .upsert(
+      { email, code, expires_at: expiresAt, used: false },
+      { onConflict: 'email' }
+    )
 
-  if (insertError) {
-    console.error('OTP insert error:', insertError)
+  if (upsertError) {
+    console.error('OTP upsert error:', upsertError)
     return { error: 'Failed to generate verification code. Please try again.' }
   }
 
@@ -101,6 +115,7 @@ interface SetPasswordData {
 
 export async function setUserPassword(data: SetPasswordData) {
   const supabase = await createClient()
+  const admin = createAdminClient()
 
   if (data.password !== data.confirmPassword) {
     return { error: 'Passwords do not match' }
@@ -110,6 +125,17 @@ export async function setUserPassword(data: SetPasswordData) {
   }
 
   const email = data.email.trim().toLowerCase()
+
+  const { data: verifiedOtp } = await admin
+    .from('otp_codes')
+    .select('id')
+    .eq('email', email)
+    .eq('used', true)
+    .maybeSingle()
+
+  if (!verifiedOtp) {
+    return { error: 'Email verification required. Please complete the verification step.' }
+  }
 
   const { data: authData, error: signUpError } = await supabase.auth.signUp({
     email,
@@ -133,15 +159,22 @@ export async function setUserPassword(data: SetPasswordData) {
 
   const username = await generateUniqueUsername(data.fullName)
 
-  await supabase.from('profiles').upsert({
+  const { error: profileError } = await admin.from('profiles').upsert({
     id: authData.user.id,
     email,
-    full_name: data.fullName,
+    name: data.fullName,
     role: data.role,
     username,
-    is_business: data.role === 'brand',
     updated_at: new Date().toISOString(),
   })
+  
+
+  if (profileError) {
+    console.error('Profile upsert error:', profileError)
+    return { error: 'Account created but profile setup failed. Please contact support.' }
+  }
+
+  await admin.from('otp_codes').delete().eq('email', email)
 
   return { success: true }
 }
