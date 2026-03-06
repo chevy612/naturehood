@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
 
 // ─────────────────────────────────────────────
 // PROSE — Long-form content with auto spacing
@@ -117,13 +118,12 @@ export function ReadableText({
 
   return (
     <p
-      className={className}
+      className={twMerge("text-[#6B6870]", className)}
       style={{
         fontFamily: "'DM Sans', sans-serif",
         fontSize: sizes[size].fontSize,
         lineHeight: sizes[size].lineHeight,
         maxWidth: sizes[size].maxWidth,
-        color: "#6B6870",
       }}
     >
       {children}

@@ -6,9 +6,15 @@
 // ============================================================
 
 import { useState, ChangeEvent } from "react";
-import { Container, ButtonTab, ButtonSubmit } from "@/app/components/ui";
+import {
+  Container,
+  ButtonTab,
+  ButtonSubmit,
+  tokens,
+  ReadableText,
+} from "@/app/components/ui";
 import { InfoBox } from "@/app/components/ui/notification";
-import {SectionHeader} from "@/app/components/ui/typography";
+import { SectionHeader } from "@/app/components/ui/typography";
 import {
   FormInput,
   FormSelect,
@@ -192,31 +198,29 @@ export default function BusinessPage() {
     <div className="min-h-screen bg-[#F5F5F5]">
       <Container>
         {/* Hero */}
-        <div className="text-center max-w-[640px] mx-auto pt-16 pb-12 md:pt-24 md:pb-16">
-            <SectionHeader content="Our Services" />
-          <h1
-            className="text-[#141115] mb-5"
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "clamp(38px, 5vw, 56px)",
-            }}
-          >
+        <div className="text-center max-w-160 mx-auto pt-16 pb-12 md:pt-24 md:pb-16">
+          <SectionHeader content="Our Services" />
+          <h1 className="text-[#141115] mb-5" style={tokens.typography.h1}>
             Marketing with Naturehood
           </h1>
-          <p
-            className="leading-relaxed max-w-[520px] mx-auto"
-          >
-            Connect with athletes who align with your brand values.
-            Let's build creative campaigns that resonate.
-          </p>
+          <ReadableText className="text-[#6B6870]" size="sm">
+            Connect with athletes who align with your brand values. Let's build
+            creative campaigns that resonate.
+          </ReadableText>
         </div>
 
         {/* Tab Navigation */}
         <div className="flex flex-col sm:flex-row gap-[2px] bg-[#E8E8E8] p-[2px] mb-12 max-w-[600px] mx-auto">
-          <ButtonTab active={activeTab === "apply"} onClick={() => setActiveTab("apply")}>
+          <ButtonTab
+            active={activeTab === "apply"}
+            onClick={() => setActiveTab("apply")}
+          >
             Submit Application
           </ButtonTab>
-          <ButtonTab active={activeTab === "meeting"} onClick={() => setActiveTab("meeting")}>
+          <ButtonTab
+            active={activeTab === "meeting"}
+            onClick={() => setActiveTab("meeting")}
+          >
             Book a Meeting
           </ButtonTab>
         </div>

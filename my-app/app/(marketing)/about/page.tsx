@@ -7,8 +7,14 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#141115]">
       {/* Hero */}
-      <Section className="bg-[#141115] pt-32 pb-16">
-        <Container>
+      <Section
+        className="relative pt-32 pb-16 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/backgrounds/fung-bow.jpg')" }}
+      >
+        {/* dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/60" />
+
+        <Container className="relative z-10">
           <div className="max-w-3xl">
             <SectionHeader color="green" content="About Us"/>
             <h1
@@ -18,7 +24,7 @@ export default function AboutPage() {
               We are problem solvers.
             </h1>
             <ReadableText className="text-white/70" size="lg">
-              We build things that help athletes and brands unlock value in the sports ecosystem. We start with creative projects, then scale into apps and systems that accelerate the sports economy in Hong Kong and beyond.
+              We build solutions that help athletes and brands unlock value in the sports ecosystem. We start with creative projects, then scale into apps and systems that accelerate the sports economy in Hong Kong and beyond.
             </ReadableText>
           </div>
         </Container>
@@ -93,7 +99,7 @@ export default function AboutPage() {
               <div className="w-3 h-3 rounded-full bg-[#C8F04D] animate-pulse" />
             </div>
             <h2
-              className="text-white mb-4"
+              className="text-[#E8E8E8] mb-4"
               style={tokens.typography.h2}
             >
               More is coming soon

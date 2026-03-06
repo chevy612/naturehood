@@ -51,24 +51,26 @@ function InstagramSVG() {
 interface ProfileCardProps {
   name: string;
   role?: string | string[];
-  description: string;
+  description?: string;
   photo?: string;
   linkedinUrl?: string;
   instagramUrl?: string;
   mode?: "dark" | "light";
-  layout?: "vertical" | "horizontal";
+  layout?: "vertical" | "horizontal" | "athlete";
+  country?: string;
   className?: string;
 }
 
 export function ProfileCard({
   name,
   role,
-  description,
+  description = "",
   photo,
   linkedinUrl,
   instagramUrl,
   mode = "dark",
   layout = "vertical",
+  country,
   className = "",
 }: ProfileCardProps) {
   const isDark = mode === "dark";
@@ -180,6 +182,52 @@ export function ProfileCard({
         )}
       </div>
     ) : null;
+
+  // ── ATHLETE ─────────────────────────────────
+  if (layout === "athlete") {
+    const sportLabel = typeof role === "string" ? role : role?.[0];
+    return (
+      <div className={clsx(
+        "bg-white rounded-2xl overflow-hidden border border-[#E8E8E8] hover:border-[#141115]/20 transition-colors",
+        "flex flex-row sm:flex-col",
+        className
+      )}>
+        {/* Image — square on mobile, 4/5 tall on desktop */}
+        <div className="relative w-2/5 sm:w-full aspect-square sm:aspect-[4/5] shrink-0 bg-[#1a1a1a]">
+          {photo ? (
+            <Image src={photo} alt={name} fill className="object-cover grayscale"
+              sizes="(max-width: 640px) 40vw, (max-width: 1024px) 50vw, 25vw" />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#141115]">
+              <span className="text-white text-4xl font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>{initials}</span>
+            </div>
+          )}
+          {/* Sport tag overlay — desktop only */}
+          {sportLabel && (
+            <div className="hidden sm:block absolute top-5 right-5">
+              <PillTag label={sportLabel} variant="active" size="sm" />
+            </div>
+          )}
+        </div>
+
+        {/* Content: stacked on mobile, row on desktop */}
+        <div className="flex-1 flex flex-col justify-between p-4 sm:flex-row sm:items-center sm:px-4 sm:py-3 sm:gap-2">
+          <div>
+            <span className="font-bold text-[#141115] uppercase tracking-wider text-sm leading-tight block" style={{ fontFamily: "'Inter', sans-serif" }}>
+              {name}
+            </span>
+            {/* Sport as pill — mobile only */}
+            {sportLabel && (
+              <div className="sm:hidden mt-1">
+                <PillTag label={sportLabel} variant="nature" size="sm" />
+              </div>
+            )}
+          </div>
+          {country && <span className="text-xl shrink-0 mt-auto sm:mt-0">{country}</span>}
+        </div>
+      </div>
+    );
+  }
 
   // ── HORIZONTAL ──────────────────────────────
   if (layout === "horizontal") {

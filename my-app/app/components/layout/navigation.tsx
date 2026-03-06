@@ -14,8 +14,9 @@ import { tokens } from '@/app/components/ui/tokens';
 // ─────────────────────────────────────────────
 const navItems = [
   { label: "Home", href: "/" },
+  { label: "Athletes", href: "/athletes"},
   { label: "Brands", href: "/business" },
-  { label: "About us", href: "/about" },
+  { label: "About us", href: "/about" }
 ];
 
 export default function Navigation() {
