@@ -36,7 +36,7 @@ function SetPasswordForm() {
         setError(result.error);
         return;
       }
-      router.push("/dashboard");
+      router.push("/home");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
