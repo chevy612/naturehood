@@ -29,12 +29,12 @@ export default async function DashboardPage() {
   const [{ data: profile }, { data: trainingLogs }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('name, username, bio, role')
+      .select('name, username, bio, role, avatar_url')
       .eq('id', user.id)
       .single(),
     supabase
       .from('training_logs')
-      .select('id, title, logged_date, duration_minutes, workout_log, is_public')
+      .select('id, title, logged_date, duration_minutes, workout_types, workout_log, is_public')
       .eq('user_id', user.id)
       .order('logged_date', { ascending: false })
       .limit(20),
@@ -44,6 +44,7 @@ export default async function DashboardPage() {
   const username = profile?.username ?? ''
   const bio = profile?.bio ?? ''
   const role = profile?.role ?? null
+  const avatarUrl = profile?.avatar_url ?? null
   const logs = trainingLogs ?? []
 
   return (
@@ -74,7 +75,7 @@ export default async function DashboardPage() {
 
           {/* ── Left: Profile summary ── */}
           <div className="flex flex-col items-center md:items-start gap-4 md:w-56 shrink-0">
-            <Avatar name={name} size="lg" />
+            <Avatar name={name} size="lg" photoUrl={avatarUrl} />
 
             <div className="text-center md:text-left">
               <h1
@@ -116,7 +117,7 @@ export default async function DashboardPage() {
               >
                 Edit Profile
               </h2>
-              <DashboardEditForm initialName={name} initialUsername={username} initialBio={bio} />
+              <DashboardEditForm initialName={name} initialUsername={username} initialBio={bio} initialAvatarUrl={avatarUrl} />
             </div>
 
             {/* My Training */}
@@ -156,6 +157,13 @@ export default async function DashboardPage() {
                           {log.duration_minutes && (
                             <PillTag label={`${log.duration_minutes} min`} variant="ghost-green" size="sm" />
                           )}
+                          <Link
+                            href={`/record/${log.id}/edit`}
+                            className="text-[11px] font-medium text-[#6B6870] hover:text-[#C8F04D] transition-colors"
+                            style={{ fontFamily: "'DM Sans', sans-serif" }}
+                          >
+                            Edit
+                          </Link>
                         </div>
                       </div>
                       <p
@@ -166,6 +174,13 @@ export default async function DashboardPage() {
                           month: 'short', day: 'numeric', year: 'numeric'
                         })}
                       </p>
+                      {log.workout_types && log.workout_types.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {log.workout_types.map((type: string) => (
+                            <PillTag key={type} label={type} variant="ghost-green" size="sm" />
+                          ))}
+                        </div>
+                      )}
                       {log.workout_log && (
                         <p
                           className="text-[12px] text-[#6B6870] leading-relaxed whitespace-pre-line"

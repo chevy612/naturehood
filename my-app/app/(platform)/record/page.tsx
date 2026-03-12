@@ -1,11 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import RecordForm from './RecordForm'
+import { getUserWorkoutTypes } from './actions'
 
 export default async function RecordPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  const previousTypes = await getUserWorkoutTypes()
 
   return (
     <div className="min-h-screen bg-[#141115] px-6 py-10">
@@ -25,7 +28,7 @@ export default async function RecordPage() {
           Log a Workout
         </h1>
 
-        <RecordForm />
+        <RecordForm previousTypes={previousTypes} />
       </div>
     </div>
   )

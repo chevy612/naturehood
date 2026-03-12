@@ -46,6 +46,52 @@ export async function updateProfile(formData: FormData) {
   return { success: true }
 }
 
+export async function uploadAvatar(formData: FormData): Promise<{ url: string } | { error: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const file = formData.get('avatar') as File | null
+  if (!file || file.size === 0) return { error: 'No file provided.' }
+
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return { error: 'Only JPEG, PNG, and WebP images are allowed.' }
+  }
+
+  const MAX_BYTES = 2 * 1024 * 1024 // 2 MB
+  if (file.size > MAX_BYTES) {
+    return { error: 'Image must be smaller than 2 MB.' }
+  }
+
+  const arrayBuffer = await file.arrayBuffer()
+  const path = `${user.id}/avatar`
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(path, arrayBuffer, { contentType: file.type, upsert: true })
+
+  if (uploadError) {
+    console.error('Avatar upload error:', uploadError)
+    return { error: 'Upload failed. Please try again.' }
+  }
+
+  const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
+  const publicUrl = urlData.publicUrl
+
+  const { error: dbError } = await supabase
+    .from('profiles')
+    .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+    .eq('id', user.id)
+
+  if (dbError) {
+    console.error('Avatar DB update error:', dbError)
+    return { error: 'Failed to save avatar. Please try again.' }
+  }
+
+  return { url: publicUrl }
+}
+
 export async function signOut() {
   const supabase = await createClient()
   await supabase.auth.signOut()

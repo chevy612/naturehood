@@ -31,7 +31,7 @@ export default async function PublicProfilePage({
   const supabase = await createClient()
   const { data: profile } = await supabase
     .from('profiles')
-    .select('name, username, bio, role')
+    .select('name, username, bio, role, avatar_url')
     .eq('username', username)
     .maybeSingle()
 
@@ -45,7 +45,7 @@ export default async function PublicProfilePage({
 
         {/* Avatar */}
         <div className="flex justify-center mb-5">
-          <Avatar name={name} size="lg" />
+          <Avatar name={name} size="lg" photoUrl={profile.avatar_url ?? null} />
         </div>
 
         {/* Name */}

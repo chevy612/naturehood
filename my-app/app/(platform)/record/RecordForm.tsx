@@ -1,28 +1,95 @@
 'use client'
 
-import { useState, ChangeEvent } from 'react'
+import { useState, useEffect, useRef, ChangeEvent } from 'react'
 import { InputDark, TextAreaDark } from '@/app/components/ui/inputs'
 import { SuccessModal } from '@/app/components/ui/notification'
+import { X } from 'lucide-react'
 import { saveWorkout } from './actions'
+
+const DRAFT_KEY = 'naturehood_draft_workout'
+
+interface Draft {
+  title: string
+  loggedDate: string
+  duration: string
+  workoutTypes: string[]
+  workoutLog: string
+  isPublic: boolean
+}
 
 // ─────────────────────────────────────────────
 // RECORD FORM
 // ─────────────────────────────────────────────
 
-export default function RecordForm() {
+export default function RecordForm({ previousTypes = [] }: { previousTypes?: string[] }) {
   const today = new Date().toISOString().split('T')[0]
 
   const [title, setTitle] = useState('')
   const [loggedDate, setLoggedDate] = useState(today)
   const [duration, setDuration] = useState('')
+  const [workoutTypes, setWorkoutTypes] = useState<string[]>([])
+  const [typeInput, setTypeInput] = useState('')
   const [workoutLog, setWorkoutLog] = useState('')
   const [isPublic, setIsPublic] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [draftRestored, setDraftRestored] = useState(false)
+  const isFirstRender = useRef(true)
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY)
+      if (raw) {
+        const draft: Draft = JSON.parse(raw)
+        if (draft.title || draft.workoutLog || draft.workoutTypes?.length) {
+          setTitle(draft.title ?? '')
+          setLoggedDate(draft.loggedDate ?? today)
+          setDuration(draft.duration ?? '')
+          setWorkoutTypes(draft.workoutTypes ?? [])
+          setWorkoutLog(draft.workoutLog ?? '')
+          setIsPublic(draft.isPublic ?? true)
+          setDraftRestored(true)
+        }
+      }
+    } catch {}
+    isFirstRender.current = false
+  }, [])
+
+  // Save draft to localStorage on every change (skip first render)
+  useEffect(() => {
+    if (isFirstRender.current) return
+    const draft: Draft = { title, loggedDate, duration, workoutTypes, workoutLog, isPublic }
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
+  }, [title, loggedDate, duration, workoutTypes, workoutLog, isPublic])
+
+  const addWorkoutType = (value: string) => {
+    const trimmed = value.trim()
+    if (trimmed && !workoutTypes.includes(trimmed)) {
+      setWorkoutTypes((prev) => [...prev, trimmed])
+    }
+    setTypeInput('')
+  }
+
+  const handleTypeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      addWorkoutType(typeInput)
+    }
+    if (e.key === 'Backspace' && typeInput === '' && workoutTypes.length > 0) {
+      setWorkoutTypes((prev) => prev.slice(0, -1))
+    }
+  }
+
+  const removeType = (label: string) => {
+    setWorkoutTypes((prev) => prev.filter((t) => t !== label))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    // Commit any pending type input
+    if (typeInput.trim()) addWorkoutType(typeInput)
     setSubmitting(true)
     setError(null)
 
@@ -30,6 +97,7 @@ export default function RecordForm() {
     formData.set('title', title)
     formData.set('logged_date', loggedDate)
     formData.set('duration_minutes', duration)
+    formData.set('workout_types', JSON.stringify(workoutTypes))
     formData.set('workout_log', workoutLog)
     formData.set('is_public', String(isPublic))
 
@@ -46,15 +114,28 @@ export default function RecordForm() {
 
   const handleSuccessClose = () => {
     setShowSuccess(false)
+    localStorage.removeItem(DRAFT_KEY)
     setTitle('')
     setLoggedDate(today)
     setDuration('')
+    setWorkoutTypes([])
+    setTypeInput('')
     setWorkoutLog('')
     setIsPublic(true)
+    setDraftRestored(false)
   }
 
   return (
     <>
+      {draftRestored && (
+        <p
+          className="text-[12px] text-[#A09EA3] mb-4"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Draft restored — your unsaved workout was recovered.
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <InputDark
           label="Workout Title"
@@ -81,6 +162,75 @@ export default function RecordForm() {
           onChange={(e: ChangeEvent<HTMLInputElement>) => setDuration(e.target.value)}
           placeholder="e.g. 60"
         />
+
+        {/* Workout Type Labels */}
+        <div>
+          <p
+            className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#6B6870] mb-2"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Workout Type
+          </p>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {workoutTypes.map((label) => (
+              <span
+                key={label}
+                className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium rounded-full border border-[#C8F04D] text-[#C8F04D]"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {label}
+                <button
+                  type="button"
+                  onClick={() => removeType(label)}
+                  className="opacity-60 hover:opacity-100 transition-opacity"
+                  aria-label={`Remove ${label}`}
+                >
+                  <X size={10} />
+                </button>
+              </span>
+            ))}
+          </div>
+          <input
+            type="text"
+            value={typeInput}
+            onChange={(e) => setTypeInput(e.target.value)}
+            onKeyDown={handleTypeKeyDown}
+            onBlur={() => { if (typeInput.trim()) addWorkoutType(typeInput) }}
+            placeholder="e.g. Strength, Cardio, Outdoor — press Enter to add"
+            className="w-full bg-transparent border-b-2 border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[14px] pb-2 placeholder-[#3A373C] transition-colors duration-150"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          />
+          <p
+            className="text-[11px] text-[#6B6870] mt-1"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Press Enter or comma to add a label. You can create any label you want.
+          </p>
+          {/* Previous label suggestions */}
+          {previousTypes.filter((t) => !workoutTypes.includes(t)).length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span
+                className="text-[11px] text-[#6B6870] shrink-0"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Your labels:
+              </span>
+              {previousTypes
+                .filter((t) => !workoutTypes.includes(t))
+                .map((label) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => addWorkoutType(label)}
+                    className="px-3 py-1 text-[11px] font-medium rounded-full border border-[#3A373C] text-[#A09EA3] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors duration-150"
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {label}
+                  </button>
+                ))}
+            </div>
+          )}
+        </div>
 
         <TextAreaDark
           label="Workout Log"

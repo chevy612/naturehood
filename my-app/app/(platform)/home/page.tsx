@@ -22,7 +22,7 @@ export default async function HomePage({
   // Step 1: fetch public training logs
   const { data: logs } = await supabase
     .from('training_logs')
-    .select('id, title, logged_date, duration_minutes, workout_log, user_id')
+    .select('id, title, logged_date, duration_minutes, workout_types, workout_log, user_id')
     .eq('is_public', true)
     .order('created_at', { ascending: false })
     .range(from, to)
@@ -35,12 +35,12 @@ export default async function HomePage({
   const { data: profilesData } = userIds.length > 0
     ? await supabase
         .from('profiles')
-        .select('id, name, username')
+        .select('id, name, username, avatar_url')
         .in('id', userIds)
     : { data: [] }
 
   const profileMap = Object.fromEntries(
-    (profilesData ?? []).map((p) => [p.id, { name: p.name, username: p.username }])
+    (profilesData ?? []).map((p) => [p.id, { name: p.name, username: p.username, avatar_url: p.avatar_url }])
   )
 
   // Merge profiles into logs

@@ -1,8 +1,10 @@
 // ─────────────────────────────────────────────
 // AVATAR
-// Initials fallback with lime ring.
-// Extracted from inline usage in account/page + [username]/page.
+// Shows a profile photo when photoUrl is provided,
+// falls back to initials with lime ring.
 // ─────────────────────────────────────────────
+
+import Image from 'next/image'
 
 const SIZES = {
   sm: { wrapper: 'w-8 h-8', text: 'text-[10px]' },
@@ -13,9 +15,11 @@ const SIZES = {
 export function Avatar({
   name,
   size = 'md',
+  photoUrl,
 }: {
   name: string
   size?: 'sm' | 'md' | 'lg'
+  photoUrl?: string | null
 }) {
   const initials = name
     .split(' ')
@@ -30,12 +34,23 @@ export function Avatar({
     <div
       className={`relative ${s.wrapper} rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#C8F04D] bg-[#C8F04D]`}
     >
-      <span
-        className={`${s.text} font-bold select-none text-[#141115]`}
-        style={{ fontFamily: "'Inter', sans-serif" }}
-      >
-        {initials}
-      </span>
+      {photoUrl ? (
+        <Image
+          src={photoUrl}
+          alt={name}
+          fill
+          className="object-cover"
+          sizes="96px"
+          unoptimized
+        />
+      ) : (
+        <span
+          className={`${s.text} font-bold select-none text-[#141115]`}
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          {initials}
+        </span>
+      )}
     </div>
   )
 }
