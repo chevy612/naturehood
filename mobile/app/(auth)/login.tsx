@@ -8,10 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
 } from 'react-native';
+import { router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
-import { colors, fonts } from '../../constants/tokens';
+import { colors, commonStyles } from '../../constants/tokens';
 
 export default function LoginScreen() {
   const [identifier, setIdentifier] = useState('');
@@ -28,7 +28,6 @@ export default function LoginScreen() {
     setLoading(true);
     setError('');
 
-    // Resolve username → email if needed
     let email = identifier.trim().toLowerCase();
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -58,25 +57,20 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.flex}
+      style={commonStyles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Wordmark */}
-        <View style={styles.header}>
-          <Text style={styles.wordmark}>NATUREHOOD</Text>
-          <Text style={styles.tagline}>Sign in to continue</Text>
+      <ScrollView contentContainerStyle={commonStyles.authScreen} keyboardShouldPersistTaps="handled">
+        <View style={commonStyles.authHeader}>
+          <Text style={commonStyles.authWordmark}>NATUREHOOD</Text>
+          <Text style={commonStyles.authTagline}>Sign in to continue</Text>
         </View>
 
-        {/* Form */}
-        <View style={styles.form}>
-          <View style={styles.field}>
-            <Text style={styles.label}>EMAIL OR USERNAME</Text>
+        <View style={commonStyles.authForm}>
+          <View style={commonStyles.authField}>
+            <Text style={commonStyles.sectionLabel}>EMAIL OR USERNAME</Text>
             <TextInput
-              style={styles.input}
+              style={commonStyles.authInput}
               placeholder="you@example.com or username"
               placeholderTextColor={colors.textMuted}
               value={identifier}
@@ -88,10 +82,10 @@ export default function LoginScreen() {
             />
           </View>
 
-          <View style={styles.field}>
-            <Text style={styles.label}>PASSWORD</Text>
+          <View style={commonStyles.authField}>
+            <Text style={commonStyles.sectionLabel}>PASSWORD</Text>
             <TextInput
-              style={styles.input}
+              style={commonStyles.authInput}
               placeholder="••••••••"
               placeholderTextColor={colors.textMuted}
               value={password}
@@ -102,10 +96,10 @@ export default function LoginScreen() {
             />
           </View>
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text style={commonStyles.textError}>{error}</Text> : null}
 
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            style={[commonStyles.authButton, loading && commonStyles.authButtonDisabled]}
             onPress={handleLogin}
             disabled={loading}
             activeOpacity={0.8}
@@ -113,83 +107,18 @@ export default function LoginScreen() {
             {loading ? (
               <ActivityIndicator color={colors.background} size="small" />
             ) : (
-              <Text style={styles.buttonText}>SIGN IN</Text>
+              <Text style={commonStyles.authButtonText}>SIGN IN</Text>
             )}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => router.push('/(auth)/signup')} activeOpacity={0.7}>
+            <Text style={commonStyles.authLink}>
+              Don't have an account?{' '}
+              <Text style={[commonStyles.authLink, commonStyles.authLinkAccent]}>Sign up</Text>
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 48,
-  },
-  header: {
-    marginBottom: 48,
-  },
-  wordmark: {
-    fontSize: 24,
-    fontFamily: fonts.heading,
-    color: colors.accent,
-    letterSpacing: 4,
-    marginBottom: 8,
-  },
-  tagline: {
-    fontSize: 13,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-  },
-  form: {
-    gap: 20,
-  },
-  field: {
-    gap: 6,
-  },
-  label: {
-    fontSize: 10,
-    fontFamily: fonts.headingM,
-    color: colors.accent,
-    letterSpacing: 3,
-  },
-  input: {
-    backgroundColor: colors.surface1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 14,
-    fontFamily: fonts.body,
-    color: colors.textPrimary,
-  },
-  error: {
-    fontSize: 12,
-    fontFamily: fonts.body,
-    color: colors.error,
-  },
-  button: {
-    backgroundColor: colors.accent,
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    fontSize: 13,
-    fontFamily: fonts.heading,
-    color: colors.background,
-    letterSpacing: 2,
-  },
-});

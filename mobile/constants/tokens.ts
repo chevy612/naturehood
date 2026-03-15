@@ -81,4 +81,68 @@ export const commonStyles = {
   divider:       { height: 1, backgroundColor: colors.border, marginVertical: spacing.sm },
   formContainer: { padding: spacing.md, gap: spacing.lg },
   pillsRow:      { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: 8 },
+
+  // ── Auth screens (login / signup steps) ───────────────────
+  authScreen: {
+    flexGrow: 1,
+    justifyContent: 'center' as const,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xxl,
+  },
+  authWordmark: {
+    fontSize: 24,
+    fontFamily: fonts.heading,
+    color: colors.accent,
+    letterSpacing: 4,
+    marginBottom: spacing.sm,
+  },
+  authTagline: {
+    fontSize: 13,
+    fontFamily: fonts.body,
+    color: colors.textMuted,
+  },
+  authHeader: { marginBottom: spacing.xxl },
+  authForm:   { gap: 20 },
+  authField:  { gap: 6 },
+  authInput: {
+    backgroundColor: colors.surface1,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+    fontFamily: fonts.body,
+    color: colors.textPrimary,
+  },
+  authButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center' as const,
+    marginTop: spacing.sm,
+  },
+  authButtonDisabled: { opacity: 0.6 },
+  authButtonText: {
+    fontSize: 13,
+    fontFamily: fonts.heading,
+    color: colors.background,
+    letterSpacing: 2,
+  },
+  authLink: {
+    fontSize: 13,
+    fontFamily: fonts.body,
+    color: colors.textMuted,
+    textAlign: 'center' as const,
+    marginTop: spacing.sm,
+  },
+  authLinkAccent: {
+    color: colors.accent,
+    fontFamily: fonts.bodyMed,
+  },
+  authHint: {
+    fontSize: 12,
+    fontFamily: fonts.body,
+    color: colors.textDisabled,
+  },
 };
