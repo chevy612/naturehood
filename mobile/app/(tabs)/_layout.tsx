@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Home, PlusCircle, Calendar, User } from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../constants/tokens';
 
 export default function TabsLayout() {
   return (
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#141115' }}>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -54,5 +56,6 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    </SafeAreaView>
   );
 }

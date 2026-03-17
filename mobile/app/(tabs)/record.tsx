@@ -215,7 +215,7 @@ export default function RecordScreen() {
             value={workoutLog}
             onChangeText={setWorkoutLog}
             multiline
-            numberOfLines={5}
+            numberOfLines={10}
             textAlignVertical="top"
           />
         </Field>
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   textarea: {
-    minHeight: 100,
+    minHeight: 200,
     paddingTop: 12,
   },
   tagInputRow: {

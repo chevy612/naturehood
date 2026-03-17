@@ -6,26 +6,29 @@ import {
   RefreshControl,
   ActivityIndicator,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
-import { colors, fonts, commonStyles } from '../../constants/tokens';
-import Avatar from '../../components/Avatar';
-import PillTag from '../../components/PillTag';
+import { colors, commonStyles } from '../../constants/tokens';
+import FeedCard from '../../components/FeedCard';
 
-type FeedItem = {
+type Log = {
   id: string;
   title: string;
   logged_date: string;
   duration_minutes: number | null;
   workout_log: string | null;
   workout_types: string[];
-  profiles: {
-    username: string;
-    name: string;
-    avatar_url: string | null;
-  } | null;
+  user_id: string;
 };
+
+type Profile = {
+  id: string;
+  name: string;
+  username: string;
+  avatar_url: string | null;
+};
+
+type FeedItem = Log & { profile: Profile | null };
 
 const PAGE_SIZE = 20;
 
@@ -40,17 +43,28 @@ export default function HomeScreen() {
     const from = pageIndex * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
-    const { data, error } = await supabase
+    // Step 1: fetch public training logs
+    const { data: logs } = await supabase
       .from('training_logs')
-      .select('id, title, logged_date, duration_minutes, workout_log, workout_types, profiles(username, name, avatar_url)')
+      .select('id, title, logged_date, duration_minutes, workout_types, workout_log, user_id')
       .eq('is_public', true)
-      .order('logged_date', { ascending: false })
+      .order('created_at', { ascending: false })
       .range(from, to);
 
-    if (error || !data) return;
+    const logList = logs ?? [];
 
-    setHasMore(data.length === PAGE_SIZE);
-    setItems(prev => replace ? (data as FeedItem[]) : [...prev, ...(data as FeedItem[])]);
+    // Step 2: fetch profiles for those users
+    // (FK goes through auth.users so PostgREST can't auto-join)
+    const userIds = [...new Set(logList.map(l => l.user_id))];
+    const { data: profilesData } = userIds.length > 0
+      ? await supabase.from('profiles').select('id, name, username, avatar_url').in('id', userIds)
+      : { data: [] };
+
+    const profileMap = Object.fromEntries((profilesData ?? []).map(p => [p.id, p]));
+    const combined: FeedItem[] = logList.map(l => ({ ...l, profile: profileMap[l.user_id] ?? null }));
+
+    setHasMore(logList.length === PAGE_SIZE);
+    setItems(prev => replace ? combined : [...prev, ...combined]);
   }, []);
 
   useEffect(() => {
@@ -105,45 +119,18 @@ export default function HomeScreen() {
         ListEmptyComponent={
           <Text style={styles.empty}>No workouts yet. Be the first to log one!</Text>
         }
-        renderItem={({ item }) => <FeedCard item={item} />}
+        renderItem={({ item }) => (
+          <FeedCard
+            id={item.id}
+            title={item.title}
+            logged_date={item.logged_date}
+            duration_minutes={item.duration_minutes}
+            workout_types={item.workout_types}
+            workout_log={item.workout_log}
+            profile={item.profile}
+          />
+        )}
       />
-    </View>
-  );
-}
-
-function FeedCard({ item }: { item: FeedItem }) {
-  const profile = item.profiles;
-  const date = new Date(item.logged_date).toLocaleDateString('en-AU', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-
-  return (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Avatar
-          name={profile?.name ?? profile?.username ?? '?'}
-          photoUrl={profile?.avatar_url ?? null}
-          size="sm"
-        />
-        <View style={styles.cardMeta}>
-          <Text style={styles.cardName}>{profile?.name ?? profile?.username}</Text>
-          <Text style={styles.cardDate}>{date}{item.duration_minutes ? ` · ${item.duration_minutes} min` : ''}</Text>
-        </View>
-      </View>
-
-      <Text style={styles.cardTitle}>{item.title}</Text>
-
-      {item.workout_types?.length > 0 && (
-        <View style={styles.tags}>
-          {item.workout_types.map(type => (
-            <PillTag key={type} label={type} />
-          ))}
-        </View>
-      )}
-
-      {item.workout_log ? (
-        <Text style={styles.cardLog} numberOfLines={3}>{item.workout_log}</Text>
-      ) : null}
     </View>
   );
 }
@@ -157,54 +144,10 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
-  card: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 16,
-    gap: 10,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  cardMeta: {
-    flex: 1,
-  },
-  cardName: {
-    fontSize: 13,
-    fontFamily: fonts.bodyMed,
-    color: colors.textPrimary,
-  },
-  cardDate: {
-    fontSize: 11,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-    marginTop: 1,
-  },
-  cardTitle: {
-    fontSize: 15,
-    fontFamily: fonts.heading,
-    color: colors.textPrimary,
-    letterSpacing: -0.2,
-  },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-  },
-  cardLog: {
-    fontSize: 12,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-    lineHeight: 18,
-  },
   empty: {
     textAlign: 'center',
     color: colors.textMuted,
-    fontFamily: fonts.body,
+    fontFamily: 'DMSans_400Regular',
     fontSize: 13,
     marginTop: 40,
   },
