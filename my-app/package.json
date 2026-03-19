@@ -10,6 +10,7 @@
     "build:prod": "NODE_ENV=production next build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@supabase/ssr": "^0.8.0",

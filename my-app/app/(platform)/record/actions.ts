@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import type { AiStructuredWorkout } from '@/lib/types'
 
 export async function getUserWorkoutTypes(): Promise<string[]> {
   const supabase = await createClient()
@@ -99,6 +100,29 @@ export async function updateWorkout(
     .eq('user_id', user.id)  // ownership check
 
   if (error) return { error: 'Failed to update workout. Please try again.' }
+
+  redirect('/account')
+}
+
+export async function updateAiStructured(
+  id: string,
+  structured: AiStructuredWorkout
+): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('training_logs')
+    .update({
+      ai_structured: structured,
+      ai_formatted_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) return { error: 'Failed to save workout report.' }
 
   redirect('/account')
 }

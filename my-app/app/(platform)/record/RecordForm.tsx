@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, ChangeEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { InputDark, TextAreaDark } from '@/app/components/ui/inputs'
 import { SuccessModal } from '@/app/components/ui/notification'
 import { X } from 'lucide-react'
@@ -23,6 +24,7 @@ interface Draft {
 
 export default function RecordForm({ previousTypes = [] }: { previousTypes?: string[] }) {
   const today = new Date().toISOString().split('T')[0]
+  const router = useRouter()
 
   const [title, setTitle] = useState('')
   const [loggedDate, setLoggedDate] = useState(today)
@@ -32,8 +34,10 @@ export default function RecordForm({ previousTypes = [] }: { previousTypes?: str
   const [workoutLog, setWorkoutLog] = useState('')
   const [isPublic, setIsPublic] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [aiSubmitting, setAiSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [aiFormatting, setAiFormatting] = useState(false)
   const [draftRestored, setDraftRestored] = useState(false)
   const isFirstRender = useRef(true)
 
@@ -107,9 +111,56 @@ export default function RecordForm({ previousTypes = [] }: { previousTypes?: str
       setError(result.error)
       setSubmitting(false)
     } else {
-      setShowSuccess(true)
       setSubmitting(false)
+      setShowSuccess(true)
+
+      // Fire AI formatting in the background — non-blocking
+      if (result.id && workoutLog.trim()) {
+        setAiFormatting(true)
+        fetch('/api/ai/format-workout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: result.id }),
+        }).finally(() => setAiFormatting(false))
+      }
     }
+  }
+
+  const handleLogWithAI = async () => {
+    if (!title.trim()) {
+      setError('Workout title is required.')
+      return
+    }
+    if (typeInput.trim()) addWorkoutType(typeInput)
+    setAiSubmitting(true)
+    setError(null)
+
+    const formData = new FormData()
+    formData.set('title', title)
+    formData.set('logged_date', loggedDate)
+    formData.set('duration_minutes', duration)
+    formData.set('workout_types', JSON.stringify(workoutTypes))
+    formData.set('workout_log', workoutLog)
+    formData.set('is_public', String(isPublic))
+
+    const result = await saveWorkout(formData)
+
+    if (result?.error) {
+      setError(result.error)
+      setAiSubmitting(false)
+      return
+    }
+
+    if (result.id && workoutLog.trim()) {
+      await fetch('/api/ai/format-workout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: result.id }),
+      })
+    }
+
+    localStorage.removeItem(DRAFT_KEY)
+    router.push(`/record/${result.id}/ai-report`)
   }
 
   const handleSuccessClose = () => {
@@ -275,21 +326,32 @@ export default function RecordForm({ previousTypes = [] }: { previousTypes?: str
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {submitting ? 'Saving…' : 'Log Workout'}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            disabled={submitting || aiSubmitting}
+            className="flex-1 bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {submitting ? 'Saving…' : 'Log Workout'}
+          </button>
+          <button
+            type="button"
+            onClick={handleLogWithAI}
+            disabled={submitting || aiSubmitting}
+            className="flex-1 border border-[#C8F04D] text-[#C8F04D] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#C8F04D]/10 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {aiSubmitting ? 'Analyzing…' : 'Log with AI'}
+          </button>
+        </div>
       </form>
 
       {showSuccess && (
         <SuccessModal
           variant="dark"
           title="Workout logged!"
-          message="Your workout has been saved. Keep it up."
+          message={aiFormatting ? 'Saved. AI is structuring your workout log…' : 'Your workout has been saved. Keep it up.'}
           onClose={handleSuccessClose}
         />
       )}
