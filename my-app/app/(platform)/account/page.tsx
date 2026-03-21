@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { PillTag } from '@/app/components/ui/tags'
 import { Avatar } from '@/app/components/platform/Avatar'
+import { WorkoutCard } from '@/app/components/platform/WorkoutCard'
 import DashboardEditForm from './DashboardEditForm'
 import { signOut } from './actions'
 
@@ -34,7 +35,7 @@ export default async function DashboardPage() {
       .single(),
     supabase
       .from('training_logs')
-      .select('id, title, logged_date, duration_minutes, workout_types, workout_log, is_public')
+      .select('id, title, logged_date, duration_minutes, workout_types, workout_log, is_public, ai_structured, ai_formatted_at')
       .eq('user_id', user.id)
       .order('logged_date', { ascending: false })
       .limit(20),
@@ -142,56 +143,7 @@ export default async function DashboardPage() {
               ) : (
                 <div className="flex flex-col divide-y divide-[#3A373C]">
                   {logs.map((log) => (
-                    <div key={log.id} className="py-4">
-                      <div className="flex items-start justify-between gap-4 mb-1">
-                        <p
-                          className="text-[14px] font-semibold text-white leading-snug"
-                          style={{ fontFamily: "'Inter', sans-serif" }}
-                        >
-                          {log.title}
-                        </p>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {!log.is_public && (
-                            <PillTag label="Private" variant="ghost-dark" size="sm" />
-                          )}
-                          {log.duration_minutes && (
-                            <PillTag label={`${log.duration_minutes} min`} variant="ghost-green" size="sm" />
-                          )}
-                          <Link
-                            href={`/record/${log.id}/edit`}
-                            className="text-[11px] font-medium text-[#6B6870] hover:text-[#C8F04D] transition-colors"
-                            style={{ fontFamily: "'DM Sans', sans-serif" }}
-                          >
-                            Edit
-                          </Link>
-                        </div>
-                      </div>
-                      <p
-                        className="text-[12px] text-[#6B6870] mb-2"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                      >
-                        {new Date(log.logged_date + 'T00:00:00').toLocaleDateString('en-US', {
-                          month: 'short', day: 'numeric', year: 'numeric'
-                        })}
-                      </p>
-                      {log.workout_types && log.workout_types.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {log.workout_types.map((type: string) => (
-                            <PillTag key={type} label={type} variant="ghost-green" size="sm" />
-                          ))}
-                        </div>
-                      )}
-                      {log.workout_log && (
-                        <p
-                          className="text-[12px] text-[#6B6870] leading-relaxed whitespace-pre-line"
-                          style={{ fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                          {log.workout_log.length > 200
-                            ? log.workout_log.slice(0, 200).trimEnd() + '…'
-                            : log.workout_log}
-                        </p>
-                      )}
-                    </div>
+                    <WorkoutCard key={log.id} log={log} variant="account" showEdit />
                   ))}
                 </div>
               )}

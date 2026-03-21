@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test:ai": "npx tsx scripts/test-ai-workout.ts",
     "lint": "eslint",
     "build:prod": "NODE_ENV=production next build"
   },
