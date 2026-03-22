@@ -24,6 +24,7 @@ export default async function HomePage({
     .from('training_logs')
     .select('id, title, logged_date, duration_minutes, workout_types, workout_log, user_id')
     .eq('is_public', true)
+    .eq('is_deleted', false)
     .order('created_at', { ascending: false })
     .range(from, to)
 

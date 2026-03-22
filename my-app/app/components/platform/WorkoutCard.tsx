@@ -31,7 +31,7 @@ export type WorkoutCardProfile = {
 
 type WorkoutCardProps = {
   log: WorkoutCardLog
-  variant?: 'feed' | 'account'
+  variant?: 'feed' | 'account' | 'grid'
   profile?: WorkoutCardProfile
   showEdit?: boolean
   showAnalyze?: boolean
@@ -187,6 +187,57 @@ function AnalyzeButton({ id }: { id: string }) {
 
 export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, showAnalyze = false }: WorkoutCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+
+  // ── Grid variant ──────────────────────────────────────────────────────────
+  if (variant === 'grid') {
+    const firstType = log.workout_types?.[0] ?? null
+    return (
+      <Link href={`/record/${log.id}`} className="block aspect-square">
+        <div className="h-full border border-[#3A373C] bg-[#1A1719] p-4 hover:border-[#C8F04D]/40 transition-colors flex flex-col justify-between">
+          {/* Top: AI indicator + type */}
+          <div className="flex items-center justify-between gap-1">
+            {firstType && (
+              <PillTag label={firstType} variant="ghost-green" size="sm" />
+            )}
+            {log.ai_structured && (
+              <span
+                className="text-[9px] font-semibold tracking-[0.25em] uppercase text-[#C8F04D]"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                AI
+              </span>
+            )}
+          </div>
+
+          {/* Middle: title */}
+          <p
+            className="text-[13px] font-semibold text-white leading-snug line-clamp-2 my-2"
+            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+          >
+            {log.title}
+          </p>
+
+          {/* Bottom: duration + date */}
+          <div className="flex flex-col gap-1">
+            {log.duration_minutes && (
+              <span
+                className="text-[11px] text-[#6B6870]"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {log.duration_minutes} min
+              </span>
+            )}
+            <span
+              className="text-[10px] text-[#6B6870]"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {formatDate(log.logged_date)}
+            </span>
+          </div>
+        </div>
+      </Link>
+    )
+  }
 
   // ── Feed variant ─────────────────────────────────────────────────────────
   if (variant === 'feed') {

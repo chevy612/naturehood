@@ -13,6 +13,7 @@ export async function getUserWorkoutTypes(): Promise<string[]> {
     .from('training_logs')
     .select('workout_types')
     .eq('user_id', user.id)
+    .eq('is_deleted', false)
     .not('workout_types', 'is', null)
 
   if (!data) return []
@@ -123,6 +124,22 @@ export async function updateAiStructured(
     .eq('user_id', user.id)
 
   if (error) return { error: 'Failed to save workout report.' }
+
+  redirect('/account')
+}
+
+export async function deleteWorkout(id: string): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('training_logs')
+    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) return { error: 'Failed to delete workout.' }
 
   redirect('/account')
 }

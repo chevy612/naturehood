@@ -33,6 +33,7 @@ export type TrainingLog = {
   like_count: number
   ai_structured: AiStructuredWorkout | null
   ai_formatted_at: string | null
+  is_deleted: boolean
   created_at: string
   updated_at: string
 }

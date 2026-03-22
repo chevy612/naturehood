@@ -189,7 +189,7 @@ const TESTS: TestCase[] = [
       if (r.exercises.length < 1) return { pass: false, reason: 'no exercises' }
       const ex = r.exercises[0]
       if (ex.weight_kg !== undefined) return { pass: false, reason: `weight_kg should be omitted for bodyweight, got ${ex.weight_kg}` }
-      const notesOrName = (ex.notes ?? '' + ex.name ?? '').toLowerCase()
+      const notesOrName = ((ex.notes ?? '') + (ex.name ?? '')).toLowerCase()
       if (!notesOrName.includes('body') && !notesOrName.includes('bw') && !notesOrName.includes('gravity')) {
         return { pass: false, reason: `bodyweight not noted: name="${ex.name}" notes="${ex.notes}"` }
       }
