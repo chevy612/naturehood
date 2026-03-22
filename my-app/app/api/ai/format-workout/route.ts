@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { formatWorkoutWithAI } from '@/lib/services/ai-workout'
 
 const CORS_HEADERS = {
@@ -13,14 +14,22 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient()
-
   // Auth check — support both cookie auth (web) and Bearer token auth (mobile)
   const authHeader = req.headers.get('Authorization')
   const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-  const { data: { user } } = bearerToken
-    ? await supabase.auth.getUser(bearerToken)
-    : await supabase.auth.getUser()
+
+  // For mobile (Bearer token): create a client with the token in the Authorization header
+  // so that RLS policies resolve auth.uid() correctly on every DB query.
+  // For web (cookie): use the standard SSR client.
+  const supabase = bearerToken
+    ? createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { global: { headers: { Authorization: `Bearer ${bearerToken}` } } }
+      )
+    : await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: CORS_HEADERS })
   }
