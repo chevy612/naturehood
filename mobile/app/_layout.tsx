@@ -49,7 +49,7 @@ export default function RootLayout() {
     SplashScreen.hideAsync();
 
     if (session) {
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/home');
     } else {
       router.replace('/(auth)/login');
     }

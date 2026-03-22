@@ -9,21 +9,9 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { MapPin, Clock } from 'lucide-react-native';
-import { supabase } from '../../lib/supabase';
-import { colors, fonts } from '../../constants/tokens';
-
-type Event = {
-  id: string;
-  title: string;
-  description: string | null;
-  location: string | null;
-  event_date: string;
-  event_time: string | null;
-  max_capacity: number | null;
-  confirmed_count: number;
-  user_rsvp: boolean;
-};
+import { MapPin } from 'lucide-react-native';
+import { colors, fonts } from '../../../constants/tokens';
+import { fetchEvents, rsvpEvent, type Event } from '../../../lib/actions/events';
 
 export default function EventsScreen() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -31,72 +19,32 @@ export default function EventsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [rsvping, setRsvping] = useState<string | null>(null);
 
-  const fetchEvents = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    const today = new Date().toISOString().split('T')[0];
-
-    const { data: eventsData } = await supabase
-      .from('events')
-      .select('id, title, description, location, event_date, event_time, max_capacity')
-      .eq('status', 'published')
-      .gte('event_date', today)
-      .order('event_date', { ascending: true });
-
-    if (!eventsData) return;
-
-    const { data: signupsData } = await supabase
-      .from('event_signups')
-      .select('event_id, user_id, status')
-      .in('event_id', eventsData.map(e => e.id))
-      .eq('status', 'confirmed');
-
-    const enriched: Event[] = eventsData.map(ev => {
-      const signups = signupsData?.filter(s => s.event_id === ev.id) ?? [];
-      return {
-        ...ev,
-        confirmed_count: signups.length,
-        user_rsvp: signups.some(s => s.user_id === user?.id),
-      };
-    });
-
-    setEvents(enriched);
+  const loadEvents = useCallback(async () => {
+    const data = await fetchEvents();
+    setEvents(data);
   }, []);
 
   useEffect(() => {
-    fetchEvents().finally(() => setLoading(false));
-  }, [fetchEvents]);
+    loadEvents().finally(() => setLoading(false));
+  }, [loadEvents]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchEvents();
+    await loadEvents();
     setRefreshing(false);
-  }, [fetchEvents]);
+  }, [loadEvents]);
 
   async function handleRsvp(event: Event) {
     setRsvping(event.id);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setRsvping(null); return; }
+    const { error } = await rsvpEvent(event);
 
-    if (event.user_rsvp) {
-      const { error } = await supabase
-        .from('event_signups')
-        .update({ status: 'cancelled' })
-        .eq('event_id', event.id)
-        .eq('user_id', user.id);
-      if (error) Alert.alert('Error', 'Could not cancel RSVP.');
-    } else {
-      if (event.max_capacity !== null && event.confirmed_count >= event.max_capacity) {
-        Alert.alert('Event Full', 'This event has reached capacity.');
-        setRsvping(null);
-        return;
-      }
-      const { error } = await supabase
-        .from('event_signups')
-        .upsert({ event_id: event.id, user_id: user.id, status: 'confirmed' });
-      if (error) Alert.alert('Error', 'Could not RSVP.');
+    if (error === 'full') {
+      Alert.alert('Event Full', 'This event has reached capacity.');
+    } else if (error) {
+      Alert.alert('Error', error);
     }
 
-    await fetchEvents();
+    await loadEvents();
     setRsvping(null);
   }
 

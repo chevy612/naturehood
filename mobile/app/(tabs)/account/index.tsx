@@ -15,23 +15,7 @@ import { colors, fonts, spacing, commonStyles } from '../../../constants/tokens'
 import Avatar from '../../../components/Avatar';
 import SectionLabel from '../../../components/ui/SectionLabel';
 import WorkoutCard from '../../../components/workout/WorkoutCard';
-
-type Profile = {
-  id: string;
-  username: string;
-  name: string;
-  bio: string | null;
-  role: 'athlete' | 'brand' | 'other';
-  avatar_url: string | null;
-};
-
-type WorkoutSummary = {
-  id: string;
-  title: string;
-  logged_date: string;
-  duration_minutes: number | null;
-  workout_types: string[];
-};
+import { fetchProfile, fetchWorkouts, type Profile, type WorkoutSummary } from '../../../lib/actions/account';
 
 export default function AccountScreen() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -43,29 +27,19 @@ export default function AccountScreen() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const [profileRes, workoutsRes] = await Promise.all([
-      supabase
-        .from('profiles')
-        .select('id, username, name, bio, role, avatar_url')
-        .eq('id', user.id)
-        .single(),
-      supabase
-        .from('training_logs')
-        .select('id, title, logged_date, duration_minutes, workout_types')
-        .eq('user_id', user.id)
-        .order('logged_date', { ascending: false })
-        .limit(50),
+    const [p, w] = await Promise.all([
+      fetchProfile(user.id),
+      fetchWorkouts(user.id),
     ]);
 
-    if (profileRes.data) setProfile(profileRes.data);
-    if (workoutsRes.data) setWorkouts(workoutsRes.data);
+    if (p) setProfile(p);
+    setWorkouts(w);
   }
 
   useEffect(() => {
     loadData().finally(() => setLoading(false));
   }, []);
 
-  // Reload profile when returning from edit-profile
   useFocusEffect(
     useCallback(() => {
       loadData();
@@ -108,12 +82,10 @@ export default function AccountScreen() {
       }
       ListHeaderComponent={
         <View>
-          {/* Page header */}
           <View style={styles.pageHeader}>
             <Text style={styles.usernameHeader}>@{profile.username}</Text>
           </View>
 
-          {/* Profile hero */}
           <View style={styles.hero}>
             <Avatar name={profile.name ?? profile.username} photoUrl={profile.avatar_url} size="lg" />
             <View style={styles.stats}>
@@ -122,18 +94,14 @@ export default function AccountScreen() {
             </View>
           </View>
 
-          {/* Profile info */}
           <View style={styles.profileInfo}>
             <Text style={styles.displayName}>{profile.name}</Text>
             <View style={styles.roleBadge}>
               <Text style={styles.roleText}>{roleLabel}</Text>
             </View>
-            {profile.bio ? (
-              <Text style={styles.bio}>{profile.bio}</Text>
-            ) : null}
+            {profile.bio ? <Text style={styles.bio}>{profile.bio}</Text> : null}
           </View>
 
-          {/* Action buttons */}
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={[styles.actionBtn, styles.actionBtnHalf]}
@@ -151,7 +119,6 @@ export default function AccountScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Workouts section label */}
           <View style={styles.sectionHeader}>
             <SectionLabel text="Workouts" />
           </View>
@@ -186,32 +153,12 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     gap: spacing.xl,
   },
-  stats: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statNumber: {
-    fontSize: 22,
-    fontFamily: fonts.heading,
-    color: colors.textPrimary,
-  },
-  statLabel: {
-    fontSize: 12,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
+  stats: { alignItems: 'center', flex: 1 },
+  statNumber: { fontSize: 22, fontFamily: fonts.heading, color: colors.textPrimary },
+  statLabel: { fontSize: 12, fontFamily: fonts.body, color: colors.textMuted, marginTop: 2 },
 
-  profileInfo: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    gap: 6,
-  },
-  displayName: {
-    fontSize: 18,
-    fontFamily: fonts.heading,
-    color: colors.textPrimary,
-  },
+  profileInfo: { paddingHorizontal: spacing.md, paddingTop: spacing.sm, gap: 6 },
+  displayName: { fontSize: 18, fontFamily: fonts.heading, color: colors.textPrimary },
   roleBadge: {
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
@@ -221,18 +168,8 @@ const styles = StyleSheet.create({
     borderColor: colors.accent + '40',
     backgroundColor: colors.accent + '15',
   },
-  roleText: {
-    fontSize: 10,
-    fontFamily: fonts.headingM,
-    color: colors.accent,
-    letterSpacing: 1,
-  },
-  bio: {
-    fontSize: 13,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-    lineHeight: 20,
-  },
+  roleText: { fontSize: 10, fontFamily: fonts.headingM, color: colors.accent, letterSpacing: 1 },
+  bio: { fontSize: 13, fontFamily: fonts.body, color: colors.textMuted, lineHeight: 20 },
 
   actionRow: {
     flexDirection: 'row',
@@ -241,19 +178,9 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     paddingBottom: spacing.md,
   },
-  actionBtn: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
+  actionBtn: { borderWidth: 1, borderColor: colors.border, borderRadius: 8, paddingVertical: 10, alignItems: 'center' },
   actionBtnHalf: { flex: 1 },
-  actionBtnText: {
-    fontSize: 13,
-    fontFamily: fonts.bodyMed,
-    color: colors.textPrimary,
-  },
+  actionBtnText: { fontSize: 13, fontFamily: fonts.bodyMed, color: colors.textPrimary },
 
   sectionHeader: {
     paddingHorizontal: spacing.md,
@@ -262,7 +189,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-
   emptyText: {
     fontSize: 13,
     fontFamily: fonts.body,

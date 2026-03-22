@@ -11,11 +11,16 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from '../../lib/supabase';
-import { colors, fonts, commonStyles } from '../../constants/tokens';
-import PillTag from '../../components/PillTag';
+import { supabase } from '../../../lib/supabase';
+import { colors, fonts, commonStyles } from '../../../constants/tokens';
+import PillTag from '../../../components/PillTag';
+import { saveWorkout, fetchRecentTypes } from '../../../lib/actions/record';
 
 const DRAFT_KEY = 'naturehood_draft_workout';
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
 
 export default function RecordScreen() {
   const [title, setTitle] = useState('');
@@ -29,7 +34,6 @@ export default function RecordScreen() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Restore draft on mount
   useEffect(() => {
     AsyncStorage.getItem(DRAFT_KEY).then(raw => {
       if (!raw) return;
@@ -50,28 +54,20 @@ export default function RecordScreen() {
       ]);
     });
 
-    loadPreviousTypes();
+    loadTypes();
   }, []);
 
-  // Auto-save draft
   useEffect(() => {
     if (!title && !workoutLog && workoutTypes.length === 0) return;
     const draft = { title, loggedDate, duration, workoutLog, isPublic, workoutTypes };
     AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
   }, [title, loggedDate, duration, workoutLog, isPublic, workoutTypes]);
 
-  async function loadPreviousTypes() {
+  async function loadTypes() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const { data } = await supabase
-      .from('training_logs')
-      .select('workout_types')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(20);
-    if (!data) return;
-    const all = data.flatMap(r => r.workout_types ?? []);
-    setPreviousTypes([...new Set(all)]);
+    const types = await fetchRecentTypes(user.id);
+    setPreviousTypes(types);
   }
 
   function addType(type: string) {
@@ -94,7 +90,7 @@ export default function RecordScreen() {
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
 
-    const { error } = await supabase.from('training_logs').insert({
+    const { error } = await saveWorkout({
       user_id: user!.id,
       title: title.trim(),
       logged_date: loggedDate,
@@ -120,7 +116,7 @@ export default function RecordScreen() {
     setIsPublic(true);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
-    loadPreviousTypes();
+    loadTypes();
   }
 
   return (
@@ -253,18 +249,10 @@ export default function RecordScreen() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <View style={{ gap: 6 }}>
-      <Text style={fieldStyles.label}>{label}</Text>
+      <Text style={commonStyles.sectionLabel}>{label}</Text>
       {children}
     </View>
   );
-}
-
-const fieldStyles = StyleSheet.create({
-  label: commonStyles.sectionLabel,
-});
-
-function today() {
-  return new Date().toISOString().split('T')[0];
 }
 
 const styles = StyleSheet.create({
@@ -286,10 +274,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodyMed,
     fontSize: 13,
   },
-  form: {
-    padding: 20,
-    gap: 20,
-  },
+  form: { padding: 20, gap: 20 },
   input: {
     backgroundColor: colors.surface1,
     borderWidth: 1,
@@ -301,14 +286,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     color: colors.textPrimary,
   },
-  textarea: {
-    minHeight: 200,
-    paddingTop: 12,
-  },
-  tagInputRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+  textarea: { minHeight: 200, paddingTop: 12 },
+  tagInputRow: { flexDirection: 'row', gap: 8 },
   addBtn: {
     backgroundColor: colors.surface2,
     borderWidth: 1,
@@ -318,26 +297,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     justifyContent: 'center',
   },
-  addBtnText: {
-    color: colors.textPrimary,
-    fontFamily: fonts.bodyMed,
-    fontSize: 13,
-  },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginTop: 6,
-  },
-  suggestions: {
-    marginTop: 8,
-    gap: 6,
-  },
-  suggestLabel: {
-    fontSize: 11,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-  },
+  addBtnText: { color: colors.textPrimary, fontFamily: fonts.bodyMed, fontSize: 13 },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
+  suggestions: { marginTop: 8, gap: 6 },
+  suggestLabel: { fontSize: 11, fontFamily: fonts.body, color: colors.textMuted },
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -348,17 +311,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 14,
   },
-  toggleLabel: {
-    fontSize: 13,
-    fontFamily: fonts.bodyMed,
-    color: colors.textPrimary,
-  },
-  toggleSub: {
-    fontSize: 11,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
+  toggleLabel: { fontSize: 13, fontFamily: fonts.bodyMed, color: colors.textPrimary },
+  toggleSub: { fontSize: 11, fontFamily: fonts.body, color: colors.textMuted, marginTop: 2 },
   button: {
     backgroundColor: colors.accent,
     borderRadius: 8,
@@ -366,13 +320,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4,
   },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    fontSize: 13,
-    fontFamily: fonts.heading,
-    color: colors.background,
-    letterSpacing: 2,
-  },
+  buttonDisabled: { opacity: 0.6 },
+  buttonText: { fontSize: 13, fontFamily: fonts.heading, color: colors.background, letterSpacing: 2 },
 });

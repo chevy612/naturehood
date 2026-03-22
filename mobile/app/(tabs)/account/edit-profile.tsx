@@ -16,14 +16,7 @@ import { colors, fonts, spacing, commonStyles } from '../../../constants/tokens'
 import Avatar from '../../../components/Avatar';
 import InputField from '../../../components/ui/InputField';
 import Button from '../../../components/ui/Button';
-
-type Profile = {
-  id: string;
-  username: string;
-  name: string;
-  bio: string | null;
-  avatar_url: string | null;
-};
+import { fetchProfile, updateProfile, uploadAvatar, signOut, type Profile } from '../../../lib/actions/account';
 
 export default function EditProfileScreen() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -41,13 +34,7 @@ export default function EditProfileScreen() {
   async function loadProfile() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, username, name, bio, avatar_url')
-      .eq('id', user.id)
-      .single();
-
+    const data = await fetchProfile(user.id);
     if (data) {
       setProfile(data);
       setName(data.name ?? '');
@@ -72,31 +59,15 @@ export default function EditProfileScreen() {
 
     if (result.canceled || !result.assets[0]) return;
 
-    const asset = result.assets[0];
     setUploading(true);
-
-    const ext = asset.uri.split('.').pop() ?? 'jpg';
-    const path = `${profile!.id}/avatar.${ext}`;
-
-    const response = await fetch(asset.uri);
-    const blob = await response.blob();
-
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(path, blob, { upsert: true, contentType: `image/${ext}` });
-
-    if (uploadError) {
-      Alert.alert('Upload failed', uploadError.message);
-      setUploading(false);
-      return;
-    }
-
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
-    const avatarUrl = `${publicUrl}?t=${Date.now()}`;
-
-    await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', profile!.id);
-    setProfile(prev => prev ? { ...prev, avatar_url: avatarUrl } : prev);
+    const { avatarUrl, error } = await uploadAvatar(profile!.id, result.assets[0].uri);
     setUploading(false);
+
+    if (error) {
+      Alert.alert('Upload failed', error);
+    } else if (avatarUrl) {
+      setProfile(prev => prev ? { ...prev, avatar_url: avatarUrl } : prev);
+    }
   }
 
   async function handleSave() {
@@ -111,17 +82,16 @@ export default function EditProfileScreen() {
     setSaving(true);
     setMessage(null);
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({ name: name.trim(), username: usernameClean, bio: bio.trim() || null })
-      .eq('id', profile.id);
+    const { error } = await updateProfile(profile.id, {
+      name: name.trim(),
+      username: usernameClean,
+      bio: bio.trim() || null,
+    });
 
     setSaving(false);
 
-    if (error?.message?.includes('unique')) {
-      setMessage({ type: 'error', text: 'Username is already taken.' });
-    } else if (error) {
-      setMessage({ type: 'error', text: 'Failed to save. Please try again.' });
+    if (error) {
+      setMessage({ type: 'error', text: error });
     } else {
       setMessage({ type: 'success', text: 'Profile updated.' });
       setProfile(prev => prev ? { ...prev, name: name.trim(), username: usernameClean, bio: bio.trim() || null } : prev);
@@ -132,7 +102,7 @@ export default function EditProfileScreen() {
   async function handleSignOut() {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: () => supabase.auth.signOut() },
+      { text: 'Sign Out', style: 'destructive', onPress: signOut },
     ]);
   }
 
@@ -146,7 +116,6 @@ export default function EditProfileScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
           <Text style={styles.backIcon}>‹</Text>
@@ -155,7 +124,6 @@ export default function EditProfileScreen() {
         <View style={styles.backBtn} />
       </View>
 
-      {/* Avatar */}
       <View style={styles.avatarSection}>
         <TouchableOpacity onPress={handleAvatarPick} disabled={uploading} activeOpacity={0.8} style={styles.avatarWrapper}>
           {uploading ? (
@@ -172,7 +140,6 @@ export default function EditProfileScreen() {
         <Text style={styles.avatarHint}>Tap to change photo</Text>
       </View>
 
-      {/* Form */}
       <View style={styles.form}>
         {message && (
           <Text style={message.type === 'success' ? styles.success : styles.error}>
@@ -180,13 +147,7 @@ export default function EditProfileScreen() {
           </Text>
         )}
 
-        <InputField
-          label="Display Name"
-          value={name}
-          onChangeText={setName}
-          placeholder="Your full name"
-        />
-
+        <InputField label="Display Name" value={name} onChangeText={setName} placeholder="Your full name" />
         <InputField
           label="Username"
           value={username}
@@ -195,7 +156,6 @@ export default function EditProfileScreen() {
           autoCapitalize="none"
           autoCorrect={false}
         />
-
         <InputField
           label="Bio"
           value={bio}
@@ -253,9 +213,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.background,
   },
-  avatarHint: {
-    fontSize: 12,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-  },
+  avatarHint: { fontSize: 12, fontFamily: fonts.body, color: colors.textMuted },
 });

@@ -2,12 +2,18 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors, fonts, commonStyles } from '../../constants/tokens';
 import PillTag from '../PillTag';
 
+type AiStructuredWorkout = {
+  exercises: { name: string }[];
+  estimated_intensity?: 'low' | 'moderate' | 'high';
+};
+
 type Props = {
   id: string;
   title: string;
   logged_date: string;
   duration_minutes: number | null;
   workout_types: string[];
+  ai_structured?: AiStructuredWorkout | null;
   onPress: (id: string) => void;
 };
 
@@ -22,6 +28,7 @@ export default function WorkoutCard({
   logged_date,
   duration_minutes,
   workout_types,
+  ai_structured,
   onPress,
 }: Props) {
   return (
@@ -42,6 +49,20 @@ export default function WorkoutCard({
           {workout_types.map((type) => (
             <PillTag key={type} label={type} variant="ghost-green" />
           ))}
+        </View>
+      )}
+
+      {ai_structured && (
+        <View style={styles.aiRow}>
+          <Text style={styles.aiExerciseCount}>
+            {ai_structured.exercises.length} exercise{ai_structured.exercises.length !== 1 ? 's' : ''}
+          </Text>
+          {ai_structured.estimated_intensity && (
+            <PillTag
+              label={`${ai_structured.estimated_intensity} intensity`}
+              variant={ai_structured.estimated_intensity === 'high' ? 'ghost-green' : 'ghost-dark'}
+            />
+          )}
         </View>
       )}
     </TouchableOpacity>
@@ -86,4 +107,18 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   types: { ...commonStyles.pillsRow, gap: 6, marginTop: 2 },
+  aiRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 2,
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  aiExerciseCount: {
+    fontSize: 11,
+    fontFamily: fonts.body,
+    color: colors.textMuted,
+  },
 });
