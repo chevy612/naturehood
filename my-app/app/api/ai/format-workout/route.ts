@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   // Fetch the workout — ownership enforced via RLS (user_id = auth.uid())
   const { data: log, error: fetchError } = await supabase
     .from('training_logs')
-    .select('id, workout_log, user_id')
+    .select('id, workout_log, title, workout_types, duration_minutes, user_id')
     .eq('id', id)
     .eq('user_id', user.id)
     .single()
@@ -57,7 +57,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No workout log text to format' }, { status: 422, headers: CORS_HEADERS })
   }
 
-  const structured = await formatWorkoutWithAI(log.workout_log)
+  const structured = await formatWorkoutWithAI({
+    workout_log: log.workout_log,
+    title: log.title ?? undefined,
+    workout_types: log.workout_types ?? [],
+    duration_minutes: log.duration_minutes ?? undefined,
+  })
 
   if (!structured) {
     return NextResponse.json({ error: 'AI formatting failed' }, { status: 500, headers: CORS_HEADERS })
