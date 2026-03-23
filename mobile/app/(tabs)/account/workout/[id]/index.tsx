@@ -11,9 +11,11 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../../../../lib/supabase';
 import { colors, fonts, spacing, commonStyles } from '../../../../../constants/tokens';
 import PillTag from '../../../../../components/PillTag';
+import SessionResult from '../../../../../components/workout/SessionResult';
 import {
   fetchWorkout,
-  analyzeWithAI,
+  analyzeWorkoutWithAI,
+  isAthleteSessionLog,
   type WorkoutDetail,
   type AiStructuredExercise,
 } from '../../../../../lib/actions/workout-detail';
@@ -59,7 +61,7 @@ export default function WorkoutDetailScreen() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error('Not authenticated');
 
-      const { error } = await analyzeWithAI(workout.id, session.access_token);
+      const { error } = await analyzeWorkoutWithAI(workout.id, session.access_token);
       if (error) throw new Error(error);
       await load();
     } catch (err: any) {
@@ -129,33 +131,42 @@ export default function WorkoutDetailScreen() {
           <View style={styles.aiCard}>
             <View style={styles.aiHeader}>
               <Text style={styles.aiLabel}>AI ANALYSIS</Text>
-              {ai.estimated_intensity && (
-                <Text style={[
-                  styles.aiIntensity,
-                  { color: ai.estimated_intensity === 'high' ? colors.accent : colors.textDisabled },
-                ]}>
-                  {ai.estimated_intensity} intensity
-                </Text>
-              )}
             </View>
 
-            {ai.summary ? <Text style={styles.aiSummary}>{ai.summary}</Text> : null}
-
-            {ai.exercises.length > 0 && (
-              <View>
-                {ai.exercises.map((ex, i) => {
-                  const metrics = formatExerciseMetrics(ex);
-                  return (
-                    <View key={i} style={styles.exerciseRow}>
-                      <Text style={styles.exerciseName}>{ex.name}</Text>
-                      <View style={styles.exerciseRight}>
-                        {metrics ? <Text style={styles.exerciseMetrics}>{metrics}</Text> : null}
-                        {ex.notes ? <Text style={styles.exerciseNotes}>{ex.notes}</Text> : null}
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
+            {/* v2 — AthleteSessionLog */}
+            {isAthleteSessionLog(ai) ? (
+              <SessionResult session={ai} />
+            ) : (
+              /* v1 legacy fallback — AiStructuredWorkout */
+              <>
+                {'estimated_intensity' in ai && ai.estimated_intensity && (
+                  <Text style={[
+                    styles.aiIntensity,
+                    { color: ai.estimated_intensity === 'high' ? colors.accent : colors.textDisabled },
+                  ]}>
+                    {ai.estimated_intensity} intensity
+                  </Text>
+                )}
+                {'summary' in ai && ai.summary ? (
+                  <Text style={styles.aiSummary}>{ai.summary as string}</Text>
+                ) : null}
+                {'exercises' in ai && Array.isArray(ai.exercises) && ai.exercises.length > 0 && (
+                  <View>
+                    {(ai.exercises as AiStructuredExercise[]).map((ex, i) => {
+                      const metrics = formatExerciseMetrics(ex);
+                      return (
+                        <View key={i} style={styles.exerciseRow}>
+                          <Text style={styles.exerciseName}>{ex.name}</Text>
+                          <View style={styles.exerciseRight}>
+                            {metrics ? <Text style={styles.exerciseMetrics}>{metrics}</Text> : null}
+                            {ex.notes ? <Text style={styles.exerciseNotes}>{ex.notes}</Text> : null}
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                )}
+              </>
             )}
 
             <TouchableOpacity

@@ -28,21 +28,21 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="home/index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="record"
+        name="record/index"
         options={{
           title: 'Record',
           tabBarIcon: ({ color, size }) => <PlusCircle size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="events"
+        name="events/index"
         options={{
           title: 'Events',
           tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
