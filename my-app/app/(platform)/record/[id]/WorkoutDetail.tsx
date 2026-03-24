@@ -4,7 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { deleteWorkout } from '../actions'
-import type { AiStructuredWorkout, AiStructuredExercise } from '@/lib/types'
+import type { AiStructuredWorkout, AiStructuredExercise, AthleteSessionLog } from '@/lib/types'
+import { SessionResult } from '@/app/components/platform/SessionResult'
+
+function isV2(ai: AiStructuredWorkout | AthleteSessionLog): ai is AthleteSessionLog {
+  const s = (ai as AthleteSessionLog).summary
+  return s !== null && s !== undefined && typeof s === 'object'
+}
 
 // ─────────────────────────────────────────────
 // HELPERS
@@ -108,7 +114,7 @@ function AiSection({ ai }: { ai: AiStructuredWorkout }) {
       )}
 
       {/* Exercises */}
-      {ai.exercises.length > 0 && (
+      {(ai.exercises ?? []).length > 0 && (
         <div className="space-y-2">
           {ai.exercises.map((ex, i) => {
             const metrics = formatExerciseMetrics(ex)
@@ -154,11 +160,10 @@ function AiSection({ ai }: { ai: AiStructuredWorkout }) {
 type Props = {
   id: string
   hasWorkoutLog: boolean
-  aiStructured: AiStructuredWorkout | null
+  aiStructured: AiStructuredWorkout | AthleteSessionLog | null
 }
 
 export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured }: Props) {
-  const router = useRouter()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -178,7 +183,9 @@ export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured }: Props
     <div className="space-y-6">
       {/* AI section */}
       {aiStructured ? (
-        <AiSection ai={aiStructured} />
+        isV2(aiStructured)
+          ? <SessionResult session={aiStructured} />
+          : <AiSection ai={aiStructured} />
       ) : hasWorkoutLog ? (
         <div>
           <p

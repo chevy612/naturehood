@@ -102,7 +102,7 @@ function ExerciseCard({ ex }: { ex: AthleteExerciseLog }) {
         </p>
       )}
       <div className="mt-1 space-y-0">
-        {ex.sets.map((s) => <SetRow key={s.set_index} set={s} />)}
+        {ex.sets.map((s, i) => <SetRow key={i} set={s} />)}
       </div>
     </div>
   )
@@ -111,8 +111,8 @@ function ExerciseCard({ ex }: { ex: AthleteExerciseLog }) {
 function StrengthBlocks({ blocks }: { blocks: AthleteBlock[] }) {
   return (
     <div className="space-y-6">
-      {blocks.map((block) => (
-        <div key={block.block_index}>
+      {blocks.map((block, i) => (
+        <div key={i}>
           {block.block_name && (
             <p
               className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
@@ -127,8 +127,8 @@ function StrengthBlocks({ blocks }: { blocks: AthleteBlock[] }) {
               )}
             </p>
           )}
-          {block.exercises.map((ex) => (
-            <ExerciseCard key={ex.exercise_index} ex={ex} />
+          {block.exercises.map((ex, i) => (
+            <ExerciseCard key={i} ex={ex} />
           ))}
         </div>
       ))}
@@ -145,8 +145,8 @@ function SprintEfforts({ sprint }: { sprint: SprintSession }) {
           {sprint.footwear && <> · Footwear: <span className="text-[#A09EA3]">{sprint.footwear}</span></>}
         </p>
       )}
-      {sprint.efforts.map((effort) => (
-        <div key={effort.effort_index} className="border border-[#3A373C] bg-[#1A1719] p-4">
+      {sprint.efforts.map((effort, i) => (
+        <div key={i} className="border border-[#3A373C] bg-[#1A1719] p-4">
           <div className="flex items-center gap-2 mb-3">
             <span
               className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
@@ -162,8 +162,8 @@ function SprintEfforts({ sprint }: { sprint: SprintSession }) {
             )}
           </div>
           <div className="space-y-1">
-            {effort.reps.map((rep) => (
-              <div key={rep.rep_index} className="flex items-center justify-between text-[12px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {effort.reps.map((rep, i) => (
+              <div key={i} className="flex items-center justify-between text-[12px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 <span className="text-[#6B6870]">Rep {rep.rep_index + 1}</span>
                 <div className="flex items-center gap-3">
                   {rep.time_seconds != null && (
@@ -330,7 +330,7 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
           <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>
             Exercises
           </p>
-          {physio.exercises.map((ex) => <ExerciseCard key={ex.exercise_index} ex={ex} />)}
+          {physio.exercises.map((ex, i) => <ExerciseCard key={i} ex={ex} />)}
         </div>
       )}
 
