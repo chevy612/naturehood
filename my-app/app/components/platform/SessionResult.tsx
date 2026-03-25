@@ -53,64 +53,165 @@ function intensityColor(intensity: PerceivedIntensity | null | undefined): strin
 
 function SetRow({ set }: { set: AthleteSetLog }) {
   const weight = fmtWeight(set)
-  const parts: string[] = []
-  if (set.reps != null) parts.push(`${set.reps} reps`)
-  else if (set.duration_seconds != null) parts.push(`${set.duration_seconds}s`)
-  if (weight) parts.push(weight)
-  if (set.distance_m != null) parts.push(`${set.distance_m}m`)
-  if (set.effort_percent != null) parts.push(`${set.effort_percent}%`)
+
+  // Primary performance metric — priority: reps → duration → distance
+  const metric =
+    set.reps != null ? `${set.reps} reps`
+    : set.duration_seconds != null ? `${set.duration_seconds}s`
+    : set.distance_m != null ? `${set.distance_m} m`
+    : null
 
   return (
-    <div className="flex items-center justify-between py-1 text-[12px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-      <span className="text-[#6B6870]">
-        Set {set.set_index + 1}{set.is_warmup ? ' (WU)' : ''}{set.is_failure ? ' ✗' : ''}
-      </span>
-      <span className="text-[#A09EA3]">{parts.join(' · ') || '—'}</span>
-      {set.notes && <span className="text-[#6B6870] italic ml-2">{set.notes}</span>}
+    <div className="border-t border-[#2A272C]">
+      {/* Main row */}
+      <div className="flex items-center gap-3 px-4 py-2.5">
+        {/* Set number */}
+        <span
+          className="w-5 shrink-0 text-[11px] text-[#6B6870] tabular-nums"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {set.set_index != null ? set.set_index + 1 : '—'}
+        </span>
+
+        {/* Status badges */}
+        <div className="w-13 shrink-0 flex gap-1">
+          {set.is_warmup && (
+            <span
+              className="text-[9px] font-semibold tracking-widest uppercase text-[#6B6870] border border-[#3A373C] px-1.5 py-0.5 leading-none"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              WU
+            </span>
+          )}
+          {set.is_failure && (
+            <span
+              className="text-[9px] font-semibold tracking-widest uppercase text-[#FF4D4D] border border-[#FF4D4D]/30 px-1.5 py-0.5 leading-none"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              FAIL
+            </span>
+          )}
+          {set.is_dropset && !set.is_failure && (
+            <span
+              className="text-[9px] font-semibold tracking-widest uppercase text-[#6B6870] border border-[#3A373C] px-1.5 py-0.5 leading-none"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              DROP
+            </span>
+          )}
+        </div>
+
+        {/* Weight */}
+        <span
+          className="flex-1 text-[13px] font-medium text-white"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          {weight ?? '—'}
+        </span>
+
+        {/* Reps / distance / time */}
+        {metric && (
+          <span
+            className="text-[12px] text-[#A09EA3]"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {metric}
+          </span>
+        )}
+
+        {/* Effort % */}
+        {set.effort_percent != null && (
+          <span
+            className="text-[11px] text-[#6B6870]"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {set.effort_percent}%
+          </span>
+        )}
+      </div>
+
+      {/* Notes sub-row */}
+      {set.notes && (
+        <p
+          className="px-4 pb-2.5 text-[11px] text-[#6B6870] italic"
+          style={{ paddingLeft: '88px', fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {set.notes}
+        </p>
+      )}
     </div>
   )
 }
 
 function ExerciseCard({ ex }: { ex: AthleteExerciseLog }) {
-  const hasMetrics = ex.max_weight_kg != null || ex.total_volume_kg != null || ex.total_reps != null
+  // Build summary chips — only show values that exist
+  const chips: string[] = []
+  if (ex.set_count != null) chips.push(`${ex.set_count} sets`)
+  if (ex.total_reps != null) chips.push(`${ex.total_reps} reps`)
+  if (ex.max_weight_kg != null) chips.push(`${ex.max_weight_kg} kg`)
+  if (ex.total_volume_kg != null) chips.push(`${(ex.total_volume_kg / 1000).toFixed(1)} t vol`)
+  if ((ex as Record<string, unknown>).total_distance_m != null)
+    chips.push(`${(ex as Record<string, unknown>).total_distance_m as number} m`)
 
   return (
-    <div className="border-t border-[#3A373C] pt-3 mt-2">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <span className="text-[13px] text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="border border-[#3A373C] bg-[#1A1719]">
+      {/* Exercise header */}
+      <div className="px-4 pt-4 pb-3">
+        <div className="flex items-start gap-2">
+          <span
+            className="text-[14px] font-semibold text-white leading-snug"
+            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+          >
             {ex.name}
           </span>
           {ex.name_original && (
-            <span className="text-[11px] text-[#6B6870] ml-2">({ex.name_original})</span>
+            <span
+              className="text-[11px] text-[#6B6870] mt-0.5 shrink-0"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              ({ex.name_original})
+            </span>
           )}
         </div>
-        {hasMetrics && (
-          <div className="text-right flex-shrink-0">
-            {ex.max_weight_kg != null && (
-              <span className="text-[12px] text-[#A09EA3]">{ex.max_weight_kg} kg</span>
-            )}
-            {ex.total_volume_kg != null && (
-              <span className="text-[11px] text-[#6B6870] ml-2">{ex.total_volume_kg.toLocaleString()} kg vol</span>
-            )}
+
+        {/* Summary chips */}
+        {chips.length > 0 && (
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5">
+            {chips.map((chip) => (
+              <span
+                key={chip}
+                className="text-[11px] text-[#6B6870]"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {chip}
+              </span>
+            ))}
           </div>
         )}
+
+        {ex.notes && (
+          <p
+            className="text-[11px] text-[#6B6870] italic mt-1.5"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {ex.notes}
+          </p>
+        )}
       </div>
-      {ex.notes && (
-        <p className="text-[11px] text-[#6B6870] italic mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-          {ex.notes}
-        </p>
+
+      {/* Sets */}
+      {ex.sets.length > 0 && (
+        <div className="border-t border-[#3A373C]">
+          {ex.sets.map((s, i) => <SetRow key={i} set={s} />)}
+        </div>
       )}
-      <div className="mt-1 space-y-0">
-        {ex.sets.map((s, i) => <SetRow key={i} set={s} />)}
-      </div>
     </div>
   )
 }
 
 function StrengthBlocks({ blocks }: { blocks: AthleteBlock[] }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {blocks.map((block, i) => (
         <div key={i}>
           {block.block_name && (
@@ -127,9 +228,11 @@ function StrengthBlocks({ blocks }: { blocks: AthleteBlock[] }) {
               )}
             </p>
           )}
-          {block.exercises.map((ex, i) => (
-            <ExerciseCard key={i} ex={ex} />
-          ))}
+          <div className="space-y-2">
+            {block.exercises.map((ex, i) => (
+              <ExerciseCard key={i} ex={ex} />
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -397,27 +500,6 @@ export function SessionResult({ session }: SessionResultProps) {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <PillTag label={sessionTypeLabel(session.session_type)} variant="ghost-green" />
-          {session.session_subtype && (
-            <PillTag label={session.session_subtype} variant="ghost-dark" />
-          )}
-          {session.duration_minutes != null && (
-            <PillTag label={`${session.duration_minutes} min`} variant="ghost-dark" />
-          )}
-        </div>
-        {intensity && (
-          <span
-            className="text-[11px] font-semibold uppercase tracking-widest"
-            style={{ color: intensityColor(intensity), fontFamily: "'Inter', sans-serif" }}
-          >
-            {intensity}
-          </span>
-        )}
-      </div>
-
       {/* Summary notes */}
       {summary.session_notes && (
         <p className="text-[13px] text-[#6B6870] leading-relaxed italic" style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -425,12 +507,6 @@ export function SessionResult({ session }: SessionResultProps) {
         </p>
       )}
 
-      {/* Stat pills */}
-      {stats.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {stats.map((s) => <StatPill key={s.label} label={s.label} value={s.value} />)}
-        </div>
-      )}
 
       {/* Readiness */}
       {session.readiness && (session.readiness.feel || session.readiness.pain_score != null) && (
