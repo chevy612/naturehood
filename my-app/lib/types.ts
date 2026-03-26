@@ -217,6 +217,187 @@ export type AthleteSessionLog = {
   } | null
 }
 
+// ── Normalized session row types (from 002_normalize_ai_session migration) ────
+
+export type SessionDetailsRow = {
+  id: string
+  training_log_id: string
+  user_id: string
+  session_type: SessionType | null
+  session_subtype: SessionSubtype
+  perceived_intensity: PerceivedIntensity | null
+  readiness_feel: 'good' | 'tired' | 'sore' | 'great' | null
+  readiness_pain_score: number | null
+  readiness_notes: string | null
+  session_notes: string | null
+  parser_version: string | null
+  parser_confidence: number | null
+  parsing_warnings: string[] | null
+  sprint_surface: string | null
+  sprint_footwear: string | null
+  sprint_conditions: string | null
+  physio_provider: 'physiotherapist' | 'coach' | 'self' | null
+  physio_clearance_status: 'cleared' | 'modified_training' | 'rest_only' | 'pending_review' | null
+  physio_notes: string | null
+  coach_reviewed_by: string | null
+  coach_reviewed_at: string | null
+  coach_approved: boolean | null
+  coach_feedback: string | null
+  coach_load_rating: 'underload' | 'optimal' | 'overload' | null
+  total_volume_kg: number | null
+  total_sets: number | null
+  total_reps: number | null
+  total_distance_m: number | null
+  total_work_duration_seconds: number | null
+  created_at: string
+  updated_at: string
+}
+
+export type SessionBlockRow = {
+  id: string
+  training_log_id: string
+  user_id: string
+  block_index: number
+  block_name: string | null
+  block_type: BlockType | null
+  emom_interval_seconds: number | null
+  circuit_rounds: number | null
+  intensity_percent: number | null
+  notes: string | null
+}
+
+export type SessionExerciseRow = {
+  id: string
+  training_log_id: string
+  user_id: string
+  block_id: string | null
+  exercise_index: number
+  name: string
+  name_original: string | null
+  name_unknown: boolean
+  category: ExerciseCategory | null
+  equipment: Equipment
+  laterality: Laterality
+  is_superset_with: number | null
+  notes: string | null
+  total_volume_kg: number | null
+  max_weight_kg: number | null
+  total_reps: number | null
+  set_count: number | null
+}
+
+export type ExerciseSetRow = {
+  id: string
+  exercise_id: string
+  training_log_id: string
+  user_id: string
+  set_index: number
+  is_warmup: boolean
+  is_failure: boolean
+  is_dropset: boolean
+  weight_kg: number | null
+  weight_type: WeightType
+  weight_value_raw: string | null
+  added_weight_kg: number | null
+  machine_level: number | null
+  reps: number | null
+  reps_left: number | null
+  reps_right: number | null
+  duration_seconds: number | null
+  distance_m: number | null
+  pace_seconds_per_km: number | null
+  time_seconds: number | null
+  splits_seconds: number[] | null
+  effort_percent: number | null
+  rest_seconds: number | null
+  rest_between_reps_seconds: number | null
+  notes: string | null
+}
+
+export type SprintEffortRow = {
+  id: string
+  training_log_id: string
+  user_id: string
+  effort_index: number
+  drill_type: string
+  distance_m: number | null
+  phase_distances_m: number[] | null
+  effort_percent: number | null
+  footwear: string | null
+  rest_between_reps_seconds: number | null
+  rest_between_sets_seconds: number | null
+  sets: number | null
+  notes: string | null
+}
+
+export type SprintRepRow = {
+  id: string
+  effort_id: string
+  training_log_id: string
+  user_id: string
+  rep_index: number
+  time_seconds: number | null
+  split_times_seconds: number[] | null
+  wind_ms: number | null
+  completed: boolean
+  notes: string | null
+}
+
+export type CompetitionResultRow = {
+  id: string
+  training_log_id: string
+  user_id: string
+  event: string | null
+  competition_name: string | null
+  venue: string | null
+  lane: number | null
+  status: 'completed' | 'dns' | 'dnf' | 'dq'
+  dns_reason: string | null
+  conditions: string | null
+  best_time_seconds: number | null
+  notes: string | null
+}
+
+export type CompetitionRoundRow = {
+  id: string
+  competition_result_id: string
+  training_log_id: string
+  user_id: string
+  round_index: number
+  round_type: 'heat' | 'semifinal' | 'final' | 'relay'
+  time_seconds: number | null
+  wind_ms: number | null
+  ranking: number | null
+  pb: boolean
+  sb: boolean
+  relay_leg: number | null
+  relay_split_seconds: number | null
+  notes: string | null
+}
+
+export type PhysioBodyAreaRow = {
+  id: string
+  training_log_id: string
+  user_id: string
+  area_index: number
+  area: string
+  side: 'left' | 'right' | 'bilateral' | null
+  injury_name: string | null
+  pain_score_before: number | null
+  pain_score_after: number | null
+  treatment_type: string | null
+}
+
+// Composite type returned when fetching a full normalized session
+export type NormalizedSession = {
+  details: SessionDetailsRow | null
+  blocks: SessionBlockRow[]
+  exercises: (SessionExerciseRow & { sets: ExerciseSetRow[] })[]
+  sprint_efforts: (SprintEffortRow & { reps: SprintRepRow[] })[]
+  competition_result: (CompetitionResultRow & { rounds: CompetitionRoundRow[] }) | null
+  physio_body_areas: PhysioBodyAreaRow[]
+}
+
 // ── Core entities ─────────────────────────────
 
 export type TrainingLog = {

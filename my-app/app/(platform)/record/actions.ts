@@ -2,7 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import type { AiStructuredWorkout } from '@/lib/types'
+import type { AiStructuredWorkout, AthleteSessionLog } from '@/lib/types'
+import { persistNormalizedSession } from '@/lib/services/session-persist'
 
 export async function getUserWorkoutTypes(): Promise<string[]> {
   const supabase = await createClient()
@@ -107,7 +108,7 @@ export async function updateWorkout(
 
 export async function updateAiStructured(
   id: string,
-  structured: AiStructuredWorkout
+  structured: AiStructuredWorkout | AthleteSessionLog
 ): Promise<{ error?: string }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -124,6 +125,11 @@ export async function updateAiStructured(
     .eq('user_id', user.id)
 
   if (error) return { error: 'Failed to save workout report.' }
+
+  // Sync to normalized tables (V2 only)
+  if ('parser_version' in structured) {
+    await persistNormalizedSession(supabase, id, user.id, structured as AthleteSessionLog)
+  }
 
   redirect('/account')
 }

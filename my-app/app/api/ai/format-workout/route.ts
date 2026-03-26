@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { formatWorkoutWithAI } from '@/lib/services/ai-workout'
+import { persistNormalizedSession } from '@/lib/services/session-persist'
+import type { AthleteSessionLog } from '@/lib/types'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -82,6 +84,11 @@ export async function POST(req: NextRequest) {
 
   if (updateError) {
     return NextResponse.json({ error: 'Failed to save AI result' }, { status: 500, headers: CORS_HEADERS })
+  }
+
+  // Persist to normalized tables (V2 schema only — skip V1 fallbacks)
+  if ('parser_version' in structured) {
+    await persistNormalizedSession(supabase, id, user.id, structured as AthleteSessionLog)
   }
 
   return NextResponse.json({ structured }, { headers: CORS_HEADERS })
