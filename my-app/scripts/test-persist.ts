@@ -15,7 +15,7 @@ import fs from 'fs'
 import path from 'path'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { persistNormalizedSession } from '../lib/services/session-persist'
-import type { AthleteSessionLog } from '../lib/types'
+import type { AthleteSessionLog, SprintEffort } from '../lib/types'
 
 // ─── Load .env.local ──────────────────────────────────────────────────────────
 const envPath = path.join(process.cwd(), '.env.local')
@@ -206,8 +206,8 @@ const case2: AthleteSessionLog = {
       exercises: [
         { exercise_index: 0, name: 'Front Squat', category: 'strength', equipment: 'barbell', sets: [{ set_index: 0, weight_kg: 80, reps: 5 }, { set_index: 1, weight_kg: 90, reps: 4 }, { set_index: 2, weight_kg: 95, reps: 3 }, { set_index: 3, weight_kg: 100, reps: 2 }] },
         { exercise_index: 1, name: 'Romanian Deadlift', category: 'strength', equipment: 'barbell', sets: [{ set_index: 0, weight_kg: 90, reps: 8 }, { set_index: 1, weight_kg: 100, reps: 8 }, { set_index: 2, weight_kg: 100, reps: 7 }, { set_index: 3, weight_kg: 100, reps: 7 }] },
-        { exercise_index: 2, name: 'Leg Press', category: 'strength', equipment: 'machine', weight_type: 'machine_level', sets: [{ set_index: 0, machine_level: 8, reps: 12 }, { set_index: 1, machine_level: 10, reps: 10 }, { set_index: 2, machine_level: 10, reps: 10 }, { set_index: 3, machine_level: 12, reps: 8 }] },
-        { exercise_index: 3, name: 'Pull-up', category: 'strength', equipment: 'bodyweight', weight_type: 'bodyweight', sets: [{ set_index: 0, reps: 8 }, { set_index: 1, reps: 7 }, { set_index: 2, reps: 6 }, { set_index: 3, reps: 6 }] },
+        { exercise_index: 2, name: 'Leg Press', category: 'strength', equipment: 'machine', sets: [{ set_index: 0, weight_type: 'machine_level', machine_level: 8, reps: 12 }, { set_index: 1, weight_type: 'machine_level', machine_level: 10, reps: 10 }, { set_index: 2, weight_type: 'machine_level', machine_level: 10, reps: 10 }, { set_index: 3, weight_type: 'machine_level', machine_level: 12, reps: 8 }] },
+        { exercise_index: 3, name: 'Pull-up', category: 'strength', equipment: 'bodyweight', sets: [{ set_index: 0, weight_type: 'bodyweight', reps: 8 }, { set_index: 1, weight_type: 'bodyweight', reps: 7 }, { set_index: 2, weight_type: 'bodyweight', reps: 6 }, { set_index: 3, weight_type: 'bodyweight', reps: 6 }] },
       ],
     },
     {
@@ -323,7 +323,7 @@ const case6: AthleteSessionLog = {
           { rep_index: 0, time_seconds: 5.20, completed: true },
           { rep_index: 1, time_seconds: 5.15, completed: true },
         ],
-      } as unknown as AthleteSessionLog['sprint_session'] extends NonNullable<infer T> ? T['efforts'][number] : never,
+      } as SprintEffort,
       {
         drill_type: 'fly', distance_m: 30, effort_percent: 90,
         reps: [
@@ -332,7 +332,7 @@ const case6: AthleteSessionLog = {
           { rep_index: 2, time_seconds: 2.97, completed: true },
           { rep_index: 3, time_seconds: 2.94, completed: false }, // DNF
         ],
-      } as unknown as AthleteSessionLog['sprint_session'] extends NonNullable<infer T> ? T['efforts'][number] : never,
+      } as SprintEffort,
       {
         drill_type: 'tempo', distance_m: 150, effort_percent: 75,
         reps: [
@@ -340,7 +340,7 @@ const case6: AthleteSessionLog = {
           { rep_index: 1, time_seconds: 19.5, completed: true },
           { rep_index: 2, time_seconds: 20.1, completed: false }, // DNF
         ],
-      } as unknown as AthleteSessionLog['sprint_session'] extends NonNullable<infer T> ? T['efforts'][number] : never,
+      } as SprintEffort,
       {
         drill_type: 'speed_endurance', distance_m: 200, effort_percent: 80,
         reps: [
@@ -351,7 +351,7 @@ const case6: AthleteSessionLog = {
           { rep_index: 4, time_seconds: 26.2, completed: true },
           { rep_index: 5, time_seconds: 26.8, completed: true },
         ],
-      } as unknown as AthleteSessionLog['sprint_session'] extends NonNullable<infer T> ? T['efforts'][number] : never,
+      } as SprintEffort,
     ],
   },
 }
