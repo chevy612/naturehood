@@ -4,6 +4,7 @@ import type {
   TrainingLog,
   NormalizedSession,
   SessionDetailsRow,
+  SessionType,
   AthleteSessionLog,
   AthleteSetLog,
   ExerciseSetRow,
@@ -42,6 +43,19 @@ function toAthleteSetLog(s: DraftSet | ExerciseSetRow): AthleteSetLog {
     rest_between_reps_seconds: s.rest_between_reps_seconds ?? null,
     notes: s.notes ?? null,
   }
+}
+
+// ── Infer session type from workout_types when session_details doesn't exist ──
+
+function inferSessionType(workoutTypes: string[]): SessionType {
+  const types = workoutTypes.map((t) => t.toLowerCase())
+  if (types.some((t) => t === 'competition')) return 'competition'
+  if (types.some((t) => ['physio', 'rehab', 'prehab'].includes(t)))
+    return types.find((t) => ['physio', 'rehab', 'prehab'].includes(t)) as SessionType
+  if (types.some((t) => ['sprint', 'speed', 'track'].includes(t))) return 'sprint'
+  if (types.some((t) => ['recovery', 'rest', 'active recovery'].includes(t))) return 'recovery'
+  if (types.some((t) => ['conditioning', 'cardio', 'circuit', 'crossfit'].includes(t))) return 'conditioning'
+  return 'strength'
 }
 
 // ── Helpers: map normalized rows → draft state ────────────────────────────────
@@ -247,8 +261,9 @@ export function useAiReportForm(
   workout: TrainingLog,
   normalizedSession: NormalizedSession
 ): UseAiReportFormReturn {
+  const workoutTypes = ((workout as Record<string, unknown>).workout_types as string[] | undefined) ?? []
   const [details, setDetails] = useState<Partial<SessionDetailsRow>>(
-    normalizedSession.details ?? {}
+    normalizedSession.details ?? { session_type: inferSessionType(workoutTypes) }
   )
   const [blocks, setBlocks] = useState<DraftBlock[]>(() => buildDraftBlocks(normalizedSession))
   const [sprintEfforts, setSprintEfforts] = useState<DraftSprintEffort[]>(() =>

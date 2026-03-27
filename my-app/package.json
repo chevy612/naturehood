@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test:ai": "npx tsx scripts/test-ai-workout.ts",
+    "test:persist": "npx tsx scripts/test-persist.ts",
     "lint": "eslint",
     "build:prod": "NODE_ENV=production next build"
   },
