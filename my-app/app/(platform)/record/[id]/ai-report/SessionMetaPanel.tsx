@@ -128,7 +128,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
                 readiness_pain_score: e.target.value === '' ? null : Math.min(10, Math.max(0, Number(e.target.value))),
               })
             }
-            className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[13px] px-3 py-2 transition-colors duration-150"
+            className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[13px] px-3 py-2 transition-colors duration-150 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           />
         </div>

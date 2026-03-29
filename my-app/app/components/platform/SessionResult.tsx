@@ -446,23 +446,6 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
   )
 }
 
-function ParserWarnings({ warnings }: { warnings: string[] }) {
-  if (!warnings.length) return null
-  return (
-    <div className="border border-[#3A373C] bg-[#1E1B1F] p-3 mt-4">
-      <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#A09EA3] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
-        Parser Warnings
-      </p>
-      <ul className="space-y-1">
-        {warnings.map((w, i) => (
-          <li key={i} className="text-[11px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            • {w}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
 
 // ─── Stat bar ─────────────────────────────────────────────────────────────────
 
@@ -495,11 +478,16 @@ export function SessionResult({ session }: SessionResultProps) {
   if (summary.total_volume_kg != null) stats.push({ label: 'Volume', value: `${(summary.total_volume_kg / 1000).toFixed(1)}t` })
   if (summary.total_distance_m != null) stats.push({ label: 'Dist', value: `${(summary.total_distance_m / 1000).toFixed(2)} km` })
 
-  const confidence = summary.parser_confidence ?? 1
-  const confidencePct = Math.round(confidence * 100)
-
   return (
     <div className="space-y-5">
+      {/* Title */}
+      <p
+        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        AI Report
+      </p>
+
       {/* Summary notes */}
       {summary.session_notes && (
         <p className="text-[13px] text-[#6B6870] leading-relaxed italic" style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -546,26 +534,6 @@ export function SessionResult({ session }: SessionResultProps) {
         <PhysioView physio={session.physio_session} />
       )}
 
-      {/* Parser confidence + warnings */}
-      <div className="flex items-center gap-2 mt-2">
-        <span className="text-[10px] text-[#6B6870]" style={{ fontFamily: "'Inter', sans-serif" }}>
-          AI confidence:
-        </span>
-        <span
-          className="text-[10px] font-semibold"
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            color: confidence >= 0.8 ? '#C8F04D' : confidence >= 0.6 ? '#A09EA3' : '#FF4D4D',
-          }}
-        >
-          {confidencePct}%
-        </span>
-        <span className="text-[10px] text-[#3A373C]">v{session.parser_version}</span>
-      </div>
-
-      {summary.parsing_warnings && summary.parsing_warnings.length > 0 && (
-        <ParserWarnings warnings={summary.parsing_warnings} />
-      )}
     </div>
   )
 }

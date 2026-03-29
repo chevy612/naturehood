@@ -127,7 +127,7 @@ function SetRow({
         value={set.weight_kg ?? ''}
         placeholder="kg"
         onChange={(e) => onChange({ weight_kg: num(e.target.value) })}
-        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -137,7 +137,7 @@ function SetRow({
         value={set.reps ?? ''}
         placeholder="reps"
         onChange={(e) => onChange({ reps: num(e.target.value) as number | null })}
-        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -149,7 +149,7 @@ function SetRow({
         value={set.effort_percent ?? ''}
         placeholder="%"
         onChange={(e) => onChange({ effort_percent: num(e.target.value) as number | null })}
-        className="w-12 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-12 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 

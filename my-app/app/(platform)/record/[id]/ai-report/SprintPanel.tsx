@@ -58,7 +58,7 @@ function RepRow({
         value={rep.time_seconds ?? ''}
         placeholder="time (s)"
         onChange={(e) => onChange({ time_seconds: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -68,7 +68,7 @@ function RepRow({
         value={rep.wind_ms ?? ''}
         placeholder="wind m/s"
         onChange={(e) => onChange({ wind_ms: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -161,7 +161,7 @@ function EffortCard({
                 value={effort.distance_m ?? ''}
                 placeholder="—"
                 onChange={(e) => onChange({ distance_m: num(e.target.value) })}
-                className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+                className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -174,7 +174,7 @@ function EffortCard({
                 value={effort.effort_percent ?? ''}
                 placeholder="—"
                 onChange={(e) => onChange({ effort_percent: num(e.target.value) as number | null })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -185,7 +185,7 @@ function EffortCard({
                 value={effort.rest_between_reps_seconds ?? ''}
                 placeholder="—"
                 onChange={(e) => onChange({ rest_between_reps_seconds: num(e.target.value) as number | null })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>

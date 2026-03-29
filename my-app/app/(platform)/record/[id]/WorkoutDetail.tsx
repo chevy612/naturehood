@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { deleteWorkout } from '../actions'
 import type { AiStructuredWorkout, AiStructuredExercise, AthleteSessionLog } from '@/lib/types'
 import { SessionResult } from '@/app/components/platform/SessionResult'
 
@@ -34,6 +33,19 @@ const INTENSITY_COLOR: Record<string, string> = {
 }
 
 // ─────────────────────────────────────────────
+// SHARED AI ANALYSIS HELPER
+// ─────────────────────────────────────────────
+
+async function runAiAnalysis(id: string): Promise<boolean> {
+  const res = await fetch('/api/ai/format-workout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  })
+  return res.ok
+}
+
+// ─────────────────────────────────────────────
 // ANALYZE BUTTON
 // ─────────────────────────────────────────────
 
@@ -44,12 +56,8 @@ function AnalyzeButton({ id }: { id: string }) {
   const handleAnalyze = async () => {
     setState('loading')
     try {
-      const res = await fetch('/api/ai/format-workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      })
-      if (res.ok) {
+      const ok = await runAiAnalysis(id)
+      if (ok) {
         setState('done')
         router.refresh()
       } else {
@@ -71,6 +79,48 @@ function AnalyzeButton({ id }: { id: string }) {
     >
       {state === 'loading' ? 'Analyzing…' : 'Analyze with AI'}
     </button>
+  )
+}
+
+// ─────────────────────────────────────────────
+// STALE BANNER
+// ─────────────────────────────────────────────
+
+function StaleBanner({ id }: { id: string }) {
+  const router = useRouter()
+  const [state, setState] = useState<'idle' | 'loading'>('idle')
+
+  const handleReanalyze = async () => {
+    setState('loading')
+    try {
+      const ok = await runAiAnalysis(id)
+      if (ok) {
+        router.refresh()
+      } else {
+        setState('idle')
+      }
+    } catch {
+      setState('idle')
+    }
+  }
+
+  return (
+    <div
+      className="flex items-start justify-between gap-4 border border-[#5C4A1E] bg-[#2A1F0A] px-4 py-3"
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      <p className="text-[12px] text-[#F0B429] leading-snug">
+        Your workout log was edited. This AI report may be outdated.
+      </p>
+      <button
+        onClick={handleReanalyze}
+        disabled={state === 'loading'}
+        className="shrink-0 text-[11px] font-bold uppercase tracking-[0.15em] text-[#F0B429] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
+        {state === 'loading' ? 'Analysing…' : 'Re-analyse'}
+      </button>
+    </div>
   )
 }
 
@@ -161,26 +211,17 @@ type Props = {
   id: string
   hasWorkoutLog: boolean
   aiStructured: AiStructuredWorkout | AthleteSessionLog | null
+  aiNeedsRefresh: boolean
 }
 
-export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured }: Props) {
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
-
-  const handleDelete = async () => {
-    setDeleting(true)
-    setDeleteError(null)
-    const result = await deleteWorkout(id)
-    if (result?.error) {
-      setDeleteError(result.error)
-      setDeleting(false)
-    }
-    // redirect happens inside the server action on success
-  }
-
+export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeedsRefresh }: Props) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Stale banner — shown when workout_log was edited after AI analysis */}
+      {aiStructured && aiNeedsRefresh && (
+        <StaleBanner id={id} />
+      )}
+
       {/* AI section */}
       {aiStructured ? (
         isV2(aiStructured)
@@ -207,60 +248,6 @@ export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured }: Props
         >
           Edit AI report →
         </Link>
-      )}
-
-      {/* Action buttons */}
-      <div className="flex items-center gap-4 pt-2 border-t border-[#3A373C]">
-        <Link
-          href={`/record/${id}/edit`}
-          className="px-5 py-2.5 border border-[#3A373C] text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#C8F04D]/40 hover:text-[#C8F04D] transition-colors"
-          style={{ fontFamily: "'Inter', sans-serif" }}
-        >
-          Edit
-        </Link>
-
-        {!confirmDelete ? (
-          <button
-            onClick={() => setConfirmDelete(true)}
-            className="px-5 py-2.5 border border-[#3A373C] text-[#6B6870] text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#FF4D4D]/40 hover:text-[#FF4D4D] transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-          >
-            Delete
-          </button>
-        ) : (
-          <div className="flex items-center gap-3">
-            <span
-              className="text-[12px] text-[#FF4D4D]"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Are you sure?
-            </span>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="text-[12px] font-semibold text-[#FF4D4D] hover:text-white transition-colors disabled:opacity-50"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {deleting ? 'Deleting…' : 'Yes, delete'}
-            </button>
-            <button
-              onClick={() => setConfirmDelete(false)}
-              className="text-[12px] text-[#6B6870] hover:text-white transition-colors"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-      </div>
-
-      {deleteError && (
-        <p
-          className="text-[12px] text-[#FF4D4D]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {deleteError}
-        </p>
       )}
     </div>
   )

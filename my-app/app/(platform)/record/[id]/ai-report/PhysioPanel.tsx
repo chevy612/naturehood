@@ -85,7 +85,7 @@ function BodyAreaCard({
                 value={area.pain_score_before ?? ''}
                 placeholder="0–10"
                 onChange={(e) => onChange({ pain_score_before: num(e.target.value) })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -98,7 +98,7 @@ function BodyAreaCard({
                 value={area.pain_score_after ?? ''}
                 placeholder="0–10"
                 onChange={(e) => onChange({ pain_score_after: num(e.target.value) })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>

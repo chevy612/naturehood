@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { PillTag } from '@/app/components/ui/tags'
 import WorkoutDetail from './WorkoutDetail'
+import WorkoutLogToggle from './WorkoutLogToggle'
+import WorkoutActions from './WorkoutActions'
 
 // ─────────────────────────────────────────────
 // HELPERS
@@ -27,7 +29,7 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
 
   const { data: log } = await supabase
     .from('training_logs')
-    .select('id, title, logged_date, duration_minutes, workout_types, workout_log, is_public, ai_structured, ai_formatted_at')
+    .select('id, title, logged_date, duration_minutes, workout_types, workout_log, is_public, ai_structured, ai_formatted_at, ai_needs_refresh')
     .eq('id', id)
     .eq('user_id', user.id)
     .eq('is_deleted', false)
@@ -75,32 +77,23 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
           ))}
         </div>
 
-        {/* Raw workout log */}
-        {log.workout_log && (
-          <div className="mb-8">
-            <p
-              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-3"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Workout Log
-            </p>
-            <div className="bg-[#1A1719] border border-[#3A373C] p-4">
-              <pre
-                className="text-[13px] text-[#A09EA3] leading-relaxed whitespace-pre-wrap break-words"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {log.workout_log}
-              </pre>
-            </div>
-          </div>
-        )}
-
-        {/* Interactive: AI section + Edit/Delete */}
+        {/* AI analysis */}
         <WorkoutDetail
           id={log.id}
           hasWorkoutLog={!!log.workout_log}
           aiStructured={log.ai_structured}
+          aiNeedsRefresh={log.ai_needs_refresh ?? false}
         />
+
+        {/* Training log (collapsible) */}
+        {log.workout_log && (
+          <div className="mb-6">
+            <WorkoutLogToggle workoutLog={log.workout_log} />
+          </div>
+        )}
+
+        {/* Edit / Delete */}
+        <WorkoutActions id={log.id} />
 
       </div>
     </div>

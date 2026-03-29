@@ -85,6 +85,7 @@ export function InputField({
           w-full bg-transparent border-b-2 py-3 px-0
           text-[#141115] text-base placeholder:text-[#6B6870]
           outline-none
+          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
           transition-all duration-200
           ${error
             ? "border-red-400 focus:border-red-500"
@@ -284,7 +285,7 @@ export function InputDark({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full bg-transparent border-b-2 py-3 px-0 text-[15px] text-white placeholder:text-[#3A373C] outline-none transition-colors duration-200 ${
+        className={`w-full bg-transparent border-b-2 py-3 px-0 text-[15px] text-white placeholder:text-[#3A373C] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-colors duration-200 ${
           error
             ? "border-[#FF4D4D] focus:border-[#FF4D4D]"
             : "border-[#3A373C] focus:border-[#C8F04D]"

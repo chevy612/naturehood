@@ -67,7 +67,7 @@ function RoundRow({
         value={round.time_seconds ?? ''}
         placeholder="time (s)"
         onChange={(e) => onChange({ time_seconds: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -78,7 +78,7 @@ function RoundRow({
         value={round.wind_ms ?? ''}
         placeholder="wind"
         onChange={(e) => onChange({ wind_ms: num(e.target.value) })}
-        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -88,7 +88,7 @@ function RoundRow({
         value={round.ranking ?? ''}
         placeholder="rank"
         onChange={(e) => onChange({ ranking: num(e.target.value) as number | null })}
-        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -187,7 +187,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
             value={result.lane ?? ''}
             placeholder="—"
             onChange={(e) => onChange({ lane: e.target.value === '' ? null : Number(e.target.value) })}
-            className="w-16 bg-transparent outline-none text-[13px] text-white placeholder-[#3A373C]"
+            className="w-16 bg-transparent outline-none text-[13px] text-white placeholder-[#3A373C] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           />
         </div>

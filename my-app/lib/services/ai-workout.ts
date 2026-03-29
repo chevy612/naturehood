@@ -330,10 +330,16 @@ export async function formatWorkoutWithAI(params: {
   try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: envelope }],
     })
+
+    // If the model hit the token limit the JSON will be truncated — fail fast
+    if (message.stop_reason === 'max_tokens') {
+      console.error('[ai-workout] Response truncated: max_tokens reached. Workout log may be too large.')
+      return null
+    }
 
     const raw = message.content[0]
     if (raw.type !== 'text') return null

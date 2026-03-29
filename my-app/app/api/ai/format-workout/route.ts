@@ -72,12 +72,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'AI formatting failed' }, { status: 500, headers: CORS_HEADERS })
   }
 
-  // Write result back to the row
+  // Write result back to the row; clear stale flag if set
   const { error: updateError } = await supabase
     .from('training_logs')
     .update({
       ai_structured: structured,
       ai_formatted_at: new Date().toISOString(),
+      ai_needs_refresh: false,
     })
     .eq('id', id)
     .eq('user_id', user.id)

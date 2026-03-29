@@ -87,6 +87,17 @@ export async function updateWorkout(
     if (raw) workoutTypes = JSON.parse(raw)
   } catch {}
 
+  // Pre-flight read: check if ai_structured exists and if workout_log actually changed
+  const { data: current } = await supabase
+    .from('training_logs')
+    .select('ai_structured, workout_log')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single()
+
+  const workoutLogChanged = (workoutLog ?? '').trim() !== (current?.workout_log ?? '').trim()
+  const needsAiRefresh = !!current?.ai_structured && workoutLogChanged
+
   const { error } = await supabase
     .from('training_logs')
     .update({
@@ -96,6 +107,7 @@ export async function updateWorkout(
       workout_log: workoutLog || null,
       is_public: isPublic,
       workout_types: workoutTypes,
+      ai_needs_refresh: needsAiRefresh,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
@@ -119,6 +131,7 @@ export async function updateAiStructured(
     .update({
       ai_structured: structured,
       ai_formatted_at: new Date().toISOString(),
+      ai_needs_refresh: false,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
