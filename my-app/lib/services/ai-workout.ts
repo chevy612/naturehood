@@ -157,22 +157,143 @@ OUTPUT SCHEMA (return exactly this shape)
   "parser_version": "2.0.0",
   "title": string | null,
   "duration_minutes": number | null,
-  "session_type": SessionType,
-  "session_subtype": string | null,
-  "language_detected": "en" | "da" | "zh" | ...,
+  "session_type": "strength"|"sprint"|"conditioning"|"competition"|"physio"|"rehab"|"prehab"|"recovery"|"mixed"|"unknown",
+  "session_subtype": "power"|"tempo"|"endurance"|"technical"|"circuit" | null,
+  "language_detected": "en"|"da"|"zh"|...,
   "perceived_intensity": "low"|"moderate"|"high"|"max" | null,
-  "readiness": { "feel": string|null, "pain_score": number|null, "notes": string|null } | null,
-  "blocks": [...] | null,
-  "competition_result": {...} | null,
-  "physio_session": {...} | null,
-  "sprint_session": {...} | null,
+  "readiness": { "feel": "good"|"tired"|"sore"|"great"|null, "pain_score": number|null, "notes": string|null } | null,
+
+  "blocks": [
+    {
+      "block_index": number,
+      "block_name": string | null,
+      "block_type": "warmup"|"main"|"cooldown"|"superset"|"circuit"|"emom"|"amrap" | null,
+      "emom_interval_seconds": number | null,
+      "circuit_rounds": number | null,
+      "intensity_percent": number | null,
+      "notes": string | null,
+      "exercises": [
+        {
+          "exercise_index": number,
+          "name": string,
+          "name_original": string | null,
+          "name_unknown": boolean,
+          "category": "olympic_lift"|"strength"|"plyometric"|"sprint"|"jump"|"core"|"mobility"|"cardio"|"coordination"|"isometric"|"unknown" | null,
+          "equipment": "barbell"|"dumbbell"|"machine"|"cable"|"bodyweight"|"resistance_band"|"sled"|"trap_bar"|"kettlebell" | null,
+          "laterality": "bilateral"|"unilateral_left"|"unilateral_right"|"alternating" | null,
+          "is_superset_with": number | null,
+          "notes": string | null,
+          "total_volume_kg": number | null,
+          "max_weight_kg": number | null,
+          "total_reps": number | null,
+          "set_count": number,
+          "sets": [
+            {
+              "set_index": number,
+              "is_warmup": boolean,
+              "is_failure": boolean,
+              "is_dropset": boolean,
+              "weight_kg": number | null,
+              "weight_type": "absolute"|"added"|"machine_level"|"band"|"bodyweight" | null,
+              "added_weight_kg": number | null,
+              "machine_level": number | null,
+              "reps": number | null,
+              "reps_left": number | null,
+              "reps_right": number | null,
+              "duration_seconds": number | null,
+              "distance_m": number | null,
+              "pace_seconds_per_km": number | null,
+              "time_seconds": number | null,
+              "effort_percent": number | null,
+              "rest_seconds": number | null,
+              "rest_between_reps_seconds": number | null,
+              "notes": string | null
+            }
+          ]
+        }
+      ]
+    }
+  ] | null,
+
+  "sprint_session": {
+    "surface": string | null,
+    "footwear": string | null,
+    "conditions": string | null,
+    "efforts": [
+      {
+        "effort_index": number,
+        "drill_type": "block_start"|"fly"|"acceleration"|"tempo"|"speed_endurance"|"hill_sprint"|"hurdle"|"relay_exchange"|"time_trial",
+        "distance_m": number | null,
+        "phase_distances_m": number[] | null,
+        "effort_percent": number | null,
+        "footwear": string | null,
+        "rest_between_reps_seconds": number | null,
+        "rest_between_sets_seconds": number | null,
+        "sets": number | null,
+        "notes": string | null,
+        "reps": [
+          {
+            "rep_index": number,
+            "time_seconds": number | null,
+            "split_times_seconds": number[] | null,
+            "wind_ms": number | null,
+            "completed": boolean,
+            "notes": string | null
+          }
+        ]
+      }
+    ]
+  } | null,
+
+  "competition_result": {
+    "event": string | null,
+    "competition_name": string | null,
+    "venue": string | null,
+    "lane": number | null,
+    "status": "completed"|"dns"|"dnf"|"dq",
+    "dns_reason": string | null,
+    "conditions": string | null,
+    "best_time_seconds": number | null,
+    "notes": string | null,
+    "rounds": [
+      {
+        "round_type": "heat"|"semifinal"|"final"|"relay",
+        "time_seconds": number | null,
+        "wind_ms": number | null,
+        "ranking": number | null,
+        "pb": boolean,
+        "sb": boolean,
+        "relay_leg": number | null,
+        "relay_split_seconds": number | null,
+        "notes": string | null
+      }
+    ]
+  } | null,
+
+  "physio_session": {
+    "provider": "physiotherapist"|"coach"|"self" | null,
+    "clearance_status": "cleared"|"modified_training"|"rest_only"|"pending_review" | null,
+    "notes": string | null,
+    "body_areas": [
+      {
+        "area": string,
+        "side": "left"|"right"|"bilateral" | null,
+        "injury_name": string | null,
+        "pain_score_before": number | null,
+        "pain_score_after": number | null,
+        "treatment_type": "manual therapy"|"dry needling"|"exercise"|"taping" | null
+      }
+    ],
+    "exercises": [ /* same structure as blocks[].exercises above */ ]
+  } | null,
+
   "summary": {
-    "total_volume_kg": number|null,
-    "total_sets": number|null,
-    "total_reps": number|null,
-    "total_distance_m": number|null,
-    "total_work_duration_seconds": number|null,
-    "estimated_intensity": string|null,
+    "total_volume_kg": number | null,
+    "total_sets": number | null,
+    "total_reps": number | null,
+    "total_distance_m": number | null,
+    "total_work_duration_seconds": number | null,
+    "estimated_intensity": "low"|"moderate"|"high"|"max" | null,
     "session_notes": string,
     "parser_confidence": number,
     "parsing_warnings": string[]

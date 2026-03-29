@@ -41,10 +41,10 @@ export async function persistNormalizedSession(
         coach_feedback: session.coach_review?.feedback ?? null,
         coach_load_rating: session.coach_review?.load_rating ?? null,
         total_volume_kg: session.summary?.total_volume_kg ?? null,
-        total_sets: session.summary?.total_sets ?? null,
-        total_reps: session.summary?.total_reps ?? null,
+        total_sets: session.summary?.total_sets != null ? Math.round(session.summary.total_sets) : null,
+        total_reps: session.summary?.total_reps != null ? Math.round(session.summary.total_reps) : null,
         total_distance_m: session.summary?.total_distance_m ?? null,
-        total_work_duration_seconds: session.summary?.total_work_duration_seconds ?? null,
+        total_work_duration_seconds: session.summary?.total_work_duration_seconds != null ? Math.round(session.summary.total_work_duration_seconds) : null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'training_log_id' }
@@ -274,7 +274,7 @@ async function persistExercises(
         notes: ex.notes ?? null,
         total_volume_kg: ex.total_volume_kg ?? null,
         max_weight_kg: ex.max_weight_kg ?? null,
-        total_reps: ex.total_reps ?? null,
+        total_reps: ex.total_reps != null ? Math.round(ex.total_reps) : null,
         set_count: ex.set_count ?? null,
       })
       .select('id')
@@ -302,7 +302,7 @@ async function persistExercises(
         reps: s.reps ?? null,
         reps_left: s.reps_left ?? null,
         reps_right: s.reps_right ?? null,
-        duration_seconds: s.duration_seconds ?? null,
+        duration_seconds: s.duration_seconds != null ? Math.round(s.duration_seconds) : null,
         distance_m: s.distance_m ?? null,
         pace_seconds_per_km: s.pace_seconds_per_km ?? null,
         time_seconds: s.time_seconds ?? null,
