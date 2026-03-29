@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { Menu, X } from "lucide-react";
 import { Container, ButtonAccent} from '@/app/components/ui';
 import { tokens } from '@/app/components/ui/tokens';
 
@@ -21,30 +19,6 @@ const navItems = [
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const router = useRouter();
-
-  // ─────────────────────────────────────────────
-  // AUTH STATE MANAGEMENT
-  // ─────────────────────────────────────────────
-  useEffect(() => {
-    const supabase = createClient();
-
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    getUser();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   // ─────────────────────────────────────────────
   // CLOSE MENU ON ESC KEY
@@ -53,7 +27,6 @@ export default function Navigation() {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setMobileMenuOpen(false);
-        setUserMenuOpen(false);
       }
     }
     window.addEventListener("keydown", onKeyDown);
@@ -71,16 +44,6 @@ export default function Navigation() {
       document.body.style.overflow = original;
     };
   }, [mobileMenuOpen]);
-
-  // ─────────────────────────────────────────────
-  // HANDLERS
-  // ─────────────────────────────────────────────
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    setUserMenuOpen(false);
-    router.push('/');
-  };
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
@@ -140,48 +103,11 @@ export default function Navigation() {
               ))}
             </div>
 
-            {/* ─── RIGHT: User Menu or Sign Up Button ─── */}
+            {/* ─── RIGHT: Sign Up Button ─── */}
             <div className="flex items-center gap-3">
-              {user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    onBlur={() => setTimeout(() => setUserMenuOpen(false), 200)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-white/5 transition-colors group"
-                    aria-label="User menu"
-                    aria-expanded={userMenuOpen}
-                  >
-                    <User className="h-5 w-5 text-white" />
-                    <span className="hidden sm:inline text-sm font-medium text-white">
-                      {user.email?.split('@')[0]}
-                    </span>
-                    <ChevronDown
-                      className={`h-4 w-4 text-white/70 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-
-                  {/* User Dropdown Menu */}
-                  <div
-                    className={`absolute right-0 mt-2 w-48 bg-[#1E1B1F] rounded-md shadow-lg border border-[#3A373C] overflow-hidden transition-all duration-200 origin-top ${
-                      userMenuOpen
-                        ? 'opacity-100 visible scale-100 translate-y-0'
-                        : 'opacity-0 invisible scale-95 -translate-y-2'
-                    }`}
-                  >
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <Link href="/signup">
-                  <ButtonAccent>Sign Up</ButtonAccent>
-                </Link>
-              )}
+              <Link href="/signup">
+                <ButtonAccent>Sign Up</ButtonAccent>
+              </Link>
             </div>
           </nav>
         </Container>
@@ -247,13 +173,11 @@ export default function Navigation() {
             </ul>
 
             {/* Mobile Menu Footer */}
-            {!user && (
-              <div className="mt-8 pt-6 border-t border-[#3A373C]">
-                <Link href="/signup" onClick={closeMobileMenu}>
-                  <ButtonAccent fullWidth>Sign Up</ButtonAccent>
-                </Link>
-              </div>
-            )}
+            <div className="mt-8 pt-6 border-t border-[#3A373C]">
+              <Link href="/signup" onClick={closeMobileMenu}>
+                <ButtonAccent fullWidth>Sign Up</ButtonAccent>
+              </Link>
+            </div>
           </nav>
         </aside>
       </div>
