@@ -1,13 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import RecordForm from './RecordForm'
 import { getUserWorkoutTypes } from './actions'
 
 export default async function RecordPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
   const previousTypes = await getUserWorkoutTypes()
 
   return (

@@ -23,15 +23,14 @@ function formatDate(dateStr: string): string {
 export default async function WorkoutDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const userId = claimsData?.claims?.sub as string
 
   const { data: log } = await supabase
     .from('training_logs')
     .select('id, title, logged_date, duration_minutes, workout_types, workout_log, is_public, ai_structured, ai_formatted_at, ai_needs_refresh')
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .eq('is_deleted', false)
     .single()
 

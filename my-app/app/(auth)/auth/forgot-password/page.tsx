@@ -2,15 +2,13 @@
 
 import { useState, ChangeEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { loginUser } from "./actions";
+import { requestPasswordReset } from "./actions";
 
-export default function LoginPage() {
-  const [emailOrUsername, setEmailOrUsername] = useState("");
-  const [password, setPassword] = useState("");
+export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,19 +16,17 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const result = await loginUser({ emailOrUsername, password });
+      const result = await requestPasswordReset(email);
 
-      if (result.error) {
+      if ("error" in result) {
         setError(result.error);
         setLoading(false);
         return;
       }
 
-      // Keep spinner active through navigation — component unmounts on arrival
-      router.prefetch("/home");
-      router.push("/home");
+      setSubmitted(true);
     } catch {
-      setError("An unexpected error occurred");
+      setError("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   };
@@ -44,102 +40,98 @@ export default function LoginPage() {
             className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Welcome Back
+            Account Recovery
           </p>
           <h1
             className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            Log In
+            Forgot Password
           </h1>
           <p
             className="text-[15px] text-[#6B6870] leading-relaxed"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Sign in to your Naturehood account to continue.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email or Username */}
-          <InputDark
-            label="Email or Username"
-            name="emailOrUsername"
-            value={emailOrUsername}
-            onChange={(e) => {
-              setEmailOrUsername(e.target.value);
-              setError("");
-            }}
-            placeholder="you@example.com"
-            required
-          />
-
-          {/* Password */}
-          <div>
-            <InputDark
-              label="Password"
-              name="password"
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError("");
-              }}
-              placeholder="Your password"
-              required
-            />
-            <div className="mt-2 text-right">
-              <Link
-                href="/auth/forgot-password"
-                className="text-[11px] text-[#6B6870] hover:text-[#C8F04D] transition-colors"
+        {submitted ? (
+          /* Success state — always shown regardless of whether email exists */
+          <div className="space-y-6">
+            <div className="border border-[#C8F04D]/30 bg-[#C8F04D]/5 p-5">
+              <p
+                className="text-[13px] text-[#C8F04D] leading-relaxed"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Forgot password?
-              </Link>
+                If an account with that email exists, you&apos;ll receive a
+                password reset link shortly. Check your inbox — the link expires
+                in 60 minutes.
+              </p>
             </div>
-          </div>
-
-          {/* Error */}
-          {error && (
             <p
-              className="text-[13px] text-[#FF4D4D]"
+              className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              {error}
+              <Link href="/login" className="text-[#C8F04D] hover:underline">
+                Back to Log In
+              </Link>
             </p>
-          )}
+          </div>
+        ) : (
+          /* Form */
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <InputDark
+              label="Email Address"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+              placeholder="you@example.com"
+              required
+            />
 
-          {/* Submit */}
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            {error && (
+              <p
+                className="text-[13px] text-[#FF4D4D]"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {error}
+              </p>
+            )}
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {loading ? "Sending..." : "Send Reset Link"}
+              </button>
+            </div>
+
+            <p
+              className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              {loading ? "Logging in..." : "Log In"}
-            </button>
-          </div>
-
-          {/* Footer link */}
-          <p
-            className="text-center text-[13px] text-[#6B6870]"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-[#C8F04D] hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </form>
+              <Link href="/login" className="text-[#C8F04D] hover:underline">
+                Back to Log In
+              </Link>
+            </p>
+          </form>
+        )}
       </div>
     </div>
   );
 }
 
 // ─────────────────────────────────────────────
-// DARK MODE INPUT (matches signup page)
+// DARK MODE INPUT (matches login page style)
 // ─────────────────────────────────────────────
 
 function InputDark({

@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { FeedCard } from '@/app/components/platform/FeedCard'
 
@@ -11,8 +10,6 @@ export default async function HomePage({
   searchParams: Promise<{ page?: string }>
 }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
 
   const { page: pageParam } = await searchParams
   const page = Math.max(1, parseInt(pageParam ?? '1', 10))

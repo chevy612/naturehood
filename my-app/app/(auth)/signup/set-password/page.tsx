@@ -34,12 +34,15 @@ function SetPasswordForm() {
       const result = await setUserPassword({ email, password, confirmPassword, fullName: name, role });
       if (result.error) {
         setError(result.error);
+        setSubmitting(false);
         return;
       }
+
+      // Keep spinner active through navigation — component unmounts on arrival
+      router.prefetch("/home");
       router.push("/home");
     } catch {
       setError("Something went wrong. Please try again.");
-    } finally {
       setSubmitting(false);
     }
   };
@@ -111,7 +114,11 @@ function SetPasswordForm() {
 
 export default function SetPasswordPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#141115] flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-[#C8F04D] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
       <SetPasswordForm />
     </Suspense>
   );

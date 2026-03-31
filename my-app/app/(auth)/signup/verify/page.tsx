@@ -201,7 +201,11 @@ function VerifyForm() {
 
 export default function VerifyPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#141115] flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-[#C8F04D] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
       <VerifyForm />
     </Suspense>
   );
