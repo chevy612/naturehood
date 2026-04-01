@@ -21,6 +21,8 @@ export default function Avatar({ name, photoUrl, size = 'md' }: Props) {
 
   return (
     <View
+      accessibilityLabel={name}
+      accessibilityRole="image"
       style={[
         styles.ring,
         { width: container + 4, height: container + 4, borderRadius: (container + 4) / 2 },

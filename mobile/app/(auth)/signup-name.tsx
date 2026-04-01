@@ -33,7 +33,7 @@ export default function SignupNameScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={commonStyles.authScreen} keyboardShouldPersistTaps="handled">
-        <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 32 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 32, minHeight: 44, justifyContent: 'center' }} accessibilityLabel="Go back" accessibilityRole="button">
           <Text style={commonStyles.navBackIcon}>‹</Text>
         </TouchableOpacity>
 

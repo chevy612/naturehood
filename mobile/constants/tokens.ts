@@ -31,6 +31,8 @@ export const spacing = {
 export const commonStyles = {
   // ── Screen layout ─────────────────────────────────────────
   screen:        { flex: 1, backgroundColor: colors.background },
+  // Note: prefer useSafeAreaInsets().bottom + 20 over this static value in screens
+  // that sit behind the tab bar or have dynamic bottom insets.
   screenContent: { paddingBottom: 60 },
   centered:      { flex: 1, justifyContent: 'center' as const, alignItems: 'center' as const, backgroundColor: colors.background },
 
@@ -60,7 +62,7 @@ export const commonStyles = {
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  navHeaderSpacer: { width: 40 },
+  navHeaderSpacer: { width: 44, height: 44, justifyContent: 'center' as const },
   navBackIcon:     { fontSize: 28, color: colors.textPrimary, fontFamily: fonts.body, lineHeight: 32 },
   navHeaderTitle:  { fontSize: 16, fontFamily: fonts.heading, color: colors.textPrimary },
 
@@ -111,6 +113,7 @@ export const commonStyles = {
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 12,
+    minHeight: 44,
     fontSize: 14,
     fontFamily: fonts.body,
     color: colors.textPrimary,

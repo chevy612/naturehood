@@ -19,6 +19,7 @@ export default function TabsLayout() {
         },
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.textMuted,
+        tabBarItemStyle: { minHeight: 44 },
         tabBarLabelStyle: {
           fontSize: 10,
           fontFamily: 'DMSans_500Medium',

@@ -117,7 +117,7 @@ export default function EditProfileScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7} accessibilityLabel="Go back" accessibilityRole="button">
           <Text style={styles.backIcon}>‹</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit profile</Text>
@@ -125,7 +125,7 @@ export default function EditProfileScreen() {
       </View>
 
       <View style={styles.avatarSection}>
-        <TouchableOpacity onPress={handleAvatarPick} disabled={uploading} activeOpacity={0.8} style={styles.avatarWrapper}>
+        <TouchableOpacity onPress={handleAvatarPick} disabled={uploading} activeOpacity={0.8} style={styles.avatarWrapper} accessibilityLabel="Change profile photo" accessibilityRole="button">
           {uploading ? (
             <View style={styles.avatarLoader}>
               <ActivityIndicator color={colors.accent} />

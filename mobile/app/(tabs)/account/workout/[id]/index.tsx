@@ -92,7 +92,7 @@ export default function WorkoutDetailScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7} accessibilityLabel="Go back" accessibilityRole="button">
           <Text style={styles.backIcon}>‹</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Workout</Text>
@@ -125,6 +125,20 @@ export default function WorkoutDetailScreen() {
         )}
 
         <View style={styles.divider} />
+
+        {/* Stale banner */}
+        {ai && workout.ai_needs_refresh && (
+          <View style={styles.staleBanner}>
+            <Text style={styles.staleText}>
+              Your workout log was edited. This AI report may be outdated.
+            </Text>
+            <TouchableOpacity onPress={handleAnalyze} disabled={analyzing} activeOpacity={0.7}>
+              <Text style={[styles.reanalyseBtn, analyzing && { opacity: 0.5 }]}>
+                {analyzing ? 'Analysing…' : 'Re-analyse'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* AI Section */}
         {ai ? (
@@ -268,4 +282,25 @@ const styles = StyleSheet.create({
   exerciseMetrics: { fontSize: 12, fontFamily: fonts.body, color: colors.textMuted },
   exerciseNotes: { fontSize: 11, fontFamily: fonts.body, color: colors.textMuted, fontStyle: 'italic' },
   editAiText: { fontSize: 12, fontFamily: fonts.bodyMed, color: colors.accent, marginTop: 4 },
+
+  staleBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: '#5C4A1E',
+    backgroundColor: '#2A1F0A',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  staleText: { fontSize: 12, fontFamily: fonts.body, color: '#F0B429', flex: 1, lineHeight: 18 },
+  reanalyseBtn: {
+    fontSize: 11,
+    fontFamily: fonts.headingM,
+    color: '#F0B429',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    flexShrink: 0,
+  },
 });

@@ -52,7 +52,7 @@ export default function WorkoutCard({
         </View>
       )}
 
-      {ai_structured && (
+      {ai_structured?.exercises && (
         <View style={styles.aiRow}>
           <Text style={styles.aiExerciseCount}>
             {ai_structured.exercises.length} exercise{ai_structured.exercises.length !== 1 ? 's' : ''}

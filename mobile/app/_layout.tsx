@@ -15,7 +15,9 @@ import {
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ThemeProvider } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
+import { NAV_THEME } from '../lib/constants';
 import type { Session } from '@supabase/supabase-js';
 
 SplashScreen.preventAutoHideAsync();
@@ -36,6 +38,7 @@ export default function RootLayout() {
       if (error) {
         // Stale/invalid refresh token — clear it and redirect to login
         supabase.auth.signOut();
+        setSession(null);
       } else {
         setSession(session);
       }
@@ -61,12 +64,14 @@ export default function RootLayout() {
   }, [fontsLoaded, session]);
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    </SafeAreaProvider>
+    <ThemeProvider value={NAV_THEME.dark}>
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }

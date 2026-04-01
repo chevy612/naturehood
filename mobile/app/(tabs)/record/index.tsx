@@ -182,7 +182,7 @@ export default function RecordScreen() {
           {workoutTypes.length > 0 && (
             <View style={styles.tags}>
               {workoutTypes.map(t => (
-                <TouchableOpacity key={t} onPress={() => removeType(t)}>
+                <TouchableOpacity key={t} onPress={() => removeType(t)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                   <PillTag label={t} removable />
                 </TouchableOpacity>
               ))}
@@ -194,7 +194,7 @@ export default function RecordScreen() {
               <Text style={styles.suggestLabel}>Previous types:</Text>
               <View style={styles.tags}>
                 {previousTypes.filter(t => !workoutTypes.includes(t)).slice(0, 8).map(t => (
-                  <TouchableOpacity key={t} onPress={() => addType(t)}>
+                  <TouchableOpacity key={t} onPress={() => addType(t)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                     <PillTag label={t} variant="ghost-dark" />
                   </TouchableOpacity>
                 ))}
@@ -282,6 +282,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 12,
+    minHeight: 44,
     fontSize: 14,
     fontFamily: fonts.body,
     color: colors.textPrimary,
@@ -295,6 +296,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 12,
+    minHeight: 44,
     justifyContent: 'center',
   },
   addBtnText: { color: colors.textPrimary, fontFamily: fonts.bodyMed, fontSize: 13 },

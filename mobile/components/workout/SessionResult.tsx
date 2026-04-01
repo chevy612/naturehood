@@ -131,8 +131,8 @@ function SprintEfforts({ sprint }: { sprint: SprintSession }) {
           {[sprint.surface, sprint.footwear].filter(Boolean).join(' · ')}
         </Text>
       ) : null}
-      {sprint.efforts.map((effort) => (
-        <View key={effort.effort_index} style={s.sprintCard}>
+      {sprint.efforts?.map((effort, i) => (
+        <View key={effort.effort_index ?? i} style={s.sprintCard}>
           <View style={s.sprintCardHeader}>
             <Text style={s.blockLabel}>
               {effort.drill_type.replace(/_/g, ' ')}
@@ -144,7 +144,7 @@ function SprintEfforts({ sprint }: { sprint: SprintSession }) {
               <Text style={s.sprintMeta}>@ {effort.effort_percent}%</Text>
             )}
           </View>
-          {effort.reps.map((rep) => (
+          {effort.reps?.map((rep) => (
             <View key={rep.rep_index} style={s.sprintRepRow}>
               <Text style={s.setLabel}>Rep {rep.rep_index + 1}</Text>
               <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>

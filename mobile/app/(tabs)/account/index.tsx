@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     paddingBottom: spacing.md,
   },
-  actionBtn: { borderWidth: 1, borderColor: colors.border, borderRadius: 8, paddingVertical: 10, alignItems: 'center' },
+  actionBtn: { borderWidth: 1, borderColor: colors.border, borderRadius: 8, minHeight: 44, paddingVertical: 10, alignItems: 'center', justifyContent: 'center' },
   actionBtnHalf: { flex: 1 },
   actionBtnText: { fontSize: 13, fontFamily: fonts.bodyMed, color: colors.textPrimary },
 

@@ -1,3 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Flat hex vars — used by existing StyleSheet.create() components */
+    --color-background: #141115;
+    --color-surface-1: #1E1B1F;
+    --color-surface-2: #2A272C;
+    --color-card: #1A1719;
+    --color-border: #3A373C;
+    --color-accent: #C8F04D;
+    --color-foreground: #FFFFFF;
+    --color-muted-foreground: #6B6870;
+    --color-disabled: #A09EA3;
+    --color-error: #FF4D4D;
+
+    /* react-native-reusables semantic aliases (HSL channel triplets — no commas) */
+    --background: 300 10% 8%;
+    --foreground: 0 0% 100%;
+    --card: 300 8% 9%;
+    --card-foreground: 0 0% 100%;
+    --popover: 300 10% 8%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 74 84% 62%;
+    --primary-foreground: 300 10% 8%;
+    --secondary: 300 8% 12%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 300 8% 17%;
+    --muted-foreground: 270 4% 42%;
+    --accent: 74 84% 62%;
+    --accent-foreground: 300 10% 8%;
+    --destructive: 0 100% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 270 4% 23%;
+    --input: 270 4% 23%;
+    --ring: 74 84% 62%;
+    --radius: 0.5rem;
+  }
+}
