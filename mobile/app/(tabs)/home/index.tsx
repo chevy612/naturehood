@@ -1,14 +1,16 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   View,
-  Text,
   FlatList,
   RefreshControl,
-  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import { colors, commonStyles } from '../../../constants/tokens';
+import { commonStyles } from '../../../constants/tokens';
 import FeedCard from '../../../components/FeedCard';
+import LoadingScreen from '../../../components/ui/LoadingScreen';
+import PageHeader from '../../../components/ui/PageHeader';
+import LoadingFooter from '../../../components/ui/LoadingFooter';
+import EmptyState from '../../../components/ui/EmptyState';
 import { fetchFeed, type FeedItem } from '../../../lib/actions/home';
 
 export default function HomeScreen() {
@@ -44,33 +46,25 @@ export default function HomeScreen() {
   }, [hasMore, loading, page, loadPage]);
 
   if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator color={colors.accent} size="large" />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.pageHeader}>
-        <Text style={styles.pageTitle}>Community Feed</Text>
-      </View>
+      <PageHeader title="Community Feed" />
 
       <FlatList
         data={items}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         onEndReached={onEndReached}
         onEndReachedThreshold={0.4}
-        ListFooterComponent={
-          hasMore ? <ActivityIndicator color={colors.accent} style={{ marginVertical: 16 }} /> : null
-        }
+        ListFooterComponent={<LoadingFooter visible={hasMore} />}
         ListEmptyComponent={
-          <Text style={styles.empty}>No workouts yet. Be the first to log one!</Text>
+          <EmptyState message="No workouts yet. Be the first to log one!" />
         }
         renderItem={({ item }) => (
           <FeedCard
@@ -89,19 +83,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:  commonStyles.screen,
-  centered:   commonStyles.centered,
-  pageHeader: commonStyles.pageHeader,
-  pageTitle:  commonStyles.pageHeaderTitle,
+  container: commonStyles.screen,
   list: {
     padding: 16,
     gap: 12,
-  },
-  empty: {
-    textAlign: 'center',
-    color: colors.textMuted,
-    fontFamily: 'DMSans_400Regular',
-    fontSize: 13,
-    marginTop: 40,
   },
 });

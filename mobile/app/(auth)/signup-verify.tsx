@@ -1,33 +1,23 @@
-import { useState, useEffect } from 'react';
+import { VerifyEmailForm } from '../../@/components/verify-email-form';
+import { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { supabase } from '../../lib/supabase';
 import { colors, commonStyles } from '../../constants/tokens';
 
-const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
-
 export default function SignupVerifyScreen() {
-  const { email } = useLocalSearchParams<{ email: string }>();
-  const [code, setCode] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { email, type } = useLocalSearchParams<{ email: string; type?: string }>();
   const [error, setError] = useState('');
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (resendCooldown <= 0) return;
-    const timer = setTimeout(() => setResendCooldown(c => c - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [resendCooldown]);
-
-  async function handleVerify() {
+  async function handleSubmit(code: string) {
     if (code.trim().length !== 6) {
       setError('Please enter the 6-digit code.');
       return;
@@ -36,38 +26,35 @@ export default function SignupVerifyScreen() {
     setLoading(true);
     setError('');
 
-    try {
-      const res = await fetch(`${API_BASE}/api/auth/signup/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code: code.trim() }),
-      });
-      const data = await res.json();
+    const otpType = type === 'recovery' ? 'recovery' : 'signup';
 
-      if (!res.ok || data.error) {
-        setError(data.error ?? 'Invalid code. Please try again.');
-        return;
-      }
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email,
+      token: code.trim(),
+      type: otpType,
+    });
 
-      router.push({ pathname: '/(auth)/signup-name', params: { email } });
-    } catch {
-      setError('Network error. Please check your connection.');
-    } finally {
+    if (verifyError) {
+      setError('Invalid code. Please try again.');
       setLoading(false);
+      return;
     }
+
+    // For signup: auth state change in _layout.tsx navigates to /(tabs)
+    // For recovery: navigate to reset password screen
+    if (otpType === 'recovery') {
+      router.replace({ pathname: '/(auth)/reset-password', params: { email } });
+    }
+
+    setLoading(false);
   }
 
   async function handleResend() {
-    setResendCooldown(60);
-    setError('');
-    try {
-      await fetch(`${API_BASE}/api/auth/signup/initiate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-    } catch {
-      // silently fail — user can try again after cooldown
+    const otpType = type === 'recovery' ? 'recovery' : 'signup';
+    if (otpType === 'recovery') {
+      await supabase.auth.resetPasswordForEmail(email);
+    } else {
+      await supabase.auth.resend({ type: 'signup', email });
     }
   }
 
@@ -76,64 +63,37 @@ export default function SignupVerifyScreen() {
       style={commonStyles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={commonStyles.authScreen} keyboardShouldPersistTaps="handled">
-        <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 32, minHeight: 44, justifyContent: 'center' }} accessibilityLabel="Go back" accessibilityRole="button">
-          <Text style={commonStyles.navBackIcon}>‹</Text>
-        </TouchableOpacity>
-
-        <View style={commonStyles.authHeader}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.wordmarkContainer}>
           <Text style={commonStyles.authWordmark}>NATUREHOOD</Text>
-          <Text style={commonStyles.authTagline}>Check your email</Text>
         </View>
-
-        <View style={commonStyles.authForm}>
-          <Text style={commonStyles.textBody}>
-            We sent a 6-digit code to {email}. Enter it below to continue.
-          </Text>
-
-          <View style={commonStyles.authField}>
-            <Text style={commonStyles.sectionLabel}>VERIFICATION CODE</Text>
-            <TextInput
-              style={[commonStyles.authInput, { letterSpacing: 8, textAlign: 'center', fontSize: 20 }]}
-              placeholder="000000"
-              placeholderTextColor={colors.textMuted}
-              value={code}
-              onChangeText={setCode}
-              keyboardType="number-pad"
-              maxLength={6}
-              returnKeyType="done"
-              onSubmitEditing={handleVerify}
-            />
-          </View>
-
-          {error ? <Text style={commonStyles.textError}>{error}</Text> : null}
-
-          <TouchableOpacity
-            style={[commonStyles.authButton, loading && commonStyles.authButtonDisabled]}
-            onPress={handleVerify}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            {loading ? (
-              <ActivityIndicator color={colors.background} size="small" />
-            ) : (
-              <Text style={commonStyles.authButtonText}>VERIFY</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleResend}
-            disabled={resendCooldown > 0}
-            activeOpacity={0.7}
-          >
-            <Text style={[commonStyles.authLink, resendCooldown > 0 && { color: colors.textDisabled }]}>
-              {resendCooldown > 0
-                ? `Resend code in ${resendCooldown}s`
-                : 'Did not receive it? Resend code'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <VerifyEmailForm
+          email={email}
+          type={type === 'recovery' ? 'recovery' : 'signup'}
+          onSubmit={handleSubmit}
+          onResend={handleResend}
+          onCancel={() => router.back()}
+          error={error}
+          loading={loading}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: colors.background,
+    paddingHorizontal: 24,
+    paddingVertical: 48,
+    justifyContent: 'center',
+  },
+  wordmarkContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+});

@@ -15,6 +15,7 @@ import {
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { PortalHost } from '@rn-primitives/portal';
 import { ThemeProvider } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
 import { NAV_THEME } from '../lib/constants';
@@ -71,6 +72,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
         </Stack>
+        <PortalHost />
       </SafeAreaProvider>
     </ThemeProvider>
   );

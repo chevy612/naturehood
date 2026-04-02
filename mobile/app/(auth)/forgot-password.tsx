@@ -1,4 +1,4 @@
-import { SignUpForm } from '../../@/components/sign-up-form';
+import { ForgotPasswordForm } from '../../@/components/forgot-password-form';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -12,40 +12,40 @@ import { router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { colors, commonStyles } from '../../constants/tokens';
 
-export default function SignupScreen() {
+export default function ForgotPasswordScreen() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  async function handleSignUp(email: string, password: string) {
+  async function handleSubmit(email: string) {
     if (!email.trim()) {
       setError('Please enter your email address.');
-      return;
-    }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
       return;
     }
 
     setLoading(true);
     setError('');
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password,
-    });
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      email.trim().toLowerCase()
+    );
 
-    if (signUpError) {
-      setError(signUpError.message);
+    if (resetError) {
+      setError(resetError.message);
       setLoading(false);
       return;
     }
 
-    router.push({
-      pathname: '/(auth)/signup-verify',
-      params: { email: email.trim().toLowerCase(), type: 'signup' },
-    });
-
+    setSuccess(true);
     setLoading(false);
+
+    // Navigate to verify screen after a short delay so user sees the success message
+    setTimeout(() => {
+      router.push({
+        pathname: '/(auth)/signup-verify',
+        params: { email: email.trim().toLowerCase(), type: 'recovery' },
+      });
+    }, 1500);
   }
 
   return (
@@ -57,11 +57,12 @@ export default function SignupScreen() {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-        <SignUpForm
-          onSubmit={handleSignUp}
-          onSignIn={() => router.replace('/(auth)/login')}
+        <ForgotPasswordForm
+          onSubmit={handleSubmit}
+          onBack={() => router.back()}
           error={error}
           loading={loading}
+          success={success}
         />
       </ScrollView>
     </KeyboardAvoidingView>

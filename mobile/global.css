@@ -16,7 +16,7 @@
     --color-disabled: #A09EA3;
     --color-error: #FF4D4D;
 
-    /* react-native-reusables semantic aliases (HSL channel triplets — no commas) */
+    /* react-native-reusables / NativeWind semantic aliases (HSL channel triplets — no commas) */
     --background: 300 10% 8%;
     --foreground: 0 0% 100%;
     --card: 300 8% 9%;

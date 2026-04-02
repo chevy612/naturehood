@@ -1,25 +1,20 @@
+import { SignInForm } from '../../@/components/sign-in-form';
 import { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { colors, commonStyles } from '../../constants/tokens';
 
 export default function LoginScreen() {
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  async function handleLogin() {
+  async function handleLogin(identifier: string, password: string) {
     if (!identifier.trim() || !password) {
       setError('Please enter your email/username and password.');
       return;
@@ -60,65 +55,28 @@ export default function LoginScreen() {
       style={commonStyles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={commonStyles.authScreen} keyboardShouldPersistTaps="handled">
-        <View style={commonStyles.authHeader}>
-          <Text style={commonStyles.authWordmark}>NATUREHOOD</Text>
-          <Text style={commonStyles.authTagline}>Sign in to continue</Text>
-        </View>
-
-        <View style={commonStyles.authForm}>
-          <View style={commonStyles.authField}>
-            <Text style={commonStyles.sectionLabel}>EMAIL OR USERNAME</Text>
-            <TextInput
-              style={commonStyles.authInput}
-              placeholder="you@example.com or username"
-              placeholderTextColor={colors.textMuted}
-              value={identifier}
-              onChangeText={setIdentifier}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              returnKeyType="next"
-            />
-          </View>
-
-          <View style={commonStyles.authField}>
-            <Text style={commonStyles.sectionLabel}>PASSWORD</Text>
-            <TextInput
-              style={commonStyles.authInput}
-              placeholder="••••••••"
-              placeholderTextColor={colors.textMuted}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              returnKeyType="done"
-              onSubmitEditing={handleLogin}
-            />
-          </View>
-
-          {error ? <Text style={commonStyles.textError}>{error}</Text> : null}
-
-          <TouchableOpacity
-            style={[commonStyles.authButton, loading && commonStyles.authButtonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            {loading ? (
-              <ActivityIndicator color={colors.background} size="small" />
-            ) : (
-              <Text style={commonStyles.authButtonText}>SIGN IN</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push('/(auth)/signup')} activeOpacity={0.7}>
-            <Text style={commonStyles.authLink}>
-              Don't have an account?{' '}
-              <Text style={[commonStyles.authLink, commonStyles.authLinkAccent]}>Sign up</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        <SignInForm
+          onSubmit={handleLogin}
+          onForgotPassword={() => router.push('/(auth)/forgot-password')}
+          onSignUp={() => router.push('/(auth)/signup')}
+          error={error}
+          loading={loading}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: colors.background,
+    paddingHorizontal: 24,
+    paddingVertical: 48,
+    justifyContent: 'center',
+  },
+});
