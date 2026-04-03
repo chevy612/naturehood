@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, PlusCircle, Calendar, User } from 'lucide-react-native';
+import { Home, PlusCircle, UtensilsCrossed, Calendar, User } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../constants/tokens';
 
@@ -40,6 +40,13 @@ export default function TabsLayout() {
         options={{
           title: 'Record',
           tabBarIcon: ({ color, size }) => <PlusCircle size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="meal"
+        options={{
+          title: 'Meal',
+          tabBarIcon: ({ color, size }) => <UtensilsCrossed size={size} color={color} />,
         }}
       />
       <Tabs.Screen

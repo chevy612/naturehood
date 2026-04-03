@@ -1,7 +1,5 @@
-import Anthropic from '@anthropic-ai/sdk'
 import type { AthleteSessionLog } from '@/lib/types'
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+import { claudeClient as client } from '@/lib/services/ai-client'
 
 const SYSTEM_PROMPT = `You are an elite athletics log parser. You receive a JSON envelope describing one athlete session and must return a single valid AthleteSessionLog JSON object — no prose, no markdown, no code fences.
 
@@ -329,7 +327,7 @@ export async function formatWorkoutWithAI(params: {
 
   try {
     const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 8192,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: envelope }],
