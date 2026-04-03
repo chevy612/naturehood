@@ -2,6 +2,55 @@ import { File } from 'expo-file-system';
 import { supabase } from '../supabase';
 import type { MealRecord, AiFoodAnalysis } from '../types/meal';
 
+// ── Fetch AI usage for the current user ──────────────────────────────────────
+
+export async function fetchAiUsage(
+  userId: string
+): Promise<{ count: number; updatedAt: string | null; error: string | null }> {
+  const { data, error } = await supabase
+    .from('user_ai_usage')
+    .select('ai_used_count, updated_at')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[meal] fetchAiUsage failed:', error.message);
+    return { count: 0, updatedAt: null, error: error.message };
+  }
+
+  if (!data) {
+    return { count: 0, updatedAt: null, error: null };
+  }
+
+  return { count: data.ai_used_count ?? 0, updatedAt: data.updated_at ?? null, error: null };
+}
+
+// ── Increment AI usage count in Supabase ─────────────────────────────────────
+
+export async function incrementAiUsageRemote(
+  userId: string,
+  currentCount: number
+): Promise<{ error: string | null }> {
+  const now = new Date().toISOString();
+
+  // Upsert: create row if it doesn't exist, otherwise update
+  const { error } = await supabase.from('user_ai_usage').upsert(
+    {
+      user_id: userId,
+      ai_used_count: currentCount + 1,
+      updated_at: now,
+    },
+    { onConflict: 'user_id' }
+  );
+
+  if (error) {
+    console.error('[meal] incrementAiUsageRemote failed:', error.message);
+    return { error: error.message };
+  }
+
+  return { error: null };
+}
+
 // ── Fetch meal history ───────────────────────────────────────────────────────
 
 export async function fetchMealHistory(
@@ -29,6 +78,8 @@ type CreateMealInput = {
   title: string;
   weight?: number | null;
   calories?: number | null;
+  protein?: number | null;
+  meal_type?: string | null;
   user_notes?: string | null;
   s3_link: string;
 };
@@ -42,6 +93,8 @@ export async function createMealRecord(input: CreateMealInput): Promise<{ error:
     title: input.title || null,
     weight: input.weight ?? null,
     calories: input.calories ?? null,
+    protein: input.protein ?? null,
+    meal_type: input.meal_type ?? null,
     user_notes: input.user_notes ?? null,
     ai_analysis: null,
     s3_link: input.s3_link,
@@ -63,6 +116,8 @@ type UpdateMealInput = {
   title?: string | null;
   calories?: number | null;
   weight?: number | null;
+  protein?: number | null;
+  meal_type?: string | null;
   user_notes?: string | null;
   ai_analysis?: AiFoodAnalysis | null;
 };
@@ -111,12 +166,10 @@ export async function uploadFoodImage(
   const file = new File(imageUri);
   const bytes = await file.bytes();
 
-  const { error: uploadError } = await supabase.storage
-    .from('food_images')
-    .upload(path, bytes, {
-      upsert: false,
-      contentType,
-    });
+  const { error: uploadError } = await supabase.storage.from('food_images').upload(path, bytes, {
+    upsert: false,
+    contentType,
+  });
 
   if (uploadError) {
     console.error('[meal] uploadFoodImage failed:', uploadError.message);
@@ -124,9 +177,7 @@ export async function uploadFoodImage(
   }
 
   // Build the public URL
-  const { data: urlData } = supabase.storage
-    .from('food_images')
-    .getPublicUrl(path);
+  const { data: urlData } = supabase.storage.from('food_images').getPublicUrl(path);
 
   return { url: urlData.publicUrl, error: null };
 }

@@ -1,16 +1,46 @@
 import { create } from 'zustand';
-import type { AiFoodAnalysis } from '../lib/types/meal';
+import type { AiFoodAnalysis, MealType } from '../lib/types/meal';
 
-// ── State shape ──────────────────────────────────────────────────────────────
+// ── AI Usage Slice ──────────────────────────────────────────────────────────
+
+type AiUsageState = {
+  aiUsedCount: number;
+  aiUsageUpdatedAt: string | null;
+};
+
+type AiUsageActions = {
+  /** Set AI usage from Supabase on app mount */
+  setAiUsage: (count: number, updatedAt: string | null) => void;
+  /** Increment after a successful AI call */
+  incrementAiUsage: () => void;
+};
+
+export const AI_LIMIT = 8;
+
+export const useAiUsageStore = create<AiUsageState & AiUsageActions>((set) => ({
+  aiUsedCount: 0,
+  aiUsageUpdatedAt: null,
+
+  setAiUsage: (count, updatedAt) => set({ aiUsedCount: count, aiUsageUpdatedAt: updatedAt }),
+
+  incrementAiUsage: () =>
+    set((s) => ({
+      aiUsedCount: s.aiUsedCount + 1,
+      aiUsageUpdatedAt: new Date().toISOString(),
+    })),
+}));
+
+// ── Meal Draft Slice ────────────────────────────────────────────────────────
 
 type MealDraftState = {
   // Image
   imageUri: string | null;
 
-  // Form fields
+  // Form fields (strings for TextInput; parsed to numbers on save)
   title: string;
-  calories: string; // kept as string for TextInput; parsed to number on save
-  weightG: string;  // optional context for AI
+  calories: string;
+  protein: string;
+  mealType: MealType | null;
   mealNotes: string;
 
   // AI result (set after successful analysis)
@@ -31,7 +61,10 @@ type MealDraftActions = {
   setImage: (uri: string) => void;
 
   /** Generic setter for any text form field */
-  setField: (key: 'title' | 'calories' | 'weightG' | 'mealNotes', value: string) => void;
+  setField: (key: 'title' | 'calories' | 'protein' | 'mealNotes', value: string) => void;
+
+  /** Set the meal type */
+  setMealType: (type: MealType | null) => void;
 
   /** Store the parsed AI analysis result */
   setAiResult: (result: AiFoodAnalysis) => void;
@@ -52,7 +85,8 @@ const initialState: MealDraftState = {
   imageUri: null,
   title: '',
   calories: '',
-  weightG: '',
+  protein: '',
+  mealType: null,
   mealNotes: '',
   aiResult: null,
   currentMealId: null,
@@ -70,6 +104,8 @@ export const useMealStore = create<MealDraftState & MealDraftActions>((set) => (
   setImage: (uri) => set({ imageUri: uri }),
 
   setField: (key, value) => set({ [key]: value }),
+
+  setMealType: (type) => set({ mealType: type }),
 
   setAiResult: (result) => set({ aiResult: result }),
 

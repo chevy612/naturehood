@@ -15,7 +15,8 @@ import { colors, fonts, commonStyles } from '../../../constants/tokens';
 import Button from '../../../components/ui/Button';
 import { useMealStore } from '../../../stores/meal-store';
 import { updateMealRecord } from '../../../lib/actions/meal';
-import { hasAiFoodData } from '../../../lib/types/meal';
+import { hasAiFoodData, MEAL_TYPES, MEAL_TYPE_LABELS } from '../../../lib/types/meal';
+import type { MealType } from '../../../lib/types/meal';
 import { supabase } from '../../../lib/supabase';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -35,31 +36,61 @@ export default function MealSummaryScreen() {
 
   // Pre-fill editable fields from AI result + form data
   const storeTitle = useMealStore((s) => s.title);
+  const storeProtein = useMealStore((s) => s.protein);
+  const storeMealType = useMealStore((s) => s.mealType);
 
   const aiData = aiResult && hasAiFoodData(aiResult.data) ? aiResult.data : null;
   const aiCalories = aiData
-    ? Math.round((aiData.meal_summary.total_calories_range.min + aiData.meal_summary.total_calories_range.max) / 2)
+    ? Math.round(
+        (aiData.meal_summary.total_calories_range.min +
+          aiData.meal_summary.total_calories_range.max) /
+          2
+      )
+    : null;
+
+  // Compute total protein from AI breakdown if available
+  const aiProtein = aiData
+    ? aiData.breakdown.reduce((sum, item) => sum + (item.macros.p ?? 0), 0)
     : null;
 
   const [title, setTitle] = useState(storeTitle || '');
   const [calories, setCalories] = useState(aiCalories?.toString() ?? '');
+  const [protein, setProtein] = useState(
+    storeProtein || (aiProtein ? Math.round(aiProtein).toString() : '')
+  );
+  const [mealType, setMealType] = useState<MealType | null>(storeMealType);
   const [description, setDescription] = useState(aiResult?.description ?? '');
 
   // Track whether user has changed anything
   const isDirty = useMemo(() => {
     const titleChanged = title !== (storeTitle || '');
     const caloriesChanged = calories !== (aiCalories?.toString() ?? '');
+    const proteinChanged =
+      protein !== (storeProtein || (aiProtein ? Math.round(aiProtein).toString() : ''));
+    const mealTypeChanged = mealType !== storeMealType;
     const descChanged = description !== (aiResult?.description ?? '');
-    return titleChanged || caloriesChanged || descChanged;
-  }, [title, calories, description, storeTitle, aiCalories, aiResult?.description]);
+    return titleChanged || caloriesChanged || proteinChanged || mealTypeChanged || descChanged;
+  }, [
+    title,
+    calories,
+    protein,
+    mealType,
+    description,
+    storeTitle,
+    aiCalories,
+    storeProtein,
+    aiProtein,
+    storeMealType,
+    aiResult?.description,
+  ]);
 
-  // ── Back handler — discard changes and go to history ─────────────────────
+  // ── Back handler — discard changes and go to history ─────────────────
   function handleBack() {
     reset();
     router.replace('/(tabs)/meal/');
   }
 
-  // ── Save + Return ───────────────────────────────────────────────────────
+  // ── Save + Return ──────────────────────────────────────────────────────
   async function handleDone() {
     if (!currentMealId) {
       handleBack();
@@ -68,22 +99,24 @@ export default function MealSummaryScreen() {
 
     setLoading('savingSummary', true);
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       Alert.alert('Error', 'You must be logged in.');
       setLoading('savingSummary', false);
       return;
     }
 
-    // Build update payload — save edits into user_notes for future reference
+    // Build update payload
     const parsedCal = calories ? parseFloat(calories) : null;
+    const parsedProtein = protein ? parseFloat(protein) : null;
 
     const { error } = await updateMealRecord(currentMealId, user.id, {
       title: title || null,
       calories: isNaN(parsedCal as number) ? null : parsedCal,
-      user_notes: isDirty
-        ? JSON.stringify({ edited_title: title, edited_calories: calories, edited_description: description })
-        : undefined,
+      protein: isNaN(parsedProtein as number) ? null : parsedProtein,
+      meal_type: mealType ?? null,
     });
 
     setLoading('savingSummary', false);
@@ -97,7 +130,7 @@ export default function MealSummaryScreen() {
     router.replace('/(tabs)/meal/');
   }
 
-  // ── AI breakdown rendering ──────────────────────────────────────────────
+  // ── AI breakdown rendering ─────────────────────────────────────────────
   const breakdownItems = aiData?.breakdown ?? [];
   const assumptions = aiData?.preparation_assumptions ?? [];
   const confidence = aiData?.meal_summary.confidence_score;
@@ -119,12 +152,12 @@ export default function MealSummaryScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* ── Image preview (smaller) ───────────────────────────────────── */}
-        {imageUri && (
+        {/* ── Image preview ─────────────────────────────────────────────── */}
+        {imageUri ? (
           <View style={styles.imageContainer}>
             <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
           </View>
-        )}
+        ) : null}
 
         {/* ── No food detected message ──────────────────────────────────── */}
         {noFood && (
@@ -166,6 +199,42 @@ export default function MealSummaryScreen() {
             />
           </Field>
 
+          <Field label="PROTEIN (G)">
+            <TextInput
+              style={styles.input}
+              value={protein}
+              onChangeText={setProtein}
+              placeholder="e.g. 30"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="numeric"
+            />
+          </Field>
+
+          <Field label="MEAL TYPE">
+            <View style={styles.mealTypePicker}>
+              {MEAL_TYPES.map((type) => {
+                const isSelected = mealType === type;
+                return (
+                  <TouchableOpacity
+                    key={type}
+                    style={[styles.mealTypeChip, isSelected && styles.mealTypeChipSelected]}
+                    activeOpacity={0.7}
+                    onPress={() => setMealType(isSelected ? null : type)}
+                  >
+                    <Text
+                      style={[
+                        styles.mealTypeChipText,
+                        isSelected && styles.mealTypeChipTextSelected,
+                      ]}
+                    >
+                      {MEAL_TYPE_LABELS[type]}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </Field>
+
           <Field label="DESCRIPTION">
             <TextInput
               style={[styles.input, styles.textarea]}
@@ -190,7 +259,8 @@ export default function MealSummaryScreen() {
                   <Text style={styles.breakdownCal}>{item.calories} kcal</Text>
                 </View>
                 <Text style={styles.breakdownMeta}>
-                  {item.estimated_weight_g}g • P: {item.macros.p}g • C: {item.macros.c}g • F: {item.macros.f}g
+                  {item.estimated_weight_g}g | P: {item.macros.p}g | C: {item.macros.c}g | F:{' '}
+                  {item.macros.f}g
                 </Text>
                 <Text style={styles.breakdownLogic}>{item.logic}</Text>
               </View>
@@ -203,7 +273,9 @@ export default function MealSummaryScreen() {
           <View style={styles.assumptionsSection}>
             <Text style={commonStyles.sectionLabel}>ASSUMPTIONS</Text>
             {assumptions.map((a, i) => (
-              <Text key={i} style={styles.assumptionText}>• {a}</Text>
+              <Text key={i} style={styles.assumptionText}>
+                {a}
+              </Text>
             ))}
           </View>
         )}
@@ -309,6 +381,33 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   textarea: { minHeight: 80, paddingTop: 12 },
+
+  // Meal type picker (chip row)
+  mealTypePicker: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  mealTypeChip: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: colors.surface1,
+  },
+  mealTypeChipSelected: {
+    borderColor: colors.accent,
+    backgroundColor: colors.accent + '20',
+  },
+  mealTypeChipText: {
+    fontSize: 12,
+    fontFamily: fonts.bodyMed,
+    color: colors.textMuted,
+  },
+  mealTypeChipTextSelected: {
+    color: colors.accent,
+  },
 
   // Breakdown
   breakdownSection: { paddingHorizontal: 16, gap: 10, marginTop: 8 },

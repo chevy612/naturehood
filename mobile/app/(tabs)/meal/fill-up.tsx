@@ -7,17 +7,26 @@ import {
   Image,
   StyleSheet,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
-import { TouchableOpacity } from 'react-native';
+import { ChevronLeft, Plus, Camera } from 'lucide-react-native';
+import * as ImagePicker from 'expo-image-picker';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 import { colors, fonts, commonStyles } from '../../../constants/tokens';
 import Button from '../../../components/ui/Button';
 import { useMealStore } from '../../../stores/meal-store';
+import { useAiUsageStore, AI_LIMIT } from '../../../stores/meal-store';
 import { supabase } from '../../../lib/supabase';
-import { createMealRecord, uploadFoodImage } from '../../../lib/actions/meal';
+import {
+  createMealRecord,
+  uploadFoodImage,
+  incrementAiUsageRemote,
+} from '../../../lib/actions/meal';
 import { analyzeFoodWithAI } from '../../../lib/services/ai-food';
-import type { AiFoodAnalysis } from '../../../lib/types/meal';
+import { MEAL_TYPES, MEAL_TYPE_LABELS } from '../../../lib/types/meal';
+import type { AiFoodAnalysis, MealType } from '../../../lib/types/meal';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MealInfoFillUpScreen — form to log meal details before saving or AI analysis
@@ -26,26 +35,59 @@ import type { AiFoodAnalysis } from '../../../lib/types/meal';
 export default function MealInfoFillUpScreen() {
   const router = useRouter();
 
-  // Zustand state
+  // Zustand — meal draft
   const imageUri = useMealStore((s) => s.imageUri);
   const title = useMealStore((s) => s.title);
   const calories = useMealStore((s) => s.calories);
-  const weightG = useMealStore((s) => s.weightG);
+  const protein = useMealStore((s) => s.protein);
+  const mealType = useMealStore((s) => s.mealType);
   const mealNotes = useMealStore((s) => s.mealNotes);
   const savingRecord = useMealStore((s) => s.savingRecord);
   const analyzingAI = useMealStore((s) => s.analyzingAI);
   const setField = useMealStore((s) => s.setField);
+  const setMealType = useMealStore((s) => s.setMealType);
+  const setImage = useMealStore((s) => s.setImage);
   const setLoading = useMealStore((s) => s.setLoading);
   const setRecordInfo = useMealStore((s) => s.setRecordInfo);
   const setAiResult = useMealStore((s) => s.setAiResult);
   const reset = useMealStore((s) => s.reset);
 
-  // Local error state
+  // Zustand — AI usage
+  const aiUsedCount = useAiUsageStore((s) => s.aiUsedCount);
+  const incrementAiUsage = useAiUsageStore((s) => s.incrementAiUsage);
+
+  // Local UI state
   const [titleError, setTitleError] = useState(false);
 
   const isAnyLoading = savingRecord || analyzingAI;
+  const hasImage = !!imageUri;
 
-  // ── Shared: upload image + create record ──────────────────────────────────
+  // ── Camera / image picker ──────────────────────────────────────────────
+
+  async function handleAddImage() {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert(
+        'Camera Permission Required',
+        'Please enable camera access in your device settings to capture food images.',
+        [{ text: 'OK' }],
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (result.canceled || !result.assets[0]) return;
+
+    setImage(result.assets[0].uri);
+  }
+
+  // ── Shared: upload image + create record ──────────────────────────────
 
   async function uploadAndCreateRecord(): Promise<{
     mealId: string;
@@ -56,45 +98,50 @@ export default function MealInfoFillUpScreen() {
     // Validate required fields
     if (!title.trim()) {
       setTitleError(true);
-      Alert.alert('Title required', 'Please add a meal title.');
       return null;
     }
     setTitleError(false);
 
-    if (!imageUri) {
-      Alert.alert('Error', 'No image captured. Please go back and take a photo.');
-      return null;
-    }
-
     // Get current user + session token
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     if (!user || !session) {
       Alert.alert('Error', 'You must be logged in.');
       return null;
     }
 
-    // Upload image to Supabase Storage
-    const { url, error: uploadErr } = await uploadFoodImage(user.id, imageUri);
-    if (uploadErr || !url) {
-      Alert.alert('Upload Failed', 'Could not upload the image. Please try again.');
-      return null;
+    // Upload image if we have one
+    let s3Url = '';
+    if (imageUri) {
+      const { url, error: uploadErr } = await uploadFoodImage(user.id, imageUri);
+      if (uploadErr || !url) {
+        Alert.alert('Upload Failed', 'Could not upload the image. Please try again.');
+        return null;
+      }
+      s3Url = url;
     }
 
     // Generate a unique meal ID
-    const mealId = crypto.randomUUID();
+    const mealId = uuidv4();
 
-    // Create the meal record
+    // Parse numeric fields
     const parsedCalories = calories ? parseFloat(calories) : null;
+    const parsedProtein = protein ? parseFloat(protein) : null;
 
     const { error: createErr } = await createMealRecord({
       meal_id: mealId,
       user_id: user.id,
       title: title.trim(),
       calories: isNaN(parsedCalories as number) ? null : parsedCalories,
+      protein: isNaN(parsedProtein as number) ? null : parsedProtein,
+      meal_type: mealType ?? null,
       user_notes: mealNotes.trim() || null,
-      s3_link: url,
+      s3_link: s3Url,
     });
 
     if (createErr) {
@@ -103,12 +150,12 @@ export default function MealInfoFillUpScreen() {
     }
 
     // Store record info in Zustand for downstream screens
-    setRecordInfo(mealId, url);
+    setRecordInfo(mealId, s3Url);
 
-    return { mealId, s3Link: url, userId: user.id, accessToken: session.access_token };
+    return { mealId, s3Link: s3Url, userId: user.id, accessToken: session.access_token };
   }
 
-  // ── Save Record flow ──────────────────────────────────────────────────────
+  // ── Save Record flow ──────────────────────────────────────────────────
 
   async function handleSaveRecord() {
     setLoading('savingRecord', true);
@@ -123,9 +170,19 @@ export default function MealInfoFillUpScreen() {
     router.replace('/(tabs)/meal/');
   }
 
-  // ── AI Analysis flow ──────────────────────────────────────────────────────
+  // ── AI Analysis flow ──────────────────────────────────────────────────
 
   async function handleAIAnalysis() {
+    // Check AI usage limit
+    if (aiUsedCount >= AI_LIMIT) {
+      Alert.alert(
+        'AI Limit Reached',
+        `You've used all ${AI_LIMIT} AI analyses for this period. Your meal can still be saved manually.`,
+        [{ text: 'OK' }],
+      );
+      return;
+    }
+
     setLoading('analyzingAI', true);
 
     const result = await uploadAndCreateRecord();
@@ -134,16 +191,18 @@ export default function MealInfoFillUpScreen() {
       return;
     }
 
-    // Call backend AI endpoint
-    const { analysis, error: aiErr } = await analyzeFoodWithAI(
-      result.mealId,
-      result.accessToken,
+    // Increment AI usage count (optimistic local + remote)
+    incrementAiUsage();
+    incrementAiUsageRemote(result.userId, aiUsedCount).catch((err) =>
+      console.warn('[meal] Failed to sync AI usage remotely:', err),
     );
+
+    // Call backend AI endpoint
+    const { analysis, error: aiErr } = await analyzeFoodWithAI(result.mealId, result.accessToken);
 
     setLoading('analyzingAI', false);
 
     if (aiErr || !analysis) {
-      // AI failed — offer fallback to manual save
       Alert.alert(
         'AI Analysis Failed',
         aiErr || 'Could not analyse the image. Your meal has been saved without AI data.',
@@ -166,7 +225,7 @@ export default function MealInfoFillUpScreen() {
     router.push('/(tabs)/meal/summary');
   }
 
-  // ── Back handler ──────────────────────────────────────────────────────────
+  // ── Back handler ──────────────────────────────────────────────────────
 
   function handleBack() {
     reset();
@@ -189,11 +248,24 @@ export default function MealInfoFillUpScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* ── Image preview ─────────────────────────────────────────────── */}
-        {imageUri && (
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
-          </View>
+        {/* ── Image section ─────────────────────────────────────────────── */}
+        {hasImage ? (
+          <TouchableOpacity
+            style={styles.imageContainer}
+            activeOpacity={0.8}
+            onPress={handleAddImage}
+          >
+            <Image source={{ uri: imageUri! }} style={styles.image} resizeMode="cover" />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.imagePlaceholder}
+            activeOpacity={0.7}
+            onPress={handleAddImage}
+          >
+            <Camera size={28} color={colors.textMuted} />
+            <Text style={styles.imagePlaceholderText}>ADD FOOD IMAGE</Text>
+          </TouchableOpacity>
         )}
 
         {/* ── Form fields ───────────────────────────────────────────────── */}
@@ -223,15 +295,43 @@ export default function MealInfoFillUpScreen() {
             />
           </Field>
 
-          <Field label="ESTIMATED WEIGHT (Gram)">
+          <Field label="ESTIMATED PROTEIN (G)">
             <TextInput
               style={styles.input}
-              value={weightG}
-              onChangeText={(v) => setField('weightG', v)}
-              placeholder="Optional — helps AI estimate portions"
+              value={protein}
+              onChangeText={(v) => setField('protein', v)}
+              placeholder="Optional — AI can estimate this"
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
             />
+          </Field>
+
+          <Field label="MEAL TYPE">
+            <View style={styles.mealTypePicker}>
+              {MEAL_TYPES.map((type) => {
+                const isSelected = mealType === type;
+                return (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.mealTypeChip,
+                      isSelected && styles.mealTypeChipSelected,
+                    ]}
+                    activeOpacity={0.7}
+                    onPress={() => setMealType(isSelected ? null : type)}
+                  >
+                    <Text
+                      style={[
+                        styles.mealTypeChipText,
+                        isSelected && styles.mealTypeChipTextSelected,
+                      ]}
+                    >
+                      {MEAL_TYPE_LABELS[type]}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </Field>
 
           <Field label="MEAL NOTES">
@@ -259,13 +359,13 @@ export default function MealInfoFillUpScreen() {
           disabled={isAnyLoading}
         />
 
-        {/* AI Analysis — primary / accent */}
+        {/* AI Analysis — primary / accent — disabled when no image */}
         <Button
           title="AI ANALYSIS"
           onPress={handleAIAnalysis}
           variant="primary"
           loading={analyzingAI}
-          disabled={isAnyLoading}
+          disabled={isAnyLoading || !hasImage}
         />
       </View>
     </View>
@@ -289,7 +389,7 @@ const styles = StyleSheet.create({
   container: commonStyles.screen,
   content: { paddingBottom: 160 },
 
-  // Image
+  // Image preview
   imageContainer: {
     marginHorizontal: 16,
     marginTop: 16,
@@ -301,6 +401,27 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 240,
+  },
+
+  // Image placeholder (dotted border)
+  imagePlaceholder: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    height: 180,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    backgroundColor: colors.surface1,
+  },
+  imagePlaceholderText: {
+    fontSize: 11,
+    fontFamily: fonts.headingM,
+    color: colors.textMuted,
+    letterSpacing: 2,
   },
 
   // Form
@@ -325,6 +446,33 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.body,
     color: colors.error,
+  },
+
+  // Meal type picker (chip row)
+  mealTypePicker: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  mealTypeChip: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: colors.surface1,
+  },
+  mealTypeChipSelected: {
+    borderColor: colors.accent,
+    backgroundColor: colors.accent + '20',
+  },
+  mealTypeChipText: {
+    fontSize: 12,
+    fontFamily: fonts.bodyMed,
+    color: colors.textMuted,
+  },
+  mealTypeChipTextSelected: {
+    color: colors.accent,
   },
 
   // Bottom bar

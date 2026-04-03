@@ -10,6 +10,10 @@ import { PageHeader } from '@/components/layout/page-header';
 import { LoadingFooter } from '@/components/loading/loading-footer';
 import { Text } from '@/components/ui/text';
 import { fetchFeed, type FeedItem } from '../../../lib/actions/home';
+import { fetchAiUsage } from '../../../lib/actions/meal';
+import { useAiUsageStore } from '../../../stores/meal-store';
+import { supabase } from '../../../lib/supabase';
+import 'react-native-get-random-values';
 
 export default function HomeScreen() {
   const [items, setItems] = useState<FeedItem[]>([]);
@@ -18,15 +22,27 @@ export default function HomeScreen() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
+  const setAiUsage = useAiUsageStore((s) => s.setAiUsage);
+
   const loadPage = useCallback(async (pageIndex: number, replace: boolean) => {
     const { items: newItems, hasMore: more } = await fetchFeed(pageIndex);
     setHasMore(more);
-    setItems(prev => replace ? newItems : [...prev, ...newItems]);
+    setItems((prev) => (replace ? newItems : [...prev, ...newItems]));
   }, []);
 
   useEffect(() => {
     loadPage(0, true).finally(() => setLoading(false));
-  }, [loadPage]);
+
+    // Fetch AI usage count and hydrate the store
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      const { count, updatedAt } = await fetchAiUsage(user.id);
+      setAiUsage(count, updatedAt);
+    })();
+  }, [loadPage, setAiUsage]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

@@ -1,3 +1,39 @@
+// ── Meal type enum ───────────────────────────────────────────────────────────
+
+export const MEAL_TYPES = [
+  'BREAKFAST',
+  'BRUNCH',
+  'LUNCH',
+  'TEA',
+  'DINNER',
+  'SNACK',
+  'DRINK',
+] as const;
+
+export type MealType = (typeof MEAL_TYPES)[number];
+
+/** Human-readable label for each meal type */
+export const MEAL_TYPE_LABELS: Record<MealType, string> = {
+  BREAKFAST: 'Breakfast',
+  BRUNCH: 'Brunch',
+  LUNCH: 'Lunch',
+  TEA: 'Tea',
+  DINNER: 'Dinner',
+  SNACK: 'Snack',
+  DRINK: 'Drink',
+};
+
+/** Badge color per meal type */
+export const MEAL_TYPE_COLORS: Record<MealType, string> = {
+  BREAKFAST: '#F5A623',
+  BRUNCH: '#E8913A',
+  LUNCH: '#4A90D9',
+  TEA: '#7ED321',
+  DINNER: '#BD10E0',
+  SNACK: '#F8E71C',
+  DRINK: '#50E3C2',
+};
+
 // ── Meal record shape (mirrors meal_records table in Supabase) ────────────────
 
 export type MealRecord = {
@@ -6,6 +42,8 @@ export type MealRecord = {
   title: string | null;
   weight: number | null; // in grams
   calories: number | null;
+  protein: number | null; // in grams
+  meal_type: MealType | null;
   user_notes: string | null;
   ai_analysis: AiFoodAnalysis | null;
   s3_link: string | null;
