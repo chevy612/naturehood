@@ -12,9 +12,9 @@ import {
 import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
 import { colors, fonts, spacing, commonStyles } from '../../../constants/tokens';
-import Avatar from '../../../components/Avatar';
-import SectionLabel from '../../../components/ui/SectionLabel';
-import WorkoutCard from '../../../components/workout/WorkoutCard';
+import { Avatar } from '@/components/avatar';
+import { SectionLabel } from '@/components/layout/section-label';
+import { WorkoutCard } from '@/components/workout/workout-card';
 import { fetchProfile, fetchWorkouts, type Profile, type WorkoutSummary } from '../../../lib/actions/account';
 
 export default function AccountScreen() {

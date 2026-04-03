@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import {
   View,
-  Text,
-  TextInput,
   ScrollView,
   TouchableOpacity,
   Switch,
   ActivityIndicator,
-  StyleSheet,
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../../lib/supabase';
-import { colors, fonts, commonStyles } from '../../../constants/tokens';
-import PillTag from '../../../components/PillTag';
+import { Badge } from '@/components/ui/badge';
+import { Text } from '@/components/ui/text';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { saveWorkout, fetchRecentTypes } from '../../../lib/actions/record';
 
 const DRAFT_KEY = 'naturehood_draft_workout';
@@ -120,208 +120,112 @@ export default function RecordScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <View style={styles.pageHeader}>
-        <Text style={styles.pageTitle}>Log Workout</Text>
+    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
+      <View className="px-5 pt-5 pb-2">
+        <Text variant="large">Log Workout</Text>
       </View>
 
       {success && (
-        <View style={styles.successBanner}>
-          <Text style={styles.successText}>Workout saved!</Text>
+        <View className="mx-5 mt-3 p-3 border border-border rounded-lg">
+          <Text variant="muted">Workout saved!</Text>
         </View>
       )}
 
-      <View style={styles.form}>
-        <Field label="WORKOUT TITLE *">
-          <TextInput
-            style={styles.input}
+      <View className="p-5 gap-5">
+        <View className="gap-1.5">
+          <Text variant="small">WORKOUT TITLE *</Text>
+          <Input
             placeholder="e.g. Push Day, Morning Run"
-            placeholderTextColor={colors.textMuted}
             value={title}
             onChangeText={setTitle}
           />
-        </Field>
+        </View>
 
-        <Field label="DATE">
-          <TextInput
-            style={styles.input}
+        <View className="gap-1.5">
+          <Text variant="small">DATE</Text>
+          <Input
             placeholder="YYYY-MM-DD"
-            placeholderTextColor={colors.textMuted}
             value={loggedDate}
             onChangeText={setLoggedDate}
           />
-        </Field>
+        </View>
 
-        <Field label="DURATION (MINUTES)">
-          <TextInput
-            style={styles.input}
+        <View className="gap-1.5">
+          <Text variant="small">DURATION (MINUTES)</Text>
+          <Input
             placeholder="e.g. 60"
-            placeholderTextColor={colors.textMuted}
             value={duration}
             onChangeText={setDuration}
             keyboardType="number-pad"
           />
-        </Field>
+        </View>
 
-        <Field label="WORKOUT TYPES">
-          <View style={styles.tagInputRow}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
+        <View className="gap-1.5">
+          <Text variant="small">WORKOUT TYPES</Text>
+          <View className="flex-row gap-2">
+            <Input
+              className="flex-1"
               placeholder="e.g. Strength"
-              placeholderTextColor={colors.textMuted}
               value={typeInput}
               onChangeText={setTypeInput}
               onSubmitEditing={() => addType(typeInput)}
               returnKeyType="done"
             />
-            <TouchableOpacity style={styles.addBtn} onPress={() => addType(typeInput)}>
-              <Text style={styles.addBtnText}>Add</Text>
-            </TouchableOpacity>
+            <Button variant="outline" size="sm" onPress={() => addType(typeInput)}>
+              <Text>Add</Text>
+            </Button>
           </View>
 
           {workoutTypes.length > 0 && (
-            <View style={styles.tags}>
+            <View className="flex-row flex-wrap gap-1.5 mt-1.5">
               {workoutTypes.map(t => (
                 <TouchableOpacity key={t} onPress={() => removeType(t)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <PillTag label={t} removable />
+                  <Badge variant="default"><Text>{t}</Text></Badge>
                 </TouchableOpacity>
               ))}
             </View>
           )}
 
           {previousTypes.length > 0 && (
-            <View style={styles.suggestions}>
-              <Text style={styles.suggestLabel}>Previous types:</Text>
-              <View style={styles.tags}>
+            <View className="mt-2 gap-1.5">
+              <Text variant="muted" className="text-[11px]">Previous types:</Text>
+              <View className="flex-row flex-wrap gap-1.5">
                 {previousTypes.filter(t => !workoutTypes.includes(t)).slice(0, 8).map(t => (
                   <TouchableOpacity key={t} onPress={() => addType(t)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <PillTag label={t} variant="ghost-dark" />
+                    <Badge variant="outline"><Text>{t}</Text></Badge>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
           )}
-        </Field>
+        </View>
 
-        <Field label="WORKOUT NOTES">
-          <TextInput
-            style={[styles.input, styles.textarea]}
+        <View className="gap-1.5">
+          <Text variant="small">WORKOUT NOTES</Text>
+          <Textarea
             placeholder="e.g. Squat 4x8 @ 100kg..."
-            placeholderTextColor={colors.textMuted}
             value={workoutLog}
             onChangeText={setWorkoutLog}
-            multiline
             numberOfLines={10}
-            textAlignVertical="top"
-          />
-        </Field>
-
-        <View style={styles.toggleRow}>
-          <View>
-            <Text style={styles.toggleLabel}>Share publicly</Text>
-            <Text style={styles.toggleSub}>Visible to the community feed</Text>
-          </View>
-          <Switch
-            value={isPublic}
-            onValueChange={setIsPublic}
-            trackColor={{ false: colors.border, true: colors.accent }}
-            thumbColor="#fff"
           />
         </View>
 
-        <TouchableOpacity
-          style={[styles.button, saving && styles.buttonDisabled]}
-          onPress={handleSave}
-          disabled={saving}
-          activeOpacity={0.8}
-        >
+        <View className="flex-row items-center justify-between border border-border rounded-lg p-3.5">
+          <View>
+            <Text>Share publicly</Text>
+            <Text variant="muted">Visible to the community feed</Text>
+          </View>
+          <Switch value={isPublic} onValueChange={setIsPublic} />
+        </View>
+
+        <Button onPress={handleSave} disabled={saving}>
           {saving ? (
-            <ActivityIndicator color={colors.background} size="small" />
+            <ActivityIndicator size="small" />
           ) : (
-            <Text style={styles.buttonText}>SAVE WORKOUT</Text>
+            <Text>SAVE WORKOUT</Text>
           )}
-        </TouchableOpacity>
+        </Button>
       </View>
     </ScrollView>
   );
 }
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <View style={{ gap: 6 }}>
-      <Text style={commonStyles.sectionLabel}>{label}</Text>
-      {children}
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container:  commonStyles.screen,
-  content:    { paddingBottom: 48 },
-  pageHeader: { ...commonStyles.pageHeader, marginBottom: 8 },
-  pageTitle:  commonStyles.pageHeaderTitle,
-  successBanner: {
-    marginHorizontal: 20,
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#1a2e10',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.accent,
-  },
-  successText: {
-    color: colors.accent,
-    fontFamily: fonts.bodyMed,
-    fontSize: 13,
-  },
-  form: { padding: 20, gap: 20 },
-  input: {
-    backgroundColor: colors.surface1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    minHeight: 44,
-    fontSize: 14,
-    fontFamily: fonts.body,
-    color: colors.textPrimary,
-  },
-  textarea: { minHeight: 200, paddingTop: 12 },
-  tagInputRow: { flexDirection: 'row', gap: 8 },
-  addBtn: {
-    backgroundColor: colors.surface2,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    minHeight: 44,
-    justifyContent: 'center',
-  },
-  addBtnText: { color: colors.textPrimary, fontFamily: fonts.bodyMed, fontSize: 13 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
-  suggestions: { marginTop: 8, gap: 6 },
-  suggestLabel: { fontSize: 11, fontFamily: fonts.body, color: colors.textMuted },
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.surface1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    padding: 14,
-  },
-  toggleLabel: { fontSize: 13, fontFamily: fonts.bodyMed, color: colors.textPrimary },
-  toggleSub: { fontSize: 11, fontFamily: fonts.body, color: colors.textMuted, marginTop: 2 },
-  button: {
-    backgroundColor: colors.accent,
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: { fontSize: 13, fontFamily: fonts.heading, color: colors.background, letterSpacing: 2 },
-});

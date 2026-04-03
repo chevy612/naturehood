@@ -10,8 +10,9 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../../../../lib/supabase';
 import { colors, fonts, spacing, commonStyles } from '../../../../../constants/tokens';
-import PillTag from '../../../../../components/PillTag';
-import SessionResult from '../../../../../components/workout/SessionResult';
+import { Badge } from '@/components/ui/badge';
+import { Text as UIText } from '@/components/ui/text';
+import { SessionResult } from '@/components/workout/session-result';
 import {
   fetchWorkout,
   analyzeWorkoutWithAI,
@@ -110,9 +111,9 @@ export default function WorkoutDetailScreen() {
             </View>
           )}
           {workout.workout_types.map((type) => (
-            <PillTag key={type} label={type} variant="ghost-green" />
+            <Badge key={type} variant="secondary"><UIText>{type}</UIText></Badge>
           ))}
-          {!workout.is_public && <PillTag label="Private" variant="ghost-dark" />}
+          {!workout.is_public && <Badge variant="outline"><UIText>Private</UIText></Badge>}
         </View>
 
         <View style={styles.divider} />

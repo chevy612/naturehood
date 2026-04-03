@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors, fonts, spacing } from '../../constants/tokens';
+import { Input } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { TouchableOpacity, View } from 'react-native';
 
 // ── Draft types ───────────────────────────────────────────────────────────────
 
@@ -114,59 +115,54 @@ function SetRow({ set, onChange, onDelete }: {
   onDelete: () => void;
 }) {
   return (
-    <View style={s.setRow}>
-      <Text style={s.setIndex}>{set.set_index + 1}</Text>
+    <View className="flex-row items-center gap-1 py-1.5 border-t border-border/40">
+      <Text variant="muted" className="w-4 text-right">{set.set_index + 1}</Text>
 
-      {/* Flags: WU / F / D */}
-      <View style={s.flagsRow}>
+      <View className="flex-row gap-0.5">
         {(['is_warmup', 'is_failure', 'is_dropset'] as const).map((flag) => (
           <TouchableOpacity
             key={flag}
             onPress={() => onChange({ [flag]: !set[flag] })}
-            style={[s.flagBtn, set[flag] && s.flagBtnActive]}
+            className={`px-1 py-0.5 border ${set[flag] ? 'bg-primary border-primary' : 'border-border'}`}
             activeOpacity={0.7}
           >
-            <Text style={[s.flagBtnText, set[flag] && s.flagBtnTextActive]}>
+            <Text className={`text-[9px] uppercase ${set[flag] ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
               {flag === 'is_warmup' ? 'WU' : flag === 'is_failure' ? 'F' : 'D'}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <TextInput
-        style={s.setInput}
+      <Input
+        className="w-13 text-center"
         value={set.weight_kg != null ? String(set.weight_kg) : ''}
         onChangeText={(v) => onChange({ weight_kg: num(v) })}
         placeholder="kg"
-        placeholderTextColor={colors.textMuted}
         keyboardType="decimal-pad"
       />
-      <TextInput
-        style={s.setInput}
+      <Input
+        className="w-11 text-center"
         value={set.reps != null ? String(set.reps) : ''}
         onChangeText={(v) => onChange({ reps: num(v) as number | null })}
         placeholder="reps"
-        placeholderTextColor={colors.textMuted}
         keyboardType="number-pad"
       />
-      <TextInput
-        style={[s.setInput, { width: 40 }]}
+      <Input
+        className="w-10 text-center"
         value={set.effort_percent != null ? String(set.effort_percent) : ''}
         onChangeText={(v) => onChange({ effort_percent: num(v) as number | null })}
         placeholder="%"
-        placeholderTextColor={colors.textMuted}
         keyboardType="number-pad"
       />
-      <TextInput
-        style={[s.setInput, { flex: 1 }]}
+      <Input
+        className="flex-1"
         value={set.notes ?? ''}
         onChangeText={(v) => onChange({ notes: v || null })}
         placeholder="note"
-        placeholderTextColor={colors.textMuted}
       />
 
-      <TouchableOpacity onPress={onDelete} style={s.deleteBtn} activeOpacity={0.7}>
-        <Text style={s.deleteBtnText}>✕</Text>
+      <TouchableOpacity onPress={onDelete} className="p-1.5" activeOpacity={0.7}>
+        <Text className="text-destructive">✕</Text>
       </TouchableOpacity>
     </View>
   );
@@ -191,32 +187,31 @@ function ExerciseCard({ exercise, onChange, onDelete }: {
     onChange({ sets: [...exercise.sets, blankSet(exercise.sets.length)] });
 
   return (
-    <View style={s.exerciseCard}>
-      <View style={s.exerciseHeader}>
-        <TextInput
-          style={s.exerciseName}
+    <View className="border border-border bg-card">
+      <View className="flex-row items-center gap-2 px-3 pt-2.5 pb-2">
+        <Input
+          className="flex-1"
           value={exercise.name}
           onChangeText={(v) => onChange({ name: v })}
           placeholder="Exercise name"
-          placeholderTextColor={colors.textMuted}
         />
-        <TouchableOpacity onPress={() => setCollapsed((c) => !c)} style={s.collapseBtn} activeOpacity={0.7}>
-          <Text style={s.collapseBtnText}>{collapsed ? '▸' : '▾'}</Text>
+        <TouchableOpacity onPress={() => setCollapsed((c) => !c)} className="px-1.5 py-1" activeOpacity={0.7}>
+          <Text variant="muted">{collapsed ? '▸' : '▾'}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={onDelete} style={s.deleteBtn} activeOpacity={0.7}>
-          <Text style={s.deleteBtnText}>✕</Text>
+        <TouchableOpacity onPress={onDelete} className="p-1.5" activeOpacity={0.7}>
+          <Text className="text-destructive">✕</Text>
         </TouchableOpacity>
       </View>
 
       {!collapsed && (
-        <View style={s.setsContainer}>
-          <View style={s.setHeaderRow}>
-            <Text style={[s.setHeaderLabel, { width: 16 }]} />
-            <Text style={[s.setHeaderLabel, { width: 52 }]}>Flags</Text>
-            <Text style={[s.setHeaderLabel, { width: 52 }]}>Weight</Text>
-            <Text style={[s.setHeaderLabel, { width: 44 }]}>Reps</Text>
-            <Text style={[s.setHeaderLabel, { width: 40 }]}>Effort</Text>
-            <Text style={[s.setHeaderLabel, { flex: 1 }]}>Note</Text>
+        <View className="border-t border-border px-3 pb-2.5">
+          <View className="flex-row items-center gap-1 pt-2 pb-1">
+            <Text className="w-4" />
+            <Text variant="muted" className="w-13 text-[9px] uppercase tracking-wide">Flags</Text>
+            <Text variant="muted" className="w-11 text-[9px] uppercase tracking-wide">Weight</Text>
+            <Text variant="muted" className="w-11 text-[9px] uppercase tracking-wide">Reps</Text>
+            <Text variant="muted" className="w-10 text-[9px] uppercase tracking-wide">Effort</Text>
+            <Text variant="muted" className="flex-1 text-[9px] uppercase tracking-wide">Note</Text>
           </View>
           {exercise.sets.map((set, i) => (
             <SetRow
@@ -226,8 +221,8 @@ function ExerciseCard({ exercise, onChange, onDelete }: {
               onDelete={() => deleteSet(i)}
             />
           ))}
-          <TouchableOpacity onPress={addSet} style={s.addSmallBtn} activeOpacity={0.7}>
-            <Text style={s.addSmallBtnText}>+ Add Set</Text>
+          <TouchableOpacity onPress={addSet} className="mt-2" activeOpacity={0.7}>
+            <Text variant="muted">+ Add Set</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -252,38 +247,38 @@ function BlockCard({ block, onChange, onDelete }: {
     onChange({ exercises: [...block.exercises, blankExercise(block.exercises.length)] });
 
   return (
-    <View style={s.blockCard}>
-      <View style={s.blockHeader}>
-        <View style={{ flex: 1, gap: 8 }}>
-          <TextInput
-            style={s.blockName}
+    <View className="border border-border p-2 gap-2">
+      <View className="flex-row items-start gap-2">
+        <View className="flex-1 gap-2">
+          <Input
             value={block.block_name ?? ''}
             onChangeText={(v) => onChange({ block_name: v || null })}
             placeholder="Block name (optional)"
-            placeholderTextColor={colors.textMuted}
           />
-          <View style={s.blockTypesRow}>
+          <View className="flex-row flex-wrap gap-1.5">
             {BLOCK_TYPES.map(({ value, label }) => {
               const active = block.block_type === value;
               return (
                 <TouchableOpacity
                   key={value}
                   onPress={() => onChange({ block_type: value })}
-                  style={[s.typeBtn, active && s.typeBtnActive]}
+                  className={`px-2.5 py-1 border ${active ? 'bg-primary border-primary' : 'border-border'}`}
                   activeOpacity={0.7}
                 >
-                  <Text style={[s.typeBtnText, active && s.typeBtnTextActive]}>{label}</Text>
+                  <Text className={`text-[10px] uppercase ${active ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
+                    {label}
+                  </Text>
                 </TouchableOpacity>
               );
             })}
           </View>
         </View>
-        <TouchableOpacity onPress={onDelete} style={s.deleteBtn} activeOpacity={0.7}>
-          <Text style={s.deleteBtnText}>✕</Text>
+        <TouchableOpacity onPress={onDelete} className="p-1.5" activeOpacity={0.7}>
+          <Text className="text-destructive">✕</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={{ gap: 8 }}>
+      <View className="gap-2">
         {block.exercises.map((ex, i) => (
           <ExerciseCard
             key={i}
@@ -294,8 +289,8 @@ function BlockCard({ block, onChange, onDelete }: {
         ))}
       </View>
 
-      <TouchableOpacity onPress={addExercise} style={s.addOutlineBtn} activeOpacity={0.7}>
-        <Text style={s.addOutlineBtnText}>+ Add Exercise</Text>
+      <TouchableOpacity onPress={addExercise} className="border border-border py-2.5 items-center" activeOpacity={0.7}>
+        <Text variant="muted">+ Add Exercise</Text>
       </TouchableOpacity>
     </View>
   );
@@ -308,7 +303,7 @@ type Props = {
   onChange: (blocks: DraftBlock[]) => void;
 };
 
-export default function StrengthPanel({ blocks, onChange }: Props) {
+export function StrengthPanel({ blocks, onChange }: Props) {
   const updateBlock = (i: number, patch: Partial<DraftBlock>) =>
     onChange(blocks.map((b, idx) => (idx === i ? { ...b, ...patch } : b)));
 
@@ -317,8 +312,8 @@ export default function StrengthPanel({ blocks, onChange }: Props) {
   const addBlock = () => onChange([...blocks, blankBlock(blocks.length)]);
 
   return (
-    <View style={s.container}>
-      <Text style={s.panelLabel}>BLOCKS & EXERCISES</Text>
+    <View className="gap-4">
+      <Text variant="small">BLOCKS & EXERCISES</Text>
 
       {blocks.map((block, i) => (
         <BlockCard
@@ -329,89 +324,9 @@ export default function StrengthPanel({ blocks, onChange }: Props) {
         />
       ))}
 
-      <TouchableOpacity onPress={addBlock} style={s.addOutlineBtn} activeOpacity={0.7}>
-        <Text style={s.addOutlineBtnText}>+ Add Block</Text>
+      <TouchableOpacity onPress={addBlock} className="border border-border py-2.5 items-center" activeOpacity={0.7}>
+        <Text variant="muted">+ Add Block</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const s = StyleSheet.create({
-  container: { gap: spacing.md },
-  panelLabel: {
-    fontSize: 10, fontFamily: fonts.headingM, color: colors.accent,
-    letterSpacing: 3, textTransform: 'uppercase',
-  },
-
-  blockCard: {
-    borderWidth: 1, borderColor: colors.border,
-    padding: spacing.sm, gap: spacing.sm,
-  },
-  blockHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  blockName: {
-    fontSize: 13, fontFamily: fonts.heading, color: colors.textPrimary,
-    borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: 4,
-  },
-  blockTypesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  typeBtn: {
-    paddingHorizontal: 10, paddingVertical: 4,
-    borderWidth: 1, borderColor: colors.border,
-  },
-  typeBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  typeBtnText: { fontSize: 10, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8 },
-  typeBtnTextActive: { color: colors.background },
-
-  exerciseCard: {
-    borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card,
-  },
-  exerciseHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingHorizontal: 12, paddingTop: 10, paddingBottom: 8,
-  },
-  exerciseName: {
-    flex: 1, fontSize: 13, fontFamily: fonts.heading, color: colors.textPrimary,
-  },
-  collapseBtn: { paddingHorizontal: 6, paddingVertical: 4 },
-  collapseBtnText: { fontSize: 14, color: colors.textMuted },
-
-  setsContainer: {
-    borderTopWidth: 1, borderTopColor: colors.border,
-    paddingHorizontal: 12, paddingBottom: 10,
-  },
-  setHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 8, paddingBottom: 4 },
-  setHeaderLabel: { fontSize: 9, fontFamily: fonts.headingM, color: colors.border, textTransform: 'uppercase', letterSpacing: 1 },
-
-  setRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingVertical: 6, borderTopWidth: 1, borderTopColor: colors.surface2,
-  },
-  setIndex: { fontSize: 11, color: colors.textMuted, fontFamily: fonts.body, width: 16, textAlign: 'right' },
-  flagsRow: { flexDirection: 'row', gap: 3 },
-  flagBtn: {
-    paddingHorizontal: 4, paddingVertical: 2,
-    borderWidth: 1, borderColor: colors.border,
-  },
-  flagBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  flagBtnText: { fontSize: 9, fontFamily: fonts.bodyMed, color: colors.border, textTransform: 'uppercase' },
-  flagBtnTextActive: { color: colors.background },
-  setInput: {
-    width: 52, backgroundColor: colors.surface1,
-    borderWidth: 1, borderColor: colors.border,
-    paddingHorizontal: 6, paddingVertical: 5,
-    fontSize: 12, fontFamily: fonts.body, color: colors.textPrimary, textAlign: 'center',
-  },
-
-  addSmallBtn: { marginTop: 8 },
-  addSmallBtnText: { fontSize: 11, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 },
-
-  addOutlineBtn: {
-    borderWidth: 1, borderColor: colors.border,
-    paddingVertical: 10, alignItems: 'center',
-  },
-  addOutlineBtnText: { fontSize: 11, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1.5 },
-
-  deleteBtn: { padding: 6 },
-  deleteBtnText: { fontSize: 13, color: colors.error, fontFamily: fonts.body },
-});

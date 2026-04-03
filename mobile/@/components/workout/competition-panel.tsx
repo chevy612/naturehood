@@ -1,5 +1,6 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors, fonts, spacing } from '../../constants/tokens';
+import { Input } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { TouchableOpacity, View } from 'react-native';
 
 // ── Draft types ───────────────────────────────────────────────────────────────
 
@@ -58,74 +59,70 @@ function RoundRow({ round, onChange, onDelete }: {
   onDelete: () => void;
 }) {
   return (
-    <View style={s.roundRow}>
-      {/* Round type */}
-      <View style={s.roundTypesRow}>
+    <View className="gap-2 py-2 border-t border-border/40">
+      <View className="flex-row gap-1.5">
         {ROUND_TYPES.map((rt) => {
           const active = round.round_type === rt;
           return (
             <TouchableOpacity
               key={rt}
               onPress={() => onChange({ round_type: rt })}
-              style={[s.roundTypeBtn, active && s.roundTypeBtnActive]}
+              className={`px-2.5 py-1 border ${active ? 'bg-primary border-primary' : 'border-border'}`}
               activeOpacity={0.7}
             >
-              <Text style={[s.roundTypeBtnText, active && s.roundTypeBtnTextActive]}>{rt}</Text>
+              <Text className={`text-[9px] uppercase ${active ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
+                {rt}
+              </Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
-      <View style={s.roundMetricsRow}>
-        <TextInput
-          style={s.roundInput}
+      <View className="flex-row items-center gap-1.5">
+        <Input
+          className="w-19 text-center"
           value={round.time_seconds != null ? String(round.time_seconds) : ''}
           onChangeText={(v) => onChange({ time_seconds: num(v) })}
           placeholder="time (s)"
-          placeholderTextColor={colors.textMuted}
           keyboardType="decimal-pad"
         />
-        <TextInput
-          style={[s.roundInput, { width: 60 }]}
+        <Input
+          className="w-15 text-center"
           value={round.wind_ms != null ? String(round.wind_ms) : ''}
           onChangeText={(v) => onChange({ wind_ms: num(v) })}
           placeholder="wind"
-          placeholderTextColor={colors.textMuted}
           keyboardType="decimal-pad"
         />
-        <TextInput
-          style={[s.roundInput, { width: 52 }]}
+        <Input
+          className="w-13 text-center"
           value={round.ranking != null ? String(round.ranking) : ''}
           onChangeText={(v) => onChange({ ranking: num(v) as number | null })}
           placeholder="rank"
-          placeholderTextColor={colors.textMuted}
           keyboardType="number-pad"
         />
 
-        {/* PB / SB */}
         {(['pb', 'sb'] as const).map((flag) => (
           <TouchableOpacity
             key={flag}
             onPress={() => onChange({ [flag]: !round[flag] })}
-            style={[s.flagBtn, round[flag] && s.flagBtnActive]}
+            className={`px-2 py-1.5 border ${round[flag] ? 'bg-primary border-primary' : 'border-border'}`}
             activeOpacity={0.7}
           >
-            <Text style={[s.flagBtnText, round[flag] && s.flagBtnTextActive]}>
+            <Text className={`text-[9px] uppercase ${round[flag] ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
               {flag.toUpperCase()}
             </Text>
           </TouchableOpacity>
         ))}
 
-        <TextInput
-          style={[s.roundInput, { flex: 1 }]}
+        <Input
+          className="flex-1"
           value={round.notes ?? ''}
           onChangeText={(v) => onChange({ notes: v || null })}
           placeholder="note"
-          placeholderTextColor={colors.textMuted}
         />
 
-        <TouchableOpacity onPress={onDelete} style={s.deleteBtn} activeOpacity={0.7}>
-          <Text style={s.deleteBtnText}>✕</Text>
+        <TouchableOpacity onPress={onDelete} className="p-1.5" activeOpacity={0.7}>
+          <Text className="text-destructive">✕</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -139,7 +136,7 @@ type Props = {
   onChange: (patch: Partial<DraftCompetitionResult>) => void;
 };
 
-export default function CompetitionPanel({ result, onChange }: Props) {
+export function CompetitionPanel({ result, onChange }: Props) {
   const updateRound = (i: number, patch: Partial<DraftRound>) =>
     onChange({ rounds: result.rounds.map((r, idx) => (idx === i ? { ...r, ...patch } : r)) });
 
@@ -150,11 +147,11 @@ export default function CompetitionPanel({ result, onChange }: Props) {
     onChange({ rounds: [...result.rounds, blankRound(result.rounds.length)] });
 
   return (
-    <View style={s.container}>
-      <Text style={s.panelLabel}>COMPETITION DETAILS</Text>
+    <View className="gap-4">
+      <Text variant="small">COMPETITION DETAILS</Text>
 
       {/* Metadata fields */}
-      <View style={s.metaCard}>
+      <View className="border border-border px-2">
         {([
           ['Event', 'event', 'e.g. 100m'],
           ['Competition', 'competition_name', '—'],
@@ -162,44 +159,42 @@ export default function CompetitionPanel({ result, onChange }: Props) {
           ['Conditions', 'conditions', 'e.g. +0.5 m/s'],
           ['Notes', 'notes', '—'],
         ] as const).map(([label, key, placeholder]) => (
-          <View key={key} style={s.metaRow}>
-            <Text style={s.metaLabel}>{label}</Text>
-            <TextInput
-              style={s.metaInput}
+          <View key={key} className="flex-row items-center gap-3 py-2.5 border-t border-border/40">
+            <Text variant="muted" className="w-[90px]">{label}</Text>
+            <Input
+              className="flex-1"
               value={(result[key] as string) ?? ''}
               onChangeText={(v) => onChange({ [key]: v || null } as Partial<DraftCompetitionResult>)}
               placeholder={placeholder}
-              placeholderTextColor={colors.textMuted}
             />
           </View>
         ))}
-        <View style={s.metaRow}>
-          <Text style={s.metaLabel}>Lane</Text>
-          <TextInput
-            style={[s.metaInput, { width: 60 }]}
+        <View className="flex-row items-center gap-3 py-2.5 border-t border-border/40">
+          <Text variant="muted" className="w-[90px]">Lane</Text>
+          <Input
+            className="w-15 text-center"
             value={result.lane != null ? String(result.lane) : ''}
             onChangeText={(v) => onChange({ lane: v === '' ? null : Number(v) })}
             placeholder="—"
-            placeholderTextColor={colors.textMuted}
             keyboardType="number-pad"
           />
         </View>
       </View>
 
       {/* Status */}
-      <View style={s.section}>
-        <Text style={s.subLabel}>STATUS</Text>
-        <View style={s.statusRow}>
+      <View className="gap-2">
+        <Text variant="small">STATUS</Text>
+        <View className="flex-row gap-2">
           {STATUSES.map((status) => {
             const active = result.status === status;
             return (
               <TouchableOpacity
                 key={status}
                 onPress={() => onChange({ status })}
-                style={[s.statusBtn, active && s.statusBtnActive]}
+                className={`px-3.5 py-2 border ${active ? 'bg-primary border-primary' : 'border-border'}`}
                 activeOpacity={0.7}
               >
-                <Text style={[s.statusBtnText, active && s.statusBtnTextActive]}>
+                <Text className={`text-[10px] uppercase ${active ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
                   {status.toUpperCase()}
                 </Text>
               </TouchableOpacity>
@@ -207,19 +202,17 @@ export default function CompetitionPanel({ result, onChange }: Props) {
           })}
         </View>
         {result.status === 'dns' && (
-          <TextInput
-            style={s.dnsInput}
+          <Input
             value={result.dns_reason ?? ''}
             onChangeText={(v) => onChange({ dns_reason: v || null })}
             placeholder="DNS reason"
-            placeholderTextColor={colors.textMuted}
           />
         )}
       </View>
 
       {/* Rounds */}
-      <View style={s.section}>
-        <Text style={s.subLabel}>ROUNDS</Text>
+      <View className="gap-2">
+        <Text variant="small">ROUNDS</Text>
         {result.rounds.map((round, i) => (
           <RoundRow
             key={i}
@@ -228,74 +221,10 @@ export default function CompetitionPanel({ result, onChange }: Props) {
             onDelete={() => deleteRound(i)}
           />
         ))}
-        <TouchableOpacity onPress={addRound} style={s.addOutlineBtn} activeOpacity={0.7}>
-          <Text style={s.addOutlineBtnText}>+ Add Round</Text>
+        <TouchableOpacity onPress={addRound} className="border border-border py-2.5 items-center mt-1" activeOpacity={0.7}>
+          <Text variant="muted">+ Add Round</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const s = StyleSheet.create({
-  container: { gap: spacing.md },
-  panelLabel: {
-    fontSize: 10, fontFamily: fonts.headingM, color: colors.accent,
-    letterSpacing: 3, textTransform: 'uppercase',
-  },
-  subLabel: {
-    fontSize: 10, fontFamily: fonts.headingM, color: colors.textMuted,
-    letterSpacing: 3, textTransform: 'uppercase',
-  },
-  section: { gap: spacing.sm },
-
-  metaCard: { borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.sm },
-  metaRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    paddingVertical: 10, borderTopWidth: 1, borderTopColor: colors.surface2,
-  },
-  metaLabel: { fontSize: 12, fontFamily: fonts.body, color: colors.textMuted, width: 90 },
-  metaInput: { flex: 1, fontSize: 13, fontFamily: fonts.body, color: colors.textPrimary },
-
-  statusRow: { flexDirection: 'row', gap: 8 },
-  statusBtn: {
-    paddingHorizontal: 14, paddingVertical: 8,
-    borderWidth: 1, borderColor: colors.border,
-  },
-  statusBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  statusBtnText: { fontSize: 10, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 },
-  statusBtnTextActive: { color: colors.background },
-  dnsInput: {
-    backgroundColor: colors.surface1, borderWidth: 1, borderColor: colors.border,
-    paddingHorizontal: 12, paddingVertical: 10,
-    fontSize: 13, fontFamily: fonts.body, color: colors.textPrimary,
-  },
-
-  roundRow: { gap: 8, paddingVertical: 8, borderTopWidth: 1, borderTopColor: colors.surface2 },
-  roundTypesRow: { flexDirection: 'row', gap: 6 },
-  roundTypeBtn: { paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: colors.border },
-  roundTypeBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  roundTypeBtnText: { fontSize: 9, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8 },
-  roundTypeBtnTextActive: { color: colors.background },
-  roundMetricsRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  roundInput: {
-    width: 76, backgroundColor: colors.surface1,
-    borderWidth: 1, borderColor: colors.border,
-    paddingHorizontal: 6, paddingVertical: 5,
-    fontSize: 12, fontFamily: fonts.body, color: colors.textPrimary, textAlign: 'center',
-  },
-  flagBtn: { paddingHorizontal: 8, paddingVertical: 5, borderWidth: 1, borderColor: colors.border },
-  flagBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  flagBtnText: { fontSize: 9, fontFamily: fonts.bodyMed, color: colors.border, textTransform: 'uppercase' },
-  flagBtnTextActive: { color: colors.background },
-
-  addOutlineBtn: {
-    borderWidth: 1, borderColor: colors.border,
-    paddingVertical: 10, alignItems: 'center', marginTop: 4,
-  },
-  addOutlineBtnText: { fontSize: 11, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1.5 },
-
-  deleteBtn: { padding: 6 },
-  deleteBtnText: { fontSize: 13, color: colors.error, fontFamily: fonts.body },
-});

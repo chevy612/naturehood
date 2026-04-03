@@ -1,4 +1,4 @@
-import { SignInForm } from '../../@/components/sign-in-form';
+import { SignInForm } from '../../@/components/auth/sign-in-form';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,

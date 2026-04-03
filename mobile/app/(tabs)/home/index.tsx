@@ -3,14 +3,12 @@ import {
   View,
   FlatList,
   RefreshControl,
-  StyleSheet,
 } from 'react-native';
-import { commonStyles } from '../../../constants/tokens';
-import FeedCard from '../../../components/FeedCard';
-import LoadingScreen from '../../../components/ui/LoadingScreen';
-import PageHeader from '../../../components/ui/PageHeader';
-import LoadingFooter from '../../../components/ui/LoadingFooter';
-import EmptyState from '../../../components/ui/EmptyState';
+import { FeedCard } from '@/components/feed-card';
+import { LoadingScreen } from '@/components/loading/loading-screen';
+import { PageHeader } from '@/components/layout/page-header';
+import { LoadingFooter } from '@/components/loading/loading-footer';
+import { Text } from '@/components/ui/text';
 import { fetchFeed, type FeedItem } from '../../../lib/actions/home';
 
 export default function HomeScreen() {
@@ -50,13 +48,13 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       <PageHeader title="Community Feed" />
 
       <FlatList
         data={items}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{ padding: 16, gap: 12 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -64,7 +62,7 @@ export default function HomeScreen() {
         onEndReachedThreshold={0.4}
         ListFooterComponent={<LoadingFooter visible={hasMore} />}
         ListEmptyComponent={
-          <EmptyState message="No workouts yet. Be the first to log one!" />
+          <Text variant="muted" className="text-center mt-10">No workouts yet. Be the first to log one!</Text>
         }
         renderItem={({ item }) => (
           <FeedCard
@@ -81,11 +79,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: commonStyles.screen,
-  list: {
-    padding: 16,
-    gap: 12,
-  },
-});

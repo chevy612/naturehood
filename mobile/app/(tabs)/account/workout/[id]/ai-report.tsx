@@ -11,11 +11,11 @@ import {
   type AiStructuredExercise, type AiStructuredWorkout, type AthleteSessionLog,
 } from '../../../../../lib/actions/workout-detail';
 import type { WeightType } from '../../../../../lib/services/ai';
-import SessionMetaPanel, { type SessionMeta, type SessionType } from '../../../../../components/workout/SessionMetaPanel';
-import StrengthPanel, { type DraftBlock, blankBlock } from '../../../../../components/workout/StrengthPanel';
-import SprintPanel, { type DraftSprintEffort } from '../../../../../components/workout/SprintPanel';
-import CompetitionPanel, { type DraftCompetitionResult, blankCompetitionResult } from '../../../../../components/workout/CompetitionPanel';
-import PhysioPanel, { type DraftBodyArea } from '../../../../../components/workout/PhysioPanel';
+import { SessionMetaPanel, type SessionMeta, type SessionType } from '@/components/workout/session-meta-panel';
+import { StrengthPanel, type DraftBlock, blankBlock } from '@/components/workout/strength-panel';
+import { SprintPanel, type DraftSprintEffort } from '@/components/workout/sprint-panel';
+import { CompetitionPanel, type DraftCompetitionResult, blankCompetitionResult } from '@/components/workout/competition-panel';
+import { PhysioPanel, type DraftBodyArea } from '@/components/workout/physio-panel';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

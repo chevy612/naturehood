@@ -1,6 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors, fonts, spacing } from '../../constants/tokens';
-import StrengthPanel, { type DraftBlock, blankBlock } from './StrengthPanel';
+import { Input } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { Textarea } from '@/components/ui/textarea';
+import { TouchableOpacity, View } from 'react-native';
+import { StrengthPanel, type DraftBlock, blankBlock } from './strength-panel';
 
 // ── Draft types ───────────────────────────────────────────────────────────────
 
@@ -43,32 +45,30 @@ function BodyAreaCard({ area, onChange, onDelete }: {
   onDelete: () => void;
 }) {
   return (
-    <View style={s.areaCard}>
-      <View style={s.areaHeader}>
-        <TextInput
-          style={s.areaName}
+    <View className="border border-border bg-card p-2 gap-2.5">
+      <View className="flex-row items-center gap-2">
+        <Input
+          className="flex-1"
           value={area.area}
           onChangeText={(v) => onChange({ area: v })}
           placeholder="Body area (e.g. left hamstring)"
-          placeholderTextColor={colors.textMuted}
         />
-        <TouchableOpacity onPress={onDelete} style={s.deleteBtn} activeOpacity={0.7}>
-          <Text style={s.deleteBtnText}>✕</Text>
+        <TouchableOpacity onPress={onDelete} className="p-1.5" activeOpacity={0.7}>
+          <Text className="text-destructive">✕</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Side */}
-      <View style={s.sidesRow}>
+      <View className="flex-row gap-2">
         {SIDES.map((side) => {
           const active = area.side === side;
           return (
             <TouchableOpacity
               key={side}
               onPress={() => onChange({ side: active ? null : side })}
-              style={[s.sideBtn, active && s.sideBtnActive]}
+              className={`px-3 py-1.5 border ${active ? 'bg-primary border-primary' : 'border-border'}`}
               activeOpacity={0.7}
             >
-              <Text style={[s.sideBtnText, active && s.sideBtnTextActive]}>
+              <Text className={`text-[10px] uppercase ${active ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
                 {side.charAt(0).toUpperCase() + side.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -76,51 +76,45 @@ function BodyAreaCard({ area, onChange, onDelete }: {
         })}
       </View>
 
-      {/* Pain scores */}
-      <View style={s.painRow}>
-        <View style={s.painField}>
-          <Text style={s.painLabel}>Pain before</Text>
-          <TextInput
-            style={s.painInput}
+      <View className="flex-row gap-4">
+        <View className="flex-row items-center gap-2">
+          <Text variant="muted">Pain before</Text>
+          <Input
+            className="w-14 text-center"
             value={area.pain_score_before != null ? String(area.pain_score_before) : ''}
             onChangeText={(v) => onChange({ pain_score_before: num(v) })}
             placeholder="0–10"
-            placeholderTextColor={colors.textMuted}
             keyboardType="decimal-pad"
           />
         </View>
-        <View style={s.painField}>
-          <Text style={s.painLabel}>Pain after</Text>
-          <TextInput
-            style={s.painInput}
+        <View className="flex-row items-center gap-2">
+          <Text variant="muted">Pain after</Text>
+          <Input
+            className="w-14 text-center"
             value={area.pain_score_after != null ? String(area.pain_score_after) : ''}
             onChangeText={(v) => onChange({ pain_score_after: num(v) })}
             placeholder="0–10"
-            placeholderTextColor={colors.textMuted}
             keyboardType="decimal-pad"
           />
         </View>
       </View>
 
-      {/* Injury + treatment */}
-      <View style={s.fieldRow}>
-        <Text style={s.fieldLabel}>Injury</Text>
-        <TextInput
-          style={s.fieldInput}
+      <View className="flex-row items-center gap-2.5">
+        <Text variant="muted" className="w-16">Injury</Text>
+        <Input
+          className="flex-1"
           value={area.injury_name ?? ''}
           onChangeText={(v) => onChange({ injury_name: v || null })}
           placeholder="e.g. hamstring strain"
-          placeholderTextColor={colors.textMuted}
         />
       </View>
-      <View style={s.fieldRow}>
-        <Text style={s.fieldLabel}>Treatment</Text>
-        <TextInput
-          style={s.fieldInput}
+      <View className="flex-row items-center gap-2.5">
+        <Text variant="muted" className="w-16">Treatment</Text>
+        <Input
+          className="flex-1"
           value={area.treatment_type ?? ''}
           onChangeText={(v) => onChange({ treatment_type: v || null })}
           placeholder="e.g. dry needling, massage"
-          placeholderTextColor={colors.textMuted}
         />
       </View>
     </View>
@@ -140,7 +134,7 @@ type Props = {
   onDetailsChange: (patch: { physioProvider?: string | null; physioClearanceStatus?: string | null; physioNotes?: string | null }) => void;
 };
 
-export default function PhysioPanel({
+export function PhysioPanel({
   bodyAreas, exerciseBlocks,
   physioProvider, physioClearanceStatus, physioNotes,
   onBodyAreasChange, onExerciseBlocksChange, onDetailsChange,
@@ -153,23 +147,23 @@ export default function PhysioPanel({
   const addArea = () => onBodyAreasChange([...bodyAreas, blankArea(bodyAreas.length)]);
 
   return (
-    <View style={s.container}>
-      <Text style={s.panelLabel}>PHYSIO SESSION</Text>
+    <View className="gap-4">
+      <Text variant="small">PHYSIO SESSION</Text>
 
       {/* Provider */}
-      <View style={s.section}>
-        <Text style={s.subLabel}>PROVIDER</Text>
-        <View style={s.pillsRow}>
+      <View className="gap-2">
+        <Text variant="small">PROVIDER</Text>
+        <View className="flex-row flex-wrap gap-2">
           {PROVIDERS.map((p) => {
             const active = physioProvider === p;
             return (
               <TouchableOpacity
                 key={p}
                 onPress={() => onDetailsChange({ physioProvider: active ? null : p })}
-                style={[s.pill, active && s.pillActive]}
+                className={`px-3.5 py-2 border ${active ? 'bg-primary border-primary' : 'border-border'}`}
                 activeOpacity={0.7}
               >
-                <Text style={[s.pillText, active && s.pillTextActive]}>
+                <Text className={active ? 'text-primary-foreground' : 'text-muted-foreground'}>
                   {p.charAt(0).toUpperCase() + p.slice(1)}
                 </Text>
               </TouchableOpacity>
@@ -179,39 +173,37 @@ export default function PhysioPanel({
       </View>
 
       {/* Clearance */}
-      <View style={s.section}>
-        <Text style={s.subLabel}>CLEARANCE</Text>
-        <View style={s.pillsRow}>
+      <View className="gap-2">
+        <Text variant="small">CLEARANCE</Text>
+        <View className="flex-row flex-wrap gap-2">
           {CLEARANCE_STATUSES.map(({ value, label }) => {
             const active = physioClearanceStatus === value;
             return (
               <TouchableOpacity
                 key={value}
                 onPress={() => onDetailsChange({ physioClearanceStatus: active ? null : value })}
-                style={[s.pill, active && s.pillActive]}
+                className={`px-3.5 py-2 border ${active ? 'bg-primary border-primary' : 'border-border'}`}
                 activeOpacity={0.7}
               >
-                <Text style={[s.pillText, active && s.pillTextActive]}>{label}</Text>
+                <Text className={active ? 'text-primary-foreground' : 'text-muted-foreground'}>
+                  {label}
+                </Text>
               </TouchableOpacity>
             );
           })}
         </View>
       </View>
 
-      {/* Notes */}
-      <TextInput
-        style={s.notesInput}
+      <Textarea
         value={physioNotes ?? ''}
         onChangeText={(v) => onDetailsChange({ physioNotes: v || null })}
         placeholder="Physio session notes…"
-        placeholderTextColor={colors.textMuted}
-        multiline
         numberOfLines={2}
       />
 
       {/* Body areas */}
-      <View style={s.section}>
-        <Text style={s.subLabel}>BODY AREAS</Text>
+      <View className="gap-2">
+        <Text variant="small">BODY AREAS</Text>
         {bodyAreas.map((area, i) => (
           <BodyAreaCard
             key={i}
@@ -220,8 +212,8 @@ export default function PhysioPanel({
             onDelete={() => deleteArea(i)}
           />
         ))}
-        <TouchableOpacity onPress={addArea} style={s.addOutlineBtn} activeOpacity={0.7}>
-          <Text style={s.addOutlineBtnText}>+ Add Body Area</Text>
+        <TouchableOpacity onPress={addArea} className="border border-border py-2.5 items-center" activeOpacity={0.7}>
+          <Text variant="muted">+ Add Body Area</Text>
         </TouchableOpacity>
       </View>
 
@@ -235,80 +227,12 @@ export default function PhysioPanel({
             block_name: 'Rehab Exercises',
             exercises: [],
           }])}
-          style={s.addOutlineBtn}
+          className="border border-border py-2.5 items-center"
           activeOpacity={0.7}
         >
-          <Text style={s.addOutlineBtnText}>+ Add Rehab Exercises</Text>
+          <Text variant="muted">+ Add Rehab Exercises</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const s = StyleSheet.create({
-  container: { gap: spacing.md },
-  panelLabel: {
-    fontSize: 10, fontFamily: fonts.headingM, color: colors.accent,
-    letterSpacing: 3, textTransform: 'uppercase',
-  },
-  subLabel: {
-    fontSize: 10, fontFamily: fonts.headingM, color: colors.textMuted,
-    letterSpacing: 3, textTransform: 'uppercase',
-  },
-  section: { gap: spacing.sm },
-  pillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  pill: { paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: colors.border },
-  pillActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  pillText: { fontSize: 11, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 },
-  pillTextActive: { color: colors.background },
-
-  notesInput: {
-    backgroundColor: colors.surface1, borderWidth: 1, borderColor: colors.border,
-    paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 13, fontFamily: fonts.body, color: colors.textPrimary,
-    minHeight: 56, textAlignVertical: 'top',
-  },
-
-  areaCard: {
-    borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card,
-    padding: spacing.sm, gap: 10,
-  },
-  areaHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  areaName: {
-    flex: 1, fontSize: 13, fontFamily: fonts.heading, color: colors.textPrimary,
-    borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: 4,
-  },
-  sidesRow: { flexDirection: 'row', gap: 8 },
-  sideBtn: { paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: colors.border },
-  sideBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  sideBtnText: { fontSize: 10, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8 },
-  sideBtnTextActive: { color: colors.background },
-
-  painRow: { flexDirection: 'row', gap: 16 },
-  painField: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  painLabel: { fontSize: 11, fontFamily: fonts.body, color: colors.textMuted },
-  painInput: {
-    width: 56, backgroundColor: colors.surface1, borderWidth: 1, borderColor: colors.border,
-    paddingHorizontal: 8, paddingVertical: 6,
-    fontSize: 12, fontFamily: fonts.body, color: colors.textPrimary, textAlign: 'center',
-  },
-
-  fieldRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  fieldLabel: { fontSize: 11, fontFamily: fonts.body, color: colors.textMuted, width: 64 },
-  fieldInput: {
-    flex: 1, backgroundColor: colors.surface1, borderWidth: 1, borderColor: colors.border,
-    paddingHorizontal: 10, paddingVertical: 7,
-    fontSize: 12, fontFamily: fonts.body, color: colors.textPrimary,
-  },
-
-  addOutlineBtn: {
-    borderWidth: 1, borderColor: colors.border,
-    paddingVertical: 10, alignItems: 'center',
-  },
-  addOutlineBtnText: { fontSize: 11, fontFamily: fonts.bodyMed, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1.5 },
-
-  deleteBtn: { padding: 6 },
-  deleteBtnText: { fontSize: 13, color: colors.error, fontFamily: fonts.body },
-});

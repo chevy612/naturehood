@@ -1,4 +1,4 @@
-import { SocialConnections } from '@/components/social-connections';
+import { SocialConnections } from '@/components/auth/social-connections';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,17 +12,18 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import * as React from 'react';
-import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, type TextInput, View } from 'react-native';
 
-interface SignUpFormProps {
-  onSubmit: (email: string, password: string) => Promise<void>;
-  onSignIn: () => void;
+interface SignInFormProps {
+  onSubmit: (identifier: string, password: string) => Promise<void>;
+  onForgotPassword: () => void;
+  onSignUp: () => void;
   error?: string;
   loading?: boolean;
 }
 
-export function SignUpForm({ onSubmit, onSignIn, error, loading }: SignUpFormProps) {
-  const [email, setEmail] = React.useState('');
+export function SignInForm({ onSubmit, onForgotPassword, onSignUp, error, loading }: SignInFormProps) {
+  const [identifier, setIdentifier] = React.useState('');
   const [password, setPassword] = React.useState('');
   const passwordInputRef = React.useRef<TextInput>(null);
 
@@ -31,30 +32,30 @@ export function SignUpForm({ onSubmit, onSignIn, error, loading }: SignUpFormPro
   }
 
   function handleSubmit() {
-    onSubmit(email, password);
+    onSubmit(identifier, password);
   }
 
   return (
     <View className="gap-6">
       <Card className="border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5">
         <CardHeader>
-          <CardTitle className="text-center text-xl sm:text-left">Create your account</CardTitle>
+          <CardTitle className="text-center text-xl sm:text-left">Sign in to Naturehood</CardTitle>
           <CardDescription className="text-center sm:text-left">
-            Welcome! Please fill in the details to get started.
+            Welcome back! Please sign in to continue
           </CardDescription>
         </CardHeader>
         <CardContent className="gap-6">
           <View className="gap-6">
             <View className="gap-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="identifier">Email or Username</Label>
               <Input
-                id="email"
-                placeholder="m@example.com"
+                id="identifier"
+                placeholder="you@example.com or @username"
                 keyboardType="email-address"
                 autoComplete="email"
                 autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
+                value={identifier}
+                onChangeText={setIdentifier}
                 onSubmitEditing={onEmailSubmitEditing}
                 returnKeyType="next"
                 submitBehavior="submit"
@@ -62,11 +63,19 @@ export function SignUpForm({ onSubmit, onSignIn, error, loading }: SignUpFormPro
               />
             </View>
             <View className="gap-1.5">
-              <Label htmlFor="password">Password</Label>
+              <View className="flex-row items-center">
+                <Label htmlFor="password">Password</Label>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
+                  onPress={onForgotPassword}>
+                  <Text className="font-normal leading-4">Forgot your password?</Text>
+                </Button>
+              </View>
               <Input
                 ref={passwordInputRef}
                 id="password"
-                placeholder="At least 8 characters"
                 secureTextEntry
                 returnKeyType="send"
                 value={password}
@@ -87,9 +96,9 @@ export function SignUpForm({ onSubmit, onSignIn, error, loading }: SignUpFormPro
             </Button>
           </View>
           <Text className="text-center text-sm">
-            Already have an account?{' '}
-            <Pressable onPress={onSignIn}>
-              <Text className="text-sm underline underline-offset-4">Sign in</Text>
+            Don&apos;t have an account?{' '}
+            <Pressable onPress={onSignUp}>
+              <Text className="text-sm underline underline-offset-4">Sign up</Text>
             </Pressable>
           </Text>
           <View className="flex-row items-center">

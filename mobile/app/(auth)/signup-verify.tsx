@@ -1,4 +1,4 @@
-import { VerifyEmailForm } from '../../@/components/verify-email-form';
+import { VerifyEmailForm } from '../../@/components/auth/verify-email-form';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -67,9 +67,6 @@ export default function SignupVerifyScreen() {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.wordmarkContainer}>
-          <Text style={commonStyles.authWordmark}>NATUREHOOD</Text>
-        </View>
         <VerifyEmailForm
           email={email}
           type={type === 'recovery' ? 'recovery' : 'signup'}

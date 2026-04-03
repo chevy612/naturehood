@@ -13,9 +13,12 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
 import { supabase } from '../../../lib/supabase';
 import { colors, fonts, spacing, commonStyles } from '../../../constants/tokens';
-import Avatar from '../../../components/Avatar';
-import InputField from '../../../components/ui/InputField';
-import Button from '../../../components/ui/Button';
+import { Avatar } from '@/components/avatar';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Text as UIText } from '@/components/ui/text';
 import { fetchProfile, updateProfile, uploadAvatar, signOut, type Profile } from '../../../lib/actions/account';
 
 export default function EditProfileScreen() {
@@ -147,26 +150,32 @@ export default function EditProfileScreen() {
           </Text>
         )}
 
-        <InputField label="Display Name" value={name} onChangeText={setName} placeholder="Your full name" />
-        <InputField
-          label="Username"
-          value={username}
-          onChangeText={setUsername}
-          placeholder="lowercase letters and numbers"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <InputField
-          label="Bio"
-          value={bio}
-          onChangeText={setBio}
-          placeholder="Tell the community about yourself..."
-          variant="textarea"
-          maxLength={150}
-        />
+        <View>
+          <Label>Display Name</Label>
+          <Input value={name} onChangeText={setName} placeholder="Your full name" />
+        </View>
+        <View>
+          <Label>Username</Label>
+          <Input
+            value={username}
+            onChangeText={setUsername}
+            placeholder="lowercase letters and numbers"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
+        <View>
+          <Label>Bio</Label>
+          <Textarea
+            value={bio}
+            onChangeText={setBio}
+            placeholder="Tell the community about yourself..."
+            maxLength={150}
+          />
+        </View>
 
-        <Button title="SAVE CHANGES" onPress={handleSave} loading={saving} />
-        <Button title="Sign Out" onPress={handleSignOut} variant="danger" />
+        <Button onPress={handleSave} disabled={saving}><UIText>SAVE CHANGES</UIText></Button>
+        <Button variant="destructive" onPress={handleSignOut}><UIText>Sign Out</UIText></Button>
       </View>
     </ScrollView>
   );
