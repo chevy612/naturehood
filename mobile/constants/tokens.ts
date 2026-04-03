@@ -28,6 +28,13 @@ export const spacing = {
   xxl: 48,
 } as const;
 
+export const radius = {
+  sm: 4,   // calc(var(--radius) - 4px)
+  md: 6,   // calc(var(--radius) - 2px)
+  lg: 8,   // var(--radius) = 0.5rem
+  xl: 16,
+} as const;
+
 export const commonStyles = {
   // ── Screen layout ─────────────────────────────────────────
   screen:        { flex: 1, backgroundColor: colors.background },

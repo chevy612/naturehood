@@ -1,17 +1,19 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   View,
-  Text,
   FlatList,
   RefreshControl,
   ActivityIndicator,
-  TouchableOpacity,
-  StyleSheet,
   Alert,
 } from 'react-native';
 import { MapPin } from 'lucide-react-native';
-import { colors, fonts } from '../../../constants/tokens';
+import { colors } from '../../../constants/tokens';
 import { fetchEvents, rsvpEvent, type Event } from '../../../lib/actions/events';
+import { Text } from '@/components/ui/text';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { PageHeader } from '@/components/layout/page-header';
+import { LoadingScreen } from '@/components/loading/loading-screen';
 
 export default function EventsScreen() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -49,28 +51,22 @@ export default function EventsScreen() {
   }
 
   if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator color={colors.accent} size="large" />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.pageHeader}>
-        <Text style={styles.pageTitle}>Events</Text>
-      </View>
+    <View className="flex-1 bg-background">
+      <PageHeader title="Events" />
 
       <FlatList
         data={events}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{ padding: 16, gap: 12 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
         }
         ListEmptyComponent={
-          <Text style={styles.empty}>No upcoming events right now.</Text>
+          <Text variant="muted" className="text-center mt-10">No upcoming events right now.</Text>
         }
         renderItem={({ item }) => {
           const isFull = item.max_capacity !== null && item.confirmed_count >= item.max_capacity && !item.user_rsvp;
@@ -80,94 +76,52 @@ export default function EventsScreen() {
           });
 
           return (
-            <View style={styles.card}>
-              <View style={styles.cardMeta}>
-                <Text style={styles.cardDate}>{date}{item.event_time ? ` · ${item.event_time.slice(0, 5)}` : ''}</Text>
-                {spotsLeft !== null && (
-                  <Text style={[styles.spots, isFull && styles.spotsRed]}>
-                    {isFull ? 'Full' : `${spotsLeft} spots left`}
+            <Card>
+              <CardContent className="gap-2">
+                <View className="flex-row justify-between items-center">
+                  <Text variant="muted" className="text-[11px]">
+                    {date}{item.event_time ? ` · ${item.event_time.slice(0, 5)}` : ''}
                   </Text>
-                )}
-              </View>
-
-              <Text style={styles.cardTitle}>{item.title}</Text>
-
-              {item.location && (
-                <View style={styles.row}>
-                  <MapPin size={12} color={colors.textMuted} />
-                  <Text style={styles.cardSub}>{item.location}</Text>
+                  {spotsLeft !== null && (
+                    <Text className={`text-[11px] ${isFull ? 'text-destructive' : 'text-primary'}`}>
+                      {isFull ? 'Full' : `${spotsLeft} spots left`}
+                    </Text>
+                  )}
                 </View>
-              )}
 
-              {item.description && (
-                <Text style={styles.cardDesc} numberOfLines={2}>{item.description}</Text>
-              )}
+                <Text variant="large">{item.title}</Text>
 
-              <TouchableOpacity
-                style={[
-                  styles.rsvpBtn,
-                  item.user_rsvp && styles.rsvpBtnActive,
-                  isFull && styles.rsvpBtnDisabled,
-                ]}
-                onPress={() => handleRsvp(item)}
-                disabled={isFull || rsvping === item.id}
-                activeOpacity={0.8}
-              >
-                {rsvping === item.id ? (
-                  <ActivityIndicator size="small" color={item.user_rsvp ? colors.background : colors.textPrimary} />
-                ) : (
-                  <Text style={[styles.rsvpText, item.user_rsvp && styles.rsvpTextActive]}>
-                    {item.user_rsvp ? 'Cancel RSVP' : isFull ? 'Event Full' : 'Sign Up'}
+                {item.location && (
+                  <View className="flex-row items-center gap-1">
+                    <MapPin size={12} color={colors.textMuted} />
+                    <Text variant="muted" className="text-xs">{item.location}</Text>
+                  </View>
+                )}
+
+                {item.description && (
+                  <Text variant="muted" className="text-xs leading-relaxed" numberOfLines={2}>
+                    {item.description}
                   </Text>
                 )}
-              </TouchableOpacity>
-            </View>
+
+                <Button
+                  variant={item.user_rsvp ? 'default' : 'outline'}
+                  size="sm"
+                  disabled={isFull || rsvping === item.id}
+                  onPress={() => handleRsvp(item)}
+                  className="mt-1"
+                >
+                  {rsvping === item.id ? (
+                    <ActivityIndicator size="small" />
+                  ) : (
+                    <Text>{item.user_rsvp ? 'Cancel RSVP' : isFull ? 'Event Full' : 'Sign Up'}</Text>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
           );
         }}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background },
-  pageHeader: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  pageTitle: { fontSize: 13, fontFamily: fonts.heading, color: colors.textPrimary, letterSpacing: -0.1 },
-  list: { padding: 16, gap: 12 },
-  empty: { textAlign: 'center', color: colors.textMuted, fontFamily: fonts.body, fontSize: 13, marginTop: 40 },
-  card: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 16,
-    gap: 8,
-  },
-  cardMeta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardDate: { fontSize: 11, fontFamily: fonts.bodyMed, color: colors.textMuted },
-  spots: { fontSize: 11, fontFamily: fonts.body, color: colors.accent },
-  spotsRed: { color: colors.error },
-  cardTitle: { fontSize: 16, fontFamily: fonts.heading, color: colors.textPrimary, letterSpacing: -0.2 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  cardSub: { fontSize: 12, fontFamily: fonts.body, color: colors.textMuted },
-  cardDesc: { fontSize: 12, fontFamily: fonts.body, color: colors.textMuted, lineHeight: 18 },
-  rsvpBtn: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  rsvpBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  rsvpBtnDisabled: { opacity: 0.4 },
-  rsvpText: { fontSize: 12, fontFamily: fonts.heading, color: colors.textPrimary, letterSpacing: 1 },
-  rsvpTextActive: { color: colors.background },
-});

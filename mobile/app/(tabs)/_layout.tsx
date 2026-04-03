@@ -1,17 +1,17 @@
 import { Tabs } from 'expo-router';
 import { Home, PlusCircle, Calendar, User } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../../constants/tokens';
+import { colors, fonts } from '../../constants/tokens';
 
 export default function TabsLayout() {
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#141115' }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#1A1719',
-          borderTopColor: '#3A373C',
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           height: 80,
           paddingBottom: 20,
@@ -22,7 +22,7 @@ export default function TabsLayout() {
         tabBarItemStyle: { minHeight: 44 },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontFamily: 'DMSans_500Medium',
+          fontFamily: fonts.bodyMed,
           letterSpacing: 0.5,
           marginTop: 2,
         },

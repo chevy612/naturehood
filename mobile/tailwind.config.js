@@ -38,6 +38,8 @@ module.exports = {
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',
         ring: 'hsl(var(--ring) / <alpha-value>)',
+        'surface-1': 'hsl(var(--surface-1) / <alpha-value>)',
+        'surface-2': 'hsl(var(--surface-2) / <alpha-value>)',
       },
       borderRadius: {
         lg: 'var(--radius)',

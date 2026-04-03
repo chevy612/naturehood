@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
+import { colors, spacing } from '../../constants/tokens';
 
 const naturehoodLogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 667.49 77.41">
   <g>
@@ -21,8 +22,8 @@ const naturehoodLogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 667
 
 export default function AuthLayout() {
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#141115' }}>
-      <View style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 24 }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ alignItems: 'center', paddingTop: spacing.xl, paddingBottom: spacing.lg }}>
         <SvgXml xml={naturehoodLogo} width={240} height={28} />
       </View>
       <Stack

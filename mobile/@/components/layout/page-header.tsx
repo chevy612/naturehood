@@ -7,8 +7,8 @@ type Props = {
 
 export function PageHeader({ title }: Props) {
   return (
-    <View>
-      <Text variant="large">{title}</Text>
+    <View className='px-5 pt-6'>
+      <Text variant="h1" className="text-left">{title}</Text>
     </View>
   );
 }
