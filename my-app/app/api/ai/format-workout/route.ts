@@ -4,6 +4,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { formatWorkoutWithAI } from '@/lib/services/ai-workout'
 import { persistNormalizedSession } from '@/lib/services/session-persist'
 import type { AthleteSessionLog } from '@/lib/types'
+import logger from '@/lib/logger'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
     duration_minutes: log.duration_minutes ?? undefined,
   })
 
-  console.log('[AI] structured output:', JSON.stringify(structured, null, 2))
+  logger.debug('[AI] structured output:', JSON.stringify(structured, null, 2))
 
   if (!structured) {
     return NextResponse.json({ error: 'AI formatting failed' }, { status: 500, headers: CORS_HEADERS })

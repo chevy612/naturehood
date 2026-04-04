@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import logger from '@/lib/logger'
 
 export async function POST(req: NextRequest) {
   const { email, fullName, username, password } = await req.json()
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
   })
 
   if (signUpError || !authData.user) {
-    console.error('Sign up error:', signUpError)
+    logger.error('Sign up error:', signUpError)
     return NextResponse.json({ error: signUpError?.message ?? 'Failed to create account.' }, { status: 500 })
   }
 
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
   })
 
   if (profileError) {
-    console.error('Profile upsert error:', profileError)
+    logger.error('Profile upsert error:', profileError)
     return NextResponse.json(
       { error: 'Account created but profile setup failed. Please contact support.' },
       { status: 500 }
