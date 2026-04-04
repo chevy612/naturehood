@@ -1,26 +1,19 @@
 import { useState } from 'react';
 import {
   View,
-  Text,
-  TextInput,
   ScrollView,
   Image,
-  StyleSheet,
   Alert,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Plus, Camera } from 'lucide-react-native';
+import { ChevronLeft, Camera } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
-import { colors, fonts, commonStyles } from '../../../constants/tokens';
-import Button from '../../../components/ui/Button';
-import { useMealStore } from '../../../stores/meal-store';
-import { useAiUsageStore, AI_LIMIT } from '../../../stores/meal-store';
 import { supabase } from '../../../lib/supabase';
 import {
   createMealRecord,
@@ -30,7 +23,18 @@ import {
 import { analyzeFoodWithAI } from '../../../lib/services/ai-food-analysis';
 import { MEAL_TYPES, MEAL_TYPE_LABELS } from '../../../lib/types/meal';
 import type { AiFoodAnalysis, MealType } from '../../../lib/types/meal';
+import { useMealStore } from '../../../stores/meal-store';
+import { useAiUsageStore, AI_LIMIT } from '../../../stores/meal-store';
 import { parseNullableFloat } from '../../../utils/mealUtils';
+
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/ui/icon';
+import { SectionLabel } from '@/components/layout/section-label';
+import { colors } from '../../../constants/tokens';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MealInfoFillUpScreen — form to log meal details before saving or AI analysis
@@ -88,7 +92,6 @@ export default function MealInfoFillUpScreen() {
     });
 
     if (result.canceled || !result.assets[0]) return;
-
     setImage(result.assets[0].uri);
   }
 
@@ -102,7 +105,6 @@ export default function MealInfoFillUpScreen() {
   } | null> {
     console.log('[fill-up] uploadAndCreateRecord() start');
 
-    // Validate required fields
     if (!title.trim()) {
       console.log('[fill-up] returning null — title empty');
       setTitleError(true);
@@ -110,7 +112,6 @@ export default function MealInfoFillUpScreen() {
     }
     setTitleError(false);
 
-    // Get current user + session token
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -122,11 +123,9 @@ export default function MealInfoFillUpScreen() {
 
     if (!user || !session) {
       Alert.alert('Error', 'You must be logged in.');
-      console.log('[fill-up] returning null — no user or session');
       return null;
     }
 
-    // Upload image if we have one
     let s3Url = '';
     if (imageUri) {
       console.log('[fill-up] uploading image, uri length:', imageUri.length);
@@ -134,19 +133,14 @@ export default function MealInfoFillUpScreen() {
       console.log('[fill-up] upload result — url:', url, '| error:', uploadErr);
       if (uploadErr || !url) {
         Alert.alert('Upload Failed', 'Could not upload the image. Please try again.');
-        console.log('[fill-up] returning null — upload failed');
         return null;
       }
       s3Url = url;
-    } else {
-      console.log('[fill-up] no imageUri, skipping upload');
     }
 
-    // Generate a unique meal ID
     const mealId = uuidv4();
     console.log('[fill-up] generated mealId:', mealId);
 
-    // Parse numeric fields
     const parsedCalories = parseNullableFloat(calories);
     const parsedProtein = parseNullableFloat(protein);
 
@@ -169,7 +163,6 @@ export default function MealInfoFillUpScreen() {
       return null;
     }
 
-    // Store record info in Zustand for downstream screens
     setRecordInfo(mealId, s3Url);
 
     console.log('[fill-up] uploadAndCreateRecord() success — mealId:', mealId);
@@ -180,13 +173,9 @@ export default function MealInfoFillUpScreen() {
 
   async function handleSaveRecord() {
     setLoading('savingRecord', true);
-
     const result = await uploadAndCreateRecord();
     setLoading('savingRecord', false);
-
-    if (!result) return; // error already shown
-
-    // Success — navigate back to history
+    if (!result) return;
     reset();
     router.replace('/(tabs)/meal/');
   }
@@ -196,7 +185,6 @@ export default function MealInfoFillUpScreen() {
   async function handleAIAnalysis() {
     console.log('[fill-up] handleAIAnalysis() — aiUsedCount:', aiUsedCount, '/ limit:', AI_LIMIT);
 
-    // Check AI usage limit
     if (aiUsedCount >= AI_LIMIT) {
       Alert.alert(
         'AI Limit Reached',
@@ -215,14 +203,12 @@ export default function MealInfoFillUpScreen() {
       return;
     }
 
-    // Increment AI usage count (optimistic local + remote)
     incrementAiUsage();
     incrementAiUsageRemote(result.userId, aiUsedCount).catch((err) =>
       console.warn('[meal] Failed to sync AI usage remotely:', err)
     );
 
     console.log('[fill-up] calling analyzeFoodWithAI — mealId:', result.mealId);
-    // Call backend AI endpoint
     const { analysis, error: aiErr } = await analyzeFoodWithAI(result.mealId, result.accessToken);
 
     console.log(
@@ -251,7 +237,6 @@ export default function MealInfoFillUpScreen() {
       return;
     }
 
-    // Store AI result and navigate to summary
     setAiResult(analysis as AiFoodAnalysis);
     router.push('/(tabs)/meal/summary');
   }
@@ -265,140 +250,127 @@ export default function MealInfoFillUpScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* ── Nav header ──────────────────────────────────────────────────── */}
-      <View style={commonStyles.navHeader as any}>
-        <TouchableOpacity onPress={handleBack} style={commonStyles.navHeaderSpacer as any}>
-          <ChevronLeft size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={commonStyles.navHeaderTitle}>Log Your Meal</Text>
-        <View style={commonStyles.navHeaderSpacer as any} />
+      <View className="flex-row items-center px-4 pt-4 pb-3">
+        <Button variant="ghost" size="icon" onPress={handleBack}>
+          <Icon as={ChevronLeft} size={24} />
+        </Button>
+        <Text className="flex-1 text-center text-sm font-semibold">Log Your Meal</Text>
+        {/* Spacer to balance the back button */}
+        <View className="w-10" />
       </View>
 
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.content}
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 160 }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
         {/* ── Image section ─────────────────────────────────────────────── */}
         {hasImage ? (
           <TouchableOpacity
-            style={styles.imageContainer}
+            className="mx-4 mt-4 rounded-xl overflow-hidden border border-border"
             activeOpacity={0.8}
             onPress={handleAddImage}
           >
-            <Image source={{ uri: imageUri! }} style={styles.image} resizeMode="cover" />
+            <Image source={{ uri: imageUri! }} className="w-full h-60" resizeMode="cover" />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={styles.imagePlaceholder}
+            className="mx-4 mt-4 h-44 rounded-xl border-2 border-border border-dashed bg-surface-1 items-center justify-center gap-2"
             activeOpacity={0.7}
             onPress={handleAddImage}
           >
-            <Camera size={28} color={colors.textMuted} />
-            <Text style={styles.imagePlaceholderText}>ADD FOOD IMAGE</Text>
+            <Icon as={Camera} size={28} className="text-muted-foreground" />
+            <Text variant="muted" className="text-[11px] font-semibold tracking-widest uppercase">
+              Add Food Image
+            </Text>
           </TouchableOpacity>
         )}
 
         {/* ── Form fields ───────────────────────────────────────────────── */}
-        <View style={styles.form}>
-          <Field label="MEAL TITLE *">
-            <TextInput
-              style={[styles.input, titleError && styles.inputError]}
+        <View className="p-4 gap-5">
+          <Field label="Meal Title *">
+            <Input
               value={title}
               onChangeText={(t) => {
                 setField('title', t);
                 if (t.trim()) setTitleError(false);
               }}
               placeholder="e.g. Grilled chicken salad"
-              placeholderTextColor={colors.textMuted}
+              className={titleError ? 'border-destructive' : ''}
             />
-            {titleError && <Text style={styles.errorText}>Title is required</Text>}
+            {titleError && <Text className="text-destructive text-sm mt-1">Title is required</Text>}
           </Field>
 
-          <Field label="CALORIES (KCAL)">
-            <TextInput
-              style={styles.input}
+          <Field label="Calories (kcal)">
+            <Input
               value={calories}
               onChangeText={(v) => setField('calories', v)}
               placeholder="Optional — AI can estimate this"
-              placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
             />
           </Field>
 
-          <Field label="ESTIMATED PROTEIN (G)">
-            <TextInput
-              style={styles.input}
+          <Field label="Estimated Protein (g)">
+            <Input
               value={protein}
               onChangeText={(v) => setField('protein', v)}
               placeholder="Optional — AI can estimate this"
-              placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
             />
           </Field>
 
-          <Field label="MEAL TYPE">
-            <View style={styles.mealTypePicker}>
+          <Field label="Meal Type">
+            <View className="flex-row flex-wrap gap-2">
               {MEAL_TYPES.map((type) => {
                 const isSelected = mealType === type;
                 return (
                   <TouchableOpacity
                     key={type}
-                    style={[styles.mealTypeChip, isSelected && styles.mealTypeChipSelected]}
                     activeOpacity={0.7}
                     onPress={() => setMealType(isSelected ? null : type)}
                   >
-                    <Text
-                      style={[
-                        styles.mealTypeChipText,
-                        isSelected && styles.mealTypeChipTextSelected,
-                      ]}
-                    >
-                      {MEAL_TYPE_LABELS[type]}
-                    </Text>
+                    <Badge variant={isSelected ? 'default' : 'outline'}>
+                      <Text>{MEAL_TYPE_LABELS[type]}</Text>
+                    </Badge>
                   </TouchableOpacity>
                 );
               })}
             </View>
           </Field>
 
-          <Field label="MEAL NOTES">
-            <TextInput
-              style={[styles.input, styles.textarea]}
+          <Field label="Meal Notes">
+            <Textarea
               value={mealNotes}
               onChangeText={(v) => setField('mealNotes', v)}
               placeholder="Any extra details? e.g. homemade, restaurant, dressing, etc."
-              placeholderTextColor={colors.textMuted}
-              multiline
-              textAlignVertical="top"
+              numberOfLines={4}
             />
           </Field>
         </View>
       </ScrollView>
 
       {/* ── Bottom buttons ───────────────────────────────────────────────── */}
-      <View style={styles.bottomBar}>
-        {/* Save Record — outline / secondary */}
-        <Button
-          title="SAVE RECORD"
-          onPress={handleSaveRecord}
-          variant="outline"
-          loading={savingRecord}
-          disabled={isAnyLoading}
-        />
+      <View className="absolute bottom-0 left-0 right-0 p-4 pb-8 gap-2.5 bg-background border-t border-border">
+        <Button variant="outline" onPress={handleSaveRecord} disabled={isAnyLoading}>
+          {savingRecord ? (
+            <ActivityIndicator size="small" color={colors.accent} />
+          ) : (
+            <Text>SAVE RECORD</Text>
+          )}
+        </Button>
 
-        {/* AI Analysis — primary / accent — disabled when no image */}
-        <Button
-          title="AI ANALYSIS"
-          onPress={handleAIAnalysis}
-          variant="primary"
-          loading={analyzingAI}
-          disabled={isAnyLoading || !hasImage}
-        />
+        <Button variant="default" onPress={handleAIAnalysis} disabled={isAnyLoading || !hasImage}>
+          {analyzingAI ? (
+            <ActivityIndicator size="small" color={colors.accent} />
+          ) : (
+            <Text>AI ANALYSIS</Text>
+          )}
+        </Button>
       </View>
     </KeyboardAvoidingView>
   );
@@ -408,116 +380,9 @@ export default function MealInfoFillUpScreen() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <View style={{ gap: 6 }}>
-      <Text style={commonStyles.sectionLabel}>{label}</Text>
+    <View className="gap-1.5">
+      <SectionLabel text={label} />
       {children}
     </View>
   );
 }
-
-// ── Styles ──────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: commonStyles.screen,
-  content: { paddingBottom: 160 },
-
-  // Image preview
-  imageContainer: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  image: {
-    width: '100%',
-    height: 240,
-  },
-
-  // Image placeholder (dotted border)
-  imagePlaceholder: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    height: 180,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    backgroundColor: colors.surface1,
-  },
-  imagePlaceholderText: {
-    fontSize: 11,
-    fontFamily: fonts.headingM,
-    color: colors.textMuted,
-    letterSpacing: 2,
-  },
-
-  // Form
-  form: { padding: 16, gap: 20 },
-  input: {
-    backgroundColor: colors.surface1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    minHeight: 44,
-    fontSize: 14,
-    fontFamily: fonts.body,
-    color: colors.textPrimary,
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  textarea: { minHeight: 100, paddingTop: 12 },
-  errorText: {
-    fontSize: 12,
-    fontFamily: fonts.body,
-    color: colors.error,
-  },
-
-  // Meal type picker (chip row)
-  mealTypePicker: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  mealTypeChip: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: colors.surface1,
-  },
-  mealTypeChipSelected: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accent + '20',
-  },
-  mealTypeChipText: {
-    fontSize: 12,
-    fontFamily: fonts.bodyMed,
-    color: colors.textMuted,
-  },
-  mealTypeChipTextSelected: {
-    color: colors.accent,
-  },
-
-  // Bottom bar
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-    paddingBottom: 32,
-    gap: 10,
-    backgroundColor: colors.background,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-});

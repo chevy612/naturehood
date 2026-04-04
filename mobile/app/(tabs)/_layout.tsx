@@ -6,33 +6,26 @@ import { colors, fonts } from '../../constants/tokens';
 export default function TabsLayout() {
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.card,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: 80,
-          paddingBottom: 20,
-          paddingTop: 10,
-        },
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarItemStyle: { minHeight: 44 },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontFamily: fonts.bodyMed,
-          letterSpacing: 0.5,
-          marginTop: 2,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="home/index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: {
+            backgroundColor: colors.card,
+            borderTopColor: colors.border,
+            borderTopWidth: 1,
+            height: 80,
+            paddingBottom: 20,
+            paddingTop: 10,
+          },
+          tabBarActiveTintColor: colors.accent,
+          tabBarInactiveTintColor: colors.textMuted,
+          tabBarItemStyle: { minHeight: 44 },
+          tabBarLabelStyle: {
+            fontSize: 10,
+            fontFamily: fonts.bodyMed,
+            letterSpacing: 0.5,
+            marginTop: 2,
+          },
         }}
       >
         <Tabs.Screen

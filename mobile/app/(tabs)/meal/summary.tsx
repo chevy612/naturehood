@@ -1,27 +1,30 @@
 import { useState, useMemo } from 'react';
 import {
   View,
-  Text,
-  TextInput,
   ScrollView,
   Image,
-  TouchableOpacity,
-  StyleSheet,
   Alert,
+  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { colors, fonts, commonStyles, spacing } from '../../../constants/tokens';
-import Button from '../../../components/ui/Button';
 import { useMealStore } from '../../../stores/meal-store';
 import { updateMealRecord } from '../../../lib/actions/meal';
 import { hasAiFoodData, MEAL_TYPES, MEAL_TYPE_LABELS } from '../../../lib/types/meal';
 import type { MealType } from '../../../lib/types/meal';
 import { supabase } from '../../../lib/supabase';
 import { parseNullableFloat } from '../../../utils/mealUtils';
+
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/ui/icon';
+import { SectionLabel } from '@/components/layout/section-label';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MealSummaryScreen — displays AI analysis results with editable fields
@@ -112,7 +115,6 @@ export default function MealSummaryScreen() {
       return;
     }
 
-    // Build update payload
     const parsedCal = parseNullableFloat(calories);
     const parsedProtein = parseNullableFloat(protein);
 
@@ -142,35 +144,35 @@ export default function MealSummaryScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* ── Nav header ──────────────────────────────────────────────────── */}
-      <View style={commonStyles.navHeader as any}>
-        <TouchableOpacity onPress={handleBack} style={commonStyles.navHeaderSpacer as any}>
-          <ChevronLeft size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={commonStyles.navHeaderTitle}>Meal Summary</Text>
-        <View style={commonStyles.navHeaderSpacer as any} />
+      <View className="flex-row items-center px-4 pt-4 pb-3">
+        <Button variant="ghost" size="icon" onPress={handleBack}>
+          <Icon as={ChevronLeft} size={24} />
+        </Button>
+        <Text className="flex-1 text-center text-sm font-semibold">Meal Summary</Text>
+        <View className="w-10" />
       </View>
 
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.content}
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 120 }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
         {/* ── Image preview ─────────────────────────────────────────────── */}
         {imageUri ? (
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+          <View className="mx-4 mt-2 rounded-xl overflow-hidden border border-border">
+            <Image source={{ uri: imageUri }} className="w-full h-[230px]" resizeMode="cover" />
           </View>
         ) : null}
 
         {/* ── No food detected message ──────────────────────────────────── */}
         {noFood && (
-          <View style={styles.noFoodBanner}>
-            <Text style={styles.noFoodText}>
+          <View className="mx-4 mt-2 p-4 bg-destructive/10 rounded-lg border border-destructive">
+            <Text className="text-destructive text-sm">
               No food was detected in the image. You can still edit the fields below manually.
             </Text>
           </View>
@@ -178,99 +180,90 @@ export default function MealSummaryScreen() {
 
         {/* ── Confidence badge ──────────────────────────────────────────── */}
         {confidence !== undefined && (
-          <View style={styles.confidenceRow}>
-            <Text style={styles.confidenceLabel}>AI Correctness Confidence</Text>
-            <Text style={styles.confidenceValue}>{Math.round(confidence * 100)}%</Text>
+          <View className="mx-4 mt-3 flex-row justify-between items-center px-4 py-2.5 bg-surface-1 rounded-lg border border-border">
+            <Text className="text-xs text-muted-foreground font-medium">
+              AI Correctness Confidence
+            </Text>
+            <Text className="text-sm font-semibold text-primary">
+              {Math.round(confidence * 100)}%
+            </Text>
           </View>
         )}
 
         {/* ── Editable fields ───────────────────────────────────────────── */}
-        <View style={styles.form}>
-          <Field label="MEAL TITLE">
-            <TextInput
-              style={styles.input}
+        <View className="p-4 gap-5">
+          <Field label="Meal Title">
+            <Input
               value={title}
               onChangeText={setTitle}
               placeholder="e.g. Grilled chicken salad"
-              placeholderTextColor={colors.textMuted}
             />
           </Field>
 
-          <Field label="CALORIES (KCAL)">
-            <TextInput
-              style={styles.input}
+          <Field label="Calories (kcal)">
+            <Input
               value={calories}
               onChangeText={setCalories}
               placeholder="e.g. 450"
-              placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
             />
           </Field>
 
-          <Field label="PROTEIN (G)">
-            <TextInput
-              style={styles.input}
+          <Field label="Protein (g)">
+            <Input
               value={protein}
               onChangeText={setProtein}
               placeholder="e.g. 30"
-              placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
             />
           </Field>
 
-          <Field label="MEAL TYPE">
-            <View style={styles.mealTypePicker}>
+          <Field label="Meal Type">
+            <View className="flex-row flex-wrap gap-2">
               {MEAL_TYPES.map((type) => {
                 const isSelected = mealType === type;
                 return (
                   <TouchableOpacity
                     key={type}
-                    style={[styles.mealTypeChip, isSelected && styles.mealTypeChipSelected]}
                     activeOpacity={0.7}
                     onPress={() => setMealType(isSelected ? null : type)}
                   >
-                    <Text
-                      style={[
-                        styles.mealTypeChipText,
-                        isSelected && styles.mealTypeChipTextSelected,
-                      ]}
-                    >
-                      {MEAL_TYPE_LABELS[type]}
-                    </Text>
+                    <Badge variant={isSelected ? 'default' : 'outline'}>
+                      <Text>{MEAL_TYPE_LABELS[type]}</Text>
+                    </Badge>
                   </TouchableOpacity>
                 );
               })}
             </View>
           </Field>
 
-          <Field label="DESCRIPTION">
-            <TextInput
-              style={[styles.input, styles.textarea]}
+          <Field label="Description">
+            <Textarea
               value={description}
               onChangeText={setDescription}
               placeholder="AI-generated meal description"
-              placeholderTextColor={colors.textMuted}
-              multiline
-              textAlignVertical="top"
+              numberOfLines={4}
             />
           </Field>
         </View>
 
         {/* ── AI Breakdown ──────────────────────────────────────────────── */}
         {breakdownItems.length > 0 && (
-          <View style={styles.breakdownSection}>
-            <Text style={commonStyles.sectionLabel}>NUTRITIONAL BREAKDOWN</Text>
+          <View className="px-4 gap-2 mt-1">
+            <SectionLabel text="Nutritional Breakdown" />
             {breakdownItems.map((item, i) => (
-              <View key={i} style={styles.breakdownCard}>
-                <View style={styles.breakdownHeader}>
-                  <Text style={styles.breakdownName}>{item.item}</Text>
-                  <Text style={styles.breakdownCal}>{item.calories} kcal</Text>
+              <View
+                key={i}
+                className="bg-surface-1 border border-border rounded-lg p-4 gap-1"
+              >
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-sm font-medium flex-1">{item.item}</Text>
+                  <Text className="text-sm font-semibold text-primary">{item.calories} kcal</Text>
                 </View>
-                <Text style={styles.breakdownMeta}>
-                  {item.estimated_weight_g}g | Protein: {item.macros.p}g | Carbs: {item.macros.c}g |
-                  Fat: {item.macros.f}g
+                <Text className="text-xs text-muted-foreground">
+                  {item.estimated_weight_g}g | Protein: {item.macros.p}g | Carbs: {item.macros.c}g | Fat: {item.macros.f}g
                 </Text>
-                <Text style={styles.breakdownLogic}>{item.logic}</Text>
+                <Text className="text-xs text-muted-foreground italic">{item.logic}</Text>
               </View>
             ))}
           </View>
@@ -278,10 +271,10 @@ export default function MealSummaryScreen() {
 
         {/* ── Preparation assumptions ───────────────────────────────────── */}
         {assumptions.length > 0 && (
-          <View style={styles.assumptionsSection}>
-            <Text style={commonStyles.sectionLabel}>ASSUMPTIONS</Text>
+          <View className="px-4 gap-2 mt-4">
+            <SectionLabel text="Assumptions" />
             {assumptions.map((a, i) => (
-              <Text key={i} style={commonStyles.textCaption}>
+              <Text key={i} className="text-xs text-muted-foreground">
                 {a}
               </Text>
             ))}
@@ -290,187 +283,26 @@ export default function MealSummaryScreen() {
       </ScrollView>
 
       {/* ── Bottom button ────────────────────────────────────────────────── */}
-      <View style={styles.bottomBar}>
-        <Button
-          title={isDirty ? 'SAVE AND RETURN' : 'DONE'}
-          onPress={handleDone}
-          variant="primary"
-          loading={savingSummary}
-        />
+      <View className="absolute bottom-0 left-0 right-0 p-4 pb-8 bg-background border-t border-border">
+        <Button variant="default" onPress={handleDone} disabled={savingSummary}>
+          {savingSummary ? (
+            <ActivityIndicator size="small" color="#141115" />
+          ) : (
+            <Text>{isDirty ? 'SAVE AND RETURN' : 'DONE'}</Text>
+          )}
+        </Button>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
-// ── Reusable field wrapper ──────────────────────────────────────────────────
+// ── Field wrapper ───────────────────────────────────────────────────────────
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <View style={{ gap: 6 }}>
-      <Text style={commonStyles.sectionLabel}>{label}</Text>
+    <View className="gap-1.5">
+      <SectionLabel text={label} />
       {children}
     </View>
   );
 }
-
-// ── Styles ──────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: commonStyles.screen,
-  content: { paddingBottom: 120 },
-
-  // Image
-  imageContainer: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.sm,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  image: {
-    width: '100%',
-    height: 230,
-  },
-
-  // No food banner
-  noFoodBanner: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: '#2e1a1a',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.error,
-  },
-  noFoodText: {
-    color: colors.error,
-    fontFamily: fonts.body,
-    fontSize: 13,
-  },
-
-  // Confidence
-  confidenceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: spacing.md,
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surface1,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  confidenceLabel: {
-    fontSize: 12,
-    fontFamily: fonts.bodyMed,
-    color: colors.textMuted,
-  },
-  confidenceValue: {
-    fontSize: 13,
-    fontFamily: fonts.heading,
-    color: colors.accent,
-  },
-
-  // Form
-  form: { padding: spacing.md, gap: spacing.md },
-  input: {
-    backgroundColor: colors.surface1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    minHeight: 44,
-    fontSize: 14,
-    fontFamily: fonts.body,
-    color: colors.textPrimary,
-  },
-  textarea: { minHeight: 80, paddingTop: spacing.md },
-
-  // Meal type picker (chip row)
-  mealTypePicker: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  mealTypeChip: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 6,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surface1,
-  },
-  mealTypeChipSelected: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accent + '20',
-  },
-  mealTypeChipText: {
-    fontSize: 12,
-    fontFamily: fonts.bodyMed,
-    color: colors.textDisabled,
-  },
-  mealTypeChipTextSelected: {
-    color: colors.accent,
-  },
-
-  // Breakdown
-  breakdownSection: { paddingHorizontal: spacing.md, gap: spacing.sm, marginTop: spacing.sm },
-  breakdownCard: {
-    backgroundColor: colors.surface1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  breakdownHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  breakdownName: {
-    fontSize: 13,
-    fontFamily: fonts.bodyMed,
-    color: colors.textPrimary,
-    flex: 1,
-  },
-  breakdownCal: {
-    fontSize: 13,
-    fontFamily: fonts.heading,
-    color: colors.accent,
-  },
-  breakdownMeta: {
-    fontSize: 11,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
-  },
-  breakdownLogic: {
-    fontSize: 11,
-    fontFamily: fonts.body,
-    color: colors.textDisabled,
-    fontStyle: 'italic',
-  },
-
-  // Assumptions
-  assumptionsSection: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-    marginTop: spacing.md,
-  },
-  // Bottom bar
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.md,
-    paddingBottom: spacing.md,
-    backgroundColor: colors.background,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-});
