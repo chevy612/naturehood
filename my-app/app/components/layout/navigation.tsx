@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Container, ButtonAccent} from '@/app/components/ui';
 import { tokens } from '@/app/components/ui/tokens';
+import { createBrowserClient } from '@supabase/ssr';
 
 // ─────────────────────────────────────────────
 // NAVIGATION ITEMS
@@ -19,6 +20,17 @@ const navItems = [
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session);
+    });
+  }, []);
 
   // ─────────────────────────────────────────────
   // CLOSE MENU ON ESC KEY
@@ -103,10 +115,10 @@ export default function Navigation() {
               ))}
             </div>
 
-            {/* ─── RIGHT: Sign Up Button ─── */}
+            {/* ─── RIGHT: Sign In / Open App Button ─── */}
             <div className="flex items-center gap-3">
-              <Link href="/signup">
-                <ButtonAccent>Sign Up</ButtonAccent>
+              <Link href={isLoggedIn ? "/home" : "/login"}>
+                <ButtonAccent>{isLoggedIn ? "Open App" : "Sign In"}</ButtonAccent>
               </Link>
             </div>
           </nav>
@@ -174,8 +186,8 @@ export default function Navigation() {
 
             {/* Mobile Menu Footer */}
             <div className="mt-8 pt-6 border-t border-[#3A373C]">
-              <Link href="/signup" onClick={closeMobileMenu}>
-                <ButtonAccent fullWidth>Sign Up</ButtonAccent>
+              <Link href={isLoggedIn ? "/home" : "/login"} onClick={closeMobileMenu}>
+                <ButtonAccent fullWidth>{isLoggedIn ? "Open App" : "Sign In"}</ButtonAccent>
               </Link>
             </div>
           </nav>
