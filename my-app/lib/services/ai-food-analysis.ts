@@ -3,13 +3,15 @@ import OpenAI from 'openai';
 import {
   type AIProvider,
   claudeClient,
-  glmClient,
+  // glmClient,
   kimiClient,
   DEFAULT_MODELS,
 } from '@/lib/services/ai-client';
+import logger from '@/lib/logger';
+
+const AI_PROVIDER = process.env.FOOD_ANALYSIS_PROVIDER ?? 'kimi';
 
 // ── System prompt — Food Analyst & Nutritionist ─────────────────────────────
-
 const SYSTEM_PROMPT = `Act as a Computer Vision Food Analyst and Nutritionist. Analyze the provided image and output a precise nutritional estimation in a strict JSON format.
 
 Analysis Protocol:
@@ -59,23 +61,22 @@ type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif';
 
 const ANTHROPIC_CLIENTS: Record<string, Anthropic> = {
   anthropic: claudeClient,
-  glm: glmClient,
+  // glm: glmClient,
 };
 
 function getClientAndModel(provider: AIProvider): {
-  sdk: 'anthropic' | 'openai';
   anthropicClient?: Anthropic;
   openaiClient?: OpenAI;
   model: string;
 } {
   if (provider === 'kimi') {
-    return { sdk: 'openai', openaiClient: kimiClient, model: DEFAULT_MODELS.kimi };
+    return { openaiClient: kimiClient, model: DEFAULT_MODELS.kimi };
   }
   const client = ANTHROPIC_CLIENTS[provider];
   if (!client) {
-    throw new Error(`[ai-food] Unknown provider "${provider}"`);
+    throw new Error(`[food-analysis] Unknown provider "${provider}"`);
   }
-  return { sdk: 'anthropic', anthropicClient: client, model: DEFAULT_MODELS[provider] };
+  return { anthropicClient: client, model: DEFAULT_MODELS[provider] };
 }
 
 // ── SDK-specific call adapters ──────────────────────────────────────────────
@@ -112,7 +113,7 @@ async function callAnthropic(
   });
 
   if (message.stop_reason === 'max_tokens') {
-    console.error('[ai-food] Anthropic response truncated: max_tokens reached.');
+    logger.error('[food-analysis] Anthropic response truncated: max_tokens reached.');
     return null;
   }
 
@@ -150,7 +151,7 @@ async function callOpenAI(
   if (!choice) return null;
 
   if (choice.finish_reason === 'length') {
-    console.error('[ai-food] OpenAI response truncated: max_tokens reached.');
+    logger.error('[food-analysis] OpenAI response truncated: max_tokens reached.');
     return null;
   }
 
@@ -175,48 +176,73 @@ function stripCodeFences(text: string): string {
  * @param base64Image - raw base64-encoded image (no data: prefix)
  * @param mediaType   - MIME type, e.g. "image/jpeg"
  * @param userNotes   - optional extra context from the user (e.g. "homemade, no dressing")
- * @param weightG     - optional weight hint in grams
+ * @param weight     - optional weight hint in grams
  * @param provider    - which AI provider to use (defaults to "kimi")
  */
 export async function analyzeFoodImage(params: {
   base64Image: string;
   mediaType: ImageMediaType;
   userNotes?: string | null;
-  weightG?: number | null;
+  weight?: number | null;
   provider?: AIProvider;
 }): Promise<AiFoodAnalysis | null> {
-  const { base64Image, mediaType, userNotes, weightG, provider = 'kimi' } = params;
+  const {
+    base64Image,
+    mediaType,
+    userNotes,
+    weight,
+    provider = AI_PROVIDER as AIProvider,
+  } = params;
 
   // Build the user-facing text prompt with optional context
   const contextParts: string[] = ['Analyze this meal image.'];
-  if (weightG) contextParts.push(`Estimated total weight: ${weightG}g.`);
+  if (weight) contextParts.push(`Estimated total weight: ${weight}g.`);
   if (userNotes?.trim()) contextParts.push(`User notes: ${userNotes.trim()}`);
   const userText = contextParts.join(' ');
 
   try {
-    const { sdk, anthropicClient, openaiClient, model } = getClientAndModel(provider);
+    const { anthropicClient, openaiClient, model } = getClientAndModel(provider);
+    logger.debug(`[food-analysis] Using provider="${provider}", model="${model}"`);
 
     // Dispatch to the correct SDK adapter
     let rawText: string | null;
-    if (sdk === 'anthropic' && anthropicClient) {
+    if (anthropicClient) {
       rawText = await callAnthropic(anthropicClient, model, base64Image, mediaType, userText);
-    } else if (sdk === 'openai' && openaiClient) {
+    } else if (openaiClient) {
       rawText = await callOpenAI(openaiClient, model, base64Image, mediaType, userText);
     } else {
-      throw new Error(`[ai-food] No client resolved for provider "${provider}"`);
+      throw new Error(`[food-analysis] No client resolved for provider "${provider}"`);
     }
+
+    logger.debug('[food-analysis] Raw AI response:', rawText ?? 'null');
 
     if (!rawText) return null;
 
     const jsonText = stripCodeFences(rawText);
-    const parsed: AiFoodAnalysis = JSON.parse(jsonText);
+    // console.log('[food-analysis] After stripCodeFences (first 300 chars):', jsonText.slice(0, 300));
+
+    let parsed: AiFoodAnalysis;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (parseErr) {
+      logger.error('[food-analysis] JSON.parse failed:', parseErr);
+      logger.error('[food-analysis] Unparseable text:', jsonText.slice(0, 1000));
+      return null;
+    }
 
     // Minimal validation — must have description
-    if (typeof parsed.description !== 'string') return null;
+    if (typeof parsed.description !== 'string') {
+      logger.error(
+        '[food-analysis] Validation failed — "description" missing or not a string. Got:',
+        typeof parsed.description
+      );
+      return null;
+    }
 
+    logger.debug('[food-analysis] Parse success — description:', parsed.description.slice(0, 100));
     return parsed;
   } catch (err) {
-    console.error('[ai-food] analyzeFoodImage failed:', err);
+    logger.error('[food-analysis] analyzeFoodImage failed:', err);
     return null;
   }
 }

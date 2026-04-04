@@ -1,6 +1,7 @@
 import { File } from 'expo-file-system';
 import { supabase } from '../supabase';
 import type { MealRecord, AiFoodAnalysis } from '../types/meal';
+import { MEAL_TYPE_LABELS } from '../types/meal';
 
 // ── Fetch AI usage for the current user ──────────────────────────────────────
 
@@ -9,8 +10,8 @@ export async function fetchAiUsage(
 ): Promise<{ count: number; updatedAt: string | null; error: string | null }> {
   const { data, error } = await supabase
     .from('user_ai_usage')
-    .select('ai_used_count, updated_at')
-    .eq('user_id', userId)
+    .select('used_count, updated_at')
+    .eq('id', userId)
     .maybeSingle();
 
   if (error) {
@@ -22,7 +23,7 @@ export async function fetchAiUsage(
     return { count: 0, updatedAt: null, error: null };
   }
 
-  return { count: data.ai_used_count ?? 0, updatedAt: data.updated_at ?? null, error: null };
+  return { count: data.used_count ?? 0, updatedAt: data.updated_at ?? null, error: null };
 }
 
 // ── Increment AI usage count in Supabase ─────────────────────────────────────
@@ -36,11 +37,11 @@ export async function incrementAiUsageRemote(
   // Upsert: create row if it doesn't exist, otherwise update
   const { error } = await supabase.from('user_ai_usage').upsert(
     {
-      user_id: userId,
-      ai_used_count: currentCount + 1,
+      id: userId,
+      used_count: currentCount + 1,
       updated_at: now,
     },
-    { onConflict: 'user_id' }
+    { onConflict: 'id' }
   );
 
   if (error) {
@@ -79,7 +80,7 @@ type CreateMealInput = {
   weight?: number | null;
   calories?: number | null;
   protein?: number | null;
-  meal_type?: string | null;
+  meal_type?: keyof typeof MEAL_TYPE_LABELS | null;
   user_notes?: string | null;
   s3_link: string;
 };
@@ -99,7 +100,7 @@ export async function createMealRecord(input: CreateMealInput): Promise<{ error:
     ai_analysis: null,
     s3_link: input.s3_link,
     created_at: now,
-    modified_at: now,
+    updated_at: now,
   });
 
   if (error) {
@@ -131,7 +132,7 @@ export async function updateMealRecord(
     .from('meal_records')
     .update({
       ...updates,
-      modified_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
     .eq('meal_id', mealId)
     .eq('user_id', userId);

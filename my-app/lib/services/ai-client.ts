@@ -70,5 +70,5 @@ function buildKimiClient(): OpenAI {
 //   import { aiClient, aiModel } from '@/lib/services/ai-client'
 
 export const claudeClient = buildAnthropicClient();
-export const glmClient = buildGlmClient();
+// export const glmClient = buildGlmClient();
 export const kimiClient = buildKimiClient();

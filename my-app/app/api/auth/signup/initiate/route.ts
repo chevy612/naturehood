@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { randomInt } from 'crypto'
 import { Resend } from 'resend'
 import { otpEmailHtml } from '@/app/components/email-template'
+import logger from '@/lib/logger'
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json()
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     .upsert({ email: normalizedEmail, code, expires_at: expiresAt, used: false }, { onConflict: 'email' })
 
   if (upsertError) {
-    console.error('OTP upsert error:', upsertError)
+    logger.error('OTP upsert error:', upsertError)
     return NextResponse.json({ error: 'Failed to generate verification code.' }, { status: 500 })
   }
 
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
   })
 
   if (emailError) {
-    console.error('Resend error:', JSON.stringify(emailError, null, 2))
+    logger.error('Resend error:', JSON.stringify(emailError, null, 2))
     return NextResponse.json({ error: 'Failed to send verification email.' }, { status: 500 })
   }
 

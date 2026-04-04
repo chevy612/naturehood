@@ -48,7 +48,7 @@ export type MealRecord = {
   ai_analysis: AiFoodAnalysis | null;
   s3_link: string | null;
   created_at: string;
-  modified_at: string;
+  updated_at: string;
 };
 
 // ── AI food-analysis response schema ─────────────────────────────────────────
@@ -95,7 +95,7 @@ export type AiFoodAnalysis = {
 
 /** Type-guard: returns true when the AI actually detected food items */
 export function hasAiFoodData(
-  data: AiFoodAnalysisData | Record<string, never>,
+  data: AiFoodAnalysisData | Record<string, never>
 ): data is AiFoodAnalysisData {
-  return "meal_summary" in data && "breakdown" in data;
+  return 'meal_summary' in data && 'breakdown' in data;
 }

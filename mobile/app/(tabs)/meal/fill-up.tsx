@@ -8,6 +8,9 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Plus, Camera } from 'lucide-react-native';
@@ -24,9 +27,10 @@ import {
   uploadFoodImage,
   incrementAiUsageRemote,
 } from '../../../lib/actions/meal';
-import { analyzeFoodWithAI } from '../../../lib/services/ai-food';
+import { analyzeFoodWithAI } from '../../../lib/services/ai-food-analysis';
 import { MEAL_TYPES, MEAL_TYPE_LABELS } from '../../../lib/types/meal';
 import type { AiFoodAnalysis, MealType } from '../../../lib/types/meal';
+import { parseNullableFloat } from '../../../utils/mealUtils';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MealInfoFillUpScreen — form to log meal details before saving or AI analysis
@@ -71,13 +75,14 @@ export default function MealInfoFillUpScreen() {
       Alert.alert(
         'Camera Permission Required',
         'Please enable camera access in your device settings to capture food images.',
-        [{ text: 'OK' }],
+        [{ text: 'OK' }]
       );
       return;
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['images'],
+      cameraType: ImagePicker.CameraType.back,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 0.7,
     });
@@ -95,8 +100,11 @@ export default function MealInfoFillUpScreen() {
     userId: string;
     accessToken: string;
   } | null> {
+    console.log('[fill-up] uploadAndCreateRecord() start');
+
     // Validate required fields
     if (!title.trim()) {
+      console.log('[fill-up] returning null — title empty');
       setTitleError(true);
       return null;
     }
@@ -110,39 +118,51 @@ export default function MealInfoFillUpScreen() {
       data: { session },
     } = await supabase.auth.getSession();
 
+    console.log('[fill-up] user:', user?.id ?? 'null', '| session:', session ? 'present' : 'null');
+
     if (!user || !session) {
       Alert.alert('Error', 'You must be logged in.');
+      console.log('[fill-up] returning null — no user or session');
       return null;
     }
 
     // Upload image if we have one
     let s3Url = '';
     if (imageUri) {
+      console.log('[fill-up] uploading image, uri length:', imageUri.length);
       const { url, error: uploadErr } = await uploadFoodImage(user.id, imageUri);
+      console.log('[fill-up] upload result — url:', url, '| error:', uploadErr);
       if (uploadErr || !url) {
         Alert.alert('Upload Failed', 'Could not upload the image. Please try again.');
+        console.log('[fill-up] returning null — upload failed');
         return null;
       }
       s3Url = url;
+    } else {
+      console.log('[fill-up] no imageUri, skipping upload');
     }
 
     // Generate a unique meal ID
     const mealId = uuidv4();
+    console.log('[fill-up] generated mealId:', mealId);
 
     // Parse numeric fields
-    const parsedCalories = calories ? parseFloat(calories) : null;
-    const parsedProtein = protein ? parseFloat(protein) : null;
+    const parsedCalories = parseNullableFloat(calories);
+    const parsedProtein = parseNullableFloat(protein);
 
+    console.log('[fill-up] calling createMealRecord — s3_link:', s3Url || '(empty)');
     const { error: createErr } = await createMealRecord({
       meal_id: mealId,
       user_id: user.id,
       title: title.trim(),
-      calories: isNaN(parsedCalories as number) ? null : parsedCalories,
-      protein: isNaN(parsedProtein as number) ? null : parsedProtein,
+      calories: parsedCalories,
+      protein: parsedProtein,
       meal_type: mealType ?? null,
       user_notes: mealNotes.trim() || null,
       s3_link: s3Url,
     });
+
+    console.log('[fill-up] createMealRecord error:', createErr ?? 'none');
 
     if (createErr) {
       Alert.alert('Error', 'Failed to save meal record. Please try again.');
@@ -152,6 +172,7 @@ export default function MealInfoFillUpScreen() {
     // Store record info in Zustand for downstream screens
     setRecordInfo(mealId, s3Url);
 
+    console.log('[fill-up] uploadAndCreateRecord() success — mealId:', mealId);
     return { mealId, s3Link: s3Url, userId: user.id, accessToken: session.access_token };
   }
 
@@ -173,12 +194,14 @@ export default function MealInfoFillUpScreen() {
   // ── AI Analysis flow ──────────────────────────────────────────────────
 
   async function handleAIAnalysis() {
+    console.log('[fill-up] handleAIAnalysis() — aiUsedCount:', aiUsedCount, '/ limit:', AI_LIMIT);
+
     // Check AI usage limit
     if (aiUsedCount >= AI_LIMIT) {
       Alert.alert(
         'AI Limit Reached',
         `You've used all ${AI_LIMIT} AI analyses for this period. Your meal can still be saved manually.`,
-        [{ text: 'OK' }],
+        [{ text: 'OK' }]
       );
       return;
     }
@@ -186,6 +209,7 @@ export default function MealInfoFillUpScreen() {
     setLoading('analyzingAI', true);
 
     const result = await uploadAndCreateRecord();
+    console.log('[fill-up] uploadAndCreateRecord result:', result ? 'ok' : 'null');
     if (!result) {
       setLoading('analyzingAI', false);
       return;
@@ -194,12 +218,19 @@ export default function MealInfoFillUpScreen() {
     // Increment AI usage count (optimistic local + remote)
     incrementAiUsage();
     incrementAiUsageRemote(result.userId, aiUsedCount).catch((err) =>
-      console.warn('[meal] Failed to sync AI usage remotely:', err),
+      console.warn('[meal] Failed to sync AI usage remotely:', err)
     );
 
+    console.log('[fill-up] calling analyzeFoodWithAI — mealId:', result.mealId);
     // Call backend AI endpoint
     const { analysis, error: aiErr } = await analyzeFoodWithAI(result.mealId, result.accessToken);
 
+    console.log(
+      '[fill-up] analyzeFoodWithAI — analysis:',
+      analysis ? 'present' : 'null',
+      '| error:',
+      aiErr ?? 'none'
+    );
     setLoading('analyzingAI', false);
 
     if (aiErr || !analysis) {
@@ -215,7 +246,7 @@ export default function MealInfoFillUpScreen() {
             },
           },
           { text: 'OK', style: 'cancel' },
-        ],
+        ]
       );
       return;
     }
@@ -233,7 +264,10 @@ export default function MealInfoFillUpScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       {/* ── Nav header ──────────────────────────────────────────────────── */}
       <View style={commonStyles.navHeader as any}>
         <TouchableOpacity onPress={handleBack} style={commonStyles.navHeaderSpacer as any}>
@@ -247,6 +281,7 @@ export default function MealInfoFillUpScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       >
         {/* ── Image section ─────────────────────────────────────────────── */}
         {hasImage ? (
@@ -313,10 +348,7 @@ export default function MealInfoFillUpScreen() {
                 return (
                   <TouchableOpacity
                     key={type}
-                    style={[
-                      styles.mealTypeChip,
-                      isSelected && styles.mealTypeChipSelected,
-                    ]}
+                    style={[styles.mealTypeChip, isSelected && styles.mealTypeChipSelected]}
                     activeOpacity={0.7}
                     onPress={() => setMealType(isSelected ? null : type)}
                   >
@@ -368,7 +400,7 @@ export default function MealInfoFillUpScreen() {
           disabled={isAnyLoading || !hasImage}
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

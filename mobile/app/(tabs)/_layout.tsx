@@ -34,36 +34,43 @@ export default function TabsLayout() {
           title: 'Home',
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
-      />
-      <Tabs.Screen
-        name="record/index"
-        options={{
-          title: 'Record',
-          tabBarIcon: ({ color, size }) => <PlusCircle size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="meal"
-        options={{
-          title: 'Meal',
-          tabBarIcon: ({ color, size }) => <UtensilsCrossed size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="events/index"
-        options={{
-          title: 'Events',
-          tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: 'Account',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="home/index"
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="record/index"
+          options={{
+            title: 'Record',
+            tabBarIcon: ({ color, size }) => <PlusCircle size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="events/index"
+          options={{
+            title: 'Events',
+            tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="meal"
+          options={{
+            title: 'Meal',
+            tabBarIcon: ({ color, size }) => <UtensilsCrossed size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="account"
+          options={{
+            title: 'Account',
+            tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          }}
+        />
+      </Tabs>
     </SafeAreaView>
   );
 }

@@ -1,5 +1,6 @@
 import type { AthleteSessionLog } from '@/lib/types'
 import { claudeClient as client } from '@/lib/services/ai-client'
+import logger from '@/lib/logger'
 
 const SYSTEM_PROMPT = `You are an elite athletics log parser. You receive a JSON envelope describing one athlete session and must return a single valid AthleteSessionLog JSON object — no prose, no markdown, no code fences.
 
@@ -335,7 +336,7 @@ export async function formatWorkoutWithAI(params: {
 
     // If the model hit the token limit the JSON will be truncated — fail fast
     if (message.stop_reason === 'max_tokens') {
-      console.error('[ai-workout] Response truncated: max_tokens reached. Workout log may be too large.')
+      logger.error('[ai-workout] Response truncated: max_tokens reached. Workout log may be too large.')
       return null
     }
 
@@ -351,7 +352,7 @@ export async function formatWorkoutWithAI(params: {
 
     return parsed
   } catch (err) {
-    console.error('[ai-workout] formatWorkoutWithAI failed:', err)
+    logger.error('[ai-workout] formatWorkoutWithAI failed:', err)
     return null
   }
 }

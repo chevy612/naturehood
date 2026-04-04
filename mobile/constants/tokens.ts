@@ -9,6 +9,7 @@ export const colors = {
   textMuted: '#6B6870',
   textDisabled: '#A09EA3',
   error: '#FF4D4D',
+  
 } as const;
 
 export const fonts = {

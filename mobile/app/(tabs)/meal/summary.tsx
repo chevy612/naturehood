@@ -8,16 +8,20 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { colors, fonts, commonStyles } from '../../../constants/tokens';
+import { colors, fonts, commonStyles, spacing } from '../../../constants/tokens';
 import Button from '../../../components/ui/Button';
 import { useMealStore } from '../../../stores/meal-store';
 import { updateMealRecord } from '../../../lib/actions/meal';
 import { hasAiFoodData, MEAL_TYPES, MEAL_TYPE_LABELS } from '../../../lib/types/meal';
 import type { MealType } from '../../../lib/types/meal';
 import { supabase } from '../../../lib/supabase';
+import { parseNullableFloat } from '../../../utils/mealUtils';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MealSummaryScreen — displays AI analysis results with editable fields
@@ -109,13 +113,13 @@ export default function MealSummaryScreen() {
     }
 
     // Build update payload
-    const parsedCal = calories ? parseFloat(calories) : null;
-    const parsedProtein = protein ? parseFloat(protein) : null;
+    const parsedCal = parseNullableFloat(calories);
+    const parsedProtein = parseNullableFloat(protein);
 
     const { error } = await updateMealRecord(currentMealId, user.id, {
       title: title || null,
-      calories: isNaN(parsedCal as number) ? null : parsedCal,
-      protein: isNaN(parsedProtein as number) ? null : parsedProtein,
+      calories: parsedCal,
+      protein: parsedProtein,
       meal_type: mealType ?? null,
     });
 
@@ -137,7 +141,10 @@ export default function MealSummaryScreen() {
   const noFood = aiResult && !hasAiFoodData(aiResult.data);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       {/* ── Nav header ──────────────────────────────────────────────────── */}
       <View style={commonStyles.navHeader as any}>
         <TouchableOpacity onPress={handleBack} style={commonStyles.navHeaderSpacer as any}>
@@ -151,6 +158,7 @@ export default function MealSummaryScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       >
         {/* ── Image preview ─────────────────────────────────────────────── */}
         {imageUri ? (
@@ -171,7 +179,7 @@ export default function MealSummaryScreen() {
         {/* ── Confidence badge ──────────────────────────────────────────── */}
         {confidence !== undefined && (
           <View style={styles.confidenceRow}>
-            <Text style={styles.confidenceLabel}>AI Confidence</Text>
+            <Text style={styles.confidenceLabel}>AI Correctness Confidence</Text>
             <Text style={styles.confidenceValue}>{Math.round(confidence * 100)}%</Text>
           </View>
         )}
@@ -259,8 +267,8 @@ export default function MealSummaryScreen() {
                   <Text style={styles.breakdownCal}>{item.calories} kcal</Text>
                 </View>
                 <Text style={styles.breakdownMeta}>
-                  {item.estimated_weight_g}g | P: {item.macros.p}g | C: {item.macros.c}g | F:{' '}
-                  {item.macros.f}g
+                  {item.estimated_weight_g}g | Protein: {item.macros.p}g | Carbs: {item.macros.c}g |
+                  Fat: {item.macros.f}g
                 </Text>
                 <Text style={styles.breakdownLogic}>{item.logic}</Text>
               </View>
@@ -273,7 +281,7 @@ export default function MealSummaryScreen() {
           <View style={styles.assumptionsSection}>
             <Text style={commonStyles.sectionLabel}>ASSUMPTIONS</Text>
             {assumptions.map((a, i) => (
-              <Text key={i} style={styles.assumptionText}>
+              <Text key={i} style={commonStyles.textCaption}>
                 {a}
               </Text>
             ))}
@@ -290,7 +298,7 @@ export default function MealSummaryScreen() {
           loading={savingSummary}
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -313,8 +321,8 @@ const styles = StyleSheet.create({
 
   // Image
   imageContainer: {
-    marginHorizontal: 16,
-    marginTop: 16,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
@@ -322,14 +330,14 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 230,
   },
 
   // No food banner
   noFoodBanner: {
-    marginHorizontal: 16,
-    marginTop: 12,
-    padding: 12,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
+    padding: spacing.md,
     backgroundColor: '#2e1a1a',
     borderRadius: 8,
     borderWidth: 1,
@@ -346,10 +354,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 16,
-    marginTop: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     backgroundColor: colors.surface1,
     borderRadius: 8,
     borderWidth: 1,
@@ -367,33 +375,33 @@ const styles = StyleSheet.create({
   },
 
   // Form
-  form: { padding: 16, gap: 16 },
+  form: { padding: spacing.md, gap: spacing.md },
   input: {
     backgroundColor: colors.surface1,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     minHeight: 44,
     fontSize: 14,
     fontFamily: fonts.body,
     color: colors.textPrimary,
   },
-  textarea: { minHeight: 80, paddingTop: 12 },
+  textarea: { minHeight: 80, paddingTop: spacing.md },
 
   // Meal type picker (chip row)
   mealTypePicker: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacing.sm,
   },
   mealTypeChip: {
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     backgroundColor: colors.surface1,
   },
   mealTypeChipSelected: {
@@ -403,21 +411,21 @@ const styles = StyleSheet.create({
   mealTypeChipText: {
     fontSize: 12,
     fontFamily: fonts.bodyMed,
-    color: colors.textMuted,
+    color: colors.textDisabled,
   },
   mealTypeChipTextSelected: {
     color: colors.accent,
   },
 
   // Breakdown
-  breakdownSection: { paddingHorizontal: 16, gap: 10, marginTop: 8 },
+  breakdownSection: { paddingHorizontal: spacing.md, gap: spacing.sm, marginTop: spacing.sm },
   breakdownCard: {
     backgroundColor: colors.surface1,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
-    padding: 12,
-    gap: 4,
+    padding: spacing.md,
+    gap: spacing.xs,
   },
   breakdownHeader: {
     flexDirection: 'row',
@@ -448,21 +456,19 @@ const styles = StyleSheet.create({
   },
 
   // Assumptions
-  assumptionsSection: { paddingHorizontal: 16, gap: 6, marginTop: 16 },
-  assumptionText: {
-    fontSize: 12,
-    fontFamily: fonts.body,
-    color: colors.textMuted,
+  assumptionsSection: {
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
-
   // Bottom bar
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 16,
-    paddingBottom: 32,
+    padding: spacing.md,
+    paddingBottom: spacing.md,
     backgroundColor: colors.background,
     borderTopWidth: 1,
     borderTopColor: colors.border,

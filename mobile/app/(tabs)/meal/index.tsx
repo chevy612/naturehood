@@ -19,53 +19,9 @@ import LoadingScreen from '../../../components/ui/LoadingScreen';
 import EmptyState from '../../../components/ui/EmptyState';
 import type { MealRecord, MealType } from '../../../lib/types/meal';
 import { MEAL_TYPE_LABELS, MEAL_TYPE_COLORS } from '../../../lib/types/meal';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-
-/** Format a Date as "April 4 (Sat)" */
-function formatDayHeader(date: Date): string {
-  return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()} (${DAY_NAMES[date.getDay()]})`;
-}
-
-/** Get a YYYY-MM-DD key for grouping */
-function dateKey(dateStr: string): string {
-  const d = new Date(dateStr);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-type Section = {
-  title: string;
-  data: MealRecord[];
-};
-
-/** Group meals by day, most recent day first */
-function groupByDay(meals: MealRecord[]): Section[] {
-  const map = new Map<string, { date: Date; meals: MealRecord[] }>();
-
-  for (const meal of meals) {
-    const key = dateKey(meal.created_at);
-    if (!map.has(key)) {
-      map.set(key, { date: new Date(meal.created_at), meals: [] });
-    }
-    map.get(key)!.meals.push(meal);
-  }
-
-  // Sort keys descending (most recent first) — meals within each day already sorted by API
-  const sorted = Array.from(map.entries()).sort((a, b) => b[0].localeCompare(a[0]));
-
-  return sorted.map(([, { date, meals }]) => ({
-    title: formatDayHeader(date),
-    data: meals,
-  }));
-}
+import { spacing } from '../../../constants/tokens';
+import { groupByDay } from '../../../utils/mealUtils';
+import type { Section } from '../../../utils/mealUtils';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MealHistoryScreen
@@ -85,11 +41,13 @@ export default function MealHistoryScreen() {
   useFocusEffect(
     useCallback(() => {
       loadMeals();
-    }, []),
+    }, [])
   );
 
   async function loadMeals() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const { data } = await fetchMealHistory(user.id);
@@ -168,7 +126,12 @@ export default function MealHistoryScreen() {
           {/* Meal type badge + calories */}
           <View style={styles.cardMetaRow}>
             {mealTypeLabel && mealTypeColor && (
-              <View style={[styles.mealTypeBadge, { backgroundColor: mealTypeColor + '25', borderColor: mealTypeColor + '50' }]}>
+              <View
+                style={[
+                  styles.mealTypeBadge,
+                  { backgroundColor: mealTypeColor + '25', borderColor: mealTypeColor + '50' },
+                ]}
+              >
                 <Text style={[styles.mealTypeBadgeText, { color: mealTypeColor }]}>
                   {mealTypeLabel}
                 </Text>
@@ -176,6 +139,9 @@ export default function MealHistoryScreen() {
             )}
             {item.calories != null && (
               <Text style={styles.cardCalories}>{Math.round(item.calories)} kcal</Text>
+            )}
+            {item.protein != null && (
+              <Text style={styles.cardProtein}>Protein {Math.round(item.protein)}g</Text>
             )}
           </View>
         </View>
@@ -219,7 +185,7 @@ export default function MealHistoryScreen() {
       {/* ── Floating pill button ─────────────────────────────────────────── */}
       <View style={styles.fabContainer}>
         <Button
-          title="ADD NEW MEAL"
+          title="LOG NEW MEAL"
           onPress={handleAddNewMeal}
           variant="primary"
           icon={<PlusCircleIcon size={18} color={colors.background} />}
@@ -243,9 +209,8 @@ const styles = StyleSheet.create({
 
   // ── Section header ──────────────────────────────────────────────────
   sectionHeader: {
-    paddingVertical: 10,
-    paddingHorizontal: 4,
-    marginTop: 8,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.xs,
   },
   sectionHeaderText: {
     fontSize: 13,
@@ -263,10 +228,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 10,
+    maxHeight: 60,
   },
   cardImage: {
-    width: 84,
-    height: 84,
+    width: 60,
+    height: 60,
   },
   cardImagePlaceholder: {
     backgroundColor: colors.surface1,
@@ -280,9 +246,9 @@ const styles = StyleSheet.create({
   },
   cardBody: {
     flex: 1,
-    padding: 12,
+    padding: spacing.md,
     justifyContent: 'center',
-    gap: 6,
+    gap: spacing.xs,
   },
   cardTitle: {
     fontSize: 14,
@@ -292,9 +258,14 @@ const styles = StyleSheet.create({
   cardMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
   cardCalories: {
+    fontSize: 13,
+    fontFamily: fonts.bodyMed,
+    color: colors.accent,
+  },
+  cardProtein: {
     fontSize: 13,
     fontFamily: fonts.bodyMed,
     color: colors.accent,
@@ -304,7 +275,7 @@ const styles = StyleSheet.create({
   mealTypeBadge: {
     borderWidth: 1,
     borderRadius: 4,
-    paddingHorizontal: 6,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 1,
   },
   mealTypeBadgeText: {
