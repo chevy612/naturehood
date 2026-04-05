@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { AthleteSessionLog, AthleteExerciseLog } from '@/lib/types'
+import logger from '@/lib/logger'
 
 /**
  * Persists a parsed AthleteSessionLog into normalized relational tables.
@@ -51,7 +52,7 @@ export async function persistNormalizedSession(
     )
 
   if (detailsError) {
-    console.error('[persist] session_details error:', detailsError)
+    logger.error('[persist] session_details error:', detailsError)
     return { error: 'Failed to persist session details' }
   }
 
@@ -78,7 +79,7 @@ export async function persistNormalizedSession(
         .single()
 
       if (blockError || !blockRow) {
-        console.error('[persist] session_blocks error:', blockError)
+        logger.error('[persist] session_blocks error:', blockError)
         return { error: 'Failed to persist session blocks' }
       }
 
@@ -130,7 +131,7 @@ export async function persistNormalizedSession(
 
     const { error: areaError } = await supabase.from('physio_body_areas').insert(areas)
     if (areaError) {
-      console.error('[persist] physio_body_areas error:', areaError)
+      logger.error('[persist] physio_body_areas error:', areaError)
       return { error: 'Failed to persist physio body areas' }
     }
   }
@@ -160,7 +161,7 @@ export async function persistNormalizedSession(
         .single()
 
       if (effortError || !effortRow) {
-        console.error('[persist] sprint_efforts error:', effortError)
+        logger.error('[persist] sprint_efforts error:', effortError)
         return { error: 'Failed to persist sprint efforts' }
       }
 
@@ -179,7 +180,7 @@ export async function persistNormalizedSession(
 
         const { error: repError } = await supabase.from('sprint_reps').insert(reps)
         if (repError) {
-          console.error('[persist] sprint_reps error:', repError)
+          logger.error('[persist] sprint_reps error:', repError)
           return { error: 'Failed to persist sprint reps' }
         }
       }
@@ -212,7 +213,7 @@ export async function persistNormalizedSession(
       .single()
 
     if (compError || !compRow) {
-      console.error('[persist] competition_results error:', compError)
+      logger.error('[persist] competition_results error:', compError)
       return { error: 'Failed to persist competition result' }
     }
 
@@ -238,7 +239,7 @@ export async function persistNormalizedSession(
 
       const { error: roundError } = await supabase.from('competition_rounds').insert(rounds)
       if (roundError) {
-        console.error('[persist] competition_rounds error:', roundError)
+        logger.error('[persist] competition_rounds error:', roundError)
         return { error: 'Failed to persist competition rounds' }
       }
     }
@@ -281,7 +282,7 @@ async function persistExercises(
       .single()
 
     if (exError || !exRow) {
-      console.error('[persist] session_exercises error:', exError)
+      logger.error('[persist] session_exercises error:', exError)
       return { error: 'Failed to persist session exercises' }
     }
 
@@ -315,7 +316,7 @@ async function persistExercises(
 
       const { error: setError } = await supabase.from('exercise_sets').insert(sets)
       if (setError) {
-        console.error('[persist] exercise_sets error:', setError)
+        logger.error('[persist] exercise_sets error:', setError)
         return { error: 'Failed to persist exercise sets' }
       }
     }

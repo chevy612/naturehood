@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import logger from './logger'
 
 /**
  * Checks Supabase connection by fetching user emails from the user table
@@ -11,7 +12,7 @@ export async function checkSupabaseConnection() {
       .select('user_email')
     
     if (error) {
-      console.error('Supabase connection error:', error)
+      logger.error('Supabase connection error:', error)
       return {
         success: false,
         error: error.message,
@@ -19,14 +20,14 @@ export async function checkSupabaseConnection() {
       }
     }
 
-    console.log('✅ Connection successful! Found users:', data?.length)
+    logger.debug('Connection successful! Found users:', data?.length)
     return {
       success: true,
       error: null,
       data: data
     }
   } catch (err) {
-    console.error('Unexpected error:', err)
+    logger.error('Unexpected error:', err)
     return {
       success: false,
       error: err instanceof Error ? err.message : 'Unknown error',
@@ -46,13 +47,13 @@ export async function getUserEmails() {
       .select('user_email')
     
     if (error) {
-      console.error('Failed to fetch user emails:', error.message)
+      logger.error('Failed to fetch user emails:', error.message)
       return []
     }
     
     return data?.map(user => user.user_email) || []
   } catch (err) {
-    console.error('Error fetching user emails:', err instanceof Error ? err.message : 'Unknown error')
+    logger.error('Error fetching user emails:', err instanceof Error ? err.message : 'Unknown error')
     return []
   }
 }

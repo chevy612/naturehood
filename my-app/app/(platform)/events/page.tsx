@@ -1,11 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { EventCard } from '@/app/components/platform/EventCard'
 
 export default async function EventsPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const userId = claimsData?.claims?.sub as string
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -17,33 +16,31 @@ export default async function EventsPage() {
     .order('event_date', { ascending: true })
 
   const eventList = events ?? []
-
-  // Fetch user's signups for this set of events
   const eventIds = eventList.map((e) => e.id)
-  const { data: mySignups } = eventIds.length > 0
-    ? await supabase
-        .from('event_signups')
-        .select('event_id, status')
-        .eq('user_id', user.id)
-        .in('event_id', eventIds)
-    : { data: [] }
+
+  // Fetch user's signups and confirmed counts in parallel
+  const [{ data: mySignups }, { data: countsData }] = eventIds.length > 0
+    ? await Promise.all([
+        supabase
+          .from('event_signups')
+          .select('event_id, status')
+          .eq('user_id', userId)
+          .in('event_id', eventIds),
+        supabase
+          .from('event_signups')
+          .select('event_id')
+          .in('event_id', eventIds)
+          .eq('status', 'confirmed'),
+      ])
+    : [{ data: [] }, { data: [] }]
 
   const signedUpSet = new Set(
     (mySignups ?? []).filter((s) => s.status === 'confirmed').map((s) => s.event_id)
   )
 
-  // Fetch confirmed counts for all events
   const countMap: Record<string, number> = {}
-  if (eventIds.length > 0) {
-    const { data: counts } = await supabase
-      .from('event_signups')
-      .select('event_id')
-      .in('event_id', eventIds)
-      .eq('status', 'confirmed')
-
-    for (const row of counts ?? []) {
-      countMap[row.event_id] = (countMap[row.event_id] ?? 0) + 1
-    }
+  for (const row of countsData ?? []) {
+    countMap[row.event_id] = (countMap[row.event_id] ?? 0) + 1
   }
 
   return (

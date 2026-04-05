@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { WorkoutCard } from '@/app/components/platform/WorkoutCard'
 import AccountProfile from './AccountProfile'
@@ -11,26 +10,25 @@ import { signOut } from './actions'
 
 export default async function AccountPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const userId = claimsData?.claims?.sub as string
 
   const [{ data: profile }, { data: trainingLogs }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('name, username, bio, role, avatar_url')
-      .eq('id', user.id)
+      .select('name, username, bio, role, avatar_url, email')
+      .eq('id', userId)
       .single(),
     supabase
       .from('training_logs')
       .select('id, title, logged_date, duration_minutes, workout_types, workout_log, is_public, ai_structured, ai_formatted_at')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('is_deleted', false)
       .order('logged_date', { ascending: false })
       .limit(60),
   ])
 
-  const name = profile?.name ?? user.email?.split('@')[0] ?? 'Member'
+  const name = profile?.name ?? profile?.email?.split('@')[0] ?? 'Member'
   const username = profile?.username ?? ''
   const bio = profile?.bio ?? ''
   const role = profile?.role ?? null

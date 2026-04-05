@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const THIRTY_DAYS = 60 * 60 * 24 * 30
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -21,8 +23,12 @@ export async function updateSession(request: NextRequest) {
           supabaseResponse = NextResponse.next({
             request,
           })
+          // Persist session for 30 days so users don't get logged out on browser close
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, {
+              ...options,
+              maxAge: options.maxAge ?? THIRTY_DAYS,
+            })
           )
         },
       },
@@ -38,12 +44,31 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims()
   const user = data?.claims
 
+  const { pathname } = request.nextUrl
+
+  // app.naturehoodofficial.com — route to the platform regardless of path
+  const host = request.headers.get('host') ?? ''
+  if (host.startsWith('app.')) {
+    const target = pathname === '/home' || pathname === '/login' ? null : (user ? '/home' : '/login')
+    if (target) {
+      const url = request.nextUrl.clone()
+      url.pathname = target
+      return NextResponse.redirect(url)
+    }
+  }
+
+  // Redirect already-authenticated users away from auth pages
+  const AUTH_PATHS = ['/login', '/signup']
+  if (user && AUTH_PATHS.some(p => pathname.startsWith(p))) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/home'
+    return NextResponse.redirect(url)
+  }
+
   // Only redirect unauthenticated users away from protected platform routes.
   // Public routes (/, /signup, /business, /login, /auth/*) remain open.
   const PROTECTED_PATHS = ['/dashboard', '/profile', '/settings', '/home', '/record', '/events', '/account']
-  const isProtected = PROTECTED_PATHS.some(p =>
-    request.nextUrl.pathname.startsWith(p)
-  )
+  const isProtected = PROTECTED_PATHS.some(p => pathname.startsWith(p))
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone()

@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { PillTag } from '@/app/components/ui/tags'
 import { InfoBox } from '@/app/components/ui/notification'
 import RsvpButtons from './RsvpButtons'
@@ -26,8 +25,8 @@ export default async function EventDetailPage({
   const { id } = await params
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const userId = claimsData?.claims?.sub as string
 
   const { data: event } = await supabase
     .from('events')
@@ -38,20 +37,20 @@ export default async function EventDetailPage({
 
   if (!event) notFound()
 
-  // User's signup state
-  const { data: mySignup } = await supabase
-    .from('event_signups')
-    .select('status')
-    .eq('event_id', id)
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  // Confirmed count
-  const { count: confirmedCount } = await supabase
-    .from('event_signups')
-    .select('*', { count: 'exact', head: true })
-    .eq('event_id', id)
-    .eq('status', 'confirmed')
+  // User's signup state and confirmed count in parallel
+  const [{ data: mySignup }, { count: confirmedCount }] = await Promise.all([
+    supabase
+      .from('event_signups')
+      .select('status')
+      .eq('event_id', id)
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('event_signups')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', id)
+      .eq('status', 'confirmed'),
+  ])
 
   const confirmed = confirmedCount ?? 0
   const spotsLeft = event.max_capacity !== null ? event.max_capacity - confirmed : null
