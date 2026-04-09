@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, ChangeEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { Camera } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { InputDark, TextAreaDark } from '@/app/components/ui/inputs'
@@ -22,6 +23,8 @@ export default function DashboardEditForm({
   initialBio: string
   initialAvatarUrl?: string | null
 }) {
+  const router = useRouter()
+
   const [name, setName] = useState(initialName)
   const [username, setUsername] = useState(initialUsername)
   const [bio, setBio] = useState(initialBio)
@@ -57,8 +60,9 @@ export default function DashboardEditForm({
     if ('error' in result) {
       setAvatarError(result.error)
     } else {
-      // Bust the CDN cache by appending a timestamp so next/image reloads
-      setAvatarUrl(result.url + '?t=' + Date.now())
+      setAvatarUrl(result.url)
+      // Refresh the server component so the profile header also picks up the new avatar
+      router.refresh()
     }
 
     setUploading(false)

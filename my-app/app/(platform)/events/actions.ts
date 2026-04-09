@@ -7,8 +7,9 @@ export async function rsvpEvent(
   eventId: string
 ): Promise<{ error?: string; success?: boolean }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) redirect('/login')
 
   // Verify event is published
   const { data: event } = await supabase
@@ -36,7 +37,7 @@ export async function rsvpEvent(
   const { error } = await supabase
     .from('event_signups')
     .upsert(
-      { event_id: eventId, user_id: user.id, status: 'confirmed' },
+      { event_id: eventId, user_id: userId, status: 'confirmed' },
       { onConflict: 'event_id,user_id' }
     )
 
@@ -49,14 +50,15 @@ export async function cancelRsvp(
   eventId: string
 ): Promise<{ error?: string; success?: boolean }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) redirect('/login')
 
   const { error } = await supabase
     .from('event_signups')
     .update({ status: 'cancelled' })
     .eq('event_id', eventId)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
 
   if (error) return { error: 'Failed to cancel. Please try again.' }
 

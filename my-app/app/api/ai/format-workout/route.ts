@@ -32,8 +32,9 @@ export async function POST(req: NextRequest) {
       )
     : await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  const { data: authData } = await supabase.auth.getClaims()
+  const userId = authData?.claims?.sub
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: CORS_HEADERS })
   }
 
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     .from('training_logs')
     .select('id, workout_log, title, workout_types, duration_minutes, user_id')
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single()
 
   if (fetchError || !log) {
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
       ai_needs_refresh: false,
     })
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
 
   if (updateError) {
     return NextResponse.json({ error: 'Failed to save AI result' }, { status: 500, headers: CORS_HEADERS })
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
 
   // Persist to normalized tables (V2 schema only — skip V1 fallbacks)
   if ('parser_version' in structured) {
-    await persistNormalizedSession(supabase, id, user.id, structured as AthleteSessionLog)
+    await persistNormalizedSession(supabase, id, userId, structured as AthleteSessionLog)
   }
 
   return NextResponse.json({ structured }, { headers: CORS_HEADERS })

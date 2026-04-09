@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { RESERVED_SLUGS } from '@/lib/username'
+import { RESERVED_SLUGS, BOT_TRAP_SLUGS } from '@/lib/username'
 import { PillTag } from '@/app/components/ui/tags'
 import { Avatar } from '@/app/components/platform/Avatar'
 
@@ -25,8 +25,9 @@ export default async function PublicProfilePage({
 }) {
   const { username } = await params
 
-  // Guard reserved slugs before any DB query
+  // Guard reserved slugs and bot-trap paths before any DB query
   if (RESERVED_SLUGS.has(username)) notFound()
+  if (BOT_TRAP_SLUGS.has(username.toLowerCase())) notFound()
 
   const supabase = await createClient()
   const { data: profile } = await supabase

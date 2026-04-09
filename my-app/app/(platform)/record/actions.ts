@@ -7,19 +7,20 @@ import { persistNormalizedSession } from '@/lib/services/session-persist'
 
 export async function getUserWorkoutTypes(): Promise<string[]> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return []
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) return []
 
-  const { data } = await supabase
+  const { data: rows } = await supabase
     .from('training_logs')
     .select('workout_types')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .eq('is_deleted', false)
     .not('workout_types', 'is', null)
 
-  if (!data) return []
+  if (!rows) return []
 
-  const all = data.flatMap((row) => row.workout_types ?? [])
+  const all = rows.flatMap((row) => row.workout_types ?? [])
   return [...new Set(all)].sort()
 }
 
@@ -27,8 +28,9 @@ export async function saveWorkout(
   formData: FormData
 ): Promise<{ error?: string; id?: string }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) redirect('/login')
 
   const title = (formData.get('title') as string | null)?.trim() ?? ''
   if (!title) return { error: 'Workout title is required.' }
@@ -45,10 +47,10 @@ export async function saveWorkout(
     if (raw) workoutTypes = JSON.parse(raw)
   } catch {}
 
-  const { data, error } = await supabase
+  const { data: inserted, error } = await supabase
     .from('training_logs')
     .insert({
-      user_id: user.id,
+      user_id: userId,
       title,
       logged_date: loggedDate,
       duration_minutes: durationMinutes && !isNaN(durationMinutes) ? durationMinutes : null,
@@ -61,7 +63,7 @@ export async function saveWorkout(
 
   if (error) return { error: 'Failed to save workout. Please try again.' }
 
-  return { id: data.id }
+  return { id: inserted.id }
 }
 
 export async function updateWorkout(
@@ -69,8 +71,9 @@ export async function updateWorkout(
   formData: FormData
 ): Promise<{ error?: string }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) redirect('/login')
 
   const title = (formData.get('title') as string | null)?.trim() ?? ''
   if (!title) return { error: 'Workout title is required.' }
@@ -92,7 +95,7 @@ export async function updateWorkout(
     .from('training_logs')
     .select('ai_structured, workout_log')
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single()
 
   const workoutLogChanged = (workoutLog ?? '').trim() !== (current?.workout_log ?? '').trim()
@@ -111,7 +114,7 @@ export async function updateWorkout(
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
-    .eq('user_id', user.id)  // ownership check
+    .eq('user_id', userId)  // ownership check
 
   if (error) return { error: 'Failed to update workout. Please try again.' }
 
@@ -123,8 +126,9 @@ export async function updateAiStructured(
   structured: AiStructuredWorkout | AthleteSessionLog
 ): Promise<{ error?: string }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) redirect('/login')
 
   const { error } = await supabase
     .from('training_logs')
@@ -135,13 +139,13 @@ export async function updateAiStructured(
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
 
   if (error) return { error: 'Failed to save workout report.' }
 
   // Sync to normalized tables (V2 only)
   if ('parser_version' in structured) {
-    await persistNormalizedSession(supabase, id, user.id, structured as AthleteSessionLog)
+    await persistNormalizedSession(supabase, id, userId, structured as AthleteSessionLog)
   }
 
   redirect('/account')
@@ -149,14 +153,15 @@ export async function updateAiStructured(
 
 export async function deleteWorkout(id: string): Promise<{ error?: string }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) redirect('/login')
 
   const { error } = await supabase
     .from('training_logs')
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
 
   if (error) return { error: 'Failed to delete workout.' }
 
