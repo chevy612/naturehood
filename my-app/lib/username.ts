@@ -6,6 +6,20 @@ import { createAdminClient } from '@/lib/supabase/admin'
 // so that no username can shadow a real page.
 // ─────────────────────────────────────────────
 
+export const BOT_TRAP_SLUGS = new Set([
+  'xmlrpc.php',
+  'wp-login.php',
+  'wp-admin',
+  '.env',
+  '.git',
+  'sitemap.xml',
+  'sitemap.xml.gz',
+  'favicon.ico',
+  'phpmyadmin',
+  'config.php',
+  'administrator',
+])
+
 export const RESERVED_SLUGS = new Set([
   // App routes
   'home', 'dashboard', 'profile', 'settings',

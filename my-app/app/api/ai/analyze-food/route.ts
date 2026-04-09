@@ -35,13 +35,12 @@ export async function POST(req: NextRequest) {
       )
     : await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: authData } = await supabase.auth.getClaims();
+  const userId = authData?.claims?.sub;
 
-  logger.debug('[ai-food-route] Auth user:', user?.id ?? 'null — UNAUTHORIZED');
+  logger.debug('[ai-food-route] Auth user:', userId ?? 'null — UNAUTHORIZED');
 
-  if (!user) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: CORS_HEADERS });
   }
 
@@ -59,7 +58,7 @@ export async function POST(req: NextRequest) {
     .from('meal_records')
     .select('meal_id, s3_link, user_notes, weight, calories, title')
     .eq('meal_id', meal_id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single();
 
   logger.debug(
@@ -159,7 +158,7 @@ export async function POST(req: NextRequest) {
       updated_at: new Date().toISOString(),
     })
     .eq('meal_id', meal_id)
-    .eq('user_id', user.id);
+    .eq('user_id', userId);
 
   if (updateError) {
     logger.error('[ai-food-route] Failed to save AI result:', updateError.message);

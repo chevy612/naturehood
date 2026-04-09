@@ -6,8 +6,9 @@ import { redirect } from 'next/navigation'
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data: authData } = await supabase.auth.getClaims()
+  const userId = authData?.claims?.sub
+  if (!userId) redirect('/login')
 
   const name = (formData.get('name') as string ?? '').trim()
   const newUsername = (formData.get('username') as string ?? '').trim().toLowerCase()
@@ -26,7 +27,7 @@ export async function updateProfile(formData: FormData) {
     .from('profiles')
     .select('id')
     .eq('username', newUsername)
-    .neq('id', user.id)
+    .neq('id', userId)
     .maybeSingle()
 
   if (existing) {
@@ -36,7 +37,7 @@ export async function updateProfile(formData: FormData) {
   const { error } = await supabase
     .from('profiles')
     .update({ name, username: newUsername, bio, updated_at: new Date().toISOString() })
-    .eq('id', user.id)
+    .eq('id', userId)
 
   if (error) {
     console.error('Profile update error:', error)
@@ -48,8 +49,9 @@ export async function updateProfile(formData: FormData) {
 
 export async function uploadAvatar(formData: FormData): Promise<{ url: string } | { error: string }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data: authData2 } = await supabase.auth.getClaims()
+  const userId2 = authData2?.claims?.sub
+  if (!userId2) redirect('/login')
 
   const file = formData.get('avatar') as File | null
   if (!file || file.size === 0) return { error: 'No file provided.' }
@@ -65,7 +67,7 @@ export async function uploadAvatar(formData: FormData): Promise<{ url: string } 
   }
 
   const arrayBuffer = await file.arrayBuffer()
-  const path = `${user.id}/avatar`
+  const path = `${userId2}/avatar`
 
   const { error: uploadError } = await supabase.storage
     .from('avatars')
@@ -77,12 +79,12 @@ export async function uploadAvatar(formData: FormData): Promise<{ url: string } 
   }
 
   const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
-  const publicUrl = urlData.publicUrl
+  const publicUrl = urlData.publicUrl + `?t=${Date.now()}`
 
   const { error: dbError } = await supabase
     .from('profiles')
     .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-    .eq('id', user.id)
+    .eq('id', userId2)
 
   if (dbError) {
     console.error('Avatar DB update error:', dbError)
