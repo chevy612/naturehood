@@ -35,10 +35,11 @@ export async function POST(req: NextRequest) {
       )
     : await createClient();
 
-  const { data: authData } = await supabase.auth.getClaims();
-  const userId = authData?.claims?.sub;
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const userId = user?.id;
 
   logger.debug('[ai-food-route] Auth user:', userId ?? 'null — UNAUTHORIZED');
+  logger.debug('[ai-food-route] Auth error:', authError?.message ?? 'none');
 
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: CORS_HEADERS });
