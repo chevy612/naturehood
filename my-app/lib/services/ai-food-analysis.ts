@@ -7,6 +7,7 @@ import {
   kimiClient,
   DEFAULT_MODELS,
 } from '@/lib/services/ai-client';
+import { getLanguageInstruction, type AiLanguage } from '@/lib/services/ai-language';
 import logger from '@/lib/logger';
 
 const AI_PROVIDER = process.env.FOOD_ANALYSIS_PROVIDER ?? 'kimi';
@@ -41,12 +42,13 @@ Output Schema (JSON ONLY, no markdown):
     ],
     "preparation_assumptions": ["string"]
   },
-  "description": "A summary string. Format: 'A meal consisting of [Item A] ([X] kcal) ([Y] g protein), [Item B] ([Y] kcal) ([Z] g protein), and [Item C] ([Z] kcal) ([W] g protein).' "
+  "description": "A summary string in the requested output language. Use a format equivalent to: 'A meal consisting of [Item A] ([X] kcal) ([Y] g protein), [Item B] ([Y] kcal) ([Z] g protein), and [Item C] ([Z] kcal) ([W] g protein).' "
 }
 
 Constraints:
 - Output ONLY valid JSON.
-- If no food is detected, return { "data": {}, "description": "No food was detected in the image." }`;
+- Use the requested output language for all user-facing string values.
+- If no food is detected, return { "data": {}, "description": "No food was detected in the image." } with the description translated into the requested output language.`;
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -185,6 +187,7 @@ export async function analyzeFoodImage(params: {
   userNotes?: string | null;
   weight?: number | null;
   provider?: AIProvider;
+  lang?: AiLanguage;
 }): Promise<AiFoodAnalysis | null> {
   const {
     base64Image,
@@ -192,10 +195,14 @@ export async function analyzeFoodImage(params: {
     userNotes,
     weight,
     provider = AI_PROVIDER as AIProvider,
+    lang = 'en',
   } = params;
 
   // Build the user-facing text prompt with optional context
-  const contextParts: string[] = ['Analyze this meal image.'];
+  const contextParts: string[] = [
+    'Analyze this meal image.',
+    getLanguageInstruction(lang),
+  ];
   if (weight) contextParts.push(`Estimated total weight: ${weight}g.`);
   if (userNotes?.trim()) contextParts.push(`User notes: ${userNotes.trim()}`);
   const userText = contextParts.join(' ');

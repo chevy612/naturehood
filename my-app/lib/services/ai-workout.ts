@@ -1,5 +1,6 @@
 import type { AthleteSessionLog } from '@/lib/types'
 import { claudeClient as client } from '@/lib/services/ai-client'
+import { getLanguageInstruction, type AiLanguage } from '@/lib/services/ai-language'
 import logger from '@/lib/logger'
 
 const SYSTEM_PROMPT = `You are an elite athletics log parser. You receive a JSON envelope describing one athlete session and must return a single valid AthleteSessionLog JSON object — no prose, no markdown, no code fences.
@@ -71,7 +72,7 @@ Block detection:
 Exercise parsing:
 • "Name  sets×reps  weight" format → one AthleteExerciseLog per exercise
 • "(4x95 4x95 4x95)" parenthesised block → one exercise per position-column; name_unknown = true if no name
-• Name original language (Danish etc.) → name = translated English, name_original = original
+• Name original language (Danish etc.) → name = translated requested output language, name_original = original
 • Descending reps "11xlvl15 10xlvl15" → sets=3, reps null per set (store individual reps in set notes if needed)
 
 Set parsing:
@@ -310,8 +311,9 @@ export async function formatWorkoutWithAI(params: {
   workout_types?: string[]
   duration_minutes?: number | null
   notes?: string | null
+  lang?: AiLanguage
 }): Promise<AthleteSessionLog | null> {
-  const { workout_log, title, workout_types, duration_minutes, notes } = params
+  const { workout_log, title, workout_types, duration_minutes, notes, lang = 'en' } = params
 
   if (!workout_log?.trim()) return null
 
@@ -323,6 +325,8 @@ export async function formatWorkoutWithAI(params: {
     workout_types: workout_types ?? [],
     duration_minutes: duration_minutes ?? null,
     notes: notes ?? null,
+    output_language: lang,
+    output_language_instruction: getLanguageInstruction(lang),
     workout_log: normalisedLog,
   })
 
@@ -330,7 +334,7 @@ export async function formatWorkoutWithAI(params: {
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 8192,
-      system: SYSTEM_PROMPT,
+      system: `${SYSTEM_PROMPT}\n\nLANGUAGE REQUIREMENT: ${getLanguageInstruction(lang)} Keep enum values, keys, units, and numeric values unchanged. Translate only user-facing text such as summaries, notes, warnings, feedback, and exercise names when appropriate.`,
       messages: [{ role: 'user', content: envelope }],
     })
 
