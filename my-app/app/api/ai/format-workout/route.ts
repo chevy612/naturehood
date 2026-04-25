@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { formatWorkoutWithAI } from '@/lib/services/ai-workout'
+import { normalizeAiLanguage } from '@/lib/services/ai-language'
 import { persistNormalizedSession } from '@/lib/services/session-persist'
 import type { AthleteSessionLog } from '@/lib/types'
 import logger from '@/lib/logger'
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { id } = body as { id?: string }
+  const { id, lang } = body as { id?: string; lang?: string }
 
   if (!id) {
     return NextResponse.json({ error: 'Missing workout id' }, { status: 400, headers: CORS_HEADERS })
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
     title: log.title ?? undefined,
     workout_types: log.workout_types ?? [],
     duration_minutes: log.duration_minutes ?? undefined,
+    lang: normalizeAiLanguage(lang),
   })
 
   logger.debug('[AI] structured output:', JSON.stringify(structured, null, 2))
