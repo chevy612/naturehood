@@ -63,23 +63,9 @@ Add these to `.env.local` (and production env config).
 
 ### Stripe price lookup keys
 
-The app uses Stripe `lookup_keys` to resolve the correct recurring Price from `(tier, interval)`.
-
-- `STRIPE_LOOKUP_KEY_ROOTED_MONTH`
-  - What it does: Lookup key for the Rooted monthly Stripe Price.
-  - Example: `naturehood_rooted_month`
-
-- `STRIPE_LOOKUP_KEY_ROOTED_YEAR`
-  - What it does: Lookup key for the Rooted yearly Stripe Price.
-  - Example: `naturehood_rooted_year`
-
-- `STRIPE_LOOKUP_KEY_CANOPY_MONTH`
-  - What it does: Lookup key for the Canopy monthly Stripe Price.
-  - Example: `naturehood_canopy_month`
-
-- `STRIPE_LOOKUP_KEY_CANOPY_YEAR`
-  - What it does: Lookup key for the Canopy yearly Stripe Price.
-  - Example: `naturehood_canopy_year`
+Lookup keys are hardcoded in `src/controllers/subscriptionController.ts` (`getLookupKey`):
+`naturehood_rooted_month`, `naturehood_rooted_year`, `naturehood_canopy_month`, `naturehood_canopy_year`.
+Set these exact strings on the corresponding Prices in the Stripe Dashboard.
 
 ### Supabase variables (already used in app)
 

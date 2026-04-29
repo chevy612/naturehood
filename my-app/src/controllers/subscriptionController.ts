@@ -26,22 +26,17 @@ function isInterval(value: unknown): value is Interval {
 }
 
 function getLookupKey(tier: Tier, interval: Interval) {
-  const keyMap: Record<Tier, Record<Interval, string | undefined>> = {
+  const keyMap: Record<Tier, Record<Interval, string>> = {
     rooted: {
-      month: process.env.STRIPE_LOOKUP_KEY_ROOTED_MONTH,
-      year: process.env.STRIPE_LOOKUP_KEY_ROOTED_YEAR,
+      month: 'naturehood_rooted_month',
+      year: 'naturehood_rooted_year',
     },
     canopy: {
-      month: process.env.STRIPE_LOOKUP_KEY_CANOPY_MONTH,
-      year: process.env.STRIPE_LOOKUP_KEY_CANOPY_YEAR,
+      month: 'naturehood_canopy_month',
+      year: 'naturehood_canopy_year',
     },
   }
-
-  const lookupKey = keyMap[tier][interval]
-  if (!lookupKey) {
-    throw new Error(`Missing lookup key for tier=${tier} interval=${interval}`)
-  }
-  return lookupKey
+  return keyMap[tier][interval]
 }
 
 async function requireAuthenticatedUserId() {
