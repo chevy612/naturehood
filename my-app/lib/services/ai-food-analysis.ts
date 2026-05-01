@@ -40,14 +40,14 @@ Output Schema (JSON ONLY, no markdown):
         "logic": "brief explanation"
       }
     ],
-    "preparation_assumptions": ["string"]
+    "preparation_assumptions": ["human-readable string describing a preparation assumption, e.g. 'pan-fried', 'contains white rice'"]
   },
   "description": "A summary string in the requested output language. Use a format equivalent to: 'A meal consisting of [Item A] ([X] kcal) ([Y] g protein), [Item B] ([Y] kcal) ([Z] g protein), and [Item C] ([Z] kcal) ([W] g protein).' "
 }
 
 Constraints:
 - Output ONLY valid JSON.
-- Use the requested output language for all user-facing string values.
+- Use the requested output language for ALL user-facing string values, including every string in the "preparation_assumptions" array. Never use English snake_case identifiers (e.g. "pan_fried") — always write natural, readable phrases in the target language.
 - If no food is detected, return { "data": {}, "description": "No food was detected in the image." } with the description translated into the requested output language.`;
 
 // ── Types ───────────────────────────────────────────────────────────────────
