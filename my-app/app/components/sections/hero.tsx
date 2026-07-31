@@ -1,178 +1,101 @@
-import Link from 'next/link';
-import { Container, ButtonPrimary, ButtonSecondary } from '@/app/components/ui';
-import { ReactNode } from 'react';
-
-
-interface HeroTemplateProps {
-  eyebrow?: string;               // Optional label above title
-  title: string | ReactNode;      // Can include JSX for accent words
-  subtitle: string;
-  primaryCTA?: ReactNode;
-  secondaryCTA?: ReactNode;
-  backgroundVideo?: string;
-  backgroundImage?: string;
-  videoControls?: boolean;
-  stats?: Array<{ value: string; label: string }>;  // Optional stats row
-}
+import Link from "next/link";
+import { ContentContainer } from "@/app/components/ui/container";
 
 export default function HeroSection() {
-  const videoURL = "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/hero.mp4";
-
   return (
-    <HeroTemplate
-      title="Where athletes meet brands."
-      subtitle="Naturehood connects dedicated athletes with forward-thinking brands to build creative projects that actually matter."
-      backgroundVideo={videoURL}
-      videoControls={false}
-      primaryCTA={
-        <div className="flex flex-col items-center w-full sm:w-auto gap-4">
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <Link href="/signup?role=athlete" className="w-full sm:w-auto">
-              <ButtonPrimary className="w-full sm:w-auto">Join as Athlete</ButtonPrimary>
-            </Link>
-            <Link href="/signup?role=brand" className="w-full sm:w-auto">
-              <ButtonSecondary variant='white' className="w-full sm:w-auto">Join as Brand</ButtonSecondary>
+    <section className="w-full bg-white">
+      {/* Hero Content */}
+      <ContentContainer as="div" className="pt-[90px] md:pt-[150px]">
+        <div className="px-0 sm:px-[104px]">
+          <h1
+            className="text-white text-[36px] sm:text-[48px] md:text-[56px] max-w-[622px] mb-[20px] md:mb-[30px]"
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 700,
+              lineHeight: "1.1",
+              letterSpacing: "-0.3px",
+              textShadow: "0px 4px 4px rgba(0,0,0,0.25)",
+            }}
+          >
+            Welcome to the home of track &amp; field.
+          </h1>
+
+          <p
+            className="text-white max-w-[449px] mb-[20px] md:mb-[30px] text-[18px] sm:text-[20px] md:text-[24px]"
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 600,
+              lineHeight: "30px",
+              letterSpacing: "-0.3px",
+              textShadow: "0px 4px 4px rgba(0,0,0,0.25)",
+            }}
+          >
+            The leading track &amp; field community in Hong Kong.
+          </p>
+
+          <Link
+            href="/signup"
+            className="inline-flex items-center justify-center bg-black text-white rounded-[999px] px-[24px] py-[14px] transition-colors hover:bg-[#1a1a1a]"
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 500,
+              fontSize: "16px",
+            }}
+          >
+            Join us
+          </Link>
+        </div>
+      </ContentContainer>
+
+      {/* Passion Sub-section */}
+      <ContentContainer as="div" className="pt-12 md:pt-[80px] pb-8 md:pb-[50px]">
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-[131px] px-0 sm:px-[104px]">
+          {/* Dark Info Card */}
+          <div className="bg-black/50 rounded-[30px] px-8 py-8 sm:px-[50px] sm:py-[40px] w-full md:w-[521px] shrink-0">
+            <p
+              className="text-white text-[18px] sm:text-[20px] md:text-[24px]"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 600,
+                lineHeight: "30px",
+                letterSpacing: "-0.3px",
+                textShadow: "0px 4px 4px rgba(0,0,0,0.25)",
+              }}
+            >
+              Born out from the love of the sport, Naturehood is the label for
+              track and field culture. By positioning ourselves as the promotor
+              of track &amp; field, we bring our vision of the sport to live.
+            </p>
+          </div>
+
+          {/* Action */}
+          <div className="flex flex-col gap-[30px] py-[30px]">
+            <h2
+              className="text-[#f5f5f5] text-[28px] sm:text-[32px] md:text-[36px] max-w-[362px]"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 700,
+                lineHeight: "41px",
+                letterSpacing: "-0.3px",
+                textShadow: "0px 4px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              Enjoying the beauty of the sport.
+            </h2>
+            <Link
+              href="/about"
+              className="inline-flex items-center justify-center bg-black text-white rounded-[999px] px-[24px] py-[14px] backdrop-blur-[2px] transition-colors hover:bg-[#1a1a1a] w-fit"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 500,
+                fontSize: "16px",
+              }}
+            >
+              Explore more
             </Link>
           </div>
         </div>
-      }
-    />
-  );
-}
-
-export function HeroTemplate({
-  eyebrow,
-  title,
-  subtitle,
-  primaryCTA,
-  secondaryCTA,
-  backgroundVideo,
-  backgroundImage,
-  videoControls = false,
-  stats,
-}: HeroTemplateProps) {
-  const isDevelopment = process.env.NODE_ENV === 'development';
-
-  return (
-    <section className="relative w-full flex h-[500px] md:h-[700px] lg:h-[900px] overflow-hidden bg-[#141115]">
-      {/* Background Media */}
-      {backgroundVideo && (
-        <video
-          src={backgroundVideo}
-          autoPlay={!isDevelopment}
-          loop
-          muted
-          playsInline
-          controls={videoControls || isDevelopment}
-          className="absolute inset-0 object-cover w-full h-full opacity-20"
-        />
-      )}
-      {backgroundImage && !backgroundVideo && (
-        <div
-          className="absolute inset-0 w-full h-full opacity-40 bg-cover bg-center"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
-      )}
-
-      {/* Accent Edge (optional design element) */}
-      <div className="absolute top-0 left-0 w-1 h-full bg-[#C8F04D] z-10" />
-
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-start pt-20 sm:pt-28 md:pt-32 lg:pt-40 px-6 sm:px-8 md:px-12 lg:px-16">
-        <Container>
-          <div className="text-left max-w-4xl">
-
-            {/* Eyebrow Label */}
-            {eyebrow && (
-              <p
-                className="mb-5 md:mb-6"
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '10px',
-                  fontWeight: '600',
-                  letterSpacing: '0.4em',
-                  textTransform: 'uppercase',
-                  color: '#C8F04D',
-                }}
-              >
-                {eyebrow}
-              </p>
-            )}
-
-            {/* Hero Title - Sk Modernist Bold */}
-            <h1
-              className="mb-7 md:mb-8"
-              style={{
-                fontFamily: "'Sk Modernist', sans-serif",
-                fontSize: 'clamp(2.75rem, 9vw, 6.25rem)',  // 44px - 100px
-                fontWeight: '700',
-                lineHeight: '0.95',
-                letterSpacing: '-0.02em',
-                color: '#F4F4F4',
-              }}
-            >
-              {title}
-            </h1>
-
-            {/* Subtitle - DM Sans 400 */}
-            <p
-              className="mb-11 max-w-xl md:max-w-2xl"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 'clamp(0.9375rem, 2vw, 1.125rem)',  // 15px - 18px
-                fontWeight: '400',
-                lineHeight: '1.75',
-                color: '#A09EA3',
-              }}
-            >
-              {subtitle}
-            </p>
-
-            {/* CTAs */}
-            {(primaryCTA || secondaryCTA) && (
-              <div className="flex flex-col sm:flex-row gap-3 mb-14 md:mb-16">
-                {primaryCTA}
-                {secondaryCTA}
-              </div>
-            )}
-
-            {/* Stats Row (optional) */}
-            {stats && stats.length > 0 && (
-              <div className="flex flex-wrap gap-8 md:gap-10 pt-8 border-t border-[#3D3940]">
-                {stats.map((stat, i) => (
-                  <div key={i}>
-                    <div
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 'clamp(1.875rem, 4vw, 2.375rem)',  // 30px - 38px
-                        fontWeight: '700',
-                        lineHeight: '1',
-                        letterSpacing: '-0.02em',
-                        color: '#F5F5F5',
-                        marginBottom: '0.25rem',
-                      }}
-                    >
-                      {stat.value}
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: '10px',
-                        fontWeight: '500',
-                        letterSpacing: '0.2em',
-                        textTransform: 'uppercase',
-                        color: '#6B6870',
-                      }}
-                    >
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </Container>
-      </div>
+      </ContentContainer>
     </section>
   );
 }

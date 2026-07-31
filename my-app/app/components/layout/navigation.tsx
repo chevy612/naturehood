@@ -1,26 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { Container, ButtonAccent} from '@/app/components/ui';
-import { tokens } from '@/app/components/ui/tokens';
-import { createBrowserClient } from '@supabase/ssr';
+import { createBrowserClient } from "@supabase/ssr";
 
-// ─────────────────────────────────────────────
-// NAVIGATION ITEMS
-// ─────────────────────────────────────────────
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Athletes", href: "/athletes"},
-  { label: "Brands", href: "/business" },
-  { label: "About us", href: "/about" }
+  { label: "Event", href: "/events" },
+  { label: "About us", href: "/about" },
 ];
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const supabase = createBrowserClient(
@@ -32,22 +28,34 @@ export default function Navigation() {
     });
   }, []);
 
-  // ─────────────────────────────────────────────
-  // CLOSE MENU ON ESC KEY
-  // ─────────────────────────────────────────────
+  // Hide on scroll down, show on scroll up
+  useEffect(() => {
+    function onScroll() {
+      const currentY = window.scrollY;
+      if (currentY < 100) {
+        // Always show near the top
+        setVisible(true);
+      } else if (currentY > lastScrollY.current) {
+        // Scrolling down → hide
+        setVisible(false);
+      } else {
+        // Scrolling up → show
+        setVisible(true);
+      }
+      lastScrollY.current = currentY;
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setMobileMenuOpen(false);
-      }
+      if (e.key === "Escape") setMobileMenuOpen(false);
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  // ─────────────────────────────────────────────
-  // LOCK BODY SCROLL WHEN MOBILE MENU OPEN
-  // ─────────────────────────────────────────────
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const original = document.body.style.overflow;
@@ -61,103 +69,113 @@ export default function Navigation() {
 
   return (
     <>
-      {/* ═══════════════════════════════════════════
-          MAIN NAVBAR
-          ═══════════════════════════════════════════ */}
+      {/* MAIN NAVBAR — Floating, transparent, hide/show on scroll */}
       <header
-        className="sticky top-0 z-50 bg-[#141115] border-b border-[#3D3940]/50 backdrop-blur-sm"
-        style={{ fontFamily: tokens.font.body }}
+        className={`fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 md:px-[108px] pt-4 md:pt-[30px] transition-transform duration-300 ${
+          visible ? "translate-y-0" : "-translate-y-full"
+        }`}
       >
-        <Container>
-          <nav className="flex items-center justify-between h-16 sm:h-20">
+        {/* Desktop Navbar */}
+        <nav
+          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[88px] px-[60px] lg:px-[103px] border-b border-[rgba(230,230,230,0.3)]"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {/* Logo */}
+          <Link href="/" className="shrink-0">
+            <Image
+              src="/naturehood.svg"
+              alt="Naturehood"
+              width={208}
+              height={24}
+              priority
+              className="w-[160px] lg:w-[208px] h-auto"
+            />
+          </Link>
 
-            {/* ─── LEFT: Mobile Menu Button (Mobile Only) ─── */}
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 hover:bg-white/5 rounded-md transition-colors"
-              aria-label="Toggle menu"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6 text-white" />
-              ) : (
-                <Menu className="h-6 w-6 text-white" />
-              )}
-            </button>
-
-            {/* ─── CENTER/LEFT: Logo ─── */}
-            <Link href="/" className="flex items-center lg:mr-12">
-              <Image
-                src="/naturehood.svg"
-                alt="Naturehood"
-                width={160}
-                height={64}
-                priority
-                className="w-32 h-auto sm:w-40 md:w-44"
-              />
-            </Link>
-
-            {/* ─── CENTER: Desktop Navigation Links ─── */}
-            <div className="hidden lg:flex items-center flex-1 gap-7">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-[11px] font-semibold text-white/70 hover:text-white transition-colors uppercase"
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    letterSpacing: "0.18em",
-                  }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-
-            {/* ─── RIGHT: Sign In / Open App Button ─── */}
-            <div className="flex items-center gap-3">
-              <Link href={isLoggedIn ? "/home" : "/login"}>
-                <ButtonAccent>{isLoggedIn ? "Open App" : "Sign In"}</ButtonAccent>
+          {/* Nav Links */}
+          <div className="flex items-center gap-[40px] lg:gap-[60px]">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-white text-[16px] lg:text-[20px] font-medium transition-colors hover:text-[#f5f5f5]/80 whitespace-nowrap"
+              >
+                {item.label}
               </Link>
-            </div>
-          </nav>
-        </Container>
+            ))}
+          </div>
+
+          {/* Sign Up / Auth Button */}
+          <Link
+            href={isLoggedIn ? "/home" : "/signup"}
+            className="bg-[#f5f5f5] text-black rounded-[999px] px-[24px] py-[14px] text-[16px] lg:text-[20px] font-medium transition-colors hover:bg-white whitespace-nowrap"
+          >
+            {isLoggedIn ? "Open App" : "Sign up"}
+          </Link>
+        </nav>
+
+        {/* Mobile Navbar */}
+        <nav
+          className="flex md:hidden items-center justify-between bg-black rounded-[100px] h-[56px] px-6"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          <Link href="/" className="shrink-0">
+            <Image
+              src="/naturehood.svg"
+              alt="Naturehood"
+              width={160}
+              height={20}
+              priority
+              className="w-[130px] h-auto"
+            />
+          </Link>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 hover:bg-white/10 rounded-md transition-colors"
+            aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5 text-white" />
+            ) : (
+              <Menu className="h-5 w-5 text-white" />
+            )}
+          </button>
+        </nav>
       </header>
 
-      {/* ═══════════════════════════════════════════
-          MOBILE MENU OVERLAY
-          ═══════════════════════════════════════════ */}
+      {/* MOBILE MENU OVERLAY */}
       <div
-        className={`fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 z-50 lg:hidden ${
+        className={`fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 z-50 md:hidden ${
           mobileMenuOpen
-            ? 'opacity-100 pointer-events-auto'
-            : 'opacity-0 pointer-events-none'
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={closeMobileMenu}
         aria-hidden={!mobileMenuOpen}
       >
-        {/* Mobile Slide-in Menu */}
         <aside
           onClick={(e) => e.stopPropagation()}
-          className={`fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-[#141115] border-r border-[#3D3940] shadow-2xl transition-transform duration-300 ease-out ${
-            mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-black shadow-2xl transition-transform duration-300 ease-out ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
           role="dialog"
           aria-modal="true"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between p-4 border-b border-[#3D3940]">
+          <div className="flex items-center justify-between p-4 border-b border-white/10">
             <Image
               src="/naturehood.svg"
               alt="Naturehood"
-              width={120}
-              height={48}
-              className="w-32"
+              width={130}
+              height={16}
+              className="w-[130px]"
             />
             <button
               onClick={closeMobileMenu}
-              className="p-2 hover:bg-white/5 rounded-md transition-colors"
+              className="p-2 hover:bg-white/10 rounded-md transition-colors"
               aria-label="Close menu"
             >
               <X className="h-5 w-5 text-white" />
@@ -171,12 +189,8 @@ export default function Navigation() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="block px-4 py-3 text-[11px] font-semibold text-white hover:bg-[#C8F04D]/10 hover:text-[#C8F04D] rounded-md transition-all uppercase"
+                    className="block px-4 py-3 text-[16px] font-medium text-white hover:bg-white/10 rounded-md transition-all"
                     onClick={closeMobileMenu}
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      letterSpacing: "0.18em",
-                    }}
                   >
                     {item.label}
                   </Link>
@@ -184,10 +198,13 @@ export default function Navigation() {
               ))}
             </ul>
 
-            {/* Mobile Menu Footer */}
-            <div className="mt-8 pt-6 border-t border-[#3D3940]">
-              <Link href={isLoggedIn ? "/home" : "/login"} onClick={closeMobileMenu}>
-                <ButtonAccent fullWidth>{isLoggedIn ? "Open App" : "Sign In"}</ButtonAccent>
+            <div className="mt-8 pt-6 border-t border-white/10">
+              <Link
+                href={isLoggedIn ? "/home" : "/signup"}
+                onClick={closeMobileMenu}
+                className="block w-full text-center bg-[#f5f5f5] text-black rounded-[999px] px-[24px] py-[14px] text-[16px] font-medium transition-colors hover:bg-white"
+              >
+                {isLoggedIn ? "Open App" : "Sign up"}
               </Link>
             </div>
           </nav>
