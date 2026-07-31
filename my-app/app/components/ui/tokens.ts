@@ -5,17 +5,21 @@
 
 export const tokens = {
   font: {
+    display: "'Sk Modernist', sans-serif",
     heading: "'Inter', sans-serif",
     body: "'DM Sans', sans-serif",
   },
   color: {
     ink:     '#141115',
     cloud:   '#F5F5F5',
-    surface2: '#2A272C',
+    surface2: '#2B282C',
     surface1: '#1E1B1F',
+    cardBg:  '#201D22',
     textSecondary: '#6B6870',
+    mutedForeground: '#847E89',
     accent: "#C8F04D",
-    border:        '#3A373C',
+    brandGreen: '#4F9D69',
+    border:        '#3D3940',
     muted:         '#E8E8E8',
     textDisabled:  '#A09EA3',
     warning:       '#F5A623',
@@ -60,15 +64,15 @@ export const tokens = {
   },
   typography: {
     hero: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Sk Modernist', sans-serif",
       fontSize: "clamp(52px, 8vw, 88px)",
-      fontWeight: "900",
+      fontWeight: "700",
       lineHeight: "0.95",
       letterSpacing: "-0.02em",
       marginBottom: "1.5rem",
     },
     h1: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Sk Modernist', sans-serif",
       fontSize: "clamp(38px, 5vw, 60px)",
       fontWeight: "700",
       lineHeight: "1.1",
@@ -76,7 +80,7 @@ export const tokens = {
       marginBottom: "1.25rem",
     },
     h2: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Sk Modernist', sans-serif",
       fontSize: "clamp(26px, 4vw, 40px)",
       fontWeight: "700",
       lineHeight: "1.2",

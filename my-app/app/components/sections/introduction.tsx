@@ -18,7 +18,7 @@ export default function IntroSection() {
             <h2
               className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#141115] mb-6"
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Sk Modernist', sans-serif",
                 lineHeight: "1.1",
                 letterSpacing: "-0.02em",
               }}

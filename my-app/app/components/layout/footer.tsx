@@ -25,7 +25,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#141115] border-t border-[#3A373C]/50 pt-16 pb-8">
+    <footer className="bg-[#141115] border-t border-[#3D3940]/50 pt-16 pb-8">
       <Container>
         {/* Main Footer Content */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
@@ -164,7 +164,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[#3A373C]">
+        <div className="pt-8 border-t border-[#3D3940]">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p
               className="text-xs text-[#6B6870] text-center md:text-left"

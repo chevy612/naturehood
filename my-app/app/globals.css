@@ -6,25 +6,44 @@
 
 @import "tailwindcss";
 
+/* ── SK MODERNIST — Display Font ──────────────────────────── */
+@font-face {
+  font-family: 'Sk Modernist';
+  src: url('/fonts/sk-modernist/Sk-Modernist-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sk Modernist';
+  src: url('/fonts/sk-modernist/Sk-Modernist-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
 :root {
   /* Fonts
+     Display uses Sk Modernist (hero, h1, h2 — loaded via @font-face above)
      Headings use Inter (loaded via next/font in layout.tsx)
-     UI/Body uses DM Sans (loaded via next/font in layout.tsx)
-     Future: DM Sans → Aktiv Grotesk when license acquired */
+     UI/Body uses DM Sans (loaded via next/font in layout.tsx) */
+  --font-display: 'Sk Modernist', sans-serif;
   --font-heading: var(--font-inter);    /* next/font variable */
   --font-ui: var(--font-dm);            /* next/font variable */
 
-  /* Naturehood Color Palette */
+  /* Naturehood Color Palette — aligned with mobile tokens */
   --color-ink: #141115;
   --color-cloud: #F5F5F5;
   --color-surface-1: #1E1B1F;
-  --color-surface-2: #2A272C;
-  --color-border: #3A373C;
+  --color-surface-2: #2B282C;
+  --color-border: #3D3940;
   --color-muted: #E8E8E8;
   --color-text-sec: #6B6870;
+  --color-muted-fg: #847E89;
   --color-disabled: #A09EA3;
   --color-accent: #C8F04D;
+  --color-brand-green: #4F9D69;
+  --color-card-bg: #201D22;
   --color-warning: #F5A623;
   --color-error: #FF4D4D;
   --color-info: #4DA6FF;
@@ -149,17 +168,17 @@
 */
 @layer components {
 
-  /* — Headings (Inter) — */
+  /* — Display (Sk Modernist) — hero, h1, h2 */
   .nh-hero {
-    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-family: var(--font-display), 'Sk Modernist', sans-serif;
     font-size: clamp(3.25rem, 9vw, 6rem);   /* 52–96px */
-    font-weight: 900;
+    font-weight: 700;
     line-height: 0.95;
     letter-spacing: -0.02em;
   }
 
   .nh-h1 {
-    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-family: var(--font-display), 'Sk Modernist', sans-serif;
     font-size: clamp(2.375rem, 5.5vw, 3.75rem); /* 38–60px */
     font-weight: 700;
     line-height: 1.0;
@@ -167,13 +186,14 @@
   }
 
   .nh-h2 {
-    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-family: var(--font-display), 'Sk Modernist', sans-serif;
     font-size: clamp(1.625rem, 4vw, 2.5rem);    /* 26–40px */
     font-weight: 700;
     line-height: 1.05;
     letter-spacing: -0.015em;
   }
 
+  /* — Headings (Inter) — h3+ */
   .nh-h3 {
     font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
     font-size: clamp(1.25rem, 3vw, 1.75rem);    /* 20–28px */

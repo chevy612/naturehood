@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import logger from '@/lib/logger'
 
@@ -43,20 +42,44 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'That username is already taken.' }, { status: 409 })
   }
 
-  const supabase = await createClient()
-  const { data: authData, error: signUpError } = await supabase.auth.signUp({
-    email: normalizedEmail,
-    password,
-    options: { data: { full_name: fullName, role: 'athlete' } },
-  })
+  // Check if an auth user already exists for this email (orphaned from a prior partial signup)
+  const { data: existingAuthUser } = await admin
+    .schema('auth')
+    .from('users')
+    .select('id')
+    .eq('email', normalizedEmail)
+    .maybeSingle()
 
-  if (signUpError || !authData.user) {
-    logger.error('Sign up error:', signUpError)
-    return NextResponse.json({ error: signUpError?.message ?? 'Failed to create account.' }, { status: 500 })
+  let userId: string
+
+  if (existingAuthUser) {
+    // Orphaned auth user — update password and reuse their ID
+    const { error: updateError } = await admin.auth.admin.updateUserById(existingAuthUser.id, {
+      password,
+      user_metadata: { full_name: fullName, role: 'athlete' },
+    })
+    if (updateError) {
+      logger.error('Update user error:', updateError)
+      return NextResponse.json({ error: 'Failed to update account.' }, { status: 500 })
+    }
+    userId = existingAuthUser.id
+  } else {
+    // New user — create with email already confirmed (app performed OTP verification)
+    const { data: authData, error: createError } = await admin.auth.admin.createUser({
+      email: normalizedEmail,
+      password,
+      email_confirm: true,
+      user_metadata: { full_name: fullName, role: 'athlete' },
+    })
+    if (createError || !authData.user) {
+      logger.error('Create user error:', createError)
+      return NextResponse.json({ error: createError?.message ?? 'Failed to create account.' }, { status: 500 })
+    }
+    userId = authData.user.id
   }
 
   const { error: profileError } = await admin.from('profiles').upsert({
-    id: authData.user.id,
+    id: userId,
     email: normalizedEmail,
     name: fullName,
     role: 'athlete',

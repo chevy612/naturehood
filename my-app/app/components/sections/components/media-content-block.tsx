@@ -107,7 +107,7 @@ export default function MediaContentBlock({
             <h2
               className={`text-3xl sm:text-4xl md:text-5xl font-bold ${colors.title}`}
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Sk Modernist', sans-serif",
                 lineHeight: "1.2",
                 letterSpacing: "-0.015em",
               }}

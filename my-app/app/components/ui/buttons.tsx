@@ -61,7 +61,7 @@ export function ButtonPrimary({ children, onClick, disabled, fullWidth, classNam
         bg-[#141115] text-[#C8F04D]
         px-5 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4
         text-xs sm:text-sm font-semibold tracking-widest uppercase
-        overflow-hidden
+        rounded-full overflow-hidden
         transition-all duration-300 ease-out
         hover:bg-[#1E1B1F]
         active:scale-[0.97]
@@ -95,7 +95,7 @@ export function ButtonSecondary({ children, onClick, disabled, fullWidth, varian
         border ${isWhite ? "border-[#E8E8E8] text-[#E8E8E8]" : "border-[#141115] text-[#141115]"} bg-transparent
         px-5 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4
         text-xs sm:text-sm font-semibold tracking-widest uppercase
-        overflow-hidden
+        rounded-full overflow-hidden
         transition-all duration-300 ease-out
         ${isWhite ? "hover:bg-[#E8E8E8] hover:text-[#141115]" : "hover:bg-[#141115] hover:text-[#C8F04D]"}
         active:scale-[0.97]
@@ -153,6 +153,7 @@ export function ButtonAccent({ children, onClick, disabled, fullWidth, className
         bg-[#C8F04D] text-[#141115]
         px-4 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4
         text-xs sm:text-sm font-bold tracking-widest uppercase
+        rounded-full
         transition-all duration-300 ease-out
         hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#C8F04D]/30
         active:scale-[0.97]
@@ -230,7 +231,7 @@ export function ButtonSubmit({ submitting = false, label = "Submit Application",
     <button
       type="submit"
       disabled={submitting}
-      className={`w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
+      className={`w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase rounded-full hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {submitting ? "Submitting..." : label}

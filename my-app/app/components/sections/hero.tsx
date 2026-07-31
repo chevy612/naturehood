@@ -99,13 +99,13 @@ export function HeroTemplate({
               </p>
             )}
 
-            {/* Hero Title - Inter 900 ExtraBold */}
+            {/* Hero Title - Sk Modernist Bold */}
             <h1
               className="mb-7 md:mb-8"
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Sk Modernist', sans-serif",
                 fontSize: 'clamp(2.75rem, 9vw, 6.25rem)',  // 44px - 100px
-                fontWeight: '900',
+                fontWeight: '700',
                 lineHeight: '0.95',
                 letterSpacing: '-0.02em',
                 color: '#F4F4F4',
@@ -138,7 +138,7 @@ export function HeroTemplate({
 
             {/* Stats Row (optional) */}
             {stats && stats.length > 0 && (
-              <div className="flex flex-wrap gap-8 md:gap-10 pt-8 border-t border-[#3A373C]">
+              <div className="flex flex-wrap gap-8 md:gap-10 pt-8 border-t border-[#3D3940]">
                 {stats.map((stat, i) => (
                   <div key={i}>
                     <div

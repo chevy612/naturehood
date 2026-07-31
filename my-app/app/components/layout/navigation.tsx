@@ -65,7 +65,7 @@ export default function Navigation() {
           MAIN NAVBAR
           ═══════════════════════════════════════════ */}
       <header
-        className="sticky top-0 z-50 bg-[#141115] border-b border-[#3A373C]/50 backdrop-blur-sm"
+        className="sticky top-0 z-50 bg-[#141115] border-b border-[#3D3940]/50 backdrop-blur-sm"
         style={{ fontFamily: tokens.font.body }}
       >
         <Container>
@@ -140,14 +140,14 @@ export default function Navigation() {
         {/* Mobile Slide-in Menu */}
         <aside
           onClick={(e) => e.stopPropagation()}
-          className={`fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-[#141115] border-r border-[#3A373C] shadow-2xl transition-transform duration-300 ease-out ${
+          className={`fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-[#141115] border-r border-[#3D3940] shadow-2xl transition-transform duration-300 ease-out ${
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
           role="dialog"
           aria-modal="true"
         >
           {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between p-4 border-b border-[#3A373C]">
+          <div className="flex items-center justify-between p-4 border-b border-[#3D3940]">
             <Image
               src="/naturehood.svg"
               alt="Naturehood"
@@ -185,7 +185,7 @@ export default function Navigation() {
             </ul>
 
             {/* Mobile Menu Footer */}
-            <div className="mt-8 pt-6 border-t border-[#3A373C]">
+            <div className="mt-8 pt-6 border-t border-[#3D3940]">
               <Link href={isLoggedIn ? "/home" : "/login"} onClick={closeMobileMenu}>
                 <ButtonAccent fullWidth>{isLoggedIn ? "Open App" : "Sign In"}</ButtonAccent>
               </Link>
