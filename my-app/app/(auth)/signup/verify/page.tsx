@@ -119,7 +119,7 @@ function VerifyForm() {
           </p>
           <h1
             className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Check your email
           </h1>
@@ -148,8 +148,8 @@ function VerifyForm() {
                 onChange={(e) => handleDigitChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={handlePaste}
-                className="w-12 h-14 text-center text-2xl font-bold text-white bg-[#1E1B22] border border-[#2E2B33] rounded-lg focus:outline-none focus:border-[#C8F04D] transition-colors"
-                style={{ fontFamily: "'Inter', sans-serif" }}
+                className="w-12 h-14 text-center text-2xl font-bold text-white bg-[#1E1B1F] border-none rounded-xl focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
                 autoFocus={i === 0}
               />
             ))}

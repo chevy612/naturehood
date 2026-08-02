@@ -4,6 +4,7 @@ import { useState, ChangeEvent, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { InputDark, SelectDark, CheckboxDark, ButtonSubmit } from "@/app/components/ui";
+import { OAuthButtons } from "@/app/components/ui/oauth-buttons";
 import { initiateSignUp } from "./actions";
 
 // ─────────────────────────────────────────────
@@ -112,7 +113,7 @@ function SignUpForm() {
             </p>
             <h1
               className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Join Naturehood
             </h1>
@@ -124,6 +125,9 @@ function SignUpForm() {
               your passion.
             </p>
           </div>
+
+          {/* OAuth */}
+          <OAuthButtons mode="signup" />
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">

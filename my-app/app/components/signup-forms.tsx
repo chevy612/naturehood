@@ -129,7 +129,7 @@ export function AthleteSignUpForm({
           </div>
           <h2
             className="text-[32px] font-bold text-white mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Welcome to Naturehood
           </h2>
@@ -164,7 +164,7 @@ export function AthleteSignUpForm({
           </p>
           <h1
             className="text-[48px] md:text-[60px] font-bold text-white leading-none mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Join Naturehood
           </h1>
@@ -183,7 +183,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               About You
             </h3>
@@ -231,7 +231,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#3A373C]">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Athletic Background
             </h3>
@@ -261,7 +261,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#3A373C]">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Social Presence
             </h3>
@@ -297,7 +297,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#3A373C]">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Creative Vision
             </h3>
@@ -468,7 +468,7 @@ export function BrandSignUpForm({
           </div>
           <h2
             className="text-[32px] font-bold text-[#141115] mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Thank You for Your Interest
           </h2>
@@ -503,7 +503,7 @@ export function BrandSignUpForm({
           </p>
           <h1
             className="text-[48px] md:text-[60px] font-bold text-[#141115] leading-none mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Partner with Naturehood
           </h1>
@@ -522,7 +522,7 @@ export function BrandSignUpForm({
           <div className="space-y-6">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Company Information
             </h3>
@@ -560,7 +560,7 @@ export function BrandSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#E8E8E8]">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Project Details
             </h3>
@@ -589,7 +589,7 @@ export function BrandSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#E8E8E8]">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Budget & Timeline
             </h3>
@@ -618,7 +618,7 @@ export function BrandSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#E8E8E8]">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Help Us Improve
             </h3>

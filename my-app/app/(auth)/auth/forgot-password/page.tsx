@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
           </p>
           <h1
             className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Forgot Password
           </h1>
@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-white text-black px-8 py-3.5 rounded-full text-[14px] font-semibold hover:bg-white/90 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {loading ? "Sending..." : "Send Reset Link"}
@@ -169,10 +169,8 @@ function InputDark({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full bg-transparent border-b-2 py-3 px-0 text-[15px] text-white placeholder:text-[#3A373C] outline-none transition-colors duration-200 ${
-          error
-            ? "border-[#FF4D4D] focus:border-[#FF4D4D]"
-            : "border-[#3A373C] focus:border-[#C8F04D]"
+        className={`w-full bg-[#1E1B1F] border-none rounded-full px-6 py-3.5 text-[14px] text-white placeholder:text-[#6B6870] outline-none transition-all duration-200 focus:ring-1 focus:ring-white/20 ${
+          error ? "ring-1 ring-[#FF4D4D]" : ""
         }`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
