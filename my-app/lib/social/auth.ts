@@ -20,7 +20,11 @@ export async function getAuthenticatedSocialClient(
       )
     : await createServerClient()
 
-  const { data, error } = await supabase.auth.getClaims()
+  // A stateless mobile request has no server-side session storage. Verify its
+  // bearer token explicitly; cookie-backed web requests still use the session.
+  const { data, error } = token
+    ? await supabase.auth.getClaims(token)
+    : await supabase.auth.getClaims()
   const userId = data?.claims?.sub
   if (error || typeof userId !== 'string') return null
   return { supabase, userId }
