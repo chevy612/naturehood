@@ -1,5 +1,18 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Social Feed Backend
+
+The Java social backend now lives in this Next.js app as Supabase-native route
+handlers. Apply `supabase/migrations/005_social_feed_backend.sql` to provision
+the social feed tables, RLS policies, count and notification triggers, ranked
+feed/search RPCs, and Realtime publication. It replaces MongoDB, Redis sorted
+set fan-out, Redis Pub/Sub, and the standalone Node conversion.
+
+Existing clients retain the `/api/posts`, `/api/feed`, and `/api/users` API
+contract. `/api/feed/stream` retains SSE compatibility but receives post events
+through Supabase Realtime; browser clients can subscribe directly with
+`lib/social/realtime.ts`.
+
 ## Getting Started
 
 First, run the development server:
