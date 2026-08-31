@@ -40,7 +40,7 @@ const KIMI_BASE_URL = process.env.KIMI_BASE_URL ?? 'https://api.moonshot.ai/v1';
 export const DEFAULT_MODELS: Record<AIProvider, string> = {
   anthropic: 'claude-haiku-4-5-20251001',
   glm: 'glm-4v',
-  kimi: 'kimi-k2.5',
+  kimi: 'kimi-k2.6',
 };
 
 // ── Internal: build a configured Anthropic client ────────────────────────────
