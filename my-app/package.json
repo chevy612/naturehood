@@ -9,6 +9,7 @@
     "test:ai": "npx tsx scripts/test-ai-workout.ts",
     "test:persist": "npx tsx scripts/test-persist.ts",
     "test:egress": "npx tsx scripts/test-egress-fixes.ts",
+    "test:social-api": "npx tsx scripts/test-social-api.ts",
     "lint": "eslint",
     "build:prod": "NODE_ENV=production next build"
   },
