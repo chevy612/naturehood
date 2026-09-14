@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ContentContainer } from "@/app/components/ui/container";
+import { ButtonPrimary } from "@/app/components/ui/buttons";
 
 const FOUNDER_PHOTOS = [
   "/about/founder-1.png",
@@ -19,9 +20,9 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white text-black">
       {/* Our Story */}
-      <section className="pt-40 pb-16 md:pt-48 md:pb-24">
+      <section className="pt-20 pb-10 md:pt-30 md:pb-0">
         <ContentContainer as="div">
-          <div className="max-w-[894px] mx-auto">
+          <div className="max-w-[900] mx-auto">
             <h1 className="nh-h1 text-center mb-10">Our Story</h1>
             <div
               className="text-[#141115] text-[17px] sm:text-[20px] lg:text-[24px] leading-[1.6] space-y-6"
@@ -51,14 +52,14 @@ export default function AboutPage() {
       </section>
 
       {/* Founders */}
-      <section className="py-12 md:py-16">
+      <section className="py-[50px]">
         <ContentContainer as="div">
-          <h2 className="nh-h2 text-center mb-10">Founders</h2>
+          <h2 className="nh-h2 text-center mb-[30px]">Founders</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-[30px]">
             {FOUNDER_PHOTOS.map((src, i) => (
               <div
                 key={src}
-                className="relative aspect-[284/730] overflow-hidden rounded-2xl bg-[#F5F5F5]"
+                className="relative aspect-[284/730] overflow-hidden rounded-[30px] bg-[#F5F5F5]"
               >
                 <Image
                   src={src}
@@ -77,11 +78,8 @@ export default function AboutPage() {
       <section className="py-12 md:py-16">
         <ContentContainer as="div">
           <div className="flex justify-center">
-            <Link
-              href="/signup"
-              className="nh-h2 inline-block border-b-[3px] border-black pb-1 transition-opacity hover:opacity-70"
-            >
-              Click here to make a change
+            <Link href="/signup" className="inline-block">
+              <ButtonPrimary>Talk to us</ButtonPrimary>
             </Link>
           </div>
         </ContentContainer>

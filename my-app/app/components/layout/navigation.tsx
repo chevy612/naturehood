@@ -76,7 +76,7 @@ export default function Navigation() {
         <div className="max-w-[1370px] mx-auto">
         {/* Desktop Navbar */}
         <nav
-          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[88px] px-[50px]"
+          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[88px] px-[50px] lg:px-[103px]"
           style={{
             fontFamily: "'DM Sans', sans-serif",
             borderBottom: "1px solid rgba(230, 230, 230, 0.3)",
