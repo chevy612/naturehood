@@ -38,7 +38,7 @@ export default function AccountProfile({ name, username, bio, role, avatarUrl, w
           {/* Name + role */}
           <h1
             className="text-[20px] font-bold text-white leading-tight mb-0.5"
-            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
           >
             {name}
           </h1>
@@ -66,16 +66,16 @@ export default function AccountProfile({ name, username, bio, role, avatarUrl, w
       <div className="flex gap-3 mb-8">
         <button
           onClick={() => setEditOpen((v) => !v)}
-          className="flex-1 py-2.5 border border-[#3A373C] text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#C8F04D]/40 hover:text-[#C8F04D] transition-colors"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="flex-1 py-2.5 border border-[#3A373C] text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#F5F5F5]/40 hover:text-[#F5F5F5] transition-colors"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {editOpen ? 'Close' : 'Edit Profile'}
         </button>
         {username ? (
           <Link
             href={`/${username}`}
-            className="flex-1 py-2.5 border border-[#3A373C] text-center text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#C8F04D]/40 hover:text-[#C8F04D] transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            className="flex-1 py-2.5 border border-[#3A373C] text-center text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#F5F5F5]/40 hover:text-[#F5F5F5] transition-colors"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             View Profile
           </Link>
@@ -83,7 +83,7 @@ export default function AccountProfile({ name, username, bio, role, avatarUrl, w
           <button
             disabled
             className="flex-1 py-2.5 border border-[#3A373C] text-[#6B6870] text-[12px] font-semibold uppercase tracking-[0.1em] opacity-40 cursor-not-allowed"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
             title="Set a username to share your profile"
           >
             View Profile

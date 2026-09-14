@@ -1,7 +1,7 @@
 /* ============================================================
    NATUREHOODOFFICIAL — globals.css
    Stack: Next.js + Tailwind CSS v4 + TypeScript
-   Design System v3: Inter (headings) + DM Sans (body/UI)
+   Design System v4: Sk Modernist (display) + DM Sans (everything else)
    ============================================================ */
 
 @import "tailwindcss";
@@ -25,14 +25,14 @@
 :root {
   /* Fonts
      Display uses Sk Modernist (hero, h1, h2 — loaded via @font-face above)
-     Headings use Inter (loaded via next/font in layout.tsx)
-     UI/Body uses DM Sans (loaded via next/font in layout.tsx) */
+     Everything else uses DM Sans (loaded via next/font in layout.tsx) */
   --font-display: 'Sk Modernist', sans-serif;
-  --font-heading: var(--font-inter);    /* next/font variable */
+  --font-heading: var(--font-dm);       /* next/font variable */
   --font-ui: var(--font-dm);            /* next/font variable */
 
   /* Naturehood Color Palette — aligned with mobile tokens */
   --color-ink: #141115;
+  --color-black: #000000;
   --color-cloud: #F5F5F5;
   --color-surface-1: #1E1B1F;
   --color-surface-2: #2B282C;
@@ -41,8 +41,8 @@
   --color-text-sec: #6B6870;
   --color-muted-fg: #847E89;
   --color-disabled: #A09EA3;
-  --color-accent: #C8F04D;
-  --color-brand-green: #4F9D69;
+  --color-accent: #F5F5F5;
+  --color-brand-green: #F5F5F5;
   --color-card-bg: #201D22;
   --color-warning: #F5A623;
   --color-error: #FF4D4D;
@@ -77,12 +77,12 @@
     font-size: 1rem;
     line-height: 1.6;
     color: var(--color-ink);
-    background-color: var(--color-cloud);
+    background-color: var(--color-white);
   }
 
-  /* Headings always use Inter */
+  /* Headings use DM Sans */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-family: var(--font-heading), 'DM Sans', system-ui, sans-serif;
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.015em;
@@ -111,10 +111,11 @@
 
   p {
     font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.75;
-    color: var(--color-text-sec);
+    font-size: 1.5rem;        /* 24px */
+    font-weight: 500;         /* Medium */
+    line-height: 1.25;        /* 30px */
+    letter-spacing: -0.3px;
+    color: var(--color-black);
   }
 
   /* Remove list styles on nav/ui lists */
@@ -193,9 +194,9 @@
     letter-spacing: -0.015em;
   }
 
-  /* — Headings (Inter) — h3+ */
+  /* — Headings (DM Sans) — h3+ */
   .nh-h3 {
-    font-family: var(--font-heading), 'Inter', system-ui, sans-serif;
+    font-family: var(--font-heading), 'DM Sans', system-ui, sans-serif;
     font-size: clamp(1.25rem, 3vw, 1.75rem);    /* 20–28px */
     font-weight: 600;
     line-height: 1.1;
@@ -214,10 +215,11 @@
 
   .nh-body {
     font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
-    font-size: 1rem;          /* 16px */
-    font-weight: 400;
-    line-height: 1.75;
-    color: var(--color-text-sec);
+    font-size: 1.5rem;        /* 24px */
+    font-weight: 500;         /* Medium */
+    line-height: 1.25;        /* 30px */
+    letter-spacing: -0.3px;
+    color: var(--color-black);
   }
 
   .nh-small {
@@ -236,99 +238,4 @@
     color: var(--color-disabled);
   }
 
-  /* — Legacy Button Styles (for backward compatibility) — */
-  .btn {
-    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
-    height: 2.5rem;
-    min-width: 1.25rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    transition: color 0.2s, background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .btn-primary {
-    border-radius: 0.125rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background-color: var(--third-color);
-    color: var(--background);
-  }
-
-  .btn-primary:hover {
-    opacity: 0.9;
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .btn-second {
-    border-radius: 0.125rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    background-color: rgb(55, 65, 81);
-    color: var(--foreground);
-    font-weight: 700;
-    border: 1px solid transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .btn-second:hover {
-    background-color: rgb(75, 85, 99);
-  }
-
-  .btn-second:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .btn-second:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgb(34, 197, 94);
-  }
-
-  .input-primary {
-    height: 2.5rem;
-    border: 1px solid currentColor;
-    padding: 0.5rem 1rem;
-    border-radius: 0;
-    color: rgb(107, 114, 128);
-    background: transparent;
-  }
-
-  .input-primary:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px white;
-  }
-
-  .input-primary::placeholder {
-    color: rgb(75, 85, 99);
-  }
-
-  .icon-button {
-    display: inline-flex;
-    height: 2.5rem;
-    width: 2.5rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9999px;
-  }
-
-  .icon-button:hover {
-    background-color: rgb(20, 83, 45);
-  }
 }

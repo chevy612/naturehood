@@ -154,7 +154,7 @@ export default function EditForm({
           {workoutTypes.map((label) => (
             <span
               key={label}
-              className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium rounded-full border border-[#C8F04D] text-[#C8F04D]"
+              className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium rounded-full border border-[#F5F5F5] text-[#F5F5F5]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {label}
@@ -176,7 +176,7 @@ export default function EditForm({
           onKeyDown={handleTypeKeyDown}
           onBlur={() => { if (typeInput.trim()) addWorkoutType(typeInput) }}
           placeholder="e.g. Strength, Cardio, Outdoor — press Enter to add"
-          className="w-full bg-transparent border-b-2 border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[14px] pb-2 placeholder-[#3A373C] transition-colors duration-150"
+          className="w-full bg-transparent border-b-2 border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[14px] pb-2 placeholder-[#3A373C] transition-colors duration-150"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         />
         <p
@@ -200,7 +200,7 @@ export default function EditForm({
                   key={label}
                   type="button"
                   onClick={() => addWorkoutType(label)}
-                  className="px-3 py-1 text-[11px] font-medium rounded-full border border-[#3A373C] text-[#A09EA3] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors duration-150"
+                  className="px-3 py-1 text-[11px] font-medium rounded-full border border-[#3A373C] text-[#A09EA3] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors duration-150"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {label}
@@ -227,7 +227,7 @@ export default function EditForm({
           aria-checked={isPublic}
           onClick={() => setIsPublic((v) => !v)}
           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-            isPublic ? 'bg-[#C8F04D]' : 'bg-[#3A373C]'
+            isPublic ? 'bg-[#F5F5F5]' : 'bg-[#3A373C]'
           }`}
         >
           <span
@@ -257,7 +257,7 @@ export default function EditForm({
         <button
           type="submit"
           disabled={submitting}
-          className="flex-1 bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-[#F5F5F5] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {submitting ? 'Saving…' : 'Save Changes'}

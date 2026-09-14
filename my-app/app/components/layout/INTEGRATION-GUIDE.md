@@ -152,7 +152,7 @@ The new components automatically use your design tokens:
 ```tsx
 // Colors
 bg-[#141115]           // tokens.color.ink
-text-[#C8F04D]         // tokens.color.accent
+text-[#F5F5F5]         // tokens.color.accent
 border-[#3A373C]       // tokens.color.border
 
 // Fonts

@@ -25,16 +25,18 @@ interface ContentContainerProps {
   children: ReactNode;
   className?: string;
   as?: "section" | "div";
+  maxWidth?: string;
 }
 
 export function ContentContainer({
   children,
   className = "",
   as: Tag = "section",
+  maxWidth = "max-w-[1224px]",
 }: ContentContainerProps) {
   return (
-    <Tag className={`w-full px-6 sm:px-12 md:px-[108px] ${className}`}>
-      <div className="max-w-[1224px] mx-auto">{children}</div>
+    <Tag className={`w-full px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] ${className}`}>
+      <div className={`${maxWidth} mx-auto`}>{children}</div>
     </Tag>
   );
 }

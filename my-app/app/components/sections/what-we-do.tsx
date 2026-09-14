@@ -1,29 +1,27 @@
 import Image from "next/image";
 import { ContentContainer, SplitGrid } from "@/app/components/ui/container";
+import { landingImages } from "@/lib/landing-images";
 
 export default function WhatWeDoSection() {
   return (
-    <ContentContainer className="py-6 md:py-[30px]">
+    <ContentContainer className="py-2.5 md:py-[25px]" maxWidth="max-w-[1370px]">
       <SplitGrid className="items-center">
-        {/* Text Content */}
-        <div className="flex flex-col gap-[30px] justify-center">
+        {/* Text Content — white rounded card on mobile, plain column on md+ */}
+        <div className="flex flex-col gap-6 md:gap-[30px] justify-center bg-white rounded-[30px] p-[30px] md:rounded-none md:p-0">
           <h2
-            className="text-black text-[28px] sm:text-[32px] md:text-[36px]"
+            className="text-black font-bold text-[22px] leading-[26px] text-center md:text-left md:text-[36px] md:leading-[41px]"
             style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 700,
-              lineHeight: "41px",
+              fontFamily: "'Sk Modernist', sans-serif",
               letterSpacing: "-0.3px",
             }}
           >
             What we do
           </h2>
           <p
-            className="text-black text-[18px] sm:text-[20px] md:text-[24px]"
+            className="text-black text-[16px] leading-[18px] md:text-[24px] md:leading-[30px] max-w-[600px] mx-auto text-center md:mx-0 md:text-left"
             style={{
               fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 600,
-              lineHeight: "30px",
+              fontWeight: 500,
               letterSpacing: "-0.3px",
             }}
           >
@@ -34,11 +32,12 @@ export default function WhatWeDoSection() {
         </div>
 
         {/* Image */}
-        <div className="relative w-full aspect-[600/405]">
+        <div className="relative w-full h-[405px] md:h-auto md:aspect-[640/405] overflow-hidden rounded-[30px]">
           <Image
-            src="/images/landing/what-we-do.jpg"
-            alt="Urban scene"
+            src={landingImages.whatWeDo}
+            alt="Track and field event"
             fill
+            sizes="(max-width: 768px) 100vw, 612px"
             className="object-cover"
           />
         </div>

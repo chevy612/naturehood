@@ -1,19 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Container} from '@/app/components/ui/container';
-import { tokens } from '@/app/components/ui/tokens';
-import { Instagram, Twitter, Linkedin, Facebook, Youtube } from "lucide-react";
+import { ContentContainer } from '@/app/components/ui/container';
+import { Instagram, Youtube, Linkedin } from "lucide-react";
 
-// ─────────────────────────────────────────────
-// FOOTER LINKS
-// ─────────────────────────────────────────────
-const footerLinks = {
-  legal: [
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Cookie Policy", href: "/cookies" },
-  ],
-};
+const legalLinks = [
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Cookies", href: "/cookies" },
+];
 
 const socialLinks = [
   { icon: Instagram, href: "https://instagram.com/naturehood.official", label: "Instagram" },
@@ -25,162 +19,69 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#141115] border-t border-[#3D3940]/50 pt-16 pb-8">
-      <Container>
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
-
-          {/* Brand Column - spans 2 on mobile */}
-          <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="inline-block mb-4">
+    <footer className="bg-black border-t border-white/10">
+      <ContentContainer as="div" className="py-12 md:py-16" maxWidth="max-w-[1370px]">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+          {/* Brand + Tagline */}
+          <div className="flex flex-col gap-4">
+            <Link href="/" className="inline-block">
               <Image
                 src="/naturehood.svg"
                 alt="Naturehood"
-                width={160}
-                height={64}
-                className="w-40 h-auto"
+                width={140}
+                height={18}
+                className="w-[140px] h-auto"
               />
             </Link>
             <p
-              className="text-sm text-[#6B6870] mb-6 max-w-sm leading-relaxed"
-              style={{ fontFamily: tokens.font.body }}
+              className="text-[13px] text-white/40 max-w-xs leading-relaxed"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Connecting athletes and brands through authentic partnerships.
-              Build your legacy with Naturehood.
+              The home of track &amp; field culture.
             </p>
-
-            {/* Social Links */}
-            <div className="flex items-center gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-md bg-white/5 hover:bg-[#C8F04D]/10 hover:text-[#C8F04D] text-white/70 transition-all"
-                  aria-label={social.label}
-                >
-                  <social.icon size={18} />
-                </a>
-              ))}
-            </div>
           </div>
 
-          {/* Product Links */}
-          {/*}
-          <div>
-            <h3
-              className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.heading }}
-            >
-              Product
-            </h3>
-            <ul className="space-y-2">
-              {footerLinks.product.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-[#6B6870] hover:text-[#C8F04D] transition-colors"
-                    style={{ fontFamily: tokens.font.body }}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company Links */}
-          {/*
-          <div>
-            <h3
-              className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.heading }}
-            >
-              Company
-            </h3>
-            <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-[#6B6870] hover:text-[#C8F04D] transition-colors"
-                    style={{ fontFamily: tokens.font.body }}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources Links */}
-          {/*
-          <div>
-            <h3
-              className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.heading }}
-            >
-              Resources
-            </h3>
-            <ul className="space-y-2">
-              {footerLinks.resources.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-[#6B6870] hover:text-[#C8F04D] transition-colors"
-                    style={{ fontFamily: tokens.font.body }}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div> 
-    
-
-          {/* Legal Links */}
-          <div>
-            <h3
-              className="text-xs font-semibold uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: tokens.font.heading }}
-            >
-              Legal
-            </h3>
-            <ul className="space-y-2">
-              {footerLinks.legal.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-[#6B6870] hover:text-[#C8F04D] transition-colors"
-                    style={{ fontFamily: tokens.font.body }}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Social Links */}
+          <div className="flex items-center gap-4">
+            {socialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
+                aria-label={social.label}
+              >
+                <social.icon size={16} />
+              </a>
+            ))}
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[#3D3940]">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p
-              className="text-xs text-[#6B6870] text-center md:text-left"
-              style={{ fontFamily: tokens.font.body }}
-            >
-              © {currentYear} Naturehood. All rights reserved.
+        <div className="mt-10 pt-6 border-t border-white/10">
+          <div
+            className="flex flex-col sm:flex-row items-center justify-between gap-4"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            <p className="text-[12px] text-white/30">
+              &copy; {currentYear} Naturehood. All rights reserved.
             </p>
-            <p
-              className="text-xs text-[#6B6870] text-center md:text-right"
-              style={{ fontFamily: tokens.font.body }}
-            >
-              Made in Hong Kong
-            </p>
+            <div className="flex items-center gap-6">
+              {legalLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-[12px] text-white/30 hover:text-white/60 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <span className="text-[12px] text-white/30">Made in Hong Kong</span>
+            </div>
           </div>
         </div>
-      </Container>
+      </ContentContainer>
     </footer>
   );
 }

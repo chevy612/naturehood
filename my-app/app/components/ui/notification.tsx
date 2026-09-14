@@ -51,12 +51,12 @@ export function SuccessModal({
         <div className="text-center">
           {/* Checkmark circle */}
           <div
-            className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${isDark ? "bg-[#C8F04D]" : "bg-[#141115]"}`}
+            className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${isDark ? "bg-[#F5F5F5]" : "bg-[#141115]"}`}
           >
             <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
               <path
                 d="M8 20l8 8L32 12"
-                stroke={isDark ? "#141115" : "#C8F04D"}
+                stroke={isDark ? "#141115" : "#F5F5F5"}
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -66,7 +66,7 @@ export function SuccessModal({
 
           <h3
             className={`text-[24px] font-bold mb-3 ${isDark ? "text-white" : "text-[#141115]"}`}
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {title}
           </h3>
@@ -94,7 +94,7 @@ interface InfoBoxProps {
 
 export function InfoBox({ color = "green", children, className = "" }: InfoBoxProps) {
   const colors = {
-    green: "bg-[#C8F04D]/15 border-[#C8F04D]/30 text-[#141115]",
+    green: "bg-[#F5F5F5]/15 border-[#F5F5F5]/30 text-[#141115]",
     red: "bg-[#FF6B6B]/15 border-[#FF6B6B]/30 text-[#141115]",
   };
 

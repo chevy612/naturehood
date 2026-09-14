@@ -66,7 +66,7 @@ export default function AboutPage() {
         <Container>
           <Stack spacing={8}>
             <p 
-              className="text-[#C8F04D]"
+              className="text-[#F5F5F5]"
               style={tokens.typography.label}
             >
               About Naturehood
@@ -142,7 +142,7 @@ export default function AboutPage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-8">
-              <div className="w-12 h-12 bg-[#C8F04D] flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-[#F5F5F5] flex items-center justify-center mb-4">
                 <span className="text-2xl font-bold text-[#141115]">1</span>
               </div>
               <h3 
@@ -158,7 +158,7 @@ export default function AboutPage() {
             </div>
 
             <div className="bg-white p-8">
-              <div className="w-12 h-12 bg-[#C8F04D] flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-[#F5F5F5] flex items-center justify-center mb-4">
                 <span className="text-2xl font-bold text-[#141115]">2</span>
               </div>
               <h3 
@@ -174,7 +174,7 @@ export default function AboutPage() {
             </div>
 
             <div className="bg-white p-8">
-              <div className="w-12 h-12 bg-[#C8F04D] flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-[#F5F5F5] flex items-center justify-center mb-4">
                 <span className="text-2xl font-bold text-[#141115]">3</span>
               </div>
               <h3 

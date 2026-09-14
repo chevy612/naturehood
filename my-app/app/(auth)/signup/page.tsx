@@ -106,7 +106,7 @@ function SignUpForm() {
           {/* Header */}
           <div className="mb-10">
             <p
-              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Get Started
@@ -171,14 +171,14 @@ function SignUpForm() {
                     I agree to the Naturehood{" "}
                     <Link
                       href="/terms"
-                      className="text-[#C8F04D] hover:underline"
+                      className="text-[#F5F5F5] hover:underline"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                       href="/privacy"
-                      className="text-[#C8F04D] hover:underline"
+                      className="text-[#F5F5F5] hover:underline"
                     >
                       Privacy Policy
                     </Link>
@@ -226,7 +226,7 @@ function SignUpForm() {
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Already have an account?{" "}
-              <Link href="/login" className="text-[#C8F04D] hover:underline">
+              <Link href="/login" className="text-[#F5F5F5] hover:underline">
                 Log in
               </Link>
             </p>

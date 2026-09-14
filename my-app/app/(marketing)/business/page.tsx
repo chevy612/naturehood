@@ -10,11 +10,8 @@ import {
   Container,
   ButtonTab,
   ButtonSubmit,
-  tokens,
-  ReadableText,
 } from "@/app/components/ui";
 import { InfoBox } from "@/app/components/ui/notification";
-import { SectionHeader } from "@/app/components/ui/typography";
 import {
   FormInput,
   FormSelect,
@@ -162,7 +159,7 @@ export default function BusinessPage() {
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
               <path
                 d="M8 20l8 8L32 12"
-                stroke="#C8F04D"
+                stroke="#F5F5F5"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -171,7 +168,7 @@ export default function BusinessPage() {
           </div>
           <h2
             className="text-[32px] font-bold text-[#141115] mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Application Submitted!
           </h2>
@@ -198,15 +195,18 @@ export default function BusinessPage() {
     <div className="min-h-screen bg-[#F5F5F5]">
       <Container>
         {/* Hero */}
-        <div className="text-center max-w-160 mx-auto pt-16 pb-12 md:pt-24 md:pb-16">
-          <SectionHeader content="Our Services" />
-          <h1 className="text-[#141115] mb-5" style={tokens.typography.h1}>
+        <div className="text-center max-w-160 mx-auto pt-32 pb-12 md:pt-40 md:pb-16">
+          <p className="nh-label text-[#6B6870] mb-4">Our Services</p>
+          <h1 className="nh-h1 text-[#141115] mb-5">
             Marketing with Naturehood
           </h1>
-          <ReadableText className="text-[#6B6870]" size="sm">
-            Connect with athletes who align with your brand values. Let's build
+          <p
+            className="text-[#6B6870] text-[15px] leading-relaxed max-w-md mx-auto"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Connect with athletes who align with your brand values. Let&apos;s build
             creative campaigns that resonate.
-          </ReadableText>
+          </p>
         </div>
 
         {/* Tab Navigation */}
@@ -392,7 +392,7 @@ export default function BusinessPage() {
             {/* Dark Meeting Panel */}
             <div className="bg-[#141115] border border-[#3A373C] p-10 sm:p-12 text-center mb-8">
               <p
-                className="text-[10px] font-semibold tracking-[0.35em] uppercase text-[#C8F04D] mb-5"
+                className="text-[10px] font-semibold tracking-[0.35em] uppercase text-[#F5F5F5] mb-5"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Skip the Form
@@ -400,7 +400,7 @@ export default function BusinessPage() {
               <h2
                 className="text-[#F5F5F5] mb-4"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'DM Sans', sans-serif",
                   fontSize: "clamp(28px, 4vw, 40px)",
                   fontWeight: 700,
                   lineHeight: 1.05,
@@ -423,7 +423,7 @@ export default function BusinessPage() {
                 href="https://calendly.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-[#C8F04D] text-[#141115] px-9 py-4 text-[11px] font-semibold tracking-[0.2em] uppercase hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#C8F04D]/20 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 bg-[#F5F5F5] text-[#141115] px-9 py-4 text-[11px] font-semibold tracking-[0.2em] uppercase hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#F5F5F5]/20 transition-all duration-200"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Schedule Meeting
@@ -449,7 +449,7 @@ export default function BusinessPage() {
                     <div
                       className="text-[32px] font-bold text-[#F5F5F5] leading-none mb-1"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
+                        fontFamily: "'DM Sans', sans-serif",
                         letterSpacing: "-0.02em",
                       }}
                     >
@@ -471,7 +471,7 @@ export default function BusinessPage() {
               <h2
                 className="text-[24px] font-bold text-[#141115] mb-2"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'DM Sans', sans-serif",
                   letterSpacing: "-0.01em",
                 }}
               >
@@ -509,8 +509,8 @@ export default function BusinessPage() {
                 ].map((item) => (
                   <div key={item.num} className="flex gap-3">
                     <span
-                      className="text-[#C8F04D] font-bold text-[14px] shrink-0"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
+                      className="text-[#F5F5F5] font-bold text-[14px] shrink-0"
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
                     >
                       {item.num}
                     </span>

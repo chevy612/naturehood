@@ -1,34 +1,37 @@
 // ─────────────────────────────────────────────
 // NATUREHOODOFFICIAL — DESIGN TOKENS
-// Typography: Inter (headings) + DM Sans (body/UI)
+// ⚠️  AUTO-GENERATED from brand/tokens/*.json
+// ⚠️  Do not edit — run: npm run brand:build
+// Typography: Sk Modernist (display) + DM Sans (everything else)
 // ─────────────────────────────────────────────
 
 export const tokens = {
   font: {
     display: "'Sk Modernist', sans-serif",
-    heading: "'Inter', sans-serif",
     body: "'DM Sans', sans-serif",
+    heading: "'DM Sans', sans-serif",  // alias: h3+ headings use body font
   },
   color: {
-    ink:     '#141115',
-    cloud:   '#F5F5F5',
-    surface2: '#2B282C',
+    ink: '#141115',
+    black: '#000000',
+    cloud: '#F5F5F5',
     surface1: '#1E1B1F',
-    cardBg:  '#201D22',
+    surface2: '#2B282C',
+    cardBg: '#1A1719',
+    border: '#3D3940',
+    muted: '#E8E8E8',
+    accent: '#F5F5F5',
+    textPrimary: '#FFFFFF',
     textSecondary: '#6B6870',
     mutedForeground: '#847E89',
-    accent: "#C8F04D",
-    brandGreen: '#4F9D69',
-    border:        '#3D3940',
-    muted:         '#E8E8E8',
-    textDisabled:  '#A09EA3',
-    warning:       '#F5A623',
-    error:         '#FF4D4D',
-    info:          '#4DA6FF',
-    white:         '#FFFFFF',
+    textDisabled: '#A09EA3',
+    error: '#FF4D4D',
+    warning: '#F5A623',
+    info: '#4DA6FF',
+    white: '#FFFFFF',
   },
   spacing: {
-    section: "py-12 sm:py-16 md:py-20 lg:py-24",
+    section: "py-6 md:py-[30px]",
     sectionSm: "py-8 sm:py-10 md:py-12 lg:py-16",
     container: "px-4 sm:px-6 md:px-8 lg:px-12",
   },
@@ -65,7 +68,7 @@ export const tokens = {
   typography: {
     hero: {
       fontFamily: "'Sk Modernist', sans-serif",
-      fontSize: "clamp(52px, 8vw, 88px)",
+      fontSize: "clamp(52px, 9vw, 96px)",
       fontWeight: "700",
       lineHeight: "0.95",
       letterSpacing: "-0.02em",
@@ -73,9 +76,9 @@ export const tokens = {
     },
     h1: {
       fontFamily: "'Sk Modernist', sans-serif",
-      fontSize: "clamp(38px, 5vw, 60px)",
+      fontSize: "clamp(38px, 5.5vw, 60px)",
       fontWeight: "700",
-      lineHeight: "1.1",
+      lineHeight: "1",
       letterSpacing: "-0.02em",
       marginBottom: "1.25rem",
     },
@@ -83,15 +86,15 @@ export const tokens = {
       fontFamily: "'Sk Modernist', sans-serif",
       fontSize: "clamp(26px, 4vw, 40px)",
       fontWeight: "700",
-      lineHeight: "1.2",
+      lineHeight: "1.05",
       letterSpacing: "-0.015em",
       marginBottom: "1rem",
     },
     h3: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'DM Sans', sans-serif",
       fontSize: "clamp(20px, 3vw, 28px)",
       fontWeight: "600",
-      lineHeight: "1.3",
+      lineHeight: "1.1",
       letterSpacing: "-0.01em",
       marginBottom: "0.75rem",
     },
@@ -99,17 +102,17 @@ export const tokens = {
       fontFamily: "'DM Sans', sans-serif",
       fontSize: "10px",
       fontWeight: "600",
+      lineHeight: "1.4",
       letterSpacing: "0.3em",
       textTransform: "uppercase" as const,
-      lineHeight: "1.4",
     },
     body: {
       fontFamily: "'DM Sans', sans-serif",
-      fontSize: "16px",
-      fontWeight: "400",
-      lineHeight: "1.75",
-      letterSpacing: "0",
-      marginBottom: "1rem",
+      fontSize: "24px",
+      fontWeight: "500",
+      lineHeight: "1.25",
+      letterSpacing: "-0.3px",
+      marginBottom: "1.5625rem",
     },
     bodyLarge: {
       fontFamily: "'DM Sans', sans-serif",
@@ -123,7 +126,7 @@ export const tokens = {
       fontFamily: "'DM Sans', sans-serif",
       fontSize: "13px",
       fontWeight: "400",
-      lineHeight: "1.6",
+      lineHeight: "1.65",
       letterSpacing: "0",
       marginBottom: "0.75rem",
     },

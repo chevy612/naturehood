@@ -85,9 +85,9 @@ export function ProfileCard({
   const hasSocial = linkedinUrl || instagramUrl;
 
   const cardBase = clsx(
-    "transition-all duration-300",
+    "transition-all duration-300 rounded-lg",
     isDark
-      ? "bg-[#2A272C] border border-[#3A373C] hover:border-[#C8F04D]/30 shadow-md"
+      ? "bg-[#2A272C] border border-[#3A373C] hover:border-[#F5F5F5]/30 shadow-md"
       : "bg-white border border-[#E8E8E8] hover:border-[#141115]/20 shadow-sm",
     className,
   );
@@ -95,8 +95,8 @@ export function ProfileCard({
   const Avatar = (
     <div
       className={clsx(
-        "relative w-30 h-30 rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#C8F04D]",
-        !photo && (isDark ? "bg-[#C8F04D]" : "bg-[#141115]"),
+        "relative w-30 h-30 rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#F5F5F5]",
+        !photo && (isDark ? "bg-[#F5F5F5]" : "bg-[#141115]"),
       )}
     >
       {photo ? (
@@ -113,7 +113,7 @@ export function ProfileCard({
             "text-lg font-bold select-none",
             isDark ? "text-[#141115]" : "text-white",
           )}
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {initials}
         </span>
@@ -157,7 +157,7 @@ export function ProfileCard({
             className={clsx(
               "inline-flex items-center justify-center w-8 h-8 transition-all duration-200",
               isDark
-                ? "text-[#6B6870] hover:text-[#C8F04D]"
+                ? "text-[#6B6870] hover:text-[#F5F5F5]"
                 : "text-[#A09EA3] hover:text-[#141115]",
             )}
           >
@@ -173,7 +173,7 @@ export function ProfileCard({
             className={clsx(
               "inline-flex items-center justify-center w-8 h-8 transition-all duration-200",
               isDark
-                ? "text-[#6B6870] hover:text-[#C8F04D]"
+                ? "text-[#6B6870] hover:text-[#F5F5F5]"
                 : "text-[#A09EA3] hover:text-[#141115]",
             )}
           >
@@ -199,7 +199,7 @@ export function ProfileCard({
               sizes="(max-width: 640px) 40vw, (max-width: 1024px) 50vw, 25vw" />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-[#141115]">
-              <span className="text-white text-4xl font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>{initials}</span>
+              <span className="text-white text-4xl font-bold" style={{ fontFamily: "'DM Sans', sans-serif" }}>{initials}</span>
             </div>
           )}
           {/* Sport tag overlay — desktop only */}
@@ -213,7 +213,7 @@ export function ProfileCard({
         {/* Content: stacked on mobile, row on desktop */}
         <div className="flex-1 flex flex-col justify-between p-4 sm:flex-row sm:items-center sm:px-4 sm:py-3 sm:gap-2">
           <div>
-            <span className="font-bold text-[#141115] uppercase tracking-wider text-sm leading-tight block" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <span className="font-bold text-[#141115] uppercase tracking-wider text-sm leading-tight block" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               {name}
             </span>
             {/* Sport as pill — mobile only */}
@@ -246,7 +246,7 @@ export function ProfileCard({
               "text-xl font-semibold mb-3",
               isDark ? "text-white" : "text-[#141115]",
             )}
-            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: "-0.01em" }}
+            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.01em" }}
           >
             {name}
           </h3>
@@ -269,7 +269,7 @@ export function ProfileCard({
           "text-lg font-semibold mb-3",
           isDark ? "text-white" : "text-[#141115]",
         )}
-        style={{ fontFamily: "'Inter', sans-serif", letterSpacing: "-0.01em" }}
+        style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.01em" }}
       >
         {name}
       </h3>

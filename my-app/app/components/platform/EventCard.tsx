@@ -48,17 +48,17 @@ export function EventCard({
 
   return (
     <Link href={`/events/${event.id}`} className="block">
-      <div className="flex gap-4 border border-[#3A373C] bg-[#1A1719] p-5 hover:border-[#C8F04D]/40 transition-colors duration-150">
+      <div className="flex gap-4 border border-[#3A373C] bg-[#1A1719] p-5 rounded-lg hover:border-[#F5F5F5]/40 transition-colors duration-150">
         {/* Date block */}
-        <div className="flex flex-col items-center justify-center shrink-0 w-14 h-14 bg-[#C8F04D]/10 border border-[#C8F04D]/20">
+        <div className="flex flex-col items-center justify-center shrink-0 w-14 h-14 bg-[#F5F5F5]/10 border border-[#F5F5F5]/20 rounded-lg">
           <span
-            className="text-[22px] font-bold leading-none text-[#C8F04D]"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            className="text-[22px] font-bold leading-none text-[#F5F5F5]"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {date.day}
           </span>
           <span
-            className="text-[9px] font-semibold tracking-[0.2em] uppercase text-[#C8F04D]/70 mt-0.5"
+            className="text-[9px] font-semibold tracking-[0.2em] uppercase text-[#F5F5F5]/70 mt-0.5"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {date.month}
@@ -69,7 +69,7 @@ export function EventCard({
         <div className="flex-1 min-w-0">
           <h3
             className="text-[15px] font-bold text-white leading-snug mb-1"
-            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
           >
             {event.title}
           </h3>

@@ -5,18 +5,36 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
+import { ButtonPrimary } from "@/app/components/ui/buttons";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Event", href: "/events" },
+  { label: "Events", href: "/events" },
   { label: "About us", href: "/about" },
 ];
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [visible, setVisible] = useState(true);
+  const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
+
+  // Reveal on scroll up, hide on scroll down (always shown near the top)
+  useEffect(() => {
+    function onScroll() {
+      const currentY = window.scrollY;
+      if (currentY < 80) {
+        setHidden(false);
+      } else if (currentY > lastScrollY.current) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
+      lastScrollY.current = currentY;
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const supabase = createBrowserClient(
@@ -26,26 +44,6 @@ export default function Navigation() {
     supabase.auth.getSession().then(({ data }) => {
       setIsLoggedIn(!!data.session);
     });
-  }, []);
-
-  // Hide on scroll down, show on scroll up
-  useEffect(() => {
-    function onScroll() {
-      const currentY = window.scrollY;
-      if (currentY < 100) {
-        // Always show near the top
-        setVisible(true);
-      } else if (currentY > lastScrollY.current) {
-        // Scrolling down → hide
-        setVisible(false);
-      } else {
-        // Scrolling up → show
-        setVisible(true);
-      }
-      lastScrollY.current = currentY;
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -69,18 +67,21 @@ export default function Navigation() {
 
   return (
     <>
-      {/* MAIN NAVBAR — Floating, transparent, hide/show on scroll */}
+      {/* MAIN NAVBAR — Sticky pill above the hero; reveals on scroll up */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 md:px-[108px] pt-4 md:pt-[30px] transition-transform duration-300 ${
-          visible ? "translate-y-0" : "-translate-y-full"
+        className={`sticky top-0 z-50 w-full px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-8 md:pt-[25px] transition-transform duration-300 ${
+          hidden ? "-translate-y-full" : "translate-y-0"
         }`}
       >
+        <div className="max-w-[1370px] mx-auto">
         {/* Desktop Navbar */}
         <nav
-          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[88px] px-[60px] lg:px-[103px] border-b border-[rgba(230,230,230,0.3)]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[88px] px-[50px]"
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            borderBottom: "1px solid rgba(230, 230, 230, 0.3)",
+          }}
         >
-          {/* Logo */}
           <Link href="/" className="shrink-0">
             <Image
               src="/naturehood.svg"
@@ -88,51 +89,49 @@ export default function Navigation() {
               width={208}
               height={24}
               priority
-              className="w-[160px] lg:w-[208px] h-auto"
+              className="w-[168px] lg:w-[208px] h-auto"
             />
           </Link>
 
-          {/* Nav Links */}
-          <div className="flex items-center gap-[40px] lg:gap-[60px]">
+          <div className="flex items-center gap-10 lg:gap-[60px]">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-white text-[16px] lg:text-[20px] font-medium transition-colors hover:text-[#f5f5f5]/80 whitespace-nowrap"
+                className="text-white text-[20px] leading-[26px] font-medium transition-opacity hover:opacity-70 whitespace-nowrap"
               >
                 {item.label}
               </Link>
             ))}
           </div>
 
-          {/* Sign Up / Auth Button */}
-          <Link
-            href={isLoggedIn ? "/home" : "/signup"}
-            className="bg-[#f5f5f5] text-black rounded-[999px] px-[24px] py-[14px] text-[16px] lg:text-[20px] font-medium transition-colors hover:bg-white whitespace-nowrap"
-          >
-            {isLoggedIn ? "Open App" : "Sign up"}
+          <Link href={isLoggedIn ? "/home" : "/signup"} className="shrink-0">
+            <ButtonPrimary variant="white">Join us</ButtonPrimary>
           </Link>
         </nav>
 
         {/* Mobile Navbar */}
         <nav
-          className="flex md:hidden items-center justify-between bg-black rounded-[100px] h-[56px] px-6"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          className="flex md:hidden items-center justify-between bg-black rounded-full h-[56px] px-5"
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            borderBottom: "1px solid rgba(230, 230, 230, 0.3)",
+          }}
         >
           <Link href="/" className="shrink-0">
             <Image
               src="/naturehood.svg"
               alt="Naturehood"
-              width={160}
-              height={20}
+              width={140}
+              height={18}
               priority
-              className="w-[130px] h-auto"
+              className="w-[120px] h-auto"
             />
           </Link>
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 hover:bg-white/10 rounded-md transition-colors"
+            className="p-2 hover:bg-white/10 rounded-full transition-colors"
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -143,6 +142,7 @@ export default function Navigation() {
             )}
           </button>
         </nav>
+        </div>
       </header>
 
       {/* MOBILE MENU OVERLAY */}
@@ -164,32 +164,30 @@ export default function Navigation() {
           aria-modal="true"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
-          {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between p-4 border-b border-white/10">
+          <div className="flex items-center justify-between p-5 border-b border-white/10">
             <Image
               src="/naturehood.svg"
               alt="Naturehood"
-              width={130}
+              width={120}
               height={16}
-              className="w-[130px]"
+              className="w-[120px]"
             />
             <button
               onClick={closeMobileMenu}
-              className="p-2 hover:bg-white/10 rounded-md transition-colors"
+              className="p-2 hover:bg-white/10 rounded-full transition-colors"
               aria-label="Close menu"
             >
               <X className="h-5 w-5 text-white" />
             </button>
           </div>
 
-          {/* Mobile Menu Items */}
-          <nav className="p-4">
+          <nav className="p-5">
             <ul className="space-y-1">
               {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="block px-4 py-3 text-[16px] font-medium text-white hover:bg-white/10 rounded-md transition-all"
+                    className="block px-4 py-3 text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
                     onClick={closeMobileMenu}
                   >
                     {item.label}
@@ -202,9 +200,11 @@ export default function Navigation() {
               <Link
                 href={isLoggedIn ? "/home" : "/signup"}
                 onClick={closeMobileMenu}
-                className="block w-full text-center bg-[#f5f5f5] text-black rounded-[999px] px-[24px] py-[14px] text-[16px] font-medium transition-colors hover:bg-white"
+                className="block"
               >
-                {isLoggedIn ? "Open App" : "Sign up"}
+                <ButtonPrimary variant="white" fullWidth>
+                  Join us
+                </ButtonPrimary>
               </Link>
             </div>
           </nav>

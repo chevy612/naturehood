@@ -25,7 +25,7 @@ const modeColors = {
     textareaBg: "#FFFFFF",
     textareaBorder: "#E8E8E8",
     checkBg: "#141115",
-    checkStroke: "#C8F04D",
+    checkStroke: "#F5F5F5",
     sectionTitle: "#141115",
     sectionDesc: "#6B6870",
     sectionBorder: "#E8E8E8",
@@ -35,12 +35,12 @@ const modeColors = {
     input: "#FFFFFF",
     placeholder: "#3A373C",
     border: "#3A373C",
-    borderFocus: "#C8F04D",
-    required: "#C8F04D",
+    borderFocus: "#F5F5F5",
+    required: "#F5F5F5",
     error: "#FF4D4D",
     textareaBg: "#1E1B1F",
     textareaBorder: "transparent",
-    checkBg: "#C8F04D",
+    checkBg: "#F5F5F5",
     checkStroke: "#141115",
     sectionTitle: "#FFFFFF",
     sectionDesc: "#6B6870",
@@ -439,7 +439,7 @@ export function FormSection({
 
   return (
     <div
-      className="p-8 sm:p-10 border mb-6"
+      className="p-8 sm:p-10 border mb-6 rounded-lg"
       style={{
         backgroundColor: mode === "light" ? "#FFFFFF" : "#1E1B1F",
         borderColor: c.sectionBorder,
@@ -448,7 +448,7 @@ export function FormSection({
       <h2
         className="text-[24px] font-bold leading-tight mb-2"
         style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'DM Sans', sans-serif",
           letterSpacing: "-0.01em",
           color: c.sectionTitle,
         }}

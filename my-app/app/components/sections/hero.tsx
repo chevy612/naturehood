@@ -1,101 +1,54 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ContentContainer } from "@/app/components/ui/container";
+import { ButtonPrimary } from "@/app/components/ui/buttons";
+import { landingImages } from "@/lib/landing-images";
 
 export default function HeroSection() {
   return (
-    <section className="w-full bg-white">
-      {/* Hero Content */}
-      <ContentContainer as="div" className="pt-[90px] md:pt-[150px]">
-        <div className="px-0 sm:px-[104px]">
-          <h1
-            className="text-white text-[36px] sm:text-[48px] md:text-[56px] max-w-[622px] mb-[20px] md:mb-[30px]"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 700,
-              lineHeight: "1.1",
-              letterSpacing: "-0.3px",
-              textShadow: "0px 4px 4px rgba(0,0,0,0.25)",
-            }}
-          >
-            Welcome to the home of track &amp; field.
-          </h1>
+    <section className="w-full bg-white px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-8 md:pt-[25px] md:pb-[25px]">
+      {/* 1370 × 738 hero with overlaid text + CTA (fixed 440px card on mobile, aspect ratio on md+) */}
+      <div className="relative w-full max-w-[1370px] mx-auto h-[440px] md:h-auto md:aspect-[1370/738] overflow-hidden rounded-[30px]">
+        <Image
+          src={landingImages.hero}
+          alt="Athlete sprinting on the track"
+          fill
+          sizes="(max-width: 1224px) 100vw, 1224px"
+          className="object-cover object-left"
+          priority
+        />
 
-          <p
-            className="text-white max-w-[449px] mb-[20px] md:mb-[30px] text-[18px] sm:text-[20px] md:text-[24px]"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 600,
-              lineHeight: "30px",
-              letterSpacing: "-0.3px",
-              textShadow: "0px 4px 4px rgba(0,0,0,0.25)",
-            }}
+        {/* Overlay — mobile: bottom-left stack. Desktop (Figma): text left, CTA right, vertically centered */}
+        <div className="absolute inset-0 flex flex-col justify-end gap-8 p-[30px] sm:p-10 md:flex-row md:items-center md:justify-between md:gap-6 md:p-[50px]">
+          <div
+            className="flex flex-col items-start text-left gap-5 max-w-[560px]"
+            style={{ textShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
           >
-            The leading track &amp; field community in Hong Kong.
-          </p>
-
-          <Link
-            href="/signup"
-            className="inline-flex items-center justify-center bg-black text-white rounded-[999px] px-[24px] py-[14px] transition-colors hover:bg-[#1a1a1a]"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 500,
-              fontSize: "16px",
-            }}
-          >
-            Join us
-          </Link>
-        </div>
-      </ContentContainer>
-
-      {/* Passion Sub-section */}
-      <ContentContainer as="div" className="pt-12 md:pt-[80px] pb-8 md:pb-[50px]">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-[131px] px-0 sm:px-[104px]">
-          {/* Dark Info Card */}
-          <div className="bg-black/50 rounded-[30px] px-8 py-8 sm:px-[50px] sm:py-[40px] w-full md:w-[521px] shrink-0">
-            <p
-              className="text-white text-[18px] sm:text-[20px] md:text-[24px]"
+            <h1
+              className="text-white font-bold text-[30px] leading-[36px] sm:text-[44px] sm:leading-[46px] md:text-[56px] md:leading-[56px]"
               style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 600,
-                lineHeight: "30px",
+                fontFamily: "'Sk Modernist', sans-serif",
                 letterSpacing: "-0.3px",
-                textShadow: "0px 4px 4px rgba(0,0,0,0.25)",
               }}
             >
-              Born out from the love of the sport, Naturehood is the label for
-              track and field culture. By positioning ourselves as the promotor
-              of track &amp; field, we bring our vision of the sport to live.
+              Welcome to the home of track and field
+            </h1>
+            <p
+              className="text-white text-[16px] leading-[18px] md:text-[24px] md:leading-[30px] font-medium"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                letterSpacing: "-0.3px",
+              }}
+            >
+              The leading athletes community in Hong Kong.
             </p>
           </div>
-
-          {/* Action */}
-          <div className="flex flex-col gap-[30px] py-[30px]">
-            <h2
-              className="text-[#f5f5f5] text-[28px] sm:text-[32px] md:text-[36px] max-w-[362px]"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 700,
-                lineHeight: "41px",
-                letterSpacing: "-0.3px",
-                textShadow: "0px 4px 4px rgba(0,0,0,0.5)",
-              }}
-            >
-              Enjoying the beauty of the sport.
-            </h2>
-            <Link
-              href="/about"
-              className="inline-flex items-center justify-center bg-black text-white rounded-[999px] px-[24px] py-[14px] backdrop-blur-[2px] transition-colors hover:bg-[#1a1a1a] w-fit"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 500,
-                fontSize: "16px",
-              }}
-            >
-              Explore more
+          <div className="flex w-full justify-start md:w-auto md:shrink-0">
+            <Link href="/signup">
+              <ButtonPrimary variant="white">Join us</ButtonPrimary>
             </Link>
           </div>
         </div>
-      </ContentContainer>
+      </div>
     </section>
   );
 }

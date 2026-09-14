@@ -82,7 +82,7 @@ function ResetPasswordContent() {
         {/* Header */}
         <div className="mb-10">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Account Recovery
@@ -117,9 +117,9 @@ function ResetPasswordContent() {
         {/* Success */}
         {tokenState === "valid" && success && (
           <div className="space-y-6">
-            <div className="border border-[#C8F04D]/30 bg-[#C8F04D]/5 p-5">
+            <div className="border border-[#F5F5F5]/30 bg-[#F5F5F5]/5 p-5">
               <p
-                className="text-[13px] text-[#C8F04D] leading-relaxed"
+                className="text-[13px] text-[#F5F5F5] leading-relaxed"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Your password has been updated. Redirecting you to log in...
@@ -129,7 +129,7 @@ function ResetPasswordContent() {
               className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              <Link href="/login" className="text-[#C8F04D] hover:underline">
+              <Link href="/login" className="text-[#F5F5F5] hover:underline">
                 Go to Log In
               </Link>
             </p>
@@ -189,7 +189,7 @@ function ResetPasswordContent() {
               className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              <Link href="/login" className="text-[#C8F04D] hover:underline">
+              <Link href="/login" className="text-[#F5F5F5] hover:underline">
                 Back to Log In
               </Link>
             </p>
@@ -246,7 +246,7 @@ function ErrorState({
       >
         <Link
           href="/auth/forgot-password"
-          className="text-[#C8F04D] hover:underline"
+          className="text-[#F5F5F5] hover:underline"
         >
           Request a new reset link
         </Link>
@@ -285,7 +285,7 @@ function InputDark({
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
-        {label} {required && <span className="text-[#C8F04D]">*</span>}
+        {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
       <input
         id={name}

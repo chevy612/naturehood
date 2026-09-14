@@ -58,7 +58,7 @@ function RepRow({
         value={rep.time_seconds ?? ''}
         placeholder="time (s)"
         onChange={(e) => onChange({ time_seconds: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -68,7 +68,7 @@ function RepRow({
         value={rep.wind_ms ?? ''}
         placeholder="wind m/s"
         onChange={(e) => onChange({ wind_ms: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -90,7 +90,7 @@ function RepRow({
         value={rep.notes ?? ''}
         placeholder="note"
         onChange={(e) => onChange({ notes: e.target.value || null })}
-        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
+        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -142,7 +142,7 @@ function EffortCard({
                 onClick={() => onChange({ drill_type: dt })}
                 className={`px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] border transition-colors ${
                   effort.drill_type === dt
-                    ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                     : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -161,7 +161,7 @@ function EffortCard({
                 value={effort.distance_m ?? ''}
                 placeholder="—"
                 onChange={(e) => onChange({ distance_m: num(e.target.value) })}
-                className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-16 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -174,7 +174,7 @@ function EffortCard({
                 value={effort.effort_percent ?? ''}
                 placeholder="—"
                 onChange={(e) => onChange({ effort_percent: num(e.target.value) as number | null })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -185,7 +185,7 @@ function EffortCard({
                 value={effort.rest_between_reps_seconds ?? ''}
                 placeholder="—"
                 onChange={(e) => onChange({ rest_between_reps_seconds: num(e.target.value) as number | null })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -221,7 +221,7 @@ function EffortCard({
         <button
           type="button"
           onClick={addRep}
-          className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#C8F04D] transition-colors uppercase tracking-[0.1em] font-semibold"
+          className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#F5F5F5] transition-colors uppercase tracking-[0.1em] font-semibold"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <Plus size={10} /> Add Rep
@@ -252,8 +252,8 @@ export default function SprintPanel({ efforts, surface, footwear, onEffortsChang
   return (
     <div className="space-y-4">
       <p
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         Sprint Session
       </p>
@@ -267,7 +267,7 @@ export default function SprintPanel({ efforts, surface, footwear, onEffortsChang
             value={surface ?? ''}
             placeholder="track, grass…"
             onChange={(e) => onMetaChange({ surface: e.target.value || null })}
-            className="bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors w-28"
+            className="bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors w-28"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           />
         </div>
@@ -278,7 +278,7 @@ export default function SprintPanel({ efforts, surface, footwear, onEffortsChang
             value={footwear ?? ''}
             placeholder="spikes, flats…"
             onChange={(e) => onMetaChange({ footwear: e.target.value || null })}
-            className="bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors w-28"
+            className="bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors w-28"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           />
         </div>
@@ -297,7 +297,7 @@ export default function SprintPanel({ efforts, surface, footwear, onEffortsChang
       <button
         type="button"
         onClick={addEffort}
-        className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors"
+        className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         <Plus size={12} /> Add Effort

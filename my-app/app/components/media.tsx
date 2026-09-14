@@ -6,6 +6,7 @@
 // Images · Videos · Grids · Carousels · Lightbox
 // ============================================================
 
+import Image from "next/image";
 import { useState, useRef, ReactNode } from "react";
 
 // ─────────────────────────────────────────────────────────────
@@ -97,10 +98,12 @@ export function MediaImage({
         className="relative w-full overflow-hidden bg-[#E8E8E8]"
         style={{ aspectRatio }}
       >
-        <img
+        <Image
           src={src}
           alt={alt}
-          className={`w-full h-full transition-transform duration-500 ${
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className={`transition-transform duration-500 ${
             objectFit === "cover" ? "object-cover" : "object-contain"
           } ${onClick ? "cursor-pointer group-hover:scale-105" : ""}`}
           onClick={onClick}
@@ -178,7 +181,7 @@ export function MediaVideo({
             className="absolute inset-0 flex items-center justify-center bg-[#141115]/30 backdrop-blur-sm transition-opacity duration-300 hover:bg-[#141115]/40"
             aria-label="Play video"
           >
-            <div className="w-16 h-16 flex items-center justify-center bg-[#C8F04D] rounded-full transition-transform duration-200 hover:scale-110">
+            <div className="w-16 h-16 flex items-center justify-center bg-[#F5F5F5] rounded-full transition-transform duration-200 hover:scale-110">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M8 6.5v11l10-5.5L8 6.5z"
@@ -252,10 +255,13 @@ export function MediaHero({
     <div className={`relative w-full ${heights[height]} overflow-hidden`}>
       {/* Background Media */}
       {type === "image" ? (
-        <img
+        <Image
           src={src}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover"
         />
       ) : (
         <video
@@ -409,7 +415,7 @@ export function MediaCarousel({
               onClick={() => goTo(index)}
               className={`w-2 h-2 rounded-full transition-all duration-200 ${
                 index === currentIndex
-                  ? "bg-[#C8F04D] w-6"
+                  ? "bg-[#F5F5F5] w-6"
                   : "bg-[#6B6870] hover:bg-[#141115]"
               }`}
               aria-label={`Go to slide ${index + 1}`}
@@ -438,15 +444,17 @@ export function MediaLightbox({
       {/* Thumbnail */}
       <div
         onClick={() => setIsOpen(true)}
-        className="cursor-pointer group relative overflow-hidden"
+        className="cursor-pointer group relative overflow-hidden aspect-[4/3]"
       >
-        <img
+        <Image
           src={thumbnail}
           alt={alt}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-[#141115]/0 group-hover:bg-[#141115]/20 transition-colors duration-300 flex items-center justify-center">
-          <div className="w-12 h-12 flex items-center justify-center bg-[#C8F04D] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-12 h-12 flex items-center justify-center bg-[#F5F5F5] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path
                 d="M14 6l-8 8M6 6l8 8"
@@ -475,7 +483,7 @@ export function MediaLightbox({
         >
           <button
             onClick={() => setIsOpen(false)}
-            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-[#C8F04D] hover:bg-[#b8e038] transition-colors duration-200"
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-[#F5F5F5] hover:bg-[#b8e038] transition-colors duration-200"
             aria-label="Close"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -560,7 +568,7 @@ export function ProjectCard({
           overlay
           overlayContent={
             <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-              <p className="font-ui text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-2">
+              <p className="font-ui text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-2">
                 {category}
               </p>
               <h3 className="font-heading text-[24px] font-bold leading-tight mb-1">

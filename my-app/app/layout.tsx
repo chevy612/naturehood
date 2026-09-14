@@ -1,21 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, DM_Sans } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import CookieBanner from "./components/ui/cookie-banner";
 
 import "./globals.css";
 
 // Naturehood Design System Fonts
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800", "900"],
-  display: "swap",
-});
-
+// 2-font system: Sk Modernist (display) + DM Sans (everything else)
 const dmSans = DM_Sans({
   variable: "--font-dm",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -57,7 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${dmSans.variable} antialiased`}
+        className={`${dmSans.variable} antialiased`}
       >
         {children}
         <CookieBanner />

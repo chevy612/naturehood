@@ -42,7 +42,7 @@ export default function LoginPage() {
         {/* Header */}
         <div className="mb-10">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Welcome Back
@@ -96,7 +96,7 @@ export default function LoginPage() {
             <div className="mt-2 text-right">
               <Link
                 href="/auth/forgot-password"
-                className="text-[11px] text-[#6B6870] hover:text-[#C8F04D] transition-colors"
+                className="text-[11px] text-[#6B6870] hover:text-[#F5F5F5] transition-colors"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Forgot password?
@@ -132,7 +132,7 @@ export default function LoginPage() {
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-[#C8F04D] hover:underline">
+            <Link href="/signup" className="text-[#F5F5F5] hover:underline">
               Sign up
             </Link>
           </p>
@@ -172,7 +172,7 @@ function InputDark({
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
-        {label} {required && <span className="text-[#C8F04D]">*</span>}
+        {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
       <input
         id={name}
