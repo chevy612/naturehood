@@ -18,7 +18,7 @@ export default function WhatWeDoSection() {
             What we do
           </h2>
           <p
-            className="text-black text-[16px] leading-[18px] md:text-[24px] md:leading-[30px] max-w-[600px] mx-auto text-center md:mx-0 md:text-left"
+            className="text-black text-[16px] leading-[18px] md:text-[24px] md:leading-[30px] max-w-[600px] md:max-w-[500px] mx-auto text-center md:mx-0 md:text-left"
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 500,
@@ -31,15 +31,17 @@ export default function WhatWeDoSection() {
           </p>
         </div>
 
-        {/* Image */}
-        <div className="relative w-full h-[405px] md:h-auto md:aspect-[640/405] overflow-hidden rounded-[30px]">
+        {/* Image — interactive: zooms in, gains depth + a soft gradient on hover */}
+        <div className="group relative w-full h-[405px] md:h-auto md:aspect-[640/405] overflow-hidden rounded-[30px] transition-shadow duration-500 ease-out hover:shadow-2xl">
           <Image
             src={landingImages.whatWeDo}
             alt="Track and field event"
             fill
             sizes="(max-width: 768px) 100vw, 612px"
-            className="object-cover"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transform-none"
           />
+          {/* Hover sheen — subtle bottom gradient fades in for depth/feedback */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         </div>
       </SplitGrid>
     </ContentContainer>
