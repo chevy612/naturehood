@@ -1,0 +1,11 @@
+{
+  "$description": "NATUREHOOD border radius tokens",
+  "scale": {
+    "none": { "value": 0,    "type": "borderRadius", "description": "No rounding" },
+    "sm":   { "value": 4,    "type": "borderRadius", "description": "Subtle rounding — tags, small elements" },
+    "md":   { "value": 8,    "type": "borderRadius", "description": "Standard rounding — inputs, cards, buttons (platform)" },
+    "lg":   { "value": 12,   "type": "borderRadius", "description": "Moderate rounding — modals, larger cards" },
+    "xl":   { "value": 16,   "type": "borderRadius", "description": "Large rounding — image containers" },
+    "full": { "value": 9999, "type": "borderRadius", "description": "Pill shape — marketing buttons, nav bar, tags" }
+  }
+}

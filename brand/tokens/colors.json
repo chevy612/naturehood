@@ -1,0 +1,88 @@
+{
+  "$description": "NATUREHOOD color palette — single source of truth for web + mobile",
+  "ink": {
+    "value": "#141115",
+    "type": "color",
+    "description": "Primary dark background / text on light surfaces"
+  },
+  "black": {
+    "value": "#000000",
+    "type": "color",
+    "description": "Pure black — body / content text on light surfaces"
+  },
+  "cloud": {
+    "value": "#F5F5F5",
+    "type": "color",
+    "description": "Light page background (marketing theme)"
+  },
+  "surface1": {
+    "value": "#1E1B1F",
+    "type": "color",
+    "description": "Raised surface — cards, modals (dark theme)"
+  },
+  "surface2": {
+    "value": "#2B282C",
+    "type": "color",
+    "description": "Inset / hover surface (dark theme)"
+  },
+  "cardBg": {
+    "value": "#1A1719",
+    "type": "color",
+    "description": "Card background — feed cards, event cards (dark theme)"
+  },
+  "border": {
+    "value": "#3D3940",
+    "type": "color",
+    "description": "Borders, dividers, hairlines"
+  },
+  "muted": {
+    "value": "#E8E8E8",
+    "type": "color",
+    "description": "Muted background on light surfaces"
+  },
+  "accent": {
+    "value": "#F5F5F5",
+    "type": "color",
+    "description": "Accent — CTAs, active states, interactive elements"
+  },
+  "textPrimary": {
+    "value": "#FFFFFF",
+    "type": "color",
+    "description": "Primary text on dark backgrounds"
+  },
+  "textSecondary": {
+    "value": "#6B6870",
+    "type": "color",
+    "description": "Body text, muted content, secondary labels"
+  },
+  "mutedForeground": {
+    "value": "#847E89",
+    "type": "color",
+    "description": "Muted foreground — subtle UI elements"
+  },
+  "textDisabled": {
+    "value": "#A09EA3",
+    "type": "color",
+    "description": "Disabled state text, captions"
+  },
+  "error": {
+    "value": "#FF4D4D",
+    "type": "color",
+    "description": "Error state — validation, destructive actions"
+  },
+  "warning": {
+    "value": "#F5A623",
+    "type": "color",
+    "description": "Warning state"
+  },
+  "info": {
+    "value": "#4DA6FF",
+    "type": "color",
+    "description": "Info state — informational messages"
+  },
+  "white": {
+    "value": "#FFFFFF",
+    "type": "color",
+    "description": "Pure white"
+  }
+}

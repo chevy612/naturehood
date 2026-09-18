@@ -12,7 +12,7 @@
 1. **Search for existing components** in:
    - `my-app/app/components/ui/` — atomic UI: `buttons.tsx`, `inputs.tsx`, `tags.tsx`, `typography.tsx`, `tokens.ts`, `profile-card.tsx`
    - `my-app/app/components/platform/` — platform UI: `Avatar.tsx`, `BottomNav.tsx`, `FeedCard.tsx`, `EventCard.tsx`
-   - `my-app/app/components/sections/` — marketing page sections (hero, intro, email-subscribe, how-we-work)
+   - `my-app/app/components/sections/` — marketing page sections (hero, concept, track-athlete, what-we-do, email-subscribe)
    - `my-app/app/components/layout/` — marketing layout (navigation, footer, email)
    - `my-app/app/components/forms/` — form components (`form-ui.tsx`)
 
@@ -34,64 +34,25 @@
 
 5. **Only create new files** when nothing suitable exists after a thorough search.
 
-## Platform Design System
+## Design System
 
-The `(platform)` route group uses a **dark theme** throughout. Follow these conventions exactly.
+Brand tokens, guidelines, and assets live in `brand/`. Use `/brand` to load design context during development.
 
-### Colors (key values — full token list in `tokens.ts`)
-| Role | Value |
-|---|---|
-| Background | `#141115` |
-| Surface (cards) | `#1A1719` or `#1E1B1F` |
-| Surface hover | `#2A272C` |
-| Border | `#3A373C` |
-| Accent / lime | `#C8F04D` |
-| Text primary | `#FFFFFF` |
-| Text muted | `#6B6870` |
-| Text disabled | `#A09EA3` |
-| Error | `#FF4D4D` |
+- **Tokens (source of truth)**: `brand/tokens/` — colors, typography, spacing, radii, motion (platform-agnostic JSON)
+- **Guidelines**: `brand/guidelines/` — themes, components, photography usage rules
+- **Generated web tokens**: `my-app/app/components/ui/tokens.ts` + CSS vars in `globals.css`
 
-### Typography
-- **Headings / labels**: `fontFamily: "'Inter', sans-serif"` — always set via inline style
-- **Body / UI text**: `fontFamily: "'DM Sans', sans-serif"` — always set via inline style
-- **Section labels**: `text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]`
-- **Page headers**: `text-[13px] font-semibold text-white` (Inter, `-0.01em` letterSpacing)
-- **Muted metadata**: `text-[12px] text-[#6B6870]` (DM Sans)
-- **Body content**: `text-[13px] sm text-[#6B6870] leading-relaxed` (DM Sans)
+### Key Facts
+- **2-font system**: Sk Modernist (display: hero/h1/h2) + DM Sans (everything else)
+- **Inter has been removed** — all h3, buttons, labels, UI text use DM Sans
+- **Accent**: `#F5F5F5` (lime) — CTAs, active states
+- **Dark theme bg**: `#141115` (ink) — platform pages
+- **Light theme bg**: `#F5F5F5` (cloud) or white — marketing pages
+- Always set font via `style={{ fontFamily: "..." }}` — Tailwind v4 cannot resolve custom font families
 
-### Platform Page Layout Standard
-```tsx
-// Every platform page follows this shell:
-<div className="min-h-screen bg-[#141115] px-6 py-10">
-  <div className="max-w-2xl mx-auto">
-    {/* content */}
-  </div>
-</div>
-```
+**Never edit `tokens.ts` directly** — edit `brand/tokens/*.json` and run `npm run brand:build`.
 
-### Form Convention (platform)
-- Use `InputDark`, `TextAreaDark`, `SelectDark` — **never** the light-mode variants in platform pages
-- Stack inputs with `space-y-6` inside `<form>`
-- Submit button: `px-6 py-3 bg-[#C8F04D] text-[#141115] text-[13px] font-bold uppercase tracking-[0.15em]`
-- Success message: `text-[#C8F04D]`, error message: `text-[#FF4D4D]`
-
-### PillTag Variants — When to Use Which
-| Variant | Use case |
-|---|---|
-| `ghost-green` | Role badges, workout types, durations (platform default) |
-| `ghost-dark` | Secondary labels on dark backgrounds |
-| `accent` | Emphasis, active state |
-| `ghost-light` | Labels on light backgrounds |
-
-### Avatar
-- Always `<Avatar name={...} size="sm|md|lg" photoUrl={...} />` — pass `photoUrl` from `profiles.avatar_url`
-- `sm` in feed cards, `lg` on profile pages
-- Ring is always lime (`ring-2 ring-[#C8F04D]`) — never change this
-
-### Cards (feed / events)
-- Container: `border border-[#3A373C] bg-[#1A1719] p-5`
-- Hover: `hover:border-[#C8F04D]/40`
-- Dividers in lists: `divide-y divide-[#3A373C]`
+For detailed theme rules, component patterns, and image conventions, see `brand/guidelines/`.
 
 ## Code Style
 - Use design tokens from `my-app/app/components/ui/tokens.ts` for colors/spacing

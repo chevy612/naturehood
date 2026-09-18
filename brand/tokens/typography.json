@@ -1,0 +1,116 @@
+{
+  "$description": "NATUREHOOD typography — 2-font system: Sk Modernist (display) + DM Sans (everything else)",
+  "fonts": {
+    "display": {
+      "value": "Sk Modernist",
+      "type": "fontFamily",
+      "description": "Display headings only — hero, h1, h2. Loaded via @font-face from /fonts/sk-modernist/",
+      "weights": [400, 700],
+      "files": {
+        "400": "/fonts/sk-modernist/Sk-Modernist-Regular.otf",
+        "700": "/fonts/sk-modernist/Sk-Modernist-Bold.otf"
+      },
+      "mobile": {
+        "regular": "SkModernist_400Regular",
+        "bold": "SkModernist_700Bold"
+      }
+    },
+    "body": {
+      "value": "DM Sans",
+      "type": "fontFamily",
+      "description": "Everything else — h3, body, buttons, labels, nav, forms. Loaded via next/font (web) or expo-font (mobile)",
+      "weights": [300, 400, 500, 600, 700, 800],
+      "mobile": {
+        "light": "DMSans_300Light",
+        "regular": "DMSans_400Regular",
+        "medium": "DMSans_500Medium",
+        "semibold": "DMSans_600SemiBold",
+        "bold": "DMSans_700Bold",
+        "extrabold": "DMSans_800ExtraBold"
+      }
+    }
+  },
+  "scale": {
+    "hero": {
+      "family": "display",
+      "size": "clamp(52px, 9vw, 96px)",
+      "weight": 700,
+      "lineHeight": 0.95,
+      "letterSpacing": "-0.02em",
+      "cssClass": "nh-hero",
+      "description": "Hero headlines — landing page main heading"
+    },
+    "h1": {
+      "family": "display",
+      "size": "clamp(38px, 5.5vw, 60px)",
+      "weight": 700,
+      "lineHeight": 1.0,
+      "letterSpacing": "-0.02em",
+      "cssClass": "nh-h1",
+      "description": "Page-level headings"
+    },
+    "h2": {
+      "family": "display",
+      "size": "clamp(26px, 4vw, 40px)",
+      "weight": 700,
+      "lineHeight": 1.05,
+      "letterSpacing": "-0.015em",
+      "cssClass": "nh-h2",
+      "description": "Section headings"
+    },
+    "h3": {
+      "family": "body",
+      "size": "clamp(20px, 3vw, 28px)",
+      "weight": 600,
+      "lineHeight": 1.1,
+      "letterSpacing": "-0.01em",
+      "cssClass": "nh-h3",
+      "description": "Sub-section headings, card titles"
+    },
+    "label": {
+      "family": "body",
+      "size": "10px",
+      "weight": 600,
+      "lineHeight": 1.4,
+      "letterSpacing": "0.3em",
+      "textTransform": "uppercase",
+      "cssClass": "nh-label",
+      "description": "Section labels, category tags, eyebrow text"
+    },
+    "body": {
+      "family": "body",
+      "size": "24px",
+      "weight": 500,
+      "lineHeight": 1.25,
+      "letterSpacing": "-0.3px",
+      "cssClass": "nh-body",
+      "description": "Standard body text — hero-content style (DM Sans Medium 24/30)"
+    },
+    "bodyLarge": {
+      "family": "body",
+      "size": "18px",
+      "weight": 400,
+      "lineHeight": 1.75,
+      "letterSpacing": "0",
+      "description": "Lead paragraphs, intro text"
+    },
+    "small": {
+      "family": "body",
+      "size": "13px",
+      "weight": 400,
+      "lineHeight": 1.65,
+      "letterSpacing": "0",
+      "cssClass": "nh-small",
+      "description": "Secondary text, metadata, form hints"
+    },
+    "caption": {
+      "family": "body",
+      "size": "11px",
+      "weight": 400,
+      "lineHeight": 1.5,
+      "letterSpacing": "0.06em",
+      "cssClass": "nh-caption",
+      "description": "Timestamps, fine print, footer text"
+    }
+  }
+}
