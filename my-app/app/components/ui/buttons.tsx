@@ -64,7 +64,7 @@ export function ButtonPrimary({ children, onClick, disabled, fullWidth, variant 
           ? "bg-[#F5F5F5] text-black hover:bg-[#F5F5F5]/80 active:bg-[#F5F5F5]/60"
           : "bg-black text-[#F5F5F5] hover:bg-black/60 active:bg-black/30"}
         px-5 py-3 sm:px-6 sm:py-3.5
-        text-[16px] leading-[22px] sm:text-[20px] sm:leading-[26px] font-medium
+        text-[16px] leading-[22px] sm:leading-[24px] font-medium
         rounded-full
         transition-colors duration-200 ease-out
         disabled:bg-[#6B6870] disabled:cursor-not-allowed

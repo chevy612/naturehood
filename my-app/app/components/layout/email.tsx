@@ -67,7 +67,7 @@ export function CTAEmailCapture({
                 onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                 placeholder={placeholder}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                className="w-full bg-[#1E1B1F] border-none rounded-full px-6 py-3.5 text-white placeholder:text-[#6B6870] text-[14px] outline-none focus:ring-1 focus:ring-white/20 transition-all duration-200"
+                className="w-full bg-[#1E1B1F] border-none rounded-full px-5 py-3 sm:px-6 sm:py-3.5 text-white placeholder:text-[#6B6870] text-[16px] leading-[22px] sm:leading-[24px] outline-none focus:ring-1 focus:ring-white/20 transition-all duration-200"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
               <ButtonPrimary variant="white" onClick={handleSubmit} fullWidth>
