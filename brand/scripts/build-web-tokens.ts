@@ -32,11 +32,19 @@ const fontEntries = [
 ].join("\n");
 
 // Build typography scale entries
+// Build the web font-size CSS value from the portable fontSize object:
+// fluid tokens (min + max + fluid) → clamp(); fixed tokens → "<min>px"
+function webFontSize(fs: any): string {
+  return fs.max && fs.fluid
+    ? `clamp(${fs.min}px, ${fs.fluid}, ${fs.max}px)`
+    : `${fs.min}px`;
+}
+
 function buildTypoEntry(key: string, t: any): string {
   const family = typo.fonts[t.family];
   const lines = [
     `      fontFamily: "'${family.value}', sans-serif",`,
-    `      fontSize: "${t.size}",`,
+    `      fontSize: "${webFontSize(t.fontSize)}",`,
     `      fontWeight: "${t.weight}",`,
     `      lineHeight: "${t.lineHeight}",`,
     `      letterSpacing: "${t.letterSpacing}",`,

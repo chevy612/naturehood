@@ -18,7 +18,7 @@ export default function WhatWeDoSection() {
             What we do
           </h2>
           <p
-            className="text-black text-[16px] leading-[18px] md:text-[24px] md:leading-[30px] max-w-[600px] md:max-w-[500px] mx-auto text-center md:mx-0 md:text-left"
+            className="text-black text-[16px] leading-[24px] md:text-[18px] md:leading-[28px] max-w-[600px] md:max-w-[500px] mx-auto text-center md:mx-0 md:text-left"
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 500,

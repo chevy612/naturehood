@@ -33,7 +33,7 @@ export default function HeroSection() {
               Welcome to the home of track and field
             </h1>
             <p
-              className="text-white text-[16px] leading-[22px] sm:text-[18px] sm:leading-[24px] lg:text-[24px] lg:leading-[30px] font-medium"
+              className="text-white text-[16px] leading-[22px] sm:text-[18px] sm:leading-[24px] lg:text-[20px] lg:leading-[28px] font-medium"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 letterSpacing: "-0.3px",

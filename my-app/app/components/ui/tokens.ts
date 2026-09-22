@@ -108,10 +108,10 @@ export const tokens = {
     },
     body: {
       fontFamily: "'DM Sans', sans-serif",
-      fontSize: "24px",
-      fontWeight: "500",
-      lineHeight: "1.25",
-      letterSpacing: "-0.3px",
+      fontSize: "16px",
+      fontWeight: "400",
+      lineHeight: "1.75",
+      letterSpacing: "-0.2px",
       marginBottom: "1.5625rem",
     },
     bodyLarge: {

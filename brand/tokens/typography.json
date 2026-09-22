@@ -33,7 +33,7 @@
   "scale": {
     "hero": {
       "family": "display",
-      "size": "clamp(52px, 9vw, 96px)",
+      "fontSize": { "min": 52, "max": 96, "fluid": "9vw", "mobile": 40 },
       "weight": 700,
       "lineHeight": 0.95,
       "letterSpacing": "-0.02em",
@@ -42,7 +42,7 @@
     },
     "h1": {
       "family": "display",
-      "size": "clamp(38px, 5.5vw, 60px)",
+      "fontSize": { "min": 38, "max": 60, "fluid": "5.5vw", "mobile": 32 },
       "weight": 700,
       "lineHeight": 1.0,
       "letterSpacing": "-0.02em",
@@ -51,7 +51,7 @@
     },
     "h2": {
       "family": "display",
-      "size": "clamp(26px, 4vw, 40px)",
+      "fontSize": { "min": 26, "max": 40, "fluid": "4vw", "mobile": 24 },
       "weight": 700,
       "lineHeight": 1.05,
       "letterSpacing": "-0.015em",
@@ -60,7 +60,7 @@
     },
     "h3": {
       "family": "body",
-      "size": "clamp(20px, 3vw, 28px)",
+      "fontSize": { "min": 20, "max": 28, "fluid": "3vw", "mobile": 20 },
       "weight": 600,
       "lineHeight": 1.1,
       "letterSpacing": "-0.01em",
@@ -69,7 +69,7 @@
     },
     "label": {
       "family": "body",
-      "size": "10px",
+      "fontSize": { "min": 10, "mobile": 10 },
       "weight": 600,
       "lineHeight": 1.4,
       "letterSpacing": "0.3em",
@@ -79,16 +79,16 @@
     },
     "body": {
       "family": "body",
-      "size": "24px",
-      "weight": 500,
-      "lineHeight": 1.25,
-      "letterSpacing": "-0.3px",
+      "fontSize": { "min": 16, "mobile": 16 },
+      "weight": 400,
+      "lineHeight": 1.75,
+      "letterSpacing": "-0.2px",
       "cssClass": "nh-body",
-      "description": "Standard body text — hero-content style (DM Sans Medium 24/30)"
+      "description": "Standard body text — DM Sans Regular 16/28"
     },
     "bodyLarge": {
       "family": "body",
-      "size": "18px",
+      "fontSize": { "min": 18, "mobile": 18 },
       "weight": 400,
       "lineHeight": 1.75,
       "letterSpacing": "0",
@@ -96,7 +96,7 @@
     },
     "small": {
       "family": "body",
-      "size": "13px",
+      "fontSize": { "min": 13, "mobile": 13 },
       "weight": 400,
       "lineHeight": 1.65,
       "letterSpacing": "0",
@@ -105,7 +105,7 @@
     },
     "caption": {
       "family": "body",
-      "size": "11px",
+      "fontSize": { "min": 11, "mobile": 11 },
       "weight": 400,
       "lineHeight": 1.5,
       "letterSpacing": "0.06em",

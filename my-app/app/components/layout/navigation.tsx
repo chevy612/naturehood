@@ -69,14 +69,14 @@ export default function Navigation() {
     <>
       {/* MAIN NAVBAR — Sticky pill above the hero; reveals on scroll up */}
       <header
-        className={`sticky top-0 z-50 w-full px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-8 md:pt-[25px] transition-transform duration-300 ${
+        className={`sticky top-0 z-50 w-full px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-5 md:pt-[25px] transition-transform duration-300 ${
           hidden ? "-translate-y-full" : "translate-y-0"
         }`}
       >
         <div className="max-w-[1370px] mx-auto">
         {/* Desktop Navbar */}
         <nav
-          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[88px] px-[50px] lg:px-[103px]"
+          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[72px] px-[50px] lg:px-[103px]"
           style={{
             fontFamily: "'DM Sans', sans-serif",
             borderBottom: "1px solid rgba(230, 230, 230, 0.3)",
@@ -89,7 +89,7 @@ export default function Navigation() {
               width={208}
               height={24}
               priority
-              className="w-[168px] lg:w-[208px] h-auto"
+              className="w-[150px] lg:w-[180px] h-auto"
             />
           </Link>
 
@@ -98,7 +98,7 @@ export default function Navigation() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-white text-[20px] leading-[26px] font-medium transition-opacity hover:opacity-70 whitespace-nowrap"
+                className="text-white text-[17px] leading-[22px] font-medium transition-opacity hover:opacity-70 whitespace-nowrap"
               >
                 {item.label}
               </Link>
@@ -112,7 +112,7 @@ export default function Navigation() {
 
         {/* Mobile Navbar */}
         <nav
-          className="flex md:hidden items-center justify-between bg-black rounded-full h-[56px] px-5"
+          className="flex md:hidden items-center justify-between bg-black rounded-full h-[48px] px-5"
           style={{
             fontFamily: "'DM Sans', sans-serif",
             borderBottom: "1px solid rgba(230, 230, 230, 0.3)",

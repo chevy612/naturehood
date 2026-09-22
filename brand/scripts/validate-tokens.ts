@@ -53,6 +53,30 @@ for (const [key, val] of Object.entries(colors)) {
   ok(`${key}: ${v.value}`);
 }
 
+// ── Validate typography scale (portable, cross-platform) ─────
+
+console.log("\n🔤 Validating typography scale...\n");
+
+const typoSource = JSON.parse(readFileSync(resolve(TOKENS, "typography.json"), "utf-8"));
+
+for (const [key, val] of Object.entries(typoSource.scale)) {
+  const t = val as any;
+  const fs = t.fontSize;
+  if (!fs || typeof fs.min !== "number") {
+    error(`Scale "${key}" missing numeric fontSize.min`);
+    continue;
+  }
+  if ((fs.max !== undefined || fs.fluid !== undefined) && !(fs.max && fs.fluid)) {
+    error(`Scale "${key}" is fluid but must define both fontSize.max and fontSize.fluid`);
+    continue;
+  }
+  if (!typoSource.fonts[t.family]) {
+    error(`Scale "${key}" references unknown font family "${t.family}"`);
+    continue;
+  }
+  ok(`${key}: ${fs.max ? `clamp ${fs.min}–${fs.max}px` : `${fs.min}px`} · mobile ${fs.mobile ?? fs.min}px`);
+}
+
 // ── Check generated web tokens exist and contain source colors ──
 
 console.log("\n🌐 Checking web tokens sync...\n");
