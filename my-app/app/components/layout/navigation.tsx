@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
@@ -17,9 +18,15 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const lastScrollY = useRef(0);
+  const pathname = usePathname();
 
-  // Reveal on scroll up, hide on scroll down (always shown near the top)
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  // Reveal on scroll up, hide on scroll down (always shown near the top).
+  // Past the hero, the pill gains subtle depth (shadow + stronger border).
   useEffect(() => {
     function onScroll() {
       const currentY = window.scrollY;
@@ -30,6 +37,7 @@ export default function Navigation() {
       } else {
         setHidden(false);
       }
+      setScrolled(currentY >= 80);
       lastScrollY.current = currentY;
     }
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -76,10 +84,12 @@ export default function Navigation() {
         <div className="max-w-[1370px] mx-auto">
         {/* Desktop Navbar */}
         <nav
-          className="hidden md:flex items-center justify-between bg-black rounded-[100px] h-[72px] px-[50px] lg:px-[103px]"
+          className={`hidden md:flex items-center justify-between bg-black rounded-[100px] h-[72px] px-[50px] lg:px-[103px] transition-all duration-300 ${
+            scrolled ? "shadow-lg shadow-black/20" : ""
+          }`}
           style={{
             fontFamily: "'DM Sans', sans-serif",
-            borderBottom: "1px solid rgba(230, 230, 230, 0.3)",
+            borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
           }}
         >
           <Link href="/" className="shrink-0">
@@ -94,15 +104,21 @@ export default function Navigation() {
           </Link>
 
           <div className="flex items-center gap-10 lg:gap-[60px]">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-white text-[17px] leading-[22px] font-medium transition-opacity hover:opacity-70 whitespace-nowrap"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`text-[17px] leading-[22px] font-medium transition-colors duration-200 whitespace-nowrap ${
+                    active ? "text-white" : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
 
           <Link href={isLoggedIn ? "/home" : "/signup"} className="shrink-0">
@@ -112,10 +128,12 @@ export default function Navigation() {
 
         {/* Mobile Navbar */}
         <nav
-          className="flex md:hidden items-center justify-between bg-black rounded-full h-[48px] px-5"
+          className={`flex md:hidden items-center justify-between bg-black rounded-full h-[48px] px-5 transition-all duration-300 ${
+            scrolled ? "shadow-lg shadow-black/20" : ""
+          }`}
           style={{
             fontFamily: "'DM Sans', sans-serif",
-            borderBottom: "1px solid rgba(230, 230, 230, 0.3)",
+            borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
           }}
         >
           <Link href="/" className="shrink-0">
@@ -131,7 +149,7 @@ export default function Navigation() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 hover:bg-white/10 active:bg-white/20 rounded-full transition-colors"
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -157,8 +175,8 @@ export default function Navigation() {
       >
         <aside
           onClick={(e) => e.stopPropagation()}
-          className={`fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-black shadow-2xl transition-transform duration-300 ease-out ${
-            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          className={`fixed top-0 right-0 h-full w-72 max-w-[85vw] bg-black shadow-2xl transition-transform duration-300 ease-out ${
+            mobileMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
           role="dialog"
           aria-modal="true"
@@ -183,17 +201,25 @@ export default function Navigation() {
 
           <nav className="p-5">
             <ul className="space-y-1">
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="block px-4 py-3 text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-                    onClick={closeMobileMenu}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className={`block px-4 py-3 text-[15px] font-medium rounded-lg transition-all ${
+                        active
+                          ? "text-white bg-white/5"
+                          : "text-white/70 hover:text-white hover:bg-white/5"
+                      }`}
+                      onClick={closeMobileMenu}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
 
             <div className="mt-8 pt-6 border-t border-white/10">
