@@ -11,7 +11,7 @@ type ProfilePhotoProps = {
   objectPosition?: string;
   /** 1 = no zoom, 1.2 = 20% closer (crops tighter). Hover adds a further 5%. */
   zoom?: number;
-  /** width/height ratio, e.g. "284/730". Smaller = taller. Overrides the variant default. */
+  /** width/height ratio, e.g. "2/3" (approved slot). Smaller = taller. Overrides the variant default. */
   aspectRatio?: string;
   /** extra classes on the outer <figure> — e.g. responsive `order-*` for grid position */
   className?: string;
@@ -31,13 +31,15 @@ function ProfilePhoto({
   const v =
     variant === "founder"
       ? {
-          aspect: "284/730",
+          // NAT-7 approved slot: tall profile 2/3 (was 284/730)
+          aspect: "2/3",
           rounded: "rounded-[30px]",
           // base render width (vw) per breakpoint, before zoom
           base: { mobile: 50, desktop: 25, breakpoint: 768 },
         }
       : {
-          aspect: "388/630",
+          // NAT-7 approved slot: tall profile 2/3 (was 388/630)
+          aspect: "2/3",
           rounded: "rounded-2xl",
           base: { mobile: 100, desktop: 33, breakpoint: 640 },
         };
@@ -91,7 +93,7 @@ export default function AboutPage() {
       {/* Our Story */}
       <section className="pt-20 pb-10 md:pt-30 md:pb-0">
         <ContentContainer as="div">
-          <div className="max-w-[900] mx-auto">
+          <div className="max-w-[900px] mx-auto">
             <h1 className="nh-h1 text-center mb-10">Our Story</h1>
             <div
               className="text-[#141115] text-[17px] sm:text-[20px] lg:text-[24px] leading-[1.6] space-y-6"
