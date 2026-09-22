@@ -40,10 +40,7 @@ export default function AthletesPage() {
           <h1 className="nh-h1 text-black mb-5">
             Meet our athletes.
           </h1>
-          <p
-            className="text-[#6B6870] text-[15px] leading-relaxed"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
+          <p className="nh-body text-[#6B6870]">
             Athletes competing across trail running, track, weightlifting
             and more.
           </p>
