@@ -8,12 +8,16 @@
 
 import Image from "next/image";
 import { useState, useRef, ReactNode } from "react";
+import { tokens } from "./ui/tokens";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────
 
-type AspectRatio = "16/9" | "4/3" | "1/1" | "3/4" | "2/3" | "21/9";
+// Approved aspect-ratio set — generated from brand/tokens/aspect-ratios.json (NAT-7).
+// Single source of truth; see brand/guidelines/photography.md. Yields the union
+// "16/9" | "3/2" | "4/5" | "2/3" | "1/1" (hero · landscape · portrait card · tall profile · square).
+type AspectRatio = (typeof tokens.aspectRatio)[keyof typeof tokens.aspectRatio];
 
 interface MediaImageProps {
   src: string;
@@ -298,7 +302,7 @@ export function MediaSplit({
   imageAlt,
   imagePosition = "left",
   children,
-  aspectRatio = "4/3",
+  aspectRatio = "3/2",
 }: MediaSplitProps) {
   return (
     <div
@@ -444,7 +448,7 @@ export function MediaLightbox({
       {/* Thumbnail */}
       <div
         onClick={() => setIsOpen(true)}
-        className="cursor-pointer group relative overflow-hidden aspect-[4/3]"
+        className="cursor-pointer group relative overflow-hidden aspect-[3/2]"
       >
         <Image
           src={thumbnail}
@@ -556,7 +560,7 @@ export function ProjectCard({
         <MediaVideo
           src={videoSrc}
           poster={imageSrc}
-          aspectRatio="4/3"
+          aspectRatio="3/2"
           muted
           loop
         />
@@ -564,7 +568,7 @@ export function ProjectCard({
         <MediaImage
           src={imageSrc}
           alt={title}
-          aspectRatio="4/3"
+          aspectRatio="3/2"
           overlay
           overlayContent={
             <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">

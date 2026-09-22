@@ -117,7 +117,7 @@ export default function AboutPage() {
             <MediaImage
               src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=1200&h=800&fit=crop"
               alt="Team collaboration"
-              aspectRatio="4/3"
+              aspectRatio="3/2"
             />
           </div>
         </Container>

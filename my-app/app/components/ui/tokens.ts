@@ -30,6 +30,13 @@ export const tokens = {
     info: '#4DA6FF',
     white: '#FFFFFF',
   },
+  aspectRatio: {
+    hero: '16/9',
+    landscape: '3/2',
+    portraitCard: '4/5',
+    tallProfile: '2/3',
+    square: '1/1',
+  },
   spacing: {
     section: "py-6 md:py-[30px]",
     sectionSm: "py-8 sm:py-10 md:py-12 lg:py-16",

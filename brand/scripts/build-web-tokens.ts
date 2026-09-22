@@ -16,9 +16,16 @@ const OUT = resolve(ROOT, "my-app/app/components/ui/tokens.ts");
 const colors = JSON.parse(readFileSync(resolve(TOKENS, "colors.json"), "utf-8"));
 const typo = JSON.parse(readFileSync(resolve(TOKENS, "typography.json"), "utf-8"));
 const spacing = JSON.parse(readFileSync(resolve(TOKENS, "spacing.json"), "utf-8"));
+const aspect = JSON.parse(readFileSync(resolve(TOKENS, "aspect-ratios.json"), "utf-8"));
 
 // Build color entries
 const colorEntries = Object.entries(colors)
+  .filter(([k]) => !k.startsWith("$"))
+  .map(([k, v]: [string, any]) => `    ${k}: '${v.value}',`)
+  .join("\n");
+
+// Build aspect-ratio entries — approved image slots (NAT-7)
+const aspectEntries = Object.entries(aspect)
   .filter(([k]) => !k.startsWith("$"))
   .map(([k, v]: [string, any]) => `    ${k}: '${v.value}',`)
   .join("\n");
@@ -126,6 +133,9 @@ ${fontEntries}
   },
   color: {
 ${colorEntries}
+  },
+  aspectRatio: {
+${aspectEntries}
   },
   spacing: {
 ${spacingEntries}
