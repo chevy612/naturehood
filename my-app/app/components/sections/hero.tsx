@@ -7,7 +7,7 @@ export default function HeroSection() {
   return (
     <section className="w-full bg-white px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-8 md:pt-[25px] md:pb-[25px]">
       {/* 1370 × 738 hero with overlaid text + CTA (fixed height on mobile/tablet, aspect ratio on lg+) */}
-      <div className="relative w-full max-w-[1370px] mx-auto h-[440px] sm:h-[500px] lg:h-auto lg:aspect-[1370/738] overflow-hidden rounded-[30px]">
+      <div className="relative w-full max-w-[1370px] mx-auto h-[440px] sm:h-[500px] lg:h-auto lg:aspect-[16/9] overflow-hidden rounded-[30px]">
         <Image
           src={landingImages.hero}
           alt="Athlete sprinting on the track"

@@ -16,7 +16,7 @@ function DiscoverCard({ href, image, title, hint }: DiscoverCardProps) {
     <Link
       href={href}
       aria-label={`${title} — ${hint}`}
-      className="group relative block w-full h-[330px] sm:h-[440px] md:h-auto md:aspect-[670/765] overflow-hidden rounded-[30px] focus:outline-none focus-visible:ring-4 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+      className="group relative block w-full h-[330px] sm:h-[440px] md:h-auto md:aspect-[4/5] overflow-hidden rounded-[30px] focus:outline-none focus-visible:ring-4 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
     >
       <Image
         src={image}

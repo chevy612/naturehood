@@ -32,7 +32,7 @@ export default function WhatWeDoSection() {
         </div>
 
         {/* Image — interactive: zooms in, gains depth + a soft gradient on hover */}
-        <div className="group relative w-full h-[405px] md:h-auto md:aspect-[640/405] overflow-hidden rounded-[30px] transition-shadow duration-500 ease-out hover:shadow-2xl">
+        <div className="group relative w-full h-[405px] md:h-auto md:aspect-[3/2] overflow-hidden rounded-[30px] transition-shadow duration-500 ease-out hover:shadow-2xl">
           <Image
             src={landingImages.whatWeDo}
             alt="Track and field event"

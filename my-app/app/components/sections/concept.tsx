@@ -12,7 +12,7 @@ export default function ConceptSection() {
         80px gap between the text group and the CTA. On md+ the card is wide &
         short (405px), so content centers with a 30px rhythm instead.
       */}
-      <div className="group relative overflow-hidden rounded-[30px] min-h-[440px] md:min-h-[405px] flex flex-col items-center justify-center gap-8 md:gap-[30px] p-[30px] sm:p-16">
+      <div className="group relative overflow-hidden rounded-[30px] h-[440px] md:h-auto md:aspect-[16/9] flex flex-col items-center justify-center gap-8 md:gap-[30px] p-[30px] sm:p-16">
         {/* Background Image — subtle zoom on hover for interactivity */}
         <Image
           src={landingImages.concept}
