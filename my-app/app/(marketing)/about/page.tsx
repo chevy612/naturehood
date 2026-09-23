@@ -99,7 +99,6 @@ export default function AboutPage() {
       <section className="pt-24 pb-10 md:pt-32 md:pb-0">
         <ContentContainer as="div">
           <div className="max-w-[900px] mx-auto">
-            <p className="nh-label text-[#6B6870] text-center mb-4">About Naturehood</p>
             <h1 className="nh-h1 text-center mb-10">Our Story</h1>
             <div className="nh-body space-y-6">
               <p>
@@ -128,7 +127,6 @@ export default function AboutPage() {
       {/* Founders */}
       <section className="py-[50px] md:py-[80px]">
         <ContentContainer as="div">
-          <p className="nh-label text-[#6B6870] text-center mb-4">The Team</p>
           <h2 className="nh-h2 text-center mb-[30px]">Founders</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-[30px]">
             <ProfilePhoto
@@ -181,7 +179,6 @@ export default function AboutPage() {
       {/* Featuring Athletes */}
       <section className="py-[50px] md:py-[80px] pb-24">
         <ContentContainer as="div">
-          <p className="nh-label text-[#6B6870] text-center mb-4">Featuring</p>
           <h2 className="nh-h2 text-center mb-10">Featuring Athletes</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-[30px]">
             <ProfilePhoto
