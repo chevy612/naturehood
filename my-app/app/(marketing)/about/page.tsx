@@ -69,20 +69,25 @@ function ProfilePhoto({
         style={{ objectPosition, transformOrigin: objectPosition, ["--zoom" as string]: zoom }}
         className="object-cover transition-transform duration-500 scale-[var(--zoom)] group-hover:scale-[calc(var(--zoom)*1.05)]"
       />
-      {/* Caption: always visible on touch/mobile, hover-reveal from lg up */}
-      <figcaption className="absolute inset-0 flex items-end bg-gradient-to-t from-[#141115]/80 via-[#141115]/20 to-transparent opacity-100 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100">
-        <div
-          className="p-4 sm:p-5"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          <p className="text-[15px] font-semibold leading-tight text-white sm:text-[17px]">
-            {name}
-          </p>
-          <p className="mt-0.5 text-[12px] text-white/70 sm:text-[13px]">
-            {role}
-          </p>
-        </div>
-      </figcaption>
+      {/* Caption: rendered only when named — the unnamed mosaic photos stay clean.
+          Always visible on touch/mobile, hover-reveal from lg up. */}
+      {name && (
+        <figcaption className="absolute inset-0 flex items-end bg-gradient-to-t from-[#141115]/80 via-[#141115]/20 to-transparent opacity-100 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100">
+          <div
+            className="p-4 sm:p-5"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            <p className="text-[16px] font-semibold leading-tight text-white">
+              {name}
+            </p>
+            {role && (
+              <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70">
+                {role}
+              </p>
+            )}
+          </div>
+        </figcaption>
+      )}
     </figure>
   );
 }
@@ -91,14 +96,12 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white text-black">
       {/* Our Story */}
-      <section className="pt-20 pb-10 md:pt-30 md:pb-0">
+      <section className="pt-24 pb-10 md:pt-32 md:pb-0">
         <ContentContainer as="div">
           <div className="max-w-[900px] mx-auto">
+            <p className="nh-label text-[#6B6870] text-center mb-4">About Naturehood</p>
             <h1 className="nh-h1 text-center mb-10">Our Story</h1>
-            <div
-              className="text-[#141115] text-[17px] sm:text-[20px] lg:text-[24px] leading-[1.6] space-y-6"
-              style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.3px" }}
-            >
+            <div className="nh-body space-y-6">
               <p>
                 Founded in 2025 by a community of Hong Kong track athletes,
                 Naturehood was born out of a shared passion: to redefine how the
@@ -123,8 +126,9 @@ export default function AboutPage() {
       </section>
 
       {/* Founders */}
-      <section className="py-[50px]">
+      <section className="py-[50px] md:py-[80px]">
         <ContentContainer as="div">
+          <p className="nh-label text-[#6B6870] text-center mb-4">The Team</p>
           <h2 className="nh-h2 text-center mb-[30px]">Founders</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-[30px]">
             <ProfilePhoto
@@ -175,8 +179,9 @@ export default function AboutPage() {
       </section>
 
       {/* Featuring Athletes */}
-      <section className="py-12 md:py-16 pb-24">
+      <section className="py-[50px] md:py-[80px] pb-24">
         <ContentContainer as="div">
+          <p className="nh-label text-[#6B6870] text-center mb-4">Featuring</p>
           <h2 className="nh-h2 text-center mb-10">Featuring Athletes</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-[30px]">
             <ProfilePhoto
@@ -189,18 +194,16 @@ export default function AboutPage() {
             <ProfilePhoto
               variant="athlete"
               src="/about/athlete-3.png"
-              name="Jamie Kwok
-              "
+              name="Jamie Kwok"
               role="Sprinter"
               objectPosition="50% 25%"
             />
             <ProfilePhoto
               variant="athlete"
-              src="/about/athlete-3.png"
-              name="Athlete Three"
-              role="Jumper"
-              objectPosition="50% 120%"
-              zoom={1.3}
+              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/featuring%20athletes/candy.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZlYXR1cmluZyBhdGhsZXRlcy9jYW5keS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkwMDg5NjQ3LCJleHAiOjQ5MTIxNTM2NDd9.hDq7tNva4_GBA5DvuR9sYb_oxCpqwyCDVuCNZ9xDYGo"
+              name="Candy Tsang"
+              role="Mid-Distance Running"
+              objectPosition="50% 25%"
             />
           </div>
         </ContentContainer>
