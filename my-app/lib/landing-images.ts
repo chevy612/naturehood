@@ -1,16 +1,16 @@
 // ─────────────────────────────────────────────
 // LANDING IMAGES — single source of truth
-// Photos live in the public Supabase Storage bucket `landing`.
-// To swap a photo: replace the file in the bucket (same name) — no redeploy.
-// Bump `?v=N` only if you need to bust the CDN cache after overwriting.
+// Photos are served from `my-app/public/images/landing/`, so they ship with
+// the deploy on every environment (no Supabase bucket, no env var, no signed keys).
+// To swap a photo: replace the file in that folder (same name) and redeploy.
 // ─────────────────────────────────────────────
 
-const base = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/landing`;
+const base = "/images/landing";
 
 export const landingImages = {
   hero: `${base}/hero.jpg`,
   concept: `${base}/concept.jpg`,
-  trackMeet: `${base}/track-meet.jpg?v=2`,
+  trackMeet: `${base}/track-meet.jpg`,
   athletes: `${base}/athletes.jpg`,
   whatWeDo: `${base}/what-we-do.jpg`,
 } as const;
