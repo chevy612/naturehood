@@ -25,8 +25,8 @@ export default function WorkoutActions({ id }: { id: string }) {
       <div className="flex items-center gap-4">
         <Link
           href={`/record/${id}/edit`}
-          className="px-5 py-2.5 border border-[#3A373C] text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#C8F04D]/40 hover:text-[#C8F04D] transition-colors"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="px-5 py-2.5 border border-[#3A373C] text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#F5F5F5]/40 hover:text-[#F5F5F5] transition-colors"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Edit
         </Link>
@@ -35,7 +35,7 @@ export default function WorkoutActions({ id }: { id: string }) {
           <button
             onClick={() => setConfirmDelete(true)}
             className="px-5 py-2.5 border border-[#3A373C] text-[#6B6870] text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#FF4D4D]/40 hover:text-[#FF4D4D] transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Delete
           </button>

@@ -116,7 +116,7 @@ export function AthleteSignUpForm({
     return (
       <div className="min-h-screen bg-[#141115] flex items-center justify-center p-8">
         <div className="max-w-md text-center">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#C8F04D] flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#F5F5F5] flex items-center justify-center">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
               <path
                 d="M8 20l8 8L32 12"
@@ -129,7 +129,7 @@ export function AthleteSignUpForm({
           </div>
           <h2
             className="text-[32px] font-bold text-white mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Welcome to Naturehood
           </h2>
@@ -157,14 +157,14 @@ export function AthleteSignUpForm({
         {/* Header */}
         <div className="mb-12">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Athlete Application
           </p>
           <h1
             className="text-[48px] md:text-[60px] font-bold text-white leading-none mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Join Naturehood
           </h1>
@@ -183,7 +183,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               About You
             </h3>
@@ -231,7 +231,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#3A373C]">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Athletic Background
             </h3>
@@ -261,7 +261,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#3A373C]">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Social Presence
             </h3>
@@ -297,7 +297,7 @@ export function AthleteSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#3A373C]">
             <h3
               className="text-[20px] font-semibold text-white"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Creative Vision
             </h3>
@@ -337,7 +337,7 @@ export function AthleteSignUpForm({
           <div className="pt-6">
             <button
               type="submit"
-              className="w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200"
+              className="w-full bg-[#F5F5F5] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Submit Application
@@ -459,7 +459,7 @@ export function BrandSignUpForm({
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
               <path
                 d="M8 20l8 8L32 12"
-                stroke="#C8F04D"
+                stroke="#F5F5F5"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -468,7 +468,7 @@ export function BrandSignUpForm({
           </div>
           <h2
             className="text-[32px] font-bold text-[#141115] mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Thank You for Your Interest
           </h2>
@@ -503,7 +503,7 @@ export function BrandSignUpForm({
           </p>
           <h1
             className="text-[48px] md:text-[60px] font-bold text-[#141115] leading-none mb-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Partner with Naturehood
           </h1>
@@ -522,7 +522,7 @@ export function BrandSignUpForm({
           <div className="space-y-6">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Company Information
             </h3>
@@ -560,7 +560,7 @@ export function BrandSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#E8E8E8]">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Project Details
             </h3>
@@ -589,7 +589,7 @@ export function BrandSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#E8E8E8]">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Budget & Timeline
             </h3>
@@ -618,7 +618,7 @@ export function BrandSignUpForm({
           <div className="space-y-6 pt-6 border-t border-[#E8E8E8]">
             <h3
               className="text-[20px] font-semibold text-[#141115]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Help Us Improve
             </h3>
@@ -637,7 +637,7 @@ export function BrandSignUpForm({
           <div className="pt-6">
             <button
               type="submit"
-              className="w-full bg-[#141115] text-[#C8F04D] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#1E1B1F] transition-colors duration-200"
+              className="w-full bg-[#141115] text-[#F5F5F5] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#1E1B1F] transition-colors duration-200"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Submit Partnership Inquiry
@@ -685,7 +685,7 @@ function InputDark({
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
-        {label} {required && <span className="text-[#C8F04D]">*</span>}
+        {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
       <input
         id={name}
@@ -698,7 +698,7 @@ function InputDark({
         className={`w-full bg-transparent border-b-2 py-3 px-0 text-[15px] text-white placeholder:text-[#3A373C] outline-none transition-colors duration-200 ${
           error
             ? "border-[#FF4D4D] focus:border-[#FF4D4D]"
-            : "border-[#3A373C] focus:border-[#C8F04D]"
+            : "border-[#3A373C] focus:border-[#F5F5F5]"
         }`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
@@ -737,7 +737,7 @@ function TextAreaDark({
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
-        {label} {required && <span className="text-[#C8F04D]">*</span>}
+        {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
       <textarea
         id={name}
@@ -750,7 +750,7 @@ function TextAreaDark({
         className={`w-full bg-[#1E1B1F] border-2 p-4 resize-none text-[15px] text-white placeholder:text-[#3A373C] outline-none transition-colors duration-200 ${
           error
             ? "border-[#FF4D4D] focus:border-[#FF4D4D]"
-            : "border-transparent focus:border-[#C8F04D]"
+            : "border-transparent focus:border-[#F5F5F5]"
         }`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
@@ -798,7 +798,7 @@ function SelectDark({
           className={`w-full bg-transparent border-b-2 py-3 pr-8 appearance-none cursor-pointer text-[15px] text-white outline-none transition-colors duration-200 ${
             error
               ? "border-[#FF4D4D]"
-              : "border-[#3A373C] focus:border-[#C8F04D]"
+              : "border-[#3A373C] focus:border-[#F5F5F5]"
           }`}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >

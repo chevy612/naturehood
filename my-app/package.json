@@ -10,7 +10,11 @@
     "test:persist": "npx tsx scripts/test-persist.ts",
     "test:egress": "npx tsx scripts/test-egress-fixes.ts",
     "lint": "eslint",
-    "build:prod": "NODE_ENV=production next build"
+    "build:prod": "NODE_ENV=production next build",
+    "brand:build": "npm run brand:build:web && npm run brand:build:mobile",
+    "brand:build:web": "npx tsx ../brand/scripts/build-web-tokens.ts",
+    "brand:build:mobile": "npx tsx ../brand/scripts/build-mobile-tokens.ts",
+    "brand:validate": "npx tsx ../brand/scripts/validate-tokens.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",

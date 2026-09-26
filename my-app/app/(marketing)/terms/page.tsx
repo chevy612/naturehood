@@ -143,7 +143,7 @@ export default function TermsPage() {
         <Section title="9. Privacy">
           <p>
             Your use of the Platform is also governed by our{" "}
-            <a href="/privacy" className="text-[#C8F04D] hover:underline">
+            <a href="/privacy" className="text-[#F5F5F5] hover:underline">
               Privacy Policy
             </a>
             , which is incorporated into these Terms by reference. By using the Platform, you consent
@@ -173,8 +173,8 @@ export default function TermsPage() {
           </p>
           <p className="mt-3">
             You may close your account at any time by contacting us at{" "}
-            <a href="mailto:hello@naturehood.co" className="text-[#C8F04D] hover:underline">
-              hello@naturehood.co
+            <a href="mailto:hello@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+              hello@naturehoodofficial.com
             </a>
             . Upon closure, your personal data will be handled in accordance with our Privacy Policy.
           </p>
@@ -200,8 +200,8 @@ export default function TermsPage() {
         <Section title="14. Contact">
           <p>
             For questions about these Terms, contact us at:{" "}
-            <a href="mailto:hello@naturehood.co" className="text-[#C8F04D] hover:underline">
-              hello@naturehood.co
+            <a href="mailto:hello@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+              hello@naturehoodofficial.com
             </a>
           </p>
         </Section>

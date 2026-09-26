@@ -32,7 +32,7 @@ export function Avatar({
 
   return (
     <div
-      className={`relative ${s.wrapper} rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#C8F04D] bg-[#C8F04D]`}
+      className={`relative ${s.wrapper} rounded-full overflow-hidden shrink-0 flex items-center justify-center ring-2 ring-[#F5F5F5] bg-[#F5F5F5]`}
     >
       {photoUrl ? (
         <Image
@@ -46,7 +46,7 @@ export function Avatar({
       ) : (
         <span
           className={`${s.text} font-bold select-none text-[#141115]`}
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {initials}
         </span>

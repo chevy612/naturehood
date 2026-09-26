@@ -53,14 +53,14 @@ function SetPasswordForm() {
         {/* Header */}
         <div className="mb-10">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Almost there
           </p>
           <h1
             className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Create your password
           </h1>
@@ -116,7 +116,7 @@ export default function SetPasswordPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#141115] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#C8F04D] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#F5F5F5] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <SetPasswordForm />

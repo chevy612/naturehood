@@ -1,177 +1,53 @@
-import Link from 'next/link';
-import { Container, ButtonPrimary, ButtonSecondary } from '@/app/components/ui';
-import { ReactNode } from 'react';
-
-
-interface HeroTemplateProps {
-  eyebrow?: string;               // Optional label above title
-  title: string | ReactNode;      // Can include JSX for accent words
-  subtitle: string;
-  primaryCTA?: ReactNode;
-  secondaryCTA?: ReactNode;
-  backgroundVideo?: string;
-  backgroundImage?: string;
-  videoControls?: boolean;
-  stats?: Array<{ value: string; label: string }>;  // Optional stats row
-}
+import Image from "next/image";
+import Link from "next/link";
+import { ButtonPrimary } from "@/app/components/ui/buttons";
+import { landingImages } from "@/lib/landing-images";
 
 export default function HeroSection() {
-  const videoURL = "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/hero.mp4";
-
   return (
-    <HeroTemplate
-      title="Where athletes meet brands."
-      subtitle="Naturehood connects dedicated athletes with forward-thinking brands to build creative projects that actually matter."
-      backgroundVideo={videoURL}
-      videoControls={false}
-      primaryCTA={
-        <div className="flex flex-col items-center w-full sm:w-auto gap-4">
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <Link href="/signup?role=athlete" className="w-full sm:w-auto">
-              <ButtonPrimary className="w-full sm:w-auto">Join as Athlete</ButtonPrimary>
-            </Link>
-            <Link href="/signup?role=brand" className="w-full sm:w-auto">
-              <ButtonSecondary variant='white' className="w-full sm:w-auto">Join as Brand</ButtonSecondary>
+    <section className="w-full bg-white px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-8 md:pt-[25px] md:pb-[25px]">
+      {/* 1370 × 738 hero with overlaid text + CTA (fixed height on mobile/tablet, aspect ratio on lg+) */}
+      <div className="relative w-full max-w-[1370px] mx-auto h-[440px] sm:h-[500px] lg:h-auto lg:aspect-[16/9] overflow-hidden rounded-[30px]">
+        <Image
+          src={landingImages.hero}
+          alt="Athlete sprinting on the track"
+          fill
+          sizes="(max-width: 1224px) 100vw, 1224px"
+          className="object-cover object-left"
+          priority
+        />
+
+        {/* Overlay — mobile/tablet: bottom-left stack. Desktop (Figma): text left, CTA right, vertically centered */}
+        <div className="absolute inset-0 flex flex-col justify-end gap-8 p-[30px] sm:p-10 lg:flex-row lg:items-center lg:justify-between lg:gap-6 lg:p-[50px]">
+          <div
+            className="flex flex-col items-start text-left gap-5 max-w-[560px]"
+            style={{ textShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
+          >
+            <h1
+              className="text-white font-bold text-[30px] leading-[36px] sm:text-[44px] sm:leading-[46px] lg:text-[52px] lg:leading-[54px] xl:text-[56px] xl:leading-[56px]"
+              style={{
+                fontFamily: "'Sk Modernist', sans-serif",
+                letterSpacing: "-0.3px",
+              }}
+            >
+              Welcome to the home of track and field
+            </h1>
+            <p
+              className="text-white text-[16px] leading-[22px] sm:text-[18px] sm:leading-[24px] lg:text-[20px] lg:leading-[28px] font-medium"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                letterSpacing: "-0.3px",
+              }}
+            >
+              The leading athletes community in Hong Kong.
+            </p>
+          </div>
+          <div className="flex w-full justify-start lg:w-auto lg:shrink-0">
+            <Link href="/signup">
+              <ButtonPrimary variant="white">Join us</ButtonPrimary>
             </Link>
           </div>
         </div>
-      }
-    />
-  );
-}
-
-export function HeroTemplate({
-  eyebrow,
-  title,
-  subtitle,
-  primaryCTA,
-  secondaryCTA,
-  backgroundVideo,
-  backgroundImage,
-  videoControls = false,
-  stats,
-}: HeroTemplateProps) {
-  const isDevelopment = process.env.NODE_ENV === 'development';
-
-  return (
-    <section className="relative w-full flex h-[500px] md:h-[700px] lg:h-[900px] overflow-hidden bg-[#141115]">
-      {/* Background Media */}
-      {backgroundVideo && (
-        <video
-          src={backgroundVideo}
-          autoPlay={!isDevelopment}
-          loop
-          muted
-          playsInline
-          controls={videoControls || isDevelopment}
-          className="absolute inset-0 object-cover w-full h-full opacity-20"
-        />
-      )}
-      {backgroundImage && !backgroundVideo && (
-        <div
-          className="absolute inset-0 w-full h-full opacity-40 bg-cover bg-center"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
-      )}
-
-      {/* Accent Edge (optional design element) */}
-      <div className="absolute top-0 left-0 w-1 h-full bg-[#C8F04D] z-10" />
-
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-start pt-20 sm:pt-28 md:pt-32 lg:pt-40 px-6 sm:px-8 md:px-12 lg:px-16">
-        <Container>
-          <div className="text-left max-w-4xl">
-
-            {/* Eyebrow Label */}
-            {eyebrow && (
-              <p
-                className="mb-5 md:mb-6"
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '10px',
-                  fontWeight: '600',
-                  letterSpacing: '0.4em',
-                  textTransform: 'uppercase',
-                  color: '#C8F04D',
-                }}
-              >
-                {eyebrow}
-              </p>
-            )}
-
-            {/* Hero Title - Inter 900 ExtraBold */}
-            <h1
-              className="mb-7 md:mb-8"
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: 'clamp(2.75rem, 9vw, 6.25rem)',  // 44px - 100px
-                fontWeight: '900',
-                lineHeight: '0.95',
-                letterSpacing: '-0.02em',
-                color: '#F4F4F4',
-              }}
-            >
-              {title}
-            </h1>
-
-            {/* Subtitle - DM Sans 400 */}
-            <p
-              className="mb-11 max-w-xl md:max-w-2xl"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 'clamp(0.9375rem, 2vw, 1.125rem)',  // 15px - 18px
-                fontWeight: '400',
-                lineHeight: '1.75',
-                color: '#A09EA3',
-              }}
-            >
-              {subtitle}
-            </p>
-
-            {/* CTAs */}
-            {(primaryCTA || secondaryCTA) && (
-              <div className="flex flex-col sm:flex-row gap-3 mb-14 md:mb-16">
-                {primaryCTA}
-                {secondaryCTA}
-              </div>
-            )}
-
-            {/* Stats Row (optional) */}
-            {stats && stats.length > 0 && (
-              <div className="flex flex-wrap gap-8 md:gap-10 pt-8 border-t border-[#3A373C]">
-                {stats.map((stat, i) => (
-                  <div key={i}>
-                    <div
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 'clamp(1.875rem, 4vw, 2.375rem)',  // 30px - 38px
-                        fontWeight: '700',
-                        lineHeight: '1',
-                        letterSpacing: '-0.02em',
-                        color: '#F5F5F5',
-                        marginBottom: '0.25rem',
-                      }}
-                    >
-                      {stat.value}
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: '10px',
-                        fontWeight: '500',
-                        letterSpacing: '0.2em',
-                        textTransform: 'uppercase',
-                        color: '#6B6870',
-                      }}
-                    >
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </Container>
       </div>
     </section>
   );

@@ -27,7 +27,7 @@ function formatExerciseMetrics(ex: AiStructuredExercise): string {
 }
 
 const INTENSITY_COLOR: Record<string, string> = {
-  high: '#C8F04D',
+  high: '#F5F5F5',
   moderate: '#A09EA3',
   low: '#A09EA3',
 }
@@ -74,8 +74,8 @@ function AnalyzeButton({ id }: { id: string }) {
     <button
       onClick={handleAnalyze}
       disabled={state === 'loading'}
-      className="px-5 py-2.5 bg-[#C8F04D] text-[#141115] text-[12px] font-bold uppercase tracking-[0.15em] hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      className="px-5 py-2.5 bg-[#F5F5F5] text-[#141115] text-[12px] font-bold uppercase tracking-[0.15em] hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {state === 'loading' ? 'Analyzing…' : 'Analyze with AI'}
     </button>
@@ -116,7 +116,7 @@ function StaleBanner({ id }: { id: string }) {
         onClick={handleReanalyze}
         disabled={state === 'loading'}
         className="shrink-0 text-[11px] font-bold uppercase tracking-[0.15em] text-[#F0B429] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         {state === 'loading' ? 'Analysing…' : 'Re-analyse'}
       </button>
@@ -138,7 +138,7 @@ function AiSection({ ai }: { ai: AiStructuredWorkout }) {
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <span
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           AI Analysis
@@ -243,7 +243,7 @@ export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeeds
       {aiStructured && (
         <Link
           href={`/record/${id}/ai-report`}
-          className="inline-block text-[12px] font-medium text-[#C8F04D] hover:text-white transition-colors"
+          className="inline-block text-[12px] font-medium text-[#F5F5F5] hover:text-white transition-colors"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Edit AI report →

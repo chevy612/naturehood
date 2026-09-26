@@ -112,14 +112,14 @@ function VerifyForm() {
         {/* Header */}
         <div className="mb-10">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Verify Email
           </p>
           <h1
             className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Check your email
           </h1>
@@ -148,8 +148,8 @@ function VerifyForm() {
                 onChange={(e) => handleDigitChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={handlePaste}
-                className="w-12 h-14 text-center text-2xl font-bold text-white bg-[#1E1B22] border border-[#2E2B33] rounded-lg focus:outline-none focus:border-[#C8F04D] transition-colors"
-                style={{ fontFamily: "'Inter', sans-serif" }}
+                className="w-12 h-14 text-center text-2xl font-bold text-white bg-[#1E1B1F] border-none rounded-xl focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
                 autoFocus={i === 0}
               />
             ))}
@@ -168,7 +168,7 @@ function VerifyForm() {
           {/* Resend message */}
           {resendMessage && (
             <p
-              className="text-[13px] text-[#C8F04D]"
+              className="text-[13px] text-[#F5F5F5]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {resendMessage}
@@ -188,7 +188,7 @@ function VerifyForm() {
               type="button"
               onClick={handleResend}
               disabled={resendCooldown > 0}
-              className="text-[#C8F04D] hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
+              className="text-[#F5F5F5] hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
             </button>
@@ -203,7 +203,7 @@ export default function VerifyPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#141115] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#C8F04D] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#F5F5F5] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <VerifyForm />

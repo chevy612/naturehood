@@ -123,7 +123,7 @@ export default function DashboardEditForm({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="text-[12px] font-medium text-[#C8F04D] hover:text-white transition-colors disabled:opacity-50"
+            className="text-[12px] font-medium text-[#F5F5F5] hover:text-white transition-colors disabled:opacity-50"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {uploading ? 'Uploading…' : 'Change photo'}
@@ -171,7 +171,7 @@ export default function DashboardEditForm({
 
       {message && (
         <p
-          className={`text-[13px] ${message.type === 'error' ? 'text-[#FF4D4D]' : 'text-[#C8F04D]'}`}
+          className={`text-[13px] ${message.type === 'error' ? 'text-[#FF4D4D]' : 'text-[#F5F5F5]'}`}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {message.text}
@@ -181,7 +181,7 @@ export default function DashboardEditForm({
       <button
         type="submit"
         disabled={submitting}
-        className="px-6 py-3 bg-[#C8F04D] text-[#141115] text-[13px] font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="px-6 py-3 bg-[#F5F5F5] text-[#141115] text-[13px] font-bold uppercase tracking-[0.15em] transition-opacity hover:opacity-90 disabled:opacity-50"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         {submitting ? 'Saving…' : 'Save Changes'}

@@ -52,7 +52,7 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
         {/* Title */}
         <h1
           className="text-[22px] font-bold text-white leading-tight mb-2"
-          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
         >
           {log.title}
         </h1>

@@ -4,6 +4,7 @@ import { useState, ChangeEvent, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { InputDark, SelectDark, CheckboxDark, ButtonSubmit } from "@/app/components/ui";
+import { OAuthButtons } from "@/app/components/ui/oauth-buttons";
 import { initiateSignUp } from "./actions";
 
 // ─────────────────────────────────────────────
@@ -105,14 +106,14 @@ function SignUpForm() {
           {/* Header */}
           <div className="mb-10">
             <p
-              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Get Started
             </p>
             <h1
               className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Join Naturehood
             </h1>
@@ -124,6 +125,9 @@ function SignUpForm() {
               your passion.
             </p>
           </div>
+
+          {/* OAuth */}
+          <OAuthButtons mode="signup" />
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -167,14 +171,14 @@ function SignUpForm() {
                     I agree to the Naturehood{" "}
                     <Link
                       href="/terms"
-                      className="text-[#C8F04D] hover:underline"
+                      className="text-[#F5F5F5] hover:underline"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                       href="/privacy"
-                      className="text-[#C8F04D] hover:underline"
+                      className="text-[#F5F5F5] hover:underline"
                     >
                       Privacy Policy
                     </Link>
@@ -222,7 +226,7 @@ function SignUpForm() {
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Already have an account?{" "}
-              <Link href="/login" className="text-[#C8F04D] hover:underline">
+              <Link href="/login" className="text-[#F5F5F5] hover:underline">
                 Log in
               </Link>
             </p>

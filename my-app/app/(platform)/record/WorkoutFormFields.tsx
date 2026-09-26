@@ -88,7 +88,7 @@ export function WorkoutFormFields({
           {workoutTypes.map((label) => (
             <span
               key={label}
-              className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium rounded-full border border-[#C8F04D] text-[#C8F04D]"
+              className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium rounded-full border border-[#F5F5F5] text-[#F5F5F5]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {label}
@@ -110,7 +110,7 @@ export function WorkoutFormFields({
           onKeyDown={onTypeKeyDown}
           onBlur={onTypeBlur}
           placeholder="e.g. Strength, Cardio, Outdoor — press Enter to add"
-          className="w-full bg-transparent border-b-2 border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[14px] pb-2 placeholder-[#3A373C] transition-colors duration-150"
+          className="w-full bg-transparent border-b-2 border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[14px] pb-2 placeholder-[#3A373C] transition-colors duration-150"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         />
         <p
@@ -134,7 +134,7 @@ export function WorkoutFormFields({
                   key={label}
                   type="button"
                   onClick={() => onAddType(label)}
-                  className="px-3 py-1 text-[11px] font-medium rounded-full border border-[#3A373C] text-[#A09EA3] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors duration-150"
+                  className="px-3 py-1 text-[11px] font-medium rounded-full border border-[#3A373C] text-[#A09EA3] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors duration-150"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {label}
@@ -161,7 +161,7 @@ export function WorkoutFormFields({
           aria-checked={isPublic}
           onClick={() => onIsPublicChange(!isPublic)}
           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-            isPublic ? 'bg-[#C8F04D]' : 'bg-[#3A373C]'
+            isPublic ? 'bg-[#F5F5F5]' : 'bg-[#3A373C]'
           }`}
         >
           <span

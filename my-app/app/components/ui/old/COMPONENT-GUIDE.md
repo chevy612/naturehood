@@ -52,7 +52,7 @@ import {
 ```tsx
 tokens.color.ink        // #141115 - Dark background
 tokens.color.cloud      // #F5F5F5 - Light background
-tokens.color.accent     // #C8F04D - Electric lime
+tokens.color.accent     // #F5F5F5 - Electric lime
 tokens.color.surface1   // #1E1B1F - Dark surface
 tokens.color.surface2   // #2A272C - Darker surface
 ```

@@ -70,8 +70,8 @@ export function InputField({
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
         <label
-          className="text-xs font-semibold uppercase tracking-widest text-[#141115]"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="text-[11px] font-normal uppercase tracking-[0.04em] text-[#141115]"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           {label}
         </label>
@@ -82,14 +82,14 @@ export function InputField({
         onChange={onChange}
         placeholder={placeholder}
         className={`
-          w-full bg-transparent border-b-2 py-3 px-0
-          text-[#141115] text-base placeholder:text-[#6B6870]
+          w-full bg-[#F5F5F5] border rounded-lg px-[14px] py-3
+          text-[#141115] text-[14px] placeholder:text-[#6B6870]
           outline-none
           [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-          transition-all duration-200
+          transition-colors duration-200
           ${error
             ? "border-red-400 focus:border-red-500"
-            : "border-[#6B6870] focus:border-[#141115]"
+            : "border-[#3D3940] focus:border-[#141115]"
           }
         `}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -109,8 +109,8 @@ export function TextArea({ label, placeholder, value, onChange, rows = 4, error 
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
         <label
-          className="text-xs font-semibold uppercase tracking-widest text-[#141115]"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="text-[11px] font-normal uppercase tracking-[0.04em] text-[#141115]"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           {label}
         </label>
@@ -153,8 +153,8 @@ export function SelectField({
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
         <label
-          className="text-xs font-semibold uppercase tracking-widest text-[#141115]"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="text-[11px] font-normal uppercase tracking-[0.04em] text-[#141115]"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           {label}
         </label>
@@ -224,7 +224,7 @@ export function Checkbox({ label, checked, onChange }: CheckboxProps) {
             >
               <path
                 d="M3 8l3.5 3.5L13 5"
-                stroke="#C8F04D"
+                stroke="#F5F5F5"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -273,10 +273,10 @@ export function InputDark({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
-        {label} {required && <span className="text-[#C8F04D]">*</span>}
+        {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
       <input
         id={name}
@@ -285,10 +285,8 @@ export function InputDark({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full bg-transparent border-b-2 py-3 px-0 text-[15px] text-white placeholder:text-[#3A373C] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-colors duration-200 ${
-          error
-            ? "border-[#FF4D4D] focus:border-[#FF4D4D]"
-            : "border-[#3A373C] focus:border-[#C8F04D]"
+        className={`w-full bg-[#1E1B1F] border-none rounded-full px-6 py-3.5 text-[14px] text-white placeholder:text-[#6B6870] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all duration-200 focus:ring-1 focus:ring-white/20 ${
+          error ? "ring-1 ring-[#FF4D4D]" : ""
         }`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
@@ -323,8 +321,8 @@ export function SelectDark({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         {label}
       </label>
@@ -334,10 +332,8 @@ export function SelectDark({
           name={name}
           value={value}
           onChange={onChange}
-          className={`w-full bg-transparent border-b-2 py-3 pr-8 appearance-none cursor-pointer text-[15px] text-white outline-none transition-colors duration-200 ${
-            error
-              ? "border-[#FF4D4D]"
-              : "border-[#3A373C] focus:border-[#C8F04D]"
+          className={`w-full bg-[#1E1B1F] border-none rounded-full px-6 py-3.5 pr-10 appearance-none cursor-pointer text-[14px] text-white outline-none transition-all duration-200 focus:ring-1 focus:ring-white/20 ${
+            error ? "ring-1 ring-[#FF4D4D]" : ""
           }`}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
@@ -351,7 +347,7 @@ export function SelectDark({
             </option>
           ))}
         </select>
-        <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#6B6870]">
+        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#6B6870]">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M4 6l4 4 4-4"
@@ -398,10 +394,10 @@ export function TextAreaDark({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
-        {label} {required && <span className="text-[#C8F04D]">*</span>}
+        {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
       <textarea
         id={name}
@@ -410,10 +406,8 @@ export function TextAreaDark({
         onChange={onChange}
         placeholder={placeholder}
         rows={rows}
-        className={`w-full bg-[#1E1B1F] border p-3 text-[15px] text-white placeholder:text-[#3A373C] outline-none resize-none transition-colors duration-200 ${
-          error
-            ? "border-[#FF4D4D] focus:border-[#FF4D4D]"
-            : "border-[#3A373C] focus:border-[#C8F04D]"
+        className={`w-full bg-[#1E1B1F] border-none rounded-2xl px-6 py-4 text-[14px] text-white placeholder:text-[#6B6870] outline-none resize-none transition-all duration-200 focus:ring-1 focus:ring-white/20 ${
+          error ? "ring-1 ring-[#FF4D4D]" : ""
         }`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
@@ -453,7 +447,7 @@ export function CheckboxDark({
           <span
             className={`block w-5 h-5 border-2 transition-all duration-200 ${
               checked
-                ? "bg-[#C8F04D] border-[#C8F04D]"
+                ? "bg-[#F5F5F5] border-[#F5F5F5]"
                 : "bg-transparent border-[#3A373C] group-hover:border-[#6B6870]"
             }`}
           >

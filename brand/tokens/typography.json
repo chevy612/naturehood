@@ -1,0 +1,116 @@
+{
+  "$description": "NATUREHOOD typography — 2-font system: Sk Modernist (display) + DM Sans (everything else)",
+  "fonts": {
+    "display": {
+      "value": "Sk Modernist",
+      "type": "fontFamily",
+      "description": "Display headings (hero, h1, h2) + labels/eyebrows (.nh-label). Loaded via @font-face from /fonts/sk-modernist/",
+      "weights": [400, 700],
+      "files": {
+        "400": "/fonts/sk-modernist/Sk-Modernist-Regular.otf",
+        "700": "/fonts/sk-modernist/Sk-Modernist-Bold.otf"
+      },
+      "mobile": {
+        "regular": "SkModernist_400Regular",
+        "bold": "SkModernist_700Bold"
+      }
+    },
+    "body": {
+      "value": "DM Sans",
+      "type": "fontFamily",
+      "description": "Everything else — h3, body, buttons, labels, nav, forms. Loaded via next/font (web) or expo-font (mobile)",
+      "weights": [300, 400, 500, 600, 700, 800],
+      "mobile": {
+        "light": "DMSans_300Light",
+        "regular": "DMSans_400Regular",
+        "medium": "DMSans_500Medium",
+        "semibold": "DMSans_600SemiBold",
+        "bold": "DMSans_700Bold",
+        "extrabold": "DMSans_800ExtraBold"
+      }
+    }
+  },
+  "scale": {
+    "hero": {
+      "family": "display",
+      "fontSize": { "min": 52, "max": 96, "fluid": "9vw", "mobile": 40 },
+      "weight": 700,
+      "lineHeight": 0.95,
+      "letterSpacing": "-0.02em",
+      "cssClass": "nh-hero",
+      "description": "Hero headlines — landing page main heading"
+    },
+    "h1": {
+      "family": "display",
+      "fontSize": { "min": 38, "max": 60, "fluid": "5.5vw", "mobile": 32 },
+      "weight": 700,
+      "lineHeight": 1.0,
+      "letterSpacing": "-0.02em",
+      "cssClass": "nh-h1",
+      "description": "Page-level headings"
+    },
+    "h2": {
+      "family": "display",
+      "fontSize": { "min": 26, "max": 40, "fluid": "4vw", "mobile": 24 },
+      "weight": 700,
+      "lineHeight": 1.05,
+      "letterSpacing": "-0.015em",
+      "cssClass": "nh-h2",
+      "description": "Section headings"
+    },
+    "h3": {
+      "family": "body",
+      "fontSize": { "min": 20, "max": 28, "fluid": "3vw", "mobile": 20 },
+      "weight": 600,
+      "lineHeight": 1.1,
+      "letterSpacing": "-0.01em",
+      "cssClass": "nh-h3",
+      "description": "Sub-section headings, card titles"
+    },
+    "label": {
+      "family": "display",
+      "fontSize": { "min": 11, "mobile": 11 },
+      "weight": 400,
+      "lineHeight": 1.4,
+      "letterSpacing": "0.04em",
+      "textTransform": "uppercase",
+      "cssClass": "nh-label",
+      "description": "Sk Modernist eyebrow — section labels, card roles, form field labels, category tags"
+    },
+    "body": {
+      "family": "body",
+      "fontSize": { "min": 16, "mobile": 16 },
+      "weight": 400,
+      "lineHeight": 1.75,
+      "letterSpacing": "-0.2px",
+      "cssClass": "nh-body",
+      "description": "Standard body text — DM Sans Regular 16/28"
+    },
+    "bodyLarge": {
+      "family": "body",
+      "fontSize": { "min": 18, "mobile": 18 },
+      "weight": 400,
+      "lineHeight": 1.75,
+      "letterSpacing": "0",
+      "description": "Lead paragraphs, intro text"
+    },
+    "small": {
+      "family": "body",
+      "fontSize": { "min": 13, "mobile": 13 },
+      "weight": 400,
+      "lineHeight": 1.65,
+      "letterSpacing": "0",
+      "cssClass": "nh-small",
+      "description": "Secondary text, metadata, form hints"
+    },
+    "caption": {
+      "family": "body",
+      "fontSize": { "min": 11, "mobile": 11 },
+      "weight": 400,
+      "lineHeight": 1.5,
+      "letterSpacing": "0.06em",
+      "cssClass": "nh-caption",
+      "description": "Timestamps, fine print, footer text"
+    }
+  }
+}

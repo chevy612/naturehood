@@ -34,8 +34,8 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       {/* Session type */}
       <div>
         <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Session Type
         </p>
@@ -47,8 +47,8 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
               onClick={() => onChange({ session_type: value })}
               className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] border transition-colors duration-150 ${
                 details.session_type === value
-                  ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
-                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#C8F04D]/50 hover:text-[#A09EA3]'
+                  ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
+                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#F5F5F5]/50 hover:text-[#A09EA3]'
               }`}
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
@@ -61,8 +61,8 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       {/* Perceived intensity */}
       <div>
         <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Intensity
         </p>
@@ -74,8 +74,8 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
               onClick={() => onChange({ perceived_intensity: details.perceived_intensity === value ? null : value })}
               className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] border transition-colors duration-150 ${
                 details.perceived_intensity === value
-                  ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
-                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#C8F04D]/50 hover:text-[#A09EA3]'
+                  ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
+                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#F5F5F5]/50 hover:text-[#A09EA3]'
               }`}
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
@@ -88,8 +88,8 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       {/* Readiness */}
       <div>
         <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Readiness
         </p>
@@ -101,8 +101,8 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
               onClick={() => onChange({ readiness_feel: details.readiness_feel === feel ? null : feel })}
               className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] border transition-colors duration-150 ${
                 details.readiness_feel === feel
-                  ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
-                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#C8F04D]/50 hover:text-[#A09EA3]'
+                  ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
+                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#F5F5F5]/50 hover:text-[#A09EA3]'
               }`}
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
@@ -128,7 +128,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
                 readiness_pain_score: e.target.value === '' ? null : Math.min(10, Math.max(0, Number(e.target.value))),
               })
             }
-            className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[13px] px-3 py-2 transition-colors duration-150 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-20 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[13px] px-3 py-2 transition-colors duration-150 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           />
         </div>
@@ -137,8 +137,8 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       {/* Session notes */}
       <div>
         <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Session Notes
         </p>
@@ -147,7 +147,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
           onChange={(e) => onChange({ session_notes: e.target.value || null })}
           placeholder="AI summary or your own notes…"
           rows={3}
-          className="w-full bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[13px] p-3 placeholder-[#3A373C] transition-colors duration-150 resize-none leading-relaxed"
+          className="w-full bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[13px] p-3 placeholder-[#3A373C] transition-colors duration-150 resize-none leading-relaxed"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         />
       </div>
@@ -160,7 +160,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
           </span>
           <span
             className={`text-[11px] font-semibold ${
-              details.parser_confidence >= 0.8 ? 'text-[#C8F04D]' :
+              details.parser_confidence >= 0.8 ? 'text-[#F5F5F5]' :
               details.parser_confidence >= 0.6 ? 'text-[#A09EA3]' : 'text-[#FF4D4D]'
             }`}
             style={{ fontFamily: "'DM Sans', sans-serif" }}

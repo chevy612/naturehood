@@ -50,30 +50,30 @@ function Arrow({ dark = false }: { dark?: boolean }) {
 // BUTTON — PRIMARY
 // ─────────────────────────────────────────────
 
-export function ButtonPrimary({ children, onClick, disabled, fullWidth, className = "", type = "button" }: ButtonBaseProps) {
+export function ButtonPrimary({ children, onClick, disabled, fullWidth, variant = "black", className = "", type = "button" }: ButtonBaseProps) {
+  const isWhite = variant === "white";
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
       className={`
-        group relative inline-flex items-center justify-center gap-2
-        bg-[#141115] text-[#C8F04D]
-        px-5 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4
-        text-xs sm:text-sm font-semibold tracking-widest uppercase
-        overflow-hidden
-        transition-all duration-300 ease-out
-        hover:bg-[#1E1B1F]
-        active:scale-[0.97]
-        disabled:opacity-40 disabled:cursor-not-allowed
+        inline-flex flex-row items-center justify-center gap-2.5
+        ${isWhite
+          ? "bg-[#F5F5F5] text-black hover:bg-[#F5F5F5]/80 active:bg-[#F5F5F5]/60"
+          : "bg-black text-[#F5F5F5] hover:bg-black/60 active:bg-black/30"}
+        px-5 py-3 sm:px-6 sm:py-3.5
+        text-[16px] leading-[22px] sm:leading-[24px] font-medium
+        rounded-full
+        transition-colors duration-200 ease-out
+        disabled:bg-[#6B6870] disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
         ${className}
       `}
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
-      <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#C8F04D] transition-all duration-500 group-hover:w-full" />
       {children}
-      <Arrow />
     </button>
   );
 }
@@ -95,15 +95,15 @@ export function ButtonSecondary({ children, onClick, disabled, fullWidth, varian
         border ${isWhite ? "border-[#E8E8E8] text-[#E8E8E8]" : "border-[#141115] text-[#141115]"} bg-transparent
         px-5 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4
         text-xs sm:text-sm font-semibold tracking-widest uppercase
-        overflow-hidden
+        rounded-full overflow-hidden
         transition-all duration-300 ease-out
-        ${isWhite ? "hover:bg-[#E8E8E8] hover:text-[#141115]" : "hover:bg-[#141115] hover:text-[#C8F04D]"}
+        ${isWhite ? "hover:bg-[#E8E8E8] hover:text-[#141115]" : "hover:bg-[#141115] hover:text-[#F5F5F5]"}
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
         ${className}
       `}
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {children}
       <Arrow />
@@ -126,14 +126,14 @@ export function ButtonGhost({ children, onClick, disabled, className = "", type 
         text-sm font-semibold tracking-wider uppercase text-[#141115]
         relative pb-0.5
         transition-all duration-200
-        hover:text-[#C8F04D]
+        hover:text-[#F5F5F5]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${className}
       `}
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {children}
-      <span className="absolute bottom-0 left-0 h-px w-0 bg-[#C8F04D] transition-all duration-300 group-hover:w-full" />
+      <span className="absolute bottom-0 left-0 h-px w-0 bg-[#F5F5F5] transition-all duration-300 group-hover:w-full" />
     </button>
   );
 }
@@ -150,17 +150,18 @@ export function ButtonAccent({ children, onClick, disabled, fullWidth, className
       disabled={disabled}
       className={`
         group relative inline-flex items-center justify-center gap-2
-        bg-[#C8F04D] text-[#141115]
+        bg-[#F5F5F5] text-[#141115]
         px-4 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4
         text-xs sm:text-sm font-bold tracking-widest uppercase
+        rounded-full
         transition-all duration-300 ease-out
-        hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#C8F04D]/30
+        hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#F5F5F5]/30
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
         ${className}
       `}
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {children}
       <Arrow dark />
@@ -174,7 +175,7 @@ export function ButtonAccent({ children, onClick, disabled, fullWidth, className
 
 export function ButtonIcon({ icon, onClick, label, variant = "outline" }: ButtonIconProps) {
   const base =
-    "inline-flex items-center justify-center w-11 h-11 transition-all duration-200 active:scale-95";
+    "inline-flex items-center justify-center w-11 h-11 rounded-lg transition-all duration-200 active:scale-95";
   const variants: Record<NonNullable<ButtonIconProps["variant"]>, string> = {
     outline: "border border-[#141115] text-[#141115] hover:bg-[#141115] hover:text-white",
     solid: "bg-[#141115] text-white hover:bg-[#1E1B1F]",
@@ -202,9 +203,9 @@ export function ButtonTab({ children, active, onClick }: ButtonTabProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex-1 px-6 py-4 text-[11px] font-semibold tracking-[0.2em] uppercase transition-all duration-200 ${
+      className={`flex-1 px-4 py-3 text-[10px] sm:px-6 sm:py-4 sm:text-[11px] font-semibold tracking-[0.2em] uppercase rounded-full transition-all duration-200 ${
         active
-          ? "bg-[#141115] text-[#C8F04D]"
+          ? "bg-[#141115] text-[#F5F5F5]"
           : "bg-white text-[#6B6870] hover:text-[#141115]"
       }`}
       style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -230,7 +231,7 @@ export function ButtonSubmit({ submitting = false, label = "Submit Application",
     <button
       type="submit"
       disabled={submitting}
-      className={`w-full bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
+      className={`w-full bg-white text-black px-6 py-3 text-[13px] sm:px-8 sm:py-3.5 sm:text-[14px] font-semibold rounded-full hover:bg-white/90 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {submitting ? "Submitting..." : label}

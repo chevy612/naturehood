@@ -1,117 +1,241 @@
-"use client";
-
 import Image from "next/image";
-import { Container, Section, ReadableText, Stack, tokens, SectionHeader, ProfileCard } from "@/app/components/ui";
+import { ContentContainer } from "@/app/components/ui/container";
+import { ButtonPrimary } from "@/app/components/ui/buttons";
+
+type ProfilePhotoProps = {
+  src: string;
+  name: string;
+  role: string;
+  /** e.g. "50% 25%" — adjusts which area of the photo is visible */
+  objectPosition?: string;
+  /** 1 = no zoom, 1.2 = 20% closer (crops tighter). Hover adds a further 5%. */
+  zoom?: number;
+  /** width/height ratio, e.g. "2/3" (approved slot). Smaller = taller. Overrides the variant default. */
+  aspectRatio?: string;
+  /** extra classes on the outer element — e.g. responsive `order-*` for grid position */
+  className?: string;
+  variant?: "founder" | "athlete";
+  /** when set, the whole card becomes a link to this Instagram profile */
+  instagramUrl?: string;
+};
+
+function ProfilePhoto({
+  src,
+  name,
+  role,
+  objectPosition = "50% 50%",
+  zoom = 1,
+  aspectRatio,
+  className = "",
+  variant = "founder",
+  instagramUrl,
+}: ProfilePhotoProps) {
+  const v =
+    variant === "founder"
+      ? {
+          // NAT-7 approved slot: tall profile 2/3 (was 284/730)
+          aspect: "2/3",
+          rounded: "rounded-[30px]",
+          // base render width (vw) per breakpoint, before zoom
+          base: { mobile: 50, desktop: 25, breakpoint: 768 },
+        }
+      : {
+          // NAT-7 approved slot: portrait card 4/5 (athlete / discover cards)
+          aspect: "4/5",
+          rounded: "rounded-2xl",
+          base: { mobile: 100, desktop: 33, breakpoint: 640 },
+        };
+
+  // Factor the CSS zoom into `sizes` so next/image fetches a high-enough
+  // resolution source (it can't see the transform: scale() on its own).
+  // OVERSCAN also compensates for `object-cover`: a wide/landscape photo
+  // dropped into a tall frame gets scaled up several times over, so the
+  // pixels actually rendered are far larger than the frame width implies.
+  const OVERSCAN = 4;
+  const vw = (n: number) => Math.min(100, Math.ceil(n * zoom * OVERSCAN));
+  const sizes = `(max-width: ${v.base.breakpoint}px) ${vw(
+    v.base.mobile
+  )}vw, ${vw(v.base.desktop)}vw`;
+
+  const figure = (
+    <figure
+      className={`group relative overflow-hidden ${v.rounded} bg-[#F5F5F5] ${
+        instagramUrl ? "" : className
+      }`}
+      style={{ aspectRatio: (aspectRatio ?? v.aspect).replace("/", " / ") }}
+    >
+      <Image
+        src={src}
+        alt={name}
+        fill
+        sizes={sizes}
+        quality={100}
+        style={{ objectPosition, transformOrigin: objectPosition, ["--zoom" as string]: zoom }}
+        className="object-cover transition-transform duration-500 scale-[var(--zoom)] group-hover:scale-[calc(var(--zoom)*1.05)]"
+      />
+      {/* Caption: rendered only when named — the unnamed mosaic photos stay clean.
+          Always visible on touch/mobile, hover-reveal from lg up. */}
+      {name && (
+        <figcaption className="absolute inset-0 flex items-end bg-gradient-to-t from-[#141115]/80 via-[#141115]/20 to-transparent opacity-100 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100">
+          <div
+            className="p-4 sm:p-5"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            <p className="text-[16px] font-semibold leading-tight text-white">
+              {name}
+            </p>
+            {role && (
+              <p
+                className="mt-1.5 text-[11px] font-normal uppercase tracking-[0.04em] text-white/70"
+                style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+              >
+                {role}
+              </p>
+            )}
+          </div>
+        </figcaption>
+      )}
+    </figure>
+  );
+
+  if (instagramUrl) {
+    return (
+      <a
+        href={instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={name ? `${name} on Instagram` : "Instagram"}
+        className={`block ${className}`}
+      >
+        {figure}
+      </a>
+    );
+  }
+
+  return figure;
+}
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#141115]">
-      {/* Hero */}
-      <Section
-        className="relative pt-32 pb-16 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/backgrounds/fung-bow.jpg')" }}
-      >
-        {/* dark overlay for text readability */}
-        <div className="absolute inset-0 bg-black/60" />
-
-        <Container className="relative z-10">
-          <div className="max-w-3xl">
-            <SectionHeader color="green" content="About Us"/>
-            <h1
-              className="text-white mb-6"
-              style={tokens.typography.h1}
-            >
-              We are problem solvers.
-            </h1>
-            <ReadableText className="text-white/70" size="lg">
-              We build solutions that help athletes and brands unlock value in the sports ecosystem. We start with creative projects, then scale into apps and systems that accelerate the sports economy in Hong Kong and beyond.
-            </ReadableText>
-          </div>
-        </Container>
-      </Section>
-
-      {/* The Team */}
-      <Section className="bg-[#1E1B1F] py-16 sm:py-20">
-        <Container>
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <p
-              className="text-[#C8F04D] mb-4"
-              style={tokens.typography.label}
-            >
-              The Founders
-            </p>
-            <h2
-              className="text-white"
-              style={tokens.typography.h2}
-            >
-              Built by people who get it
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-10 max-w-3xl mx-auto">
-            <ProfileCard
-              layout="horizontal"
-              mode="dark"
-              role={["Sprinter", "Content"]}
-              name="Colin Cheung"
-              description={'I’ve been running track since I was 10, and it’s become a core part of who I am. I founded Naturehood to help athletes (including myself) build personal brands so they can earn what they deserve and sustain a long-term career outside the 9–5 path.'}
-              photo="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/founders/colin-color.png"
-            />
-            <ProfileCard
-              layout="horizontal"
-              mode="dark"
-              name="Chevy Cheung"
-              role={["Sprinter", "Tech"]}
-              description={'I was motivated to start Naturehood after something that happened during my internship at an investment bank. I told my manager I was a sprinter, and he asked, “Can you make money from that?” That question stayed with me. It showed how undervalued sport is in Hong Kong — and it became the reason I started building a platform that helps athletes create real commercial opportunities.'}
-              photo="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/founders/chevy-color.webp"
-            />
-            <ProfileCard
-              layout="horizontal"
-              mode="dark"
-              name="Justin Choi"
-              role={["Runner", "Business"]}
-              description={'I’m a sports lover, and I’ve seen that many sports communities in Hong Kong aren’t very engaging or well-structured. I enjoy taking on challenges, so I founded Naturehood to help change that. Since launching last year, the more my team and I have built, the more meaningful this project has become. My hope is that Naturehood will create real impact for local athletes and sports communities.'}
-              photo="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/founders/justin-color.png"
-            />
-          </div>
-        </Container>
-      </Section>
-
-
-      {/* More Coming Soon */}
-      <Section className="relative overflow-hidden py-16 sm:py-20">
-        {/* Background image */}
-        <Image
-          src="https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/backgrounds/candy-run.jpg"
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority={false}
-        />
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-[#141115]/70" />
-
-        {/* Content */}
-        <Container className="relative z-10">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#C8F04D]/10 flex items-center justify-center">
-              <div className="w-3 h-3 rounded-full bg-[#C8F04D] animate-pulse" />
+    <div className="min-h-screen bg-white text-black">
+      {/* Our Story */}
+      <section className="pt-24 pb-10 md:pt-32 md:pb-0">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
+          <div className="max-w-[900px] mx-auto">
+            <h1 className="nh-h1 text-center mb-10">Our Story</h1>
+            <div className="nh-body space-y-6">
+              <p>
+                Founded in 2025 by a community of Hong Kong track athletes,
+                Naturehood was born out of a shared passion: to redefine how the
+                world sees Track and Field.
+              </p>
+              <p>
+                What started as a mission to broaden the public&apos;s appreciation
+                for the sport quickly evolved into something larger. By
+                highlighting local athletes and capturing the raw energy of Hong
+                Kong&rsquo;s athletic meets, we built a unique narrative
+                style&mdash;shaping track and field not just as a sport, but as a
+                lifestyle and a cultural movement.
+              </p>
+              <p>
+                Today, Naturehood continues to expand its network, bringing you
+                behind the scenes to showcase the passion, grit, and culture of
+                the athletic community.
+              </p>
             </div>
-            <h2
-              className="text-[#E8E8E8] mb-4"
-              style={tokens.typography.h2}
-            >
-              More is coming soon
-            </h2>
-            <ReadableText className="text-[#E8E8E8]">
-              We&apos;re just getting started. Stay tuned as we share more of our
-              journey, our team, and what we&apos;re building for athletes and brands
-              across Hong Kong and beyond.
-            </ReadableText>
           </div>
-        </Container>
-      </Section>
+        </ContentContainer>
+      </section>
+
+      {/* Founders */}
+      <section className="py-[50px] md:py-[80px]">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
+          <h2 className="nh-h2 text-center mb-[30px]">Founders</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-[30px]">
+            <ProfilePhoto
+              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/chevy-1.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY2hldnktMS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIxOTI0LCJleHAiOjQ5MTE2ODU5MjR9.49aLQLykq7n7HxePUz3n9KVQwCIuZhwkvS1035rL0og"
+              name="Chevy Cheung"
+              role="Product"
+              objectPosition="36.5% 34%"
+              zoom={2.5}
+              className="md:order-2"
+              instagramUrl="https://www.instagram.com/j.ccman/"
+            />
+            <ProfilePhoto
+              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/colin-1.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY29saW4tMS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIyMTkxLCJleHAiOjQ5MTE2ODYxOTF9.BcW9XU4XxsrCDvjvkxmxF_Vhi_0AIedGyIIwFSntous"
+              name="Colin Cheung"
+              role="Creative"
+              objectPosition="91.5% 10%"
+              zoom={1.0}
+              className="md:order-3"
+              instagramUrl="https://www.instagram.com/ccwcolin/"
+            />
+            <ProfilePhoto
+              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/chevy-2.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY2hldnktMi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIyNTM4LCJleHAiOjQ5MTE2ODY1Mzh9.mW8lqNxQlpOWNkaIOxlOB8h5uiJN-KU2hqAUJOiFrRI"
+              name=""
+              role=""
+              objectPosition="40% 0%"
+              zoom={1.6}
+              className="md:order-1"
+            />
+            <ProfilePhoto
+              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/colin-2.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY29saW4tMi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjI0NjY3LCJleHAiOjQ5MTE2ODg2Njd9.bWHQdxhcCT9iXw2tTtbTyVyO6zdeLxrgMFS6GGdvUBc"
+              name= ""
+              role=""
+              objectPosition="70% 100%"
+              zoom={1.15}
+              className="md:order-4"
+            />
+          </div>
+        </ContentContainer>
+      </section>
+
+      {/* Call to action */}
+      <section className="py-12 md:py-16">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
+          <div className="flex justify-center">
+            <a
+              href="mailto:hello@naturehoodofficial.com?subject=I%27d%20like%20more%20information&body=Hi%20Naturehood%20team%2C%0A%0AI%27d%20like%20to%20learn%20more%20about%20Naturehood.%0A%0AThanks%2C%0A"
+              className="inline-block"
+            >
+              <ButtonPrimary>Talk to us</ButtonPrimary>
+            </a>
+          </div>
+        </ContentContainer>
+      </section>
+
+      {/* Featuring Athletes */}
+      <section className="py-[50px] md:py-[80px] pb-24">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
+          <h2 className="nh-h2 text-center mb-10">Featuring Athletes</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-[30px]">
+            <ProfilePhoto
+              variant="athlete"
+              src="/about/athlete-2.png"
+              name="Alton Kwok"
+              role="Sprinter"
+              objectPosition="50% 30%"
+              instagramUrl="https://www.instagram.com/altonkwok.track/"
+            />
+            <ProfilePhoto
+              variant="athlete"
+              src="/about/athlete-3.png"
+              name="Jamie Kwok"
+              role="Sprinter"
+              objectPosition="100% 100%"
+              instagramUrl="https://www.instagram.com/jamie.sprints/"
+            />
+            <ProfilePhoto
+              variant="athlete"
+              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/featuring%20athletes/candy.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZlYXR1cmluZyBhdGhsZXRlcy9jYW5keS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkwMDg5NjQ3LCJleHAiOjQ5MTIxNTM2NDd9.hDq7tNva4_GBA5DvuR9sYb_oxCpqwyCDVuCNZ9xDYGo"
+              name="Candy Tsang"
+              role="Mid-Distance Runner"
+              objectPosition="50% 25%"
+              instagramUrl="https://www.instagram.com/hiutung.gameon/"
+            />
+          </div>
+        </ContentContainer>
+      </section>
     </div>
   );
 }

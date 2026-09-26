@@ -1,3 +1,6 @@
 node_modules/
 .DS_Store
 .claude/worktrees/
+
+# Auto-generated brand token artifacts (mobile) — regenerate via `npm run brand:build`
+brand/dist/

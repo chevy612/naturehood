@@ -110,7 +110,7 @@ function SetRow({
             onClick={() => onChange({ [flag]: !set[flag] })}
             className={`px-1.5 py-0.5 text-[9px] font-bold uppercase border transition-colors ${
               set[flag]
-                ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                 : 'border-[#3A373C] text-[#3A373C] hover:border-[#6B6870]'
             }`}
             style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -127,7 +127,7 @@ function SetRow({
         value={set.weight_kg ?? ''}
         placeholder="kg"
         onChange={(e) => onChange({ weight_kg: num(e.target.value) })}
-        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -137,7 +137,7 @@ function SetRow({
         value={set.reps ?? ''}
         placeholder="reps"
         onChange={(e) => onChange({ reps: num(e.target.value) as number | null })}
-        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -149,7 +149,7 @@ function SetRow({
         value={set.effort_percent ?? ''}
         placeholder="%"
         onChange={(e) => onChange({ effort_percent: num(e.target.value) as number | null })}
-        className="w-12 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -159,7 +159,7 @@ function SetRow({
         value={set.notes ?? ''}
         placeholder="note"
         onChange={(e) => onChange({ notes: e.target.value || null })}
-        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
+        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -207,7 +207,7 @@ function ExerciseCard({
           onChange={(e) => onChange({ name: e.target.value })}
           placeholder="Exercise name"
           className="flex-1 bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C]"
-          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
         />
         <button
           type="button"
@@ -251,7 +251,7 @@ function ExerciseCard({
           <button
             type="button"
             onClick={addSet}
-            className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#C8F04D] transition-colors uppercase tracking-[0.1em] font-semibold"
+            className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#F5F5F5] transition-colors uppercase tracking-[0.1em] font-semibold"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             <Plus size={10} /> Add Set
@@ -292,8 +292,8 @@ function BlockCard({
             value={block.block_name ?? ''}
             onChange={(e) => onChange({ block_name: e.target.value || null })}
             placeholder="Block name (optional)"
-            className="w-full bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C] border-b border-[#3A373C] focus:border-[#C8F04D] pb-1 transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+            className="w-full bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C] border-b border-[#3A373C] focus:border-[#F5F5F5] pb-1 transition-colors"
+            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
           />
           <div className="flex flex-wrap gap-1.5">
             {BLOCK_TYPES.map(({ value, label }) => (
@@ -303,7 +303,7 @@ function BlockCard({
                 onClick={() => onChange({ block_type: value })}
                 className={`px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] border transition-colors ${
                   block.block_type === value
-                    ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                     : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -338,7 +338,7 @@ function BlockCard({
       <button
         type="button"
         onClick={addExercise}
-        className="flex items-center gap-2 px-3 py-1.5 border border-[#3A373C] text-[#6B6870] text-[10px] font-semibold uppercase tracking-[0.15em] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 border border-[#3A373C] text-[#6B6870] text-[10px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         <Plus size={10} /> Add Exercise
@@ -365,8 +365,8 @@ export default function StrengthPanel({ blocks, onChange }: Props) {
   return (
     <div className="space-y-4">
       <p
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         Blocks &amp; Exercises
       </p>
@@ -383,7 +383,7 @@ export default function StrengthPanel({ blocks, onChange }: Props) {
       <button
         type="button"
         onClick={addBlock}
-        className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors"
+        className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         <Plus size={12} /> Add Block

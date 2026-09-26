@@ -85,7 +85,7 @@ export default function PrivacyPage() {
           <SubSection title="Technical Data">
             <ul>
               <li>Authentication session tokens (stored as cookies — see our{" "}
-                <a href="/cookies" className="text-[#C8F04D] hover:underline">Cookie Policy</a>)
+                <a href="/cookies" className="text-[#F5F5F5] hover:underline">Cookie Policy</a>)
               </li>
             </ul>
           </SubSection>
@@ -167,8 +167,8 @@ export default function PrivacyPage() {
           </ul>
           <p className="mt-3">
             To exercise any of these rights, contact us at{" "}
-            <a href="mailto:privacy@naturehood.com" className="text-[#C8F04D] hover:underline">
-              privacy@naturehood.co
+            <a href="mailto:privacy@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+              privacy@naturehoodofficial.com
             </a>
             . We will respond within 40 days as required by the PDPO.
           </p>
@@ -195,7 +195,7 @@ export default function PrivacyPage() {
           <p>
             We use essential cookies to maintain your authenticated session. We do not use
             advertising or analytics tracking cookies. For full details, see our{" "}
-            <a href="/cookies" className="text-[#C8F04D] hover:underline">
+            <a href="/cookies" className="text-[#F5F5F5] hover:underline">
               Cookie Policy
             </a>
             .
@@ -226,8 +226,8 @@ export default function PrivacyPage() {
           <ul>
             <li>
               Email:{" "}
-              <a href="mailto:privacy@naturehood.co" className="text-[#C8F04D] hover:underline">
-                privacy@naturehood.com
+              <a href="mailto:privacy@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+                privacy@naturehoodofficial.com
               </a>
             </li>
           </ul>
@@ -237,7 +237,7 @@ export default function PrivacyPage() {
               href="https://www.pcpd.org.hk"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#C8F04D] hover:underline"
+              className="text-[#F5F5F5] hover:underline"
             >
               Office of the Privacy Commissioner for Personal Data (PCPD)
             </a>{" "}

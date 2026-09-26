@@ -42,7 +42,7 @@ function sessionTypeLabel(type: SessionType): string {
 function intensityColor(intensity: PerceivedIntensity | null | undefined): string {
   switch (intensity) {
     case 'max':  return '#FF4D4D'
-    case 'high': return '#C8F04D'
+    case 'high': return '#F5F5F5'
     case 'moderate': return '#A09EA3'
     case 'low': return '#6B6870'
     default: return '#6B6870'
@@ -78,7 +78,7 @@ function SetRow({ set }: { set: AthleteSetLog }) {
           {set.is_warmup && (
             <span
               className="text-[9px] font-semibold tracking-widest uppercase text-[#6B6870] border border-[#3A373C] px-1.5 py-0.5 leading-none"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               WU
             </span>
@@ -86,7 +86,7 @@ function SetRow({ set }: { set: AthleteSetLog }) {
           {set.is_failure && (
             <span
               className="text-[9px] font-semibold tracking-widest uppercase text-[#FF4D4D] border border-[#FF4D4D]/30 px-1.5 py-0.5 leading-none"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               FAIL
             </span>
@@ -94,7 +94,7 @@ function SetRow({ set }: { set: AthleteSetLog }) {
           {set.is_dropset && !set.is_failure && (
             <span
               className="text-[9px] font-semibold tracking-widest uppercase text-[#6B6870] border border-[#3A373C] px-1.5 py-0.5 leading-none"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               DROP
             </span>
@@ -104,7 +104,7 @@ function SetRow({ set }: { set: AthleteSetLog }) {
         {/* Weight */}
         <span
           className="flex-1 text-[13px] font-medium text-white"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {weight ?? '—'}
         </span>
@@ -154,13 +154,13 @@ function ExerciseCard({ ex }: { ex: AthleteExerciseLog }) {
     chips.push(`${(ex as Record<string, unknown>).total_distance_m as number} m`)
 
   return (
-    <div className="border border-[#3A373C] bg-[#1A1719]">
+    <div className="border border-[#3A373C] bg-[#1A1719] rounded-lg">
       {/* Exercise header */}
       <div className="px-4 pt-4 pb-3">
         <div className="flex items-start gap-2">
           <span
             className="text-[14px] font-semibold text-white leading-snug"
-            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
           >
             {ex.name}
           </span>
@@ -216,8 +216,8 @@ function StrengthBlocks({ blocks }: { blocks: AthleteBlock[] }) {
         <div key={i}>
           {block.block_name && (
             <p
-              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {block.block_name}
               {block.block_type === 'emom' && block.emom_interval_seconds && (
@@ -249,11 +249,11 @@ function SprintEfforts({ sprint }: { sprint: SprintSession }) {
         </p>
       )}
       {sprint.efforts.map((effort, i) => (
-        <div key={i} className="border border-[#3A373C] bg-[#1A1719] p-4">
+        <div key={i} className="border border-[#3A373C] bg-[#1A1719] p-4 rounded-lg">
           <div className="flex items-center gap-2 mb-3">
             <span
-              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {effort.drill_type.replace(/_/g, ' ')}
             </span>
@@ -293,7 +293,7 @@ function SprintEfforts({ sprint }: { sprint: SprintSession }) {
 
 function CompetitionResultView({ result }: { result: CompetitionResult }) {
   const statusColor: Record<string, string> = {
-    completed: '#C8F04D',
+    completed: '#F5F5F5',
     dns: '#FF4D4D',
     dnf: '#FF4D4D',
     dq: '#FF4D4D',
@@ -303,7 +303,7 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
     <div className="space-y-4">
       <div className="flex items-center gap-3 flex-wrap">
         {result.event && (
-          <span className="text-[20px] font-semibold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <span className="text-[20px] font-semibold text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             {result.event}
           </span>
         )}
@@ -314,7 +314,7 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
         )}
         <span
           className="text-[11px] font-semibold uppercase tracking-widest"
-          style={{ color: statusColor[result.status] ?? '#A09EA3', fontFamily: "'Inter', sans-serif" }}
+          style={{ color: statusColor[result.status] ?? '#A09EA3', fontFamily: "'DM Sans', sans-serif" }}
         >
           {result.status}
         </span>
@@ -327,7 +327,7 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
       )}
 
       {result.rounds.length > 0 && (
-        <div className="border border-[#3A373C] overflow-hidden">
+        <div className="border border-[#3A373C] overflow-hidden rounded-lg">
           <table className="w-full text-[12px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             <thead>
               <tr className="bg-[#1E1B1F]">
@@ -345,7 +345,7 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
                   </td>
                   <td className="px-4 py-2 text-right font-medium text-white">
                     {round.time_seconds != null ? fmtTime(round.time_seconds) : '—'}
-                    {round.pb && <span className="ml-2 text-[#C8F04D] text-[10px] font-bold">PB</span>}
+                    {round.pb && <span className="ml-2 text-[#F5F5F5] text-[10px] font-bold">PB</span>}
                     {round.sb && !round.pb && <span className="ml-2 text-[#A09EA3] text-[10px] font-bold">SB</span>}
                   </td>
                   <td className="px-4 py-2 text-right text-[#6B6870] italic">{round.notes ?? ''}</td>
@@ -358,10 +358,10 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
 
       {result.best_time_seconds != null && (
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Best
           </span>
-          <span className="text-[18px] font-semibold text-[#C8F04D]" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <span className="text-[18px] font-semibold text-[#F5F5F5]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             {fmtTime(result.best_time_seconds)}
           </span>
         </div>
@@ -378,7 +378,7 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
 
 function PhysioView({ physio }: { physio: PhysioSession }) {
   const clearanceColors: Record<string, string> = {
-    cleared: '#C8F04D',
+    cleared: '#F5F5F5',
     modified_training: '#A09EA3',
     rest_only: '#FF4D4D',
     pending_review: '#6B6870',
@@ -395,7 +395,7 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
         {physio.clearance_status && (
           <span
             className="text-[11px] font-semibold uppercase tracking-widest"
-            style={{ color: clearanceColors[physio.clearance_status] ?? '#A09EA3', fontFamily: "'Inter', sans-serif" }}
+            style={{ color: clearanceColors[physio.clearance_status] ?? '#A09EA3', fontFamily: "'DM Sans', sans-serif" }}
           >
             {physio.clearance_status.replace(/_/g, ' ')}
           </span>
@@ -404,7 +404,7 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
 
       {physio.body_areas && physio.body_areas.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Areas
           </p>
           {physio.body_areas.map((area, i) => (
@@ -430,7 +430,7 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
 
       {physio.exercises && physio.exercises.length > 0 && (
         <div>
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Exercises
           </p>
           {physio.exercises.map((ex, i) => <ExerciseCard key={i} ex={ex} />)}
@@ -451,11 +451,11 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
 
 function StatPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center px-3 py-2 border border-[#3A373C] bg-[#1E1B1F] min-w-[64px]">
-      <span className="text-[18px] font-semibold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="flex flex-col items-center px-3 py-2 border border-[#3A373C] bg-[#1E1B1F] min-w-[64px] rounded-lg">
+      <span className="text-[18px] font-semibold text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         {value}
       </span>
-      <span className="text-[10px] text-[#6B6870] uppercase tracking-widest mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <span className="text-[10px] text-[#6B6870] uppercase tracking-widest mt-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         {label}
       </span>
     </div>

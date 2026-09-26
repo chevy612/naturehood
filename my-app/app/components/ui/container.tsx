@@ -17,6 +17,51 @@ export function Container({ children, className = "" }: ContainerProps) {
 }
 
 // ─────────────────────────────────────────────
+// CONTENT CONTAINER — Landing / marketing pages
+// Outer responsive padding + 1224px inner max-width
+// ─────────────────────────────────────────────
+
+interface ContentContainerProps {
+  children: ReactNode;
+  className?: string;
+  as?: "section" | "div";
+  maxWidth?: string;
+}
+
+export function ContentContainer({
+  children,
+  className = "",
+  as: Tag = "section",
+  maxWidth = "max-w-[1224px]",
+}: ContentContainerProps) {
+  return (
+    <Tag className={`w-full px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] ${className}`}>
+      <div className={`${maxWidth} mx-auto`}>{children}</div>
+    </Tag>
+  );
+}
+
+// ─────────────────────────────────────────────
+// SPLIT GRID — Two-column layout (50/50)
+// Stacks vertically on mobile, side-by-side on md+
+// ─────────────────────────────────────────────
+
+interface SplitGridProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function SplitGrid({ children, className = "" }: SplitGridProps) {
+  return (
+    <div
+      className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-[30px] ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
 // STACK — Vertical spacing between elements
 // ─────────────────────────────────────────────
 

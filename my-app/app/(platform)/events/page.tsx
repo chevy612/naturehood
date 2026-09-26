@@ -48,7 +48,7 @@ export default async function EventsPage() {
       <div className="max-w-2xl mx-auto">
 
         <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-10"
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Events

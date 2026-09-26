@@ -7,17 +7,17 @@
 //   ink:      #141115  (background)
 //   surface1: #1E1B1F  (card)
 //   border:   #3A373C
-//   accent:   #C8F04D  (lime)
+//   accent:   #F5F5F5  (lime)
 //   white:    #FFFFFF
 //   text2:    #A09EA3
 //   muted:    #6B6870
-//   fonts:    Inter (headings) · DM Sans (body)
+//   fonts:    Sk Modernist (display) · DM Sans (everything)
 // ─────────────────────────────────────────────
 
 const GOOGLE_FONTS = `
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 `
 
 // ─── Shared shell ────────────────────────────
@@ -46,7 +46,7 @@ function emailShell(title: string, cardContent: string): string {
           <tr>
             <td style="padding:0 0 28px 0;">
               <span style="
-                font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+                font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
                 font-size:18px;
                 font-weight:700;
                 color:#FFFFFF;
@@ -105,7 +105,7 @@ function cardHeader(label: string, heading: string, body: string): string {
       font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       font-size:10px;
       font-weight:600;
-      color:#C8F04D;
+      color:#F5F5F5;
       letter-spacing:0.3em;
       text-transform:uppercase;
       line-height:1.4;
@@ -113,7 +113,7 @@ function cardHeader(label: string, heading: string, body: string): string {
 
     <h2 style="
       margin:0 0 12px;
-      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       font-size:28px;
       font-weight:700;
       color:#FFFFFF;
@@ -153,10 +153,10 @@ export function otpEmailHtml(code: string): string {
           text-align:center;
         ">
           <span style="
-            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+            font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
             font-size:48px;
             font-weight:700;
-            color:#C8F04D;
+            color:#F5F5F5;
             letter-spacing:0.3em;
             line-height:1;
           ">${code}</span>
@@ -202,7 +202,7 @@ export function welcomeEmailHtml(firstName: string): string {
       font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       font-size:10px;
       font-weight:600;
-      color:#C8F04D;
+      color:#F5F5F5;
       letter-spacing:0.3em;
       text-transform:uppercase;
     ">What's next</p>
@@ -242,7 +242,7 @@ export function passwordResetEmailHtml(resetUrl: string): string {
     <!-- CTA button -->
     <table cellpadding="0" cellspacing="0" border="0" role="presentation">
       <tr>
-        <td style="background-color:#C8F04D;">
+        <td style="background-color:#F5F5F5;">
           <a href="${resetUrl}" target="_blank" style="
             display:inline-block;
             padding:14px 32px;
@@ -265,7 +265,7 @@ export function passwordResetEmailHtml(resetUrl: string): string {
       color:#6B6870;
       line-height:1.6;
     ">If the button doesn't work, copy and paste this link into your browser:<br/>
-    <a href="${resetUrl}" style="color:#C8F04D;text-decoration:underline;word-break:break-all;">${resetUrl}</a></p>
+    <a href="${resetUrl}" style="color:#F5F5F5;text-decoration:underline;word-break:break-all;">${resetUrl}</a></p>
 
     <!-- Expiry note -->
     <p style="
