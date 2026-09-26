@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ContentContainer } from "@/app/components/ui/container";
 import { ButtonPrimary } from "@/app/components/ui/buttons";
 
@@ -13,9 +12,11 @@ type ProfilePhotoProps = {
   zoom?: number;
   /** width/height ratio, e.g. "2/3" (approved slot). Smaller = taller. Overrides the variant default. */
   aspectRatio?: string;
-  /** extra classes on the outer <figure> — e.g. responsive `order-*` for grid position */
+  /** extra classes on the outer element — e.g. responsive `order-*` for grid position */
   className?: string;
   variant?: "founder" | "athlete";
+  /** when set, the whole card becomes a link to this Instagram profile */
+  instagramUrl?: string;
 };
 
 function ProfilePhoto({
@@ -27,6 +28,7 @@ function ProfilePhoto({
   aspectRatio,
   className = "",
   variant = "founder",
+  instagramUrl,
 }: ProfilePhotoProps) {
   const v =
     variant === "founder"
@@ -38,8 +40,8 @@ function ProfilePhoto({
           base: { mobile: 50, desktop: 25, breakpoint: 768 },
         }
       : {
-          // NAT-7 approved slot: tall profile 2/3 (was 388/630)
-          aspect: "2/3",
+          // NAT-7 approved slot: portrait card 4/5 (athlete / discover cards)
+          aspect: "4/5",
           rounded: "rounded-2xl",
           base: { mobile: 100, desktop: 33, breakpoint: 640 },
         };
@@ -55,9 +57,11 @@ function ProfilePhoto({
     v.base.mobile
   )}vw, ${vw(v.base.desktop)}vw`;
 
-  return (
+  const figure = (
     <figure
-      className={`group relative overflow-hidden ${v.rounded} bg-[#F5F5F5] ${className}`}
+      className={`group relative overflow-hidden ${v.rounded} bg-[#F5F5F5] ${
+        instagramUrl ? "" : className
+      }`}
       style={{ aspectRatio: (aspectRatio ?? v.aspect).replace("/", " / ") }}
     >
       <Image
@@ -81,7 +85,10 @@ function ProfilePhoto({
               {name}
             </p>
             {role && (
-              <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70">
+              <p
+                className="mt-1.5 text-[11px] font-normal uppercase tracking-[0.04em] text-white/70"
+                style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+              >
                 {role}
               </p>
             )}
@@ -90,6 +97,22 @@ function ProfilePhoto({
       )}
     </figure>
   );
+
+  if (instagramUrl) {
+    return (
+      <a
+        href={instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={name ? `${name} on Instagram` : "Instagram"}
+        className={`block ${className}`}
+      >
+        {figure}
+      </a>
+    );
+  }
+
+  return figure;
 }
 
 export default function AboutPage() {
@@ -97,7 +120,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-white text-black">
       {/* Our Story */}
       <section className="pt-24 pb-10 md:pt-32 md:pb-0">
-        <ContentContainer as="div">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
           <div className="max-w-[900px] mx-auto">
             <h1 className="nh-h1 text-center mb-10">Our Story</h1>
             <div className="nh-body space-y-6">
@@ -126,24 +149,26 @@ export default function AboutPage() {
 
       {/* Founders */}
       <section className="py-[50px] md:py-[80px]">
-        <ContentContainer as="div">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
           <h2 className="nh-h2 text-center mb-[30px]">Founders</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-[30px]">
             <ProfilePhoto
               src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/chevy-1.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY2hldnktMS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIxOTI0LCJleHAiOjQ5MTE2ODU5MjR9.49aLQLykq7n7HxePUz3n9KVQwCIuZhwkvS1035rL0og"
               name="Chevy Cheung"
-              role="Co-Founder"
-              objectPosition="41.5% 34%"
+              role="Product"
+              objectPosition="36.5% 34%"
               zoom={2.5}
               className="md:order-2"
+              instagramUrl="https://www.instagram.com/j.ccman/"
             />
             <ProfilePhoto
               src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/colin-1.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY29saW4tMS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIyMTkxLCJleHAiOjQ5MTE2ODYxOTF9.BcW9XU4XxsrCDvjvkxmxF_Vhi_0AIedGyIIwFSntous"
               name="Colin Cheung"
-              role="Co-Founder"
-              objectPosition="67.5% 10%"
+              role="Creative"
+              objectPosition="91.5% 10%"
               zoom={1.0}
               className="md:order-3"
+              instagramUrl="https://www.instagram.com/ccwcolin/"
             />
             <ProfilePhoto
               src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/chevy-2.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY2hldnktMi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIyNTM4LCJleHAiOjQ5MTE2ODY1Mzh9.mW8lqNxQlpOWNkaIOxlOB8h5uiJN-KU2hqAUJOiFrRI"
@@ -167,18 +192,21 @@ export default function AboutPage() {
 
       {/* Call to action */}
       <section className="py-12 md:py-16">
-        <ContentContainer as="div">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
           <div className="flex justify-center">
-            <Link href="/signup" className="inline-block">
+            <a
+              href="mailto:hello@naturehoodofficial.com?subject=I%27d%20like%20more%20information&body=Hi%20Naturehood%20team%2C%0A%0AI%27d%20like%20to%20learn%20more%20about%20Naturehood.%0A%0AThanks%2C%0A"
+              className="inline-block"
+            >
               <ButtonPrimary>Talk to us</ButtonPrimary>
-            </Link>
+            </a>
           </div>
         </ContentContainer>
       </section>
 
       {/* Featuring Athletes */}
       <section className="py-[50px] md:py-[80px] pb-24">
-        <ContentContainer as="div">
+        <ContentContainer as="div" maxWidth="max-w-[1370px]">
           <h2 className="nh-h2 text-center mb-10">Featuring Athletes</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-[30px]">
             <ProfilePhoto
@@ -187,20 +215,23 @@ export default function AboutPage() {
               name="Alton Kwok"
               role="Sprinter"
               objectPosition="50% 30%"
+              instagramUrl="https://www.instagram.com/altonkwok.track/"
             />
             <ProfilePhoto
               variant="athlete"
               src="/about/athlete-3.png"
               name="Jamie Kwok"
               role="Sprinter"
-              objectPosition="50% 25%"
+              objectPosition="100% 100%"
+              instagramUrl="https://www.instagram.com/jamie.sprints/"
             />
             <ProfilePhoto
               variant="athlete"
               src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/featuring%20athletes/candy.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZlYXR1cmluZyBhdGhsZXRlcy9jYW5keS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkwMDg5NjQ3LCJleHAiOjQ5MTIxNTM2NDd9.hDq7tNva4_GBA5DvuR9sYb_oxCpqwyCDVuCNZ9xDYGo"
               name="Candy Tsang"
-              role="Mid-Distance Running"
+              role="Mid-Distance Runner"
               objectPosition="50% 25%"
+              instagramUrl="https://www.instagram.com/hiutung.gameon/"
             />
           </div>
         </ContentContainer>

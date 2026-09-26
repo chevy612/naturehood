@@ -54,7 +54,7 @@ Which approved slot each existing image should adopt. This is the guide for the 
 | Home · Concept background | `sections/concept.tsx` | none (`min-h`) | Hero `16/9` (add ratio) |
 | Home · Discover cards | `sections/track-athlete.tsx` | `670/765` | Portrait card `4/5` |
 | Home · What We Do | `sections/what-we-do.tsx` | `640/405` | Landscape `3/2` |
-| About · Athletes | `about/page.tsx` (athlete) | `388/630` | Tall profile `2/3` |
+| About · Athletes | `about/page.tsx` (athlete) | `388/630` | Portrait card `4/5` |
 | About · Founders | `about/page.tsx` (founder) | `284/730` | Tall profile `2/3` ⚠️ |
 | Athletes · cards | `ui/profile-card.tsx` (athlete) | `1/1` → `4/5` | Portrait card `4/5` (all breakpoints) |
 | Avatars | `platform/Avatar.tsx`, `ui/profile-card.tsx` | `1/1` | Square `1/1` (unchanged) |
