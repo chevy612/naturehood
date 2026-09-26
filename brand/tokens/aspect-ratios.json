@@ -1,0 +1,28 @@
+{
+  "$description": "NATUREHOOD approved image aspect ratios — single source of truth (NAT-7). See brand/guidelines/photography.md",
+  "hero": {
+    "value": "16/9",
+    "type": "aspectRatio",
+    "description": "Full-bleed hero / banner, section background cards"
+  },
+  "landscape": {
+    "value": "3/2",
+    "type": "aspectRatio",
+    "description": "Feature / split images, blog & case-study covers"
+  },
+  "portraitCard": {
+    "value": "4/5",
+    "type": "aspectRatio",
+    "description": "Athlete & discover cards, team profiles"
+  },
+  "tallProfile": {
+    "value": "2/3",
+    "type": "aspectRatio",
+    "description": "Full-body athlete / founder portraits"
+  },
+  "square": {
+    "value": "1/1",
+    "type": "aspectRatio",
+    "description": "Avatars, thumbnails, square tiles"
+  }
+}

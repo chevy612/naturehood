@@ -18,7 +18,7 @@ export default function WorkoutLogToggle({ workoutLog }: { workoutLog: string })
         <button
           type="button"
           onClick={() => setShow(v => !v)}
-          className="flex items-center gap-1 text-[11px] text-[#A09EA3] hover:text-[#C8F04D] transition-colors duration-150"
+          className="flex items-center gap-1 text-[11px] text-[#A09EA3] hover:text-[#F5F5F5] transition-colors duration-150"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {show ? 'Hide' : 'View log'}

@@ -55,7 +55,7 @@ export default function RsvpButtons({
           <button
             onClick={handleRsvp}
             disabled={loading || isFull}
-            className="bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[#F5F5F5] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {loading ? 'Signing up…' : 'Sign Up'}

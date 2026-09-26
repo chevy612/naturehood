@@ -1,20 +1,19 @@
-import { HeroSection, IntroSection, HowWeWorkSection, EmailSubscribe } from "@/app/components/sections";
+import {
+  HeroSection,
+  ConceptSection,
+  TrackAthleteSection,
+  WhatWeDoSection,
+  EmailSubscribe,
+} from "@/app/components/sections";
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col justify-start gap-6">
+    <div className="min-h-screen flex flex-col bg-white">
       <HeroSection />
-      <IntroSection />
-      <HowWeWorkSection />
+      <ConceptSection />
+      <TrackAthleteSection />
+      <WhatWeDoSection />
       <EmailSubscribe />
     </div>
   );
 }
-
-
-
-
-
-
-
-

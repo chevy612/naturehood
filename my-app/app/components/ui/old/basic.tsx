@@ -21,7 +21,7 @@ export const tokens = {
     surface2: '#2A272C',
     surface1: '#1E1B1F',
     textSecondary: '#6B6870',
-    accent: "#C8F04D", // electric lime
+    accent: "#F5F5F5", // electric lime
     border:        '#3A373C',
     muted:         '#E8E8E8',
     textDisabled:  '#A09EA3',
@@ -359,7 +359,7 @@ export function ButtonPrimary({ children, onClick, disabled, fullWidth, classNam
       disabled={disabled}
       className={`
         group relative inline-flex items-center justify-center gap-2
-        bg-[#141115] text-[#C8F04D]
+        bg-[#141115] text-[#F5F5F5]
         px-5 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4
         text-xs sm:text-sm font-semibold tracking-widest uppercase
         overflow-hidden
@@ -373,7 +373,7 @@ export function ButtonPrimary({ children, onClick, disabled, fullWidth, classNam
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* animated underline bar */}
-      <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#C8F04D] transition-all duration-500 group-hover:w-full" />
+      <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#F5F5F5] transition-all duration-500 group-hover:w-full" />
       {children}
       <Arrow />
     </button>
@@ -399,7 +399,7 @@ export function ButtonSecondary({ children, onClick, disabled, fullWidth, varian
         text-xs sm:text-sm font-semibold tracking-widest uppercase
         overflow-hidden
         transition-all duration-300 ease-out
-        ${isWhite ? "hover:bg-[#E8E8E8] hover:text-[#141115]" : "hover:bg-[#141115] hover:text-[#C8F04D]"}
+        ${isWhite ? "hover:bg-[#E8E8E8] hover:text-[#141115]" : "hover:bg-[#141115] hover:text-[#F5F5F5]"}
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
@@ -428,7 +428,7 @@ export function ButtonGhost({ children, onClick, disabled, className = "", type 
         text-sm font-semibold tracking-wider uppercase text-[#141115]
         relative pb-0.5
         transition-all duration-200
-        hover:text-[#C8F04D]
+        hover:text-[#F5F5F5]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${className}
       `}
@@ -436,7 +436,7 @@ export function ButtonGhost({ children, onClick, disabled, className = "", type 
     >
       {children}
       {/* animated underline */}
-      <span className="absolute bottom-0 left-0 h-px w-0 bg-[#C8F04D] transition-all duration-300 group-hover:w-full" />
+      <span className="absolute bottom-0 left-0 h-px w-0 bg-[#F5F5F5] transition-all duration-300 group-hover:w-full" />
     </button>
   );
 }
@@ -453,11 +453,11 @@ export function ButtonAccent({ children, onClick, disabled, fullWidth, className
       disabled={disabled}
       className={`
         group relative inline-flex items-center justify-center gap-2
-        bg-[#C8F04D] text-[#141115]
+        bg-[#F5F5F5] text-[#141115]
         px-4 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4
         text-xs sm:text-sm font-bold tracking-widest uppercase
         transition-all duration-300 ease-out
-        hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#C8F04D]/30
+        hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#F5F5F5]/30
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
@@ -661,7 +661,7 @@ export function Checkbox({ label, checked, onChange }: CheckboxProps) {
             >
               <path
                 d="M3 8l3.5 3.5L13 5"
-                stroke="#C8F04D"
+                stroke="#F5F5F5"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -687,9 +687,9 @@ export function Checkbox({ label, checked, onChange }: CheckboxProps) {
 export function PillTag({ label, variant = "default", onRemove }: PillTagProps) {
   const variants: Record<PillVariant, string> = {
     default: "bg-[#F5F5F5] text-[#141115] border border-[#E8E8E8]",
-    active: "bg-[#141115] text-[#C8F04D]",
-    nature: "bg-[#C8F04D]/15 text-[#141115] border border-[#C8F04D]/30",
-    accent: "bg-[#C8F04D] text-[#141115]",
+    active: "bg-[#141115] text-[#F5F5F5]",
+    nature: "bg-[#F5F5F5]/15 text-[#141115] border border-[#F5F5F5]/30",
+    accent: "bg-[#F5F5F5] text-[#141115]",
   };
   return (
     <span
@@ -748,7 +748,7 @@ export function CTAEmailCapture({
         )}
         {submitted ? (
           <div
-            className="flex items-center gap-2 text-[#C8F04D]"
+            className="flex items-center gap-2 text-[#F5F5F5]"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -783,7 +783,7 @@ export function CTAEmailCapture({
             <button
               onClick={handleSubmit}
               className="
-                bg-[#C8F04D] text-[#141115] px-6 py-3.5
+                bg-[#F5F5F5] text-[#141115] px-6 py-3.5
                 text-xs font-bold uppercase tracking-widest
                 hover:bg-[#b8e038] transition-colors duration-200
                 flex-shrink-0
@@ -1042,7 +1042,7 @@ export function HeroTemplate({
       )}
 
       {/* Accent Edge (optional design element) */}
-      <div className="absolute top-0 left-0 w-1 h-full bg-[#C8F04D] z-10" />
+      <div className="absolute top-0 left-0 w-1 h-full bg-[#F5F5F5] z-10" />
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-start pt-20 sm:pt-28 md:pt-32 lg:pt-40 px-6 sm:px-8 md:px-12 lg:px-16">
@@ -1059,7 +1059,7 @@ export function HeroTemplate({
                   fontWeight: '600',
                   letterSpacing: '0.4em',
                   textTransform: 'uppercase',
-                  color: '#C8F04D',
+                  color: '#F5F5F5',
                 }}
               >
                 {eyebrow}
@@ -1179,7 +1179,7 @@ export function FeatureSection({
           {features.map((feature, i) => (
             <div key={i} className="flex flex-col gap-4">
               {feature.icon && (
-                <div className="text-[#C8F04D] w-12 h-12 flex items-center justify-center">
+                <div className="text-[#F5F5F5] w-12 h-12 flex items-center justify-center">
                   {feature.icon}
                 </div>
               )}
@@ -1215,7 +1215,7 @@ export function StatsSection({ stats }: StatsSectionProps) {
           {stats.map((stat, i) => (
             <div key={i} className="text-center">
               <div
-                className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#C8F04D] mb-2"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#F5F5F5] mb-2"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 {stat.value}
@@ -1287,10 +1287,10 @@ export function FeatureCard({
   linkHref,
 }: FeatureCardProps) {
   return (
-    <div className="bg-white p-8 md:p-10 border border-[#E8E8E8] hover:border-[#C8F04D] transition-all duration-300">
+    <div className="bg-white p-8 md:p-10 border border-[#E8E8E8] hover:border-[#F5F5F5] transition-all duration-300">
       {/* Numbered Badge */}
       <div
-        className="inline-block bg-[#141115] text-[#C8F04D] px-3 py-1 mb-6"
+        className="inline-block bg-[#141115] text-[#F5F5F5] px-3 py-1 mb-6"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
         <span className="text-[11px] font-bold tracking-[0.2em]">{number}</span>
@@ -1319,7 +1319,7 @@ export function FeatureCard({
       {linkText && linkHref && (
         <a
           href={linkHref}
-          className="inline-flex items-center text-[10px] font-semibold tracking-[0.2em] uppercase text-[#141115] border-b border-[#C8F04D] pb-0.5 hover:text-[#C8F04D] transition-colors"
+          className="inline-flex items-center text-[10px] font-semibold tracking-[0.2em] uppercase text-[#141115] border-b border-[#F5F5F5] pb-0.5 hover:text-[#F5F5F5] transition-colors"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {linkText} →
@@ -1539,12 +1539,12 @@ export function SuccessModal({
         <div className="text-center">
           {/* Checkmark circle */}
           <div
-            className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${isDark ? "bg-[#C8F04D]" : "bg-[#141115]"}`}
+            className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${isDark ? "bg-[#F5F5F5]" : "bg-[#141115]"}`}
           >
             <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
               <path
                 d="M8 20l8 8L32 12"
-                stroke={isDark ? "#141115" : "#C8F04D"}
+                stroke={isDark ? "#141115" : "#F5F5F5"}
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -1758,7 +1758,7 @@ export default function NaturehoodComponentPreview() {
               { name: "Muted",     hex: "#E8E8E8", border: true  },
               { name: "Text Sec.", hex: "#6B6870", border: false },
               { name: "Disabled",  hex: "#A09EA3", border: false },
-              { name: "Accent",    hex: "#C8F04D", border: false },
+              { name: "Accent",    hex: "#F5F5F5", border: false },
               { name: "Warning",   hex: "#F5A623", border: false },
               { name: "Error",     hex: "#FF4D4D", border: false },
               { name: "Info",      hex: "#4DA6FF", border: false },

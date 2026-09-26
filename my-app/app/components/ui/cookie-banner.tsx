@@ -32,13 +32,13 @@ export default function CookieBanner() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <p className="text-sm text-[#6B6870] leading-relaxed">
           We use essential cookies to keep you signed in.{" "}
-          <Link href="/cookies" className="text-[#C8F04D] hover:underline">
+          <Link href="/cookies" className="text-[#F5F5F5] hover:underline">
             Cookie Policy
           </Link>
         </p>
         <button
           onClick={accept}
-          className="shrink-0 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-black bg-[#C8F04D] hover:bg-[#d4f56a] transition-colors"
+          className="shrink-0 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-black bg-[#F5F5F5] hover:bg-[#d4f56a] transition-colors"
           style={{ fontFamily: tokens.font.heading }}
         >
           Got it

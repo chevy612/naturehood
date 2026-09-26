@@ -51,8 +51,8 @@ function BodyAreaCard({
             value={area.area}
             onChange={(e) => onChange({ area: e.target.value })}
             placeholder="Body area (e.g. left hamstring)"
-            className="w-full bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C] border-b border-[#3A373C] focus:border-[#C8F04D] pb-1 transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+            className="w-full bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C] border-b border-[#3A373C] focus:border-[#F5F5F5] pb-1 transition-colors"
+            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
           />
 
           {/* Side */}
@@ -64,7 +64,7 @@ function BodyAreaCard({
                 onClick={() => onChange({ side: area.side === s ? null : s })}
                 className={`px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] border transition-colors ${
                   area.side === s
-                    ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                     : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -85,7 +85,7 @@ function BodyAreaCard({
                 value={area.pain_score_before ?? ''}
                 placeholder="0–10"
                 onChange={(e) => onChange({ pain_score_before: num(e.target.value) })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -98,7 +98,7 @@ function BodyAreaCard({
                 value={area.pain_score_after ?? ''}
                 placeholder="0–10"
                 onChange={(e) => onChange({ pain_score_after: num(e.target.value) })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
@@ -111,7 +111,7 @@ function BodyAreaCard({
               value={area.injury_name ?? ''}
               placeholder="e.g. hamstring strain"
               onChange={(e) => onChange({ injury_name: e.target.value || null })}
-              className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+              className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             />
           </div>
@@ -123,7 +123,7 @@ function BodyAreaCard({
               value={area.treatment_type ?? ''}
               placeholder="e.g. dry needling, massage"
               onChange={(e) => onChange({ treatment_type: e.target.value || null })}
-              className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors"
+              className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             />
           </div>
@@ -171,8 +171,8 @@ export default function PhysioPanel({
   return (
     <div className="space-y-6">
       <p
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         Physio Session
       </p>
@@ -180,7 +180,7 @@ export default function PhysioPanel({
       {/* Provider + clearance */}
       <div className="space-y-3">
         <div>
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Provider
           </p>
           <div className="flex gap-2">
@@ -191,7 +191,7 @@ export default function PhysioPanel({
                 onClick={() => onDetailsChange({ physio_provider: details.physio_provider === p ? null : p })}
                 className={`px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] border transition-colors capitalize ${
                   details.physio_provider === p
-                    ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                     : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -203,7 +203,7 @@ export default function PhysioPanel({
         </div>
 
         <div>
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Clearance
           </p>
           <div className="flex flex-wrap gap-2">
@@ -214,7 +214,7 @@ export default function PhysioPanel({
                 onClick={() => onDetailsChange({ physio_clearance_status: details.physio_clearance_status === value ? null : value })}
                 className={`px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] border transition-colors ${
                   details.physio_clearance_status === value
-                    ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                     : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -230,14 +230,14 @@ export default function PhysioPanel({
           onChange={(e) => onDetailsChange({ physio_notes: e.target.value || null })}
           placeholder="Physio session notes…"
           rows={2}
-          className="w-full bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-white text-[13px] p-3 placeholder-[#3A373C] transition-colors resize-none leading-relaxed"
+          className="w-full bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[13px] p-3 placeholder-[#3A373C] transition-colors resize-none leading-relaxed"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         />
       </div>
 
       {/* Body areas */}
       <div className="space-y-3">
-        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
           Body Areas
         </p>
         {bodyAreas.map((area, i) => (
@@ -251,7 +251,7 @@ export default function PhysioPanel({
         <button
           type="button"
           onClick={addArea}
-          className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <Plus size={12} /> Add Body Area
@@ -266,7 +266,7 @@ export default function PhysioPanel({
         <button
           type="button"
           onClick={() => onExerciseBlocksChange([{ block_index: 0, block_name: 'Rehab Exercises', block_type: 'main', emom_interval_seconds: null, circuit_rounds: null, intensity_percent: null, notes: null, exercises: [] }])}
-          className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <Plus size={12} /> Add Rehab Exercises

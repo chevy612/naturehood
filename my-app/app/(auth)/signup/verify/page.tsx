@@ -112,7 +112,7 @@ function VerifyForm() {
         {/* Header */}
         <div className="mb-10">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Verify Email
@@ -168,7 +168,7 @@ function VerifyForm() {
           {/* Resend message */}
           {resendMessage && (
             <p
-              className="text-[13px] text-[#C8F04D]"
+              className="text-[13px] text-[#F5F5F5]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {resendMessage}
@@ -188,7 +188,7 @@ function VerifyForm() {
               type="button"
               onClick={handleResend}
               disabled={resendCooldown > 0}
-              className="text-[#C8F04D] hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
+              className="text-[#F5F5F5] hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
             </button>
@@ -203,7 +203,7 @@ export default function VerifyPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#141115] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#C8F04D] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#F5F5F5] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <VerifyForm />

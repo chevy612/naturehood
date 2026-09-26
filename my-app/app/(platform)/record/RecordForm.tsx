@@ -73,7 +73,7 @@ export default function RecordForm({ previousTypes = [] }: { previousTypes?: str
           <button
             type="submit"
             disabled={form.submitting || form.aiSubmitting}
-            className="flex-1 bg-[#C8F04D] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-[#F5F5F5] text-[#141115] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {form.submitting ? 'Saving…' : 'Log Workout'}
@@ -82,7 +82,7 @@ export default function RecordForm({ previousTypes = [] }: { previousTypes?: str
             type="button"
             onClick={() => form.handleLogWithAI(types.workoutTypes, types.commitPendingType)}
             disabled={form.submitting || form.aiSubmitting}
-            className="flex-1 border border-[#C8F04D] text-[#C8F04D] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#C8F04D]/10 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 border border-[#F5F5F5] text-[#F5F5F5] px-8 py-4 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#F5F5F5]/10 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {form.aiSubmitting ? 'Analyzing…' : 'Log with AI'}

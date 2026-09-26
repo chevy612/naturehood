@@ -82,7 +82,7 @@ function AiSection({ ai, showExercises }: { ai: AiStructuredWorkout; showExercis
       {/* Label row */}
       <div className="flex items-center gap-2 mb-1">
         <span
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           AI
@@ -173,7 +173,7 @@ function AnalyzeButton({ id }: { id: string }) {
     <button
       onClick={handleAnalyze}
       disabled={state === 'loading'}
-      className="mt-2 text-[11px] font-medium text-[#C8F04D] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="mt-2 text-[11px] font-medium text-[#F5F5F5] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {state === 'loading' ? 'Analyzing…' : 'Analyze with AI →'}
@@ -193,7 +193,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
     const firstType = log.workout_types?.[0] ?? null
     return (
       <Link href={`/record/${log.id}`} className="block aspect-square">
-        <div className="h-full border border-[#3A373C] bg-[#1A1719] p-4 hover:border-[#C8F04D]/40 transition-colors flex flex-col justify-between">
+        <div className="h-full border border-[#3A373C] bg-[#1A1719] p-4 rounded-lg hover:border-[#F5F5F5]/40 transition-colors flex flex-col justify-between">
           {/* Top: AI indicator + type */}
           <div className="flex items-center justify-between gap-1">
             {firstType && (
@@ -201,7 +201,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
             )}
             {log.ai_structured && (
               <span
-                className="text-[9px] font-semibold tracking-[0.25em] uppercase text-[#C8F04D]"
+                className="text-[9px] font-semibold tracking-[0.25em] uppercase text-[#F5F5F5]"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 AI
@@ -212,7 +212,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
           {/* Middle: title */}
           <p
             className="text-[13px] font-semibold text-white leading-snug line-clamp-2 my-2"
-            style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
           >
             {log.title}
           </p>
@@ -254,14 +254,14 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
       : null
 
     return (
-      <div className="border border-[#3A373C] bg-[#1A1719] p-5">
+      <div className="border border-[#3A373C] bg-[#1A1719] p-5 rounded-lg">
         {/* Header: avatar + name + date */}
         <div className="flex items-start gap-3 mb-4">
           <Avatar name={displayName} size="sm" photoUrl={profile?.avatar_url ?? null} />
           <div className="flex-1 min-w-0">
             <p
               className="text-[13px] font-semibold text-white leading-tight"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {displayName}
             </p>
@@ -286,7 +286,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
         {/* Title */}
         <h3
           className="text-[15px] font-bold text-white mb-3 leading-snug"
-          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
         >
           {log.title}
         </h3>
@@ -314,7 +314,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
         {isTruncated && (
           <button
             onClick={() => setIsExpanded((v) => !v)}
-            className="mt-2 text-[11px] font-medium text-[#C8F04D] hover:text-white transition-colors"
+            className="mt-2 text-[11px] font-medium text-[#F5F5F5] hover:text-white transition-colors"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {isExpanded ? 'Show less' : 'See more'}
@@ -336,7 +336,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
       <div className="flex items-start justify-between gap-4 mb-1">
         <p
           className="text-[14px] font-semibold text-white leading-snug"
-          style={{ fontFamily: "'Inter', sans-serif" }}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {log.title}
         </p>
@@ -350,7 +350,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
           {showEdit && (
             <Link
               href={`/record/${log.id}/edit`}
-              className="text-[11px] font-medium text-[#6B6870] hover:text-[#C8F04D] transition-colors"
+              className="text-[11px] font-medium text-[#6B6870] hover:text-[#F5F5F5] transition-colors"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Edit

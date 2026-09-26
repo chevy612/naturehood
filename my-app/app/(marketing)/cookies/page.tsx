@@ -55,7 +55,7 @@ export default function CookiesPage() {
                 <tr>
                   <td className="px-4 py-3 text-white/80 font-mono text-xs">sb-*-auth-token</td>
                   <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded text-xs bg-[#C8F04D]/10 text-[#C8F04D]">
+                    <span className="px-2 py-0.5 rounded text-xs bg-[#F5F5F5]/10 text-[#F5F5F5]">
                       Essential
                     </span>
                   </td>
@@ -69,7 +69,7 @@ export default function CookiesPage() {
                     sb-*-auth-token-code-verifier
                   </td>
                   <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded text-xs bg-[#C8F04D]/10 text-[#C8F04D]">
+                    <span className="px-2 py-0.5 rounded text-xs bg-[#F5F5F5]/10 text-[#F5F5F5]">
                       Essential
                     </span>
                   </td>
@@ -119,7 +119,7 @@ export default function CookiesPage() {
                 href="https://support.google.com/chrome/answer/95647"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C8F04D] hover:underline"
+                className="text-[#F5F5F5] hover:underline"
               >
                 Google Chrome
               </a>
@@ -129,7 +129,7 @@ export default function CookiesPage() {
                 href="https://support.apple.com/en-gb/guide/safari/sfri11471/mac"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C8F04D] hover:underline"
+                className="text-[#F5F5F5] hover:underline"
               >
                 Safari
               </a>
@@ -139,7 +139,7 @@ export default function CookiesPage() {
                 href="https://support.mozilla.org/en-US/kb/clear-cookies-and-site-data-firefox"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C8F04D] hover:underline"
+                className="text-[#F5F5F5] hover:underline"
               >
                 Firefox
               </a>
@@ -149,7 +149,7 @@ export default function CookiesPage() {
                 href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C8F04D] hover:underline"
+                className="text-[#F5F5F5] hover:underline"
               >
                 Microsoft Edge
               </a>
@@ -167,8 +167,8 @@ export default function CookiesPage() {
         <Section title="6. Contact">
           <p>
             For questions about our use of cookies, contact us at{" "}
-            <a href="mailto:privacy@naturehood.co" className="text-[#C8F04D] hover:underline">
-              privacy@naturehood.com
+            <a href="mailto:privacy@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+              privacy@naturehoodofficial.com
             </a>
             .
           </p>

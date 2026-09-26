@@ -50,7 +50,7 @@ function RoundRow({
             onClick={() => onChange({ round_type: rt })}
             className={`px-2 py-0.5 text-[9px] font-bold uppercase border transition-colors ${
               round.round_type === rt
-                ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                 : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
             }`}
             style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -67,7 +67,7 @@ function RoundRow({
         value={round.time_seconds ?? ''}
         placeholder="time (s)"
         onChange={(e) => onChange({ time_seconds: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -78,7 +78,7 @@ function RoundRow({
         value={round.wind_ms ?? ''}
         placeholder="wind"
         onChange={(e) => onChange({ wind_ms: num(e.target.value) })}
-        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -88,7 +88,7 @@ function RoundRow({
         value={round.ranking ?? ''}
         placeholder="rank"
         onChange={(e) => onChange({ ranking: num(e.target.value) as number | null })}
-        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -100,7 +100,7 @@ function RoundRow({
           onClick={() => onChange({ [flag]: !round[flag] })}
           className={`px-2 py-1 text-[9px] font-bold uppercase border transition-colors ${
             round[flag]
-              ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+              ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
               : 'border-[#3A373C] text-[#3A373C] hover:border-[#6B6870]'
           }`}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -115,7 +115,7 @@ function RoundRow({
         value={round.notes ?? ''}
         placeholder="note"
         onChange={(e) => onChange({ notes: e.target.value || null })}
-        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
+        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
 
@@ -167,8 +167,8 @@ export default function CompetitionPanel({ result, onChange }: Props) {
   return (
     <div className="space-y-6">
       <p
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         Competition Details
       </p>
@@ -197,7 +197,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
 
       {/* Status */}
       <div>
-        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
           Status
         </p>
         <div className="flex gap-2">
@@ -208,7 +208,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
               onClick={() => onChange({ status: s })}
               className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] border transition-colors ${
                 result.status === s
-                  ? 'bg-[#C8F04D] border-[#C8F04D] text-[#141115]'
+                  ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
                   : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
               }`}
               style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -223,7 +223,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
             value={result.dns_reason ?? ''}
             placeholder="DNS reason"
             onChange={(e) => onChange({ dns_reason: e.target.value || null })}
-            className="mt-2 w-full bg-transparent border border-[#3A373C] focus:border-[#C8F04D] outline-none text-[12px] text-white px-3 py-2 transition-colors"
+            className="mt-2 w-full bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-3 py-2 transition-colors"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           />
         )}
@@ -231,7 +231,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
 
       {/* Rounds */}
       <div>
-        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
           Rounds
         </p>
         <div className="flex items-center gap-2 pb-1">
@@ -253,7 +253,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
         <button
           type="button"
           onClick={addRound}
-          className="mt-3 flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#C8F04D] hover:text-[#C8F04D] transition-colors"
+          className="mt-3 flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <Plus size={12} /> Add Round

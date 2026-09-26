@@ -1,0 +1,40 @@
+{
+  "$description": "NATUREHOOD spacing scale — platform-agnostic base values (in px). Build scripts convert to platform-specific formats.",
+  "scale": {
+    "xs":  { "value": 4,  "type": "spacing", "description": "Micro spacing — icon gaps, tight padding" },
+    "sm":  { "value": 8,  "type": "spacing", "description": "Small — inner padding, list gaps" },
+    "md":  { "value": 16, "type": "spacing", "description": "Medium — card padding, form field gaps" },
+    "lg":  { "value": 24, "type": "spacing", "description": "Large — section inner padding" },
+    "xl":  { "value": 32, "type": "spacing", "description": "Extra large — major section gaps" },
+    "2xl": { "value": 48, "type": "spacing", "description": "Double extra large — page-level spacing" },
+    "3xl": { "value": 64, "type": "spacing", "description": "Hero spacing, major vertical gaps" },
+    "4xl": { "value": 96, "type": "spacing", "description": "Maximum section spacing" }
+  },
+  "layout": {
+    "containerPadding": {
+      "mobile": 24,
+      "tablet": 48,
+      "desktop": 108,
+      "description": "Horizontal padding for ContentContainer"
+    },
+    "maxContentWidth": {
+      "value": 1224,
+      "description": "Max inner width for ContentContainer"
+    },
+    "maxPageWidth": {
+      "value": 672,
+      "description": "Max width for platform pages (max-w-2xl)"
+    }
+  },
+  "section": {
+    "web": {
+      "normal": "py-6 md:py-[30px]",
+      "description": "Vertical padding between marketing sections"
+    },
+    "mobile": {
+      "normal": 24,
+      "large": 48,
+      "description": "Vertical padding between mobile screens/sections"
+    }
+  }
+}

@@ -63,7 +63,7 @@ export default async function EventDetailPage({
       <div className="max-w-2xl mx-auto">
 
         <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-10"
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Event
@@ -72,7 +72,7 @@ export default async function EventDetailPage({
         {/* Title */}
         <h1
           className="text-[28px] font-bold text-white leading-tight mb-6"
-          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
         >
           {event.title}
         </h1>

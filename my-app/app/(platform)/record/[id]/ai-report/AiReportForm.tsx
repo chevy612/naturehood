@@ -35,7 +35,7 @@ export default function AiReportForm({
       <div className="space-y-2">
         <h2
           className="text-[18px] font-bold text-white"
-          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
         >
           {workout.title}
         </h2>
@@ -140,7 +140,7 @@ export default function AiReportForm({
           type="button"
           onClick={form.handleSave}
           disabled={form.saving}
-          className="px-8 py-3 bg-[#C8F04D] text-[#141115] text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-8 py-3 bg-[#F5F5F5] text-[#141115] text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {form.saving ? 'Saving…' : 'Confirm & Save'}

@@ -52,7 +52,7 @@ export default async function PublicProfilePage({
         {/* Name */}
         <h1
           className="text-[28px] font-bold text-white leading-tight mb-1"
-          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
         >
           {name}
         </h1>

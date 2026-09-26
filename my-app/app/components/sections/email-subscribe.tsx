@@ -18,11 +18,13 @@ export default function EmailSubscribe() {
   };
 
   return (
-    <CTAEmailCapture
-      headline="Join the Naturehood community"
-      subtext="Get exclusive updates on athlete collaborations, brand partnerships, and product news"
-      placeholder="Enter your email"
-      onSubmit={handleEmailSubmit}
-    />
+    <section id="subscribe" style={{ scrollMarginTop: "96px" }}>
+      <CTAEmailCapture
+        headline="Join the Naturehood community"
+        subtext="Get exclusive updates on athlete collaborations, brand partnerships, and product news"
+        placeholder="Enter your email"
+        onSubmit={handleEmailSubmit}
+      />
+    </section>
   );
 }

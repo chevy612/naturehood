@@ -9,7 +9,7 @@ export default async function RecordPage() {
       <div className="max-w-2xl mx-auto">
 
         <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-10"
+          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           Record
@@ -17,7 +17,7 @@ export default async function RecordPage() {
 
         <h1
           className="text-2xl font-bold text-white mb-8"
-          style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
         >
           Log a Workout
         </h1>

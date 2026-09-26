@@ -42,7 +42,7 @@ export default async function AccountPage() {
         {/* ── Top bar ── */}
         <div className="flex items-center justify-between mb-8">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D]"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             My Account
@@ -83,15 +83,15 @@ export default async function AccountPage() {
         <div className="flex gap-3 mb-6">
           <Link
             href="/record"
-            className="flex-1 py-3 border border-[#3A373C] text-center text-white text-[12px] font-semibold uppercase tracking-widest hover:border-[#C8F04D]/40 hover:text-[#C8F04D] transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            className="flex-1 py-3 border border-[#3A373C] text-center text-white text-[12px] font-semibold uppercase tracking-widest hover:border-[#F5F5F5]/40 hover:text-[#F5F5F5] transition-colors"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             + Log Workout
           </Link>
           <Link
             href="/record"
-            className="flex-1 py-3 bg-[#C8F04D] text-center text-[#141115] text-[12px] font-bold uppercase tracking-widest hover:bg-white transition-colors"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            className="flex-1 py-3 bg-[#F5F5F5] text-center text-[#141115] text-[12px] font-bold uppercase tracking-widest hover:bg-white transition-colors"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             + Log with AI
           </Link>
@@ -104,7 +104,7 @@ export default async function AccountPage() {
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             No workouts logged yet.{' '}
-            <Link href="/record" className="text-[#C8F04D] hover:underline">
+            <Link href="/record" className="text-[#F5F5F5] hover:underline">
               Log your first workout →
             </Link>
           </p>

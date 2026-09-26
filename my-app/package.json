@@ -11,7 +11,11 @@
     "test:egress": "npx tsx scripts/test-egress-fixes.ts",
     "test:social-api": "npx tsx scripts/test-social-api.ts",
     "lint": "eslint",
-    "build:prod": "NODE_ENV=production next build"
+    "build:prod": "NODE_ENV=production next build",
+    "brand:build": "npm run brand:build:web && npm run brand:build:mobile",
+    "brand:build:web": "npx tsx ../brand/scripts/build-web-tokens.ts",
+    "brand:build:mobile": "npx tsx ../brand/scripts/build-mobile-tokens.ts",
+    "brand:validate": "npx tsx ../brand/scripts/validate-tokens.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
@@ -21,6 +25,7 @@
     "@supabase/supabase-js": "^2.89.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "expo-server-sdk": "^6.1.0",
     "lucide-react": "^0.562.0",
     "next": "^16.1.6",
     "openai": "^6.33.0",

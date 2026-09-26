@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
         {/* Header */}
         <div className="mb-10">
           <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#C8F04D] mb-3"
+            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Account Recovery
@@ -60,9 +60,9 @@ export default function ForgotPasswordPage() {
         {submitted ? (
           /* Success state — always shown regardless of whether email exists */
           <div className="space-y-6">
-            <div className="border border-[#C8F04D]/30 bg-[#C8F04D]/5 p-5">
+            <div className="border border-[#F5F5F5]/30 bg-[#F5F5F5]/5 p-5">
               <p
-                className="text-[13px] text-[#C8F04D] leading-relaxed"
+                className="text-[13px] text-[#F5F5F5] leading-relaxed"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 If an account with that email exists, you&apos;ll receive a
@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
               className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              <Link href="/login" className="text-[#C8F04D] hover:underline">
+              <Link href="/login" className="text-[#F5F5F5] hover:underline">
                 Back to Log In
               </Link>
             </p>
@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
               className="text-center text-[13px] text-[#6B6870]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              <Link href="/login" className="text-[#C8F04D] hover:underline">
+              <Link href="/login" className="text-[#F5F5F5] hover:underline">
                 Back to Log In
               </Link>
             </p>
@@ -160,7 +160,7 @@ function InputDark({
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
-        {label} {required && <span className="text-[#C8F04D]">*</span>}
+        {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
       <input
         id={name}
