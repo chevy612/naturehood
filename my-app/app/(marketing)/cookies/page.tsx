@@ -167,8 +167,8 @@ export default function CookiesPage() {
         <Section title="6. Contact">
           <p>
             For questions about our use of cookies, contact us at{" "}
-            <a href="mailto:privacy@naturehood.co" className="text-[#F5F5F5] hover:underline">
-              privacy@naturehood.com
+            <a href="mailto:privacy@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+              privacy@naturehoodofficial.com
             </a>
             .
           </p>

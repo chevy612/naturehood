@@ -167,8 +167,8 @@ export default function PrivacyPage() {
           </ul>
           <p className="mt-3">
             To exercise any of these rights, contact us at{" "}
-            <a href="mailto:privacy@naturehood.com" className="text-[#F5F5F5] hover:underline">
-              privacy@naturehood.co
+            <a href="mailto:privacy@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+              privacy@naturehoodofficial.com
             </a>
             . We will respond within 40 days as required by the PDPO.
           </p>
@@ -226,8 +226,8 @@ export default function PrivacyPage() {
           <ul>
             <li>
               Email:{" "}
-              <a href="mailto:privacy@naturehood.co" className="text-[#F5F5F5] hover:underline">
-                privacy@naturehood.com
+              <a href="mailto:privacy@naturehoodofficial.com" className="text-[#F5F5F5] hover:underline">
+                privacy@naturehoodofficial.com
               </a>
             </li>
           </ul>

@@ -314,7 +314,7 @@ export default function AboutPage() {
               </ReadableText>
             </Stack>
             <a
-              href="mailto:invest@naturehood.com"
+              href="mailto:invest@naturehoodofficial.com"
               className="inline-block px-8 py-4 bg-[#141115] text-white font-semibold uppercase tracking-wider text-sm hover:bg-[#1E1B1F] transition-colors duration-200"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >

@@ -183,7 +183,7 @@ export default function BusinessPage() {
             className="text-[13px] text-[#6B6870]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Watch for an email from team@naturehood.com
+            Watch for an email from team@naturehoodofficial.com
           </p>
         </div>
       </div>
