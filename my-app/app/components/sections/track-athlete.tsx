@@ -65,12 +65,12 @@ export default function TrackAthleteSection() {
       <SplitGrid>
         <DiscoverCard
           href="/events"
-          image={landingImages.trackMeet}
+          image={landingImages.hero}
           title="Track Meet"
           hint="See upcoming meets"
         />
         <DiscoverCard
-          href="/athletes"
+          href="/about#featuring-athletes"
           image={landingImages.athletes}
           title="Athlete"
           hint="Meet the athletes"

@@ -205,7 +205,7 @@ export default function AboutPage() {
       </section>
 
       {/* Featuring Athletes */}
-      <section className="py-[50px] md:py-[80px] pb-24">
+      <section id="featuring-athletes" className="scroll-mt-28 py-[50px] md:py-[80px] pb-24">
         <ContentContainer as="div" maxWidth="max-w-[1370px]">
           <h2 className="nh-h2 text-center mb-10">Featuring Athletes</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-[30px]">
