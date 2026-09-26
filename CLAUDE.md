@@ -43,8 +43,8 @@ Brand tokens, guidelines, and assets live in `brand/`. Use `/brand` to load desi
 - **Generated web tokens**: `my-app/app/components/ui/tokens.ts` + CSS vars in `globals.css`
 
 ### Key Facts
-- **2-font system**: Sk Modernist (display: hero/h1/h2) + DM Sans (everything else)
-- **Inter has been removed** — all h3, buttons, labels, UI text use DM Sans
+- **2-font system**: Sk Modernist (display: hero/h1/h2 + labels/eyebrows via `.nh-label`) + DM Sans (everything else). Sk Modernist ships only Regular (400) & Bold (700).
+- **Inter has been removed** — h3, buttons, and UI text use DM Sans; labels/eyebrows use Sk Modernist
 - **Accent**: `#F5F5F5` (lime) — CTAs, active states
 - **Dark theme bg**: `#141115` (ink) — platform pages
 - **Light theme bg**: `#F5F5F5` (cloud) or white — marketing pages

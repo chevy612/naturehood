@@ -21,8 +21,11 @@ Used in the `(marketing)` route group — landing pages, about, athletes, busine
 | Disabled text | `#A09EA3` |
 
 ### Typography
-- **Display headings** (hero, h1, h2): Sk Modernist via `.nh-hero`, `.nh-h1`, `.nh-h2` classes
-- **All other text**: DM Sans — h3 (`.nh-h3`), body (`.nh-body`), labels (`.nh-label`), etc.
+- **Display headings** (hero, h1, h2) **& labels/eyebrows** (`.nh-label`): Sk Modernist
+- **All other text**: DM Sans — h3 (`.nh-h3`), body (`.nh-body`), captions, form fields, etc.
+
+  > Labels use Sk Modernist **Regular (400)**, 11px, `0.04em` tracking, uppercase — a calm
+  > eyebrow, not the old wide-tracked look. Compound labels join parts with a `·` middot.
 
 **Headings on dark/image backgrounds**: `.nh-h2 text-white`
 **Headings on light backgrounds**: `.nh-h2 text-black`
@@ -105,7 +108,7 @@ Used in the `(platform)` route group — dashboard, feed, profile, record, event
 
 ### Typography
 - **All text**: `fontFamily: "'DM Sans', sans-serif"` — always set via inline style
-- **Section labels**: `text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]`
+- **Section labels**: `text-[11px] font-normal tracking-[0.04em] uppercase text-[#F5F5F5]` with `fontFamily: "'Sk Modernist', sans-serif"` (or use `.nh-label` / `<SectionHeader>`)
 - **Page headers**: `text-[13px] font-semibold text-white` (DM Sans, `-0.01em` letterSpacing)
 - **Muted metadata**: `text-[12px] text-[#6B6870]` (DM Sans)
 - **Body content**: `text-[13px] text-[#6B6870] leading-relaxed` (DM Sans)

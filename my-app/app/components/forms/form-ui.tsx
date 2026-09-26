@@ -85,8 +85,8 @@ export function FormInput({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase"
-        style={{ fontFamily: "'DM Sans', sans-serif", color: c.label }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase"
+        style={{ fontFamily: "'Sk Modernist', sans-serif", color: c.label }}
       >
         {label} {required && <span style={{ color: c.required }}>*</span>}
       </label>
@@ -160,8 +160,8 @@ export function FormSelect({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase"
-        style={{ fontFamily: "'DM Sans', sans-serif", color: c.label }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase"
+        style={{ fontFamily: "'Sk Modernist', sans-serif", color: c.label }}
       >
         {label} {required && <span style={{ color: c.required }}>*</span>}
       </label>
@@ -264,8 +264,8 @@ export function FormTextArea({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase"
-        style={{ fontFamily: "'DM Sans', sans-serif", color: c.label }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase"
+        style={{ fontFamily: "'Sk Modernist', sans-serif", color: c.label }}
       >
         {label} {required && <span style={{ color: c.required }}>*</span>}
       </label>
@@ -343,8 +343,8 @@ export function FormCheckboxGroup({
   return (
     <div className="flex flex-col gap-3">
       <label
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase"
-        style={{ fontFamily: "'DM Sans', sans-serif", color: c.label }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase"
+        style={{ fontFamily: "'Sk Modernist', sans-serif", color: c.label }}
       >
         {label}
       </label>

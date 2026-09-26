@@ -70,8 +70,8 @@ export function InputField({
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
         <label
-          className="text-xs font-semibold uppercase tracking-widest text-[#141115]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          className="text-[11px] font-normal uppercase tracking-[0.04em] text-[#141115]"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           {label}
         </label>
@@ -109,8 +109,8 @@ export function TextArea({ label, placeholder, value, onChange, rows = 4, error 
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
         <label
-          className="text-xs font-semibold uppercase tracking-widest text-[#141115]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          className="text-[11px] font-normal uppercase tracking-[0.04em] text-[#141115]"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           {label}
         </label>
@@ -153,8 +153,8 @@ export function SelectField({
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
         <label
-          className="text-xs font-semibold uppercase tracking-widest text-[#141115]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          className="text-[11px] font-normal uppercase tracking-[0.04em] text-[#141115]"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           {label}
         </label>
@@ -273,8 +273,8 @@ export function InputDark({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>
@@ -321,8 +321,8 @@ export function SelectDark({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         {label}
       </label>
@@ -394,8 +394,8 @@ export function TextAreaDark({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={name}
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="text-[11px] font-normal tracking-[0.04em] uppercase text-[#6B6870]"
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         {label} {required && <span className="text-[#F5F5F5]">*</span>}
       </label>

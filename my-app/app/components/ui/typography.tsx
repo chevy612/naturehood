@@ -41,18 +41,29 @@ export function ReadableText({
 
 //Section Header//
 interface SectionHeaderProps {
-  content: ReactNode;
+  /** A single label, or an array of segments joined with a `·` middot (compound label). */
+  content: ReactNode | ReactNode[];
   className?: string;
   color?: "green" | "gray";
 }
 
 export function SectionHeader({ content, className = "" ,color = "gray"}: SectionHeaderProps) {
+  // Compound label: join segments with a dimmed middot separator.
+  const body = Array.isArray(content)
+    ? content.map((seg, i) => (
+        <span key={i}>
+          {i > 0 && <span className="mx-2 text-current/40">·</span>}
+          {seg}
+        </span>
+      ))
+    : content;
+
   return (
     <p
-      className={`text-[10px] font-semibold tracking-[0.35em] uppercase mb-4 ${color === "green" ? "text-[#F5F5F5]" : "text-[#6B6870]"} ${className}`}
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
+      className={`text-[11px] font-normal tracking-[0.04em] uppercase mb-4 ${color === "green" ? "text-[#F5F5F5]" : "text-[#6B6870]"} ${className}`}
+      style={{ fontFamily: "'Sk Modernist', sans-serif" }}
     >
-      {content}
+      {body}
     </p>
   );
 }

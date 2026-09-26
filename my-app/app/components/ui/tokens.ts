@@ -106,11 +106,11 @@ export const tokens = {
       marginBottom: "0.75rem",
     },
     label: {
-      fontFamily: "'DM Sans', sans-serif",
-      fontSize: "10px",
-      fontWeight: "600",
+      fontFamily: "'Sk Modernist', sans-serif",
+      fontSize: "11px",
+      fontWeight: "400",
       lineHeight: "1.4",
-      letterSpacing: "0.3em",
+      letterSpacing: "0.04em",
       textTransform: "uppercase" as const,
     },
     body: {

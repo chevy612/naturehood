@@ -205,10 +205,10 @@
 
   /* — Body (DM Sans) — */
   .nh-label {
-    font-family: var(--font-ui), 'DM Sans', system-ui, sans-serif;
-    font-size: 0.625rem;   /* 10px */
-    font-weight: 600;
-    letter-spacing: 0.3em;
+    font-family: var(--font-display), 'Sk Modernist', sans-serif;
+    font-size: 0.6875rem;  /* 11px */
+    font-weight: 400;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--color-text-sec);
   }

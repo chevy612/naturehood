@@ -24,14 +24,14 @@ export function PillTag({ label, variant = "default", size = "md", onRemove }: P
   };
 
   const sizes: Record<PillSize, string> = {
-    sm: "px-2 py-0.5 text-[9px] tracking-[0.2em]",
-    md: "px-3 py-1 text-xs tracking-wider",
+    sm: "px-2 py-0.5 text-[9px] tracking-[0.04em]",
+    md: "px-3 py-1 text-xs tracking-[0.04em]",
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-semibold uppercase rounded-full ${sizes[size]} ${variants[variant]}`}
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
+      className={`inline-flex items-center gap-1.5 font-normal uppercase rounded-full ${sizes[size]} ${variants[variant]}`}
+      style={{ fontFamily: "'Sk Modernist', sans-serif" }}
     >
       {label}
       {onRemove && (

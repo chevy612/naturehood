@@ -4,7 +4,7 @@
     "display": {
       "value": "Sk Modernist",
       "type": "fontFamily",
-      "description": "Display headings only — hero, h1, h2. Loaded via @font-face from /fonts/sk-modernist/",
+      "description": "Display headings (hero, h1, h2) + labels/eyebrows (.nh-label). Loaded via @font-face from /fonts/sk-modernist/",
       "weights": [400, 700],
       "files": {
         "400": "/fonts/sk-modernist/Sk-Modernist-Regular.otf",
@@ -68,14 +68,14 @@
       "description": "Sub-section headings, card titles"
     },
     "label": {
-      "family": "body",
-      "fontSize": { "min": 10, "mobile": 10 },
-      "weight": 600,
+      "family": "display",
+      "fontSize": { "min": 11, "mobile": 11 },
+      "weight": 400,
       "lineHeight": 1.4,
-      "letterSpacing": "0.3em",
+      "letterSpacing": "0.04em",
       "textTransform": "uppercase",
       "cssClass": "nh-label",
-      "description": "Section labels, category tags, eyebrow text"
+      "description": "Sk Modernist eyebrow — section labels, card roles, form field labels, category tags"
     },
     "body": {
       "family": "body",
