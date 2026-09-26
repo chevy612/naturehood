@@ -4,8 +4,7 @@ import { ContentContainer } from "@/app/components/ui/container";
 import { Grid } from "@/app/components/ui/container";
 import { ProfileCard } from "@/app/components/ui/profile-card";
 
-const BASE =
-  "https://jkaucsreqaywqxjwvteh.supabase.co/storage/v1/object/public/public-media/athletes";
+const BASE = "/image/athletes";
 
 const athletes = [
   {

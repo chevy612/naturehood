@@ -10,7 +10,6 @@ import { ButtonPrimary } from "@/app/components/ui/buttons";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Events", href: "/events" },
   { label: "About us", href: "/about" },
 ];
 
@@ -121,7 +120,7 @@ export default function Navigation() {
             })}
           </div>
 
-          <Link href={isLoggedIn ? "/home" : "/signup"} className="shrink-0">
+          <Link href={isLoggedIn ? "/home" : "/#subscribe"} className="shrink-0">
             <ButtonPrimary variant="white">Join us</ButtonPrimary>
           </Link>
         </nav>
@@ -224,7 +223,7 @@ export default function Navigation() {
 
             <div className="mt-8 pt-6 border-t border-white/10">
               <Link
-                href={isLoggedIn ? "/home" : "/signup"}
+                href={isLoggedIn ? "/home" : "/#subscribe"}
                 onClick={closeMobileMenu}
                 className="block"
               >
