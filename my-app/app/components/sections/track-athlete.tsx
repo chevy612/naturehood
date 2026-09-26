@@ -70,7 +70,7 @@ export default function TrackAthleteSection() {
           hint="See upcoming meets"
         />
         <DiscoverCard
-          href="/athletes"
+          href="/about#featuring-athletes"
           image={landingImages.athletes}
           title="Athlete"
           hint="Meet the athletes"
