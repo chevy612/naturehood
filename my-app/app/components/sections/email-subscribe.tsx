@@ -1,20 +1,13 @@
 "use client";
 
 import { CTAEmailCapture } from "@/app/components/layout/email";
-import { createClient } from "@/lib/supabase/client";
+import { subscribeToCommunity } from "./subscribe-actions";
 
 export default function EmailSubscribe() {
   const handleEmailSubmit = async (email: string) => {
-    const supabase = createClient();
-
-    const { error } = await supabase
-      .from("subscribed_email")
-      .insert({ email });
-
-    if (error) {
-      console.error("Subscription error:", error.message);
-      throw new Error(error.message);
-    }
+    const result = await subscribeToCommunity(email);
+    if (!result.ok) throw new Error(result.error);
+    return result.message;
   };
 
   return (
