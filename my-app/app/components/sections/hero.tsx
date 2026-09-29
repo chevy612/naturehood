@@ -43,7 +43,7 @@ export default function HeroSection() {
             </p>
           </div>
           <div className="flex w-full justify-start lg:w-auto lg:shrink-0">
-            <Link href="/signup">
+            <Link href="/#subscribe">
               <ButtonPrimary variant="white">Join us</ButtonPrimary>
             </Link>
           </div>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { createBrowserClient } from "@supabase/ssr";
 import { ButtonPrimary } from "@/app/components/ui/buttons";
 
 const navItems = [
@@ -15,7 +14,6 @@ const navItems = [
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const lastScrollY = useRef(0);
@@ -41,16 +39,6 @@ export default function Navigation() {
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-    supabase.auth.getSession().then(({ data }) => {
-      setIsLoggedIn(!!data.session);
-    });
   }, []);
 
   useEffect(() => {
@@ -120,7 +108,7 @@ export default function Navigation() {
             })}
           </div>
 
-          <Link href={isLoggedIn ? "/home" : "/#subscribe"} className="shrink-0">
+          <Link href="/#subscribe" className="shrink-0">
             <ButtonPrimary variant="white">Join us</ButtonPrimary>
           </Link>
         </nav>
@@ -223,7 +211,7 @@ export default function Navigation() {
 
             <div className="mt-8 pt-6 border-t border-white/10">
               <Link
-                href={isLoggedIn ? "/home" : "/#subscribe"}
+                href="/#subscribe"
                 onClick={closeMobileMenu}
                 className="block"
               >
