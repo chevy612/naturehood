@@ -279,3 +279,73 @@ export function passwordResetEmailHtml(resetUrl: string): string {
 
   return emailShell('Reset your Naturehood password', card)
 }
+
+// ─────────────────────────────────────────────
+// 4. COMMUNITY WELCOME EMAIL (newsletter / "Join us")
+// ─────────────────────────────────────────────
+
+export function communityWelcomeEmailHtml(): string {
+  const card = cardHeader(
+    'Join the Community',
+    'Welcome to Naturehood',
+    "Welcome to Naturehood — the fast-growing startup founded in Hong Kong. We're currently looking for athletes, creators and builders to scale our business. Stay close, and reach out to " +
+      '<a href="mailto:team@naturehoodofficial.com" style="color:#F5F5F5;text-decoration:underline;">team@naturehoodofficial.com</a>' +
+      ' anytime if you come up with a great idea!'
+  )
+
+  return emailShell('Welcome to Naturehood', card)
+}
+
+// ─────────────────────────────────────────────
+// 5. NEW SUBSCRIBER — INTERNAL TEAM NOTIFICATION
+// ─────────────────────────────────────────────
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+export function newSubscriberNotificationEmailHtml(email: string): string {
+  const card = `
+    ${cardHeader(
+      'New Community Member',
+      'New signup',
+      'Someone just joined the Naturehood community. Their email is below:'
+    )}
+
+    <!-- Subscriber email box -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+      <tr>
+        <td style="
+          background-color:#141115;
+          border:1px solid #3A373C;
+          padding:20px 24px;
+          text-align:center;
+        ">
+          <span style="
+            font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+            font-size:20px;
+            font-weight:700;
+            color:#F5F5F5;
+            line-height:1.35;
+            word-break:break-all;
+          ">${escapeHtml(email)}</span>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Note -->
+    <p style="
+      margin:24px 0 0;
+      font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      font-size:13px;
+      color:#6B6870;
+      line-height:1.6;
+    ">Sent automatically when a new member joins via the website. Reply to this email to reach them directly.</p>
+  `
+
+  return emailShell('New Naturehood signup', card)
+}

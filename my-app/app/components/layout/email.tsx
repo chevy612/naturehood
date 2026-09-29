@@ -8,7 +8,7 @@ interface CTAEmailCaptureProps {
   headline?: string;
   subtext?: string;
   placeholder?: string;
-  onSubmit?: (email: string) => Promise<void>;
+  onSubmit?: (email: string) => Promise<string | void>;
 }
 
 export function CTAEmailCapture({
@@ -19,11 +19,31 @@ export function CTAEmailCapture({
 }: CTAEmailCaptureProps) {
   const [email, setEmail] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const handleSubmit = async (): Promise<void> => {
-    if (!email) return;
-    if (onSubmit) await onSubmit(email);
-    setSubmitted(true);
+    if (!email || submitting) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      const result = onSubmit ? await onSubmit(email) : undefined;
+      setMessage(
+        typeof result === "string" && result
+          ? result
+          : "You're in. We'll be in touch."
+      );
+      setSubmitted(true);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -56,7 +76,7 @@ export function CTAEmailCapture({
                 />
               </svg>
               <span className="text-[14px] font-medium tracking-wide">
-                You&apos;re in. We&apos;ll be in touch.
+                {message}
               </span>
             </div>
           ) : (
@@ -70,8 +90,21 @@ export function CTAEmailCapture({
                 className="w-full bg-[#1E1B1F] border-none rounded-full px-5 py-3 sm:px-6 sm:py-3.5 text-white placeholder:text-[#6B6870] text-[16px] leading-[22px] sm:leading-[24px] outline-none focus:ring-1 focus:ring-white/20 transition-all duration-200"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
-              <ButtonPrimary variant="white" onClick={handleSubmit} fullWidth>
-                Join us
+              {error && (
+                <p
+                  className="text-[13px] text-[#FF4D4D] text-left px-2"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {error}
+                </p>
+              )}
+              <ButtonPrimary
+                variant="white"
+                onClick={handleSubmit}
+                disabled={submitting}
+                fullWidth
+              >
+                {submitting ? "Joining..." : "Join us"}
               </ButtonPrimary>
             </div>
           )}
