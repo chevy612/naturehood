@@ -153,7 +153,7 @@ export default function AboutPage() {
           <h2 className="nh-h2 text-center mb-[30px]">Founders</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-[30px]">
             <ProfilePhoto
-              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/chevy-1.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY2hldnktMS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIxOTI0LCJleHAiOjQ5MTE2ODU5MjR9.49aLQLykq7n7HxePUz3n9KVQwCIuZhwkvS1035rL0og"
+              src="/about/chevy-1.png"
               name="Chevy Cheung"
               role="Product"
               objectPosition="36.5% 34%"
@@ -162,7 +162,7 @@ export default function AboutPage() {
               instagramUrl="https://www.instagram.com/j.ccman/"
             />
             <ProfilePhoto
-              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/colin-1.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY29saW4tMS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIyMTkxLCJleHAiOjQ5MTE2ODYxOTF9.BcW9XU4XxsrCDvjvkxmxF_Vhi_0AIedGyIIwFSntous"
+              src="/about/colin-1.png"
               name="Colin Cheung"
               role="Creative"
               objectPosition="91.5% 10%"
@@ -171,7 +171,7 @@ export default function AboutPage() {
               instagramUrl="https://www.instagram.com/ccwcolin/"
             />
             <ProfilePhoto
-              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/chevy-2.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY2hldnktMi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjIyNTM4LCJleHAiOjQ5MTE2ODY1Mzh9.mW8lqNxQlpOWNkaIOxlOB8h5uiJN-KU2hqAUJOiFrRI"
+              src="/about/chevy-2.png"
               name=""
               role=""
               objectPosition="40% 0%"
@@ -179,7 +179,7 @@ export default function AboutPage() {
               className="md:order-1"
             />
             <ProfilePhoto
-              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/founder/colin-2.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZvdW5kZXIvY29saW4tMi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5NjI0NjY3LCJleHAiOjQ5MTE2ODg2Njd9.bWHQdxhcCT9iXw2tTtbTyVyO6zdeLxrgMFS6GGdvUBc"
+              src="/about/colin-2.png"
               name= ""
               role=""
               objectPosition="70% 100%"
@@ -227,7 +227,7 @@ export default function AboutPage() {
             />
             <ProfilePhoto
               variant="athlete"
-              src="https://vddlfdngjtcoxcyuvkbd.supabase.co/storage/v1/object/sign/Website/featuring%20athletes/candy.png?token=eyJraWQiOiI3MWMxN2QwNS00NjExLTQyMmEtYmI1YS1jYjcyMzc1MGY0OTUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXZWJzaXRlL2ZlYXR1cmluZyBhdGhsZXRlcy9jYW5keS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkwMDg5NjQ3LCJleHAiOjQ5MTIxNTM2NDd9.hDq7tNva4_GBA5DvuR9sYb_oxCpqwyCDVuCNZ9xDYGo"
+              src="/about/candy.png"
               name="Candy Tsang"
               role="Mid-Distance Runner"
               objectPosition="50% 25%"

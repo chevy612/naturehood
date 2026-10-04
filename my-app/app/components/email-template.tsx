@@ -27,6 +27,12 @@ const BODY_FONT = "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-se
 // DM Sans via Google Fonts (Apple Mail, iOS, some web clients) + Sk Modernist via
 // @font-face from the hosted .otf. Clients that strip <style>/@font-face (Gmail, Outlook)
 // fall back to DM Sans through the font stacks above.
+//
+// The [data-ogsc]/[data-ogsb] rules fight Gmail's mobile-app "auto dark mode," which
+// detects our black/near-black design and inverts it (light card, dark text, default
+// blue links) on some Gmail app inboxes even though the email is already dark-themed.
+// Those attributes are injected by Gmail onto elements it recolors, so we use them to
+// force our own palette back on the .nh-card / .nh-box hooks.
 const HEAD_FONTS = `
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
@@ -44,6 +50,9 @@ const HEAD_FONTS = `
       font-weight: 700;
       src: url('${ASSET_BASE_URL}/fonts/sk-modernist/Sk-Modernist-Bold.otf') format('opentype');
     }
+    [data-ogsc] { color:#FFFFFF !important; }
+    [data-ogsc] .nh-card, [data-ogsb] .nh-card { background-color:#1E1B1F !important; }
+    [data-ogsc] .nh-box, [data-ogsb] .nh-box { background-color:#000000 !important; border-color:#3A373C !important; }
   </style>
 `
 
@@ -56,13 +65,14 @@ function emailShell(title: string, cardContent: string): string {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark" />
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
   <title>${title}</title>
   ${HEAD_FONTS}
 </head>
-<body style="margin:0;padding:0;background-color:#000000;">
+<body style="margin:0;padding:0;background-color:#000000;" bgcolor="#000000">
 
   <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
-    style="background-color:#000000;">
+    style="background-color:#000000;" bgcolor="#000000">
     <tr>
       <td align="center" style="padding:40px 20px;">
 
@@ -79,7 +89,7 @@ function emailShell(title: string, cardContent: string): string {
 
           <!-- ── CARD ── -->
           <tr>
-            <td style="
+            <td class="nh-card" bgcolor="#1E1B1F" style="
               background-color:#1E1B1F;
               border-radius:30px;
               padding:48px;
@@ -170,7 +180,7 @@ export function otpEmailHtml(code: string): string {
     <!-- OTP code box -->
     <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
       <tr>
-        <td style="
+        <td class="nh-box" bgcolor="#000000" style="
           background-color:#000000;
           border:1px solid #3A373C;
           border-radius:12px;
@@ -284,7 +294,7 @@ export function passwordResetEmailHtml(resetUrl: string): string {
       color:rgba(255,255,255,0.45);
       line-height:1.6;
     ">If the button doesn't work, copy and paste this link into your browser:<br/>
-    <a href="${resetUrl}" style="color:#F5F5F5;text-decoration:underline;word-break:break-all;">${resetUrl}</a></p>
+    <a href="${resetUrl}" style="text-decoration:underline;word-break:break-all;"><span style="color:#F5F5F5;">${resetUrl}</span></a></p>
 
     <!-- Expiry note -->
     <p style="
@@ -308,7 +318,7 @@ export function communityWelcomeEmailHtml(): string {
     'Join the Community',
     'Welcome to Naturehood',
     "Welcome to Naturehood — the fast-growing startup founded in Hong Kong. We're currently looking for athletes, creators and builders to scale our business. Stay close, and reach out to " +
-      '<a href="mailto:team@naturehoodofficial.com" style="color:#F5F5F5;text-decoration:underline;">team@naturehoodofficial.com</a>' +
+      '<a href="mailto:team@naturehoodofficial.com" style="text-decoration:underline;"><span style="color:#F5F5F5;">team@naturehoodofficial.com</span></a>' +
       ' anytime if you come up with a great idea!'
   )
 
@@ -338,7 +348,7 @@ export function newSubscriberNotificationEmailHtml(email: string): string {
     <!-- Subscriber email box -->
     <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
       <tr>
-        <td style="
+        <td class="nh-box" bgcolor="#000000" style="
           background-color:#000000;
           border:1px solid #3A373C;
           border-radius:12px;
