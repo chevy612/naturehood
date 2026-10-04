@@ -71,6 +71,42 @@ function extractProtein(analysis: { data: Record<string, unknown> }): number | n
   return total > 0 ? Math.round(total) : null;
 }
 
+function extractCarbs(analysis: { data: Record<string, unknown> }): number | null {
+  const breakdown = Array.isArray(analysis.data?.breakdown) ? analysis.data.breakdown : [];
+  const total = breakdown.reduce((sum, item) => {
+    if (!item || typeof item !== 'object') {
+      return sum;
+    }
+
+    const row = item as Record<string, unknown>;
+    const macros =
+      row.macros && typeof row.macros === 'object'
+        ? (row.macros as Record<string, unknown>)
+        : null;
+    return sum + (toFiniteNumber(macros?.c) ?? 0);
+  }, 0);
+
+  return total > 0 ? Math.round(total) : null;
+}
+
+function extractFat(analysis: { data: Record<string, unknown> }): number | null {
+  const breakdown = Array.isArray(analysis.data?.breakdown) ? analysis.data.breakdown : [];
+  const total = breakdown.reduce((sum, item) => {
+    if (!item || typeof item !== 'object') {
+      return sum;
+    }
+
+    const row = item as Record<string, unknown>;
+    const macros =
+      row.macros && typeof row.macros === 'object'
+        ? (row.macros as Record<string, unknown>)
+        : null;
+    return sum + (toFiniteNumber(macros?.f) ?? 0);
+  }, 0);
+
+  return total > 0 ? Math.round(total) : null;
+}
+
 export async function POST(req: NextRequest) {
   logger.debug('[ai-food-route] POST /api/ai/analyze-food called');
 
@@ -202,17 +238,25 @@ export async function POST(req: NextRequest) {
   const aiProtein = extractProtein(analysis);
   logger.debug('[ai-food-route] Computed aiProtein:', aiProtein);
 
+  const aiCarbs = extractCarbs(analysis);
+  logger.debug('[ai-food-route] Computed aiCarbs:', aiCarbs);
+
+  const aiFat = extractFat(analysis);
+  logger.debug('[ai-food-route] Computed aiFat:', aiFat);
+
   const { data: updatedMeal, error: updateError } = await supabase
     .from('meal_records')
     .update({
       ai_analysis: analysis,
       calories: aiCalories,
       protein: aiProtein,
+      carbs: aiCarbs,
+      fat: aiFat,
       updated_at: new Date().toISOString(),
     })
     .eq('meal_id', meal_id)
     .eq('user_id', userId)
-    .select('meal_id, ai_analysis, calories, protein')
+    .select('meal_id, ai_analysis, calories, protein, carbs, fat')
     .single();
 
   if (updateError || !updatedMeal) {
@@ -229,6 +273,8 @@ export async function POST(req: NextRequest) {
       analysis: updatedMeal.ai_analysis,
       calories: updatedMeal.calories,
       protein: updatedMeal.protein,
+      carbs: updatedMeal.carbs,
+      fat: updatedMeal.fat,
     },
     { headers: CORS_HEADERS }
   );
