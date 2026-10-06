@@ -170,6 +170,57 @@ function stripCodeFences(text: string): string {
     .replace(/\s*```$/i, '');
 }
 
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+/** True when `data` carries a complete, renderable food-analysis payload. */
+function hasValidFoodData(data: Record<string, unknown>): boolean {
+  const summary = data.meal_summary;
+  if (!summary || typeof summary !== 'object') return false;
+
+  const range = (summary as Record<string, unknown>).total_calories_range;
+  if (!range || typeof range !== 'object') return false;
+  const r = range as Record<string, unknown>;
+  if (!isFiniteNumber(r.min) || !isFiniteNumber(r.max)) return false;
+
+  const breakdown = data.breakdown;
+  if (!Array.isArray(breakdown)) return false;
+
+  // Every present item must carry the fields the UI reads (calories + macros).
+  return breakdown.every((item) => {
+    if (!item || typeof item !== 'object') return false;
+    const row = item as Record<string, unknown>;
+    if (!isFiniteNumber(row.calories)) return false;
+    const macros = row.macros;
+    if (!macros || typeof macros !== 'object') return false;
+    const m = macros as Record<string, unknown>;
+    return isFiniteNumber(m.p) && isFiniteNumber(m.c) && isFiniteNumber(m.f);
+  });
+}
+
+/**
+ * Schema-validate a parsed AI response before it is persisted. Accepts the
+ * documented "no food" shape (empty `data` object) and otherwise requires a
+ * complete food-analysis payload. Anything else is rejected so malformed /
+ * partial JSON never reaches the database (NAT-28).
+ */
+function validateFoodAnalysis(parsed: unknown): parsed is AiFoodAnalysis {
+  if (!parsed || typeof parsed !== 'object') return false;
+  const obj = parsed as Record<string, unknown>;
+
+  if (typeof obj.description !== 'string' || !obj.description.trim()) return false;
+
+  const data = obj.data;
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  const dataObj = data as Record<string, unknown>;
+
+  // "No food detected" — an empty data object is a valid terminal result.
+  if (Object.keys(dataObj).length === 0) return true;
+
+  return hasValidFoodData(dataObj);
+}
+
 // ── Main function ───────────────────────────────────────────────────────────
 
 /**
@@ -228,7 +279,7 @@ export async function analyzeFoodImage(params: {
     const jsonText = stripCodeFences(rawText);
     // console.log('[food-analysis] After stripCodeFences (first 300 chars):', jsonText.slice(0, 300));
 
-    let parsed: AiFoodAnalysis;
+    let parsed: unknown;
     try {
       parsed = JSON.parse(jsonText);
     } catch (parseErr) {
@@ -237,11 +288,11 @@ export async function analyzeFoodImage(params: {
       return null;
     }
 
-    // Minimal validation — must have description
-    if (typeof parsed.description !== 'string') {
+    // Schema validation — reject malformed / partial payloads before persisting.
+    if (!validateFoodAnalysis(parsed)) {
       logger.error(
-        '[food-analysis] Validation failed — "description" missing or not a string. Got:',
-        typeof parsed.description
+        '[food-analysis] Schema validation failed. Payload (first 1000 chars):',
+        jsonText.slice(0, 1000)
       );
       return null;
     }

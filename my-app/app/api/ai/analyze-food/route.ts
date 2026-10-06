@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { analyzeFoodImage } from '@/lib/services/ai-food-analysis';
 import { normalizeAiLanguage } from '@/lib/services/ai-language';
+import { extractCalories, extractProtein, extractCarbs, extractFat } from '@/lib/services/meal-macros';
 import logger from '@/lib/logger';
 
 const CORS_HEADERS = {
@@ -13,98 +14,6 @@ const CORS_HEADERS = {
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
-}
-
-function toFiniteNumber(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return value;
-  }
-
-  if (typeof value === 'string' && value.trim()) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  return null;
-}
-
-function extractCalories(analysis: { data: Record<string, unknown> }): number | null {
-  const summary =
-    analysis.data?.meal_summary && typeof analysis.data.meal_summary === 'object'
-      ? (analysis.data.meal_summary as Record<string, unknown>)
-      : null;
-  const range =
-    summary?.total_calories_range && typeof summary.total_calories_range === 'object'
-      ? (summary.total_calories_range as Record<string, unknown>)
-      : null;
-  const min = toFiniteNumber(range?.min);
-  const max = toFiniteNumber(range?.max);
-
-  return min != null && max != null ? Math.round((min + max) / 2) : null;
-}
-
-function extractProtein(analysis: { data: Record<string, unknown> }): number | null {
-  const summary =
-    analysis.data?.meal_summary && typeof analysis.data.meal_summary === 'object'
-      ? (analysis.data.meal_summary as Record<string, unknown>)
-      : null;
-  const summaryProtein = toFiniteNumber(summary?.total_protein);
-
-  if (summaryProtein != null) {
-    return Math.round(summaryProtein);
-  }
-
-  const breakdown = Array.isArray(analysis.data?.breakdown) ? analysis.data.breakdown : [];
-  const total = breakdown.reduce((sum, item) => {
-    if (!item || typeof item !== 'object') {
-      return sum;
-    }
-
-    const row = item as Record<string, unknown>;
-    const macros =
-      row.macros && typeof row.macros === 'object'
-        ? (row.macros as Record<string, unknown>)
-        : null;
-    return sum + (toFiniteNumber(row.protein) ?? toFiniteNumber(macros?.p) ?? 0);
-  }, 0);
-
-  return total > 0 ? Math.round(total) : null;
-}
-
-function extractCarbs(analysis: { data: Record<string, unknown> }): number | null {
-  const breakdown = Array.isArray(analysis.data?.breakdown) ? analysis.data.breakdown : [];
-  const total = breakdown.reduce((sum, item) => {
-    if (!item || typeof item !== 'object') {
-      return sum;
-    }
-
-    const row = item as Record<string, unknown>;
-    const macros =
-      row.macros && typeof row.macros === 'object'
-        ? (row.macros as Record<string, unknown>)
-        : null;
-    return sum + (toFiniteNumber(macros?.c) ?? 0);
-  }, 0);
-
-  return total > 0 ? Math.round(total) : null;
-}
-
-function extractFat(analysis: { data: Record<string, unknown> }): number | null {
-  const breakdown = Array.isArray(analysis.data?.breakdown) ? analysis.data.breakdown : [];
-  const total = breakdown.reduce((sum, item) => {
-    if (!item || typeof item !== 'object') {
-      return sum;
-    }
-
-    const row = item as Record<string, unknown>;
-    const macros =
-      row.macros && typeof row.macros === 'object'
-        ? (row.macros as Record<string, unknown>)
-        : null;
-    return sum + (toFiniteNumber(macros?.f) ?? 0);
-  }, 0);
-
-  return total > 0 ? Math.round(total) : null;
 }
 
 export async function POST(req: NextRequest) {
