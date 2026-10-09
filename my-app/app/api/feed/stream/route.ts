@@ -1,16 +1,18 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { socialFailure, socialOptions } from '@/lib/social/http'
+import { finishSseConnection, noteSseSubscriptionError } from '@/lib/observability/sse'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
 
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
         closed = true
         if (heartbeat) clearInterval(heartbeat)
         if (channel) void channel.unsubscribe()
+        finishSseConnection(request.signal, 'close')
         controller.close()
       }
       closeStream = close
@@ -75,7 +78,11 @@ export async function GET(request: NextRequest) {
             })}\n\n`)
           }
         )
-        .subscribe()
+        .subscribe((status) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            noteSseSubscriptionError(status, request.signal)
+          }
+        })
 
       request.signal.addEventListener('abort', close, { once: true })
     },
@@ -93,7 +100,11 @@ export async function GET(request: NextRequest) {
       'x-accel-buffering': 'no',
       'access-control-allow-origin': '*',
       'access-control-allow-methods': 'GET, OPTIONS',
-      'access-control-allow-headers': 'Content-Type, Authorization',
+      'access-control-allow-headers': 'Content-Type, Authorization, traceparent, tracestate, X-Request-ID',
+      'access-control-expose-headers': 'X-Request-ID',
     },
   })
 }
+
+export const OPTIONS = observeApiRoute('/api/feed/stream', 'OPTIONS', handleOPTIONS, { sse: true })
+export const GET = observeApiRoute('/api/feed/stream', 'GET', handleGET, { sse: true })

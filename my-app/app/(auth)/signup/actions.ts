@@ -1,11 +1,14 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { generateUniqueUsername } from '@/lib/username'
 import { randomInt } from 'crypto'
 import { Resend } from 'resend'
 import { otpEmailHtml } from '@/app/components/email-template'
+import { tracedEmailSend } from '@/lib/observability/dependencies'
 
 // ─────────────────────────────────────────────
 // SHARED INTERFACE
@@ -24,7 +27,7 @@ interface SignUpFormData {
 // initiateSignUp → verifySignUpOtp → setUserPassword
 // ─────────────────────────────────────────────
 
-export async function initiateSignUp(data: SignUpFormData) {
+async function initiateSignUpImpl(data: SignUpFormData) {
   const admin = createAdminClient()
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -66,12 +69,12 @@ export async function initiateSignUp(data: SignUpFormData) {
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const { error: emailError } = await resend.emails.send({
+  const { error: emailError } = await tracedEmailSend(() => resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL ?? 'Naturehood <onboarding@resend.dev>',
     to: email,
     subject: 'Your Naturehood verification code',
     html: otpEmailHtml(code),
-  })
+  }))
 
   if (emailError) {
     console.error('Resend email error:', JSON.stringify(emailError, null, 2))
@@ -81,7 +84,7 @@ export async function initiateSignUp(data: SignUpFormData) {
   return { success: true }
 }
 
-export async function verifySignUpOtp(email: string, token: string) {
+async function verifySignUpOtpImpl(email: string, token: string) {
   const admin = createAdminClient()
 
   const normalizedEmail = email.trim().toLowerCase()
@@ -113,7 +116,7 @@ interface SetPasswordData {
   role: 'athlete' | 'brand' | 'other'
 }
 
-export async function setUserPassword(data: SetPasswordData) {
+async function setUserPasswordImpl(data: SetPasswordData) {
   const supabase = await createClient()
   const admin = createAdminClient()
 
@@ -177,4 +180,18 @@ export async function setUserPassword(data: SetPasswordData) {
   await admin.from('otp_codes').delete().eq('email', email)
 
   return { success: true }
+}
+
+export async function initiateSignUp(...args: Parameters<typeof initiateSignUpImpl>): Promise<Awaited<ReturnType<typeof initiateSignUpImpl>>> {
+  return withServerAction('initiateSignUp', () => initiateSignUpImpl(...args))
+}
+
+
+export async function verifySignUpOtp(...args: Parameters<typeof verifySignUpOtpImpl>): Promise<Awaited<ReturnType<typeof verifySignUpOtpImpl>>> {
+  return withServerAction('verifySignUpOtp', () => verifySignUpOtpImpl(...args))
+}
+
+
+export async function setUserPassword(...args: Parameters<typeof setUserPasswordImpl>): Promise<Awaited<ReturnType<typeof setUserPasswordImpl>>> {
+  return withServerAction('setUserPassword', () => setUserPasswordImpl(...args))
 }

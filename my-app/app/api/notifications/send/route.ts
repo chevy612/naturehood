@@ -1,10 +1,12 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Expo, { ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk'
+import { tracedPushSend } from '@/lib/observability/dependencies'
 
 const expo = new Expo()
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   const apiKey = req.headers.get('x-api-key')
   if (!apiKey || apiKey !== process.env.NOTIFICATIONS_API_KEY) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -48,7 +50,10 @@ export async function POST(req: NextRequest) {
   const tickets: ExpoPushTicket[] = []
 
   for (const chunk of chunks) {
-    const chunkTickets = await expo.sendPushNotificationsAsync(chunk)
+    const chunkTickets = await tracedPushSend(
+      () => expo.sendPushNotificationsAsync(chunk),
+      chunk.length,
+    )
     tickets.push(...chunkTickets)
   }
 
@@ -69,3 +74,5 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true, sent: validTokens.length, tickets })
 }
+
+export const POST = observeApiRoute('/api/notifications/send', 'POST', handlePOST)

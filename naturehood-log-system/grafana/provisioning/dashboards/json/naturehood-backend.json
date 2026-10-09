@@ -1,0 +1,157 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Request volume",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (http_route) (rate({service_name=\"naturehood-backend\"} | json | event=\"http.request\" [$__rate_interval]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "title": "Status distribution",
+      "type": "piechart",
+      "targets": [
+        {
+          "expr": "sum by (http_status) (count_over_time({service_name=\"naturehood-backend\"} | json | event=\"http.request\" [$__range]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0 }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "id": 3,
+      "title": "Error rate (5xx)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate({service_name=\"naturehood-backend\"} | json | event=\"http.request\" | http_status >= 500 [$__rate_interval])) / sum(rate({service_name=\"naturehood-backend\"} | json | event=\"http.request\" [$__rate_interval]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 16, "x": 8, "y": 8 },
+      "id": 4,
+      "title": "Latency p50 / p95 / p99",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "quantile_over_time(0.50, {service_name=\"naturehood-backend\"} | json | event=\"http.request\" | outcome!=\"stream_open\" | unwrap duration_ms [$__interval])",
+          "legendFormat": "p50",
+          "refId": "A"
+        },
+        {
+          "expr": "quantile_over_time(0.95, {service_name=\"naturehood-backend\"} | json | event=\"http.request\" | outcome!=\"stream_open\" | unwrap duration_ms [$__interval])",
+          "legendFormat": "p95",
+          "refId": "B"
+        },
+        {
+          "expr": "quantile_over_time(0.99, {service_name=\"naturehood-backend\"} | json | event=\"http.request\" | outcome!=\"stream_open\" | unwrap duration_ms [$__interval])",
+          "legendFormat": "p99",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 5,
+      "title": "Slow routes (mean duration)",
+      "type": "barchart",
+      "targets": [
+        {
+          "expr": "topk(10, avg by (http_route) (avg_over_time({service_name=\"naturehood-backend\"} | json | event=\"http.request\" | outcome!=\"stream_open\" | unwrap duration_ms [$__range])))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 6,
+      "title": "Dependency failures",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (dependency) (count_over_time({service_name=\"naturehood-backend\"} | json | event=\"dependency\" | outcome=~\"error|exception\" [$__rate_interval]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "id": 7,
+      "title": "SSE lifecycle",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (event) (count_over_time({service_name=\"naturehood-backend\"} | json | event=~\"sse\\\\..+\" [$__rate_interval]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "id": 8,
+      "title": "Server action outcomes",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (action, outcome) (count_over_time({service_name=\"naturehood-backend\"} | json | event=\"server_action\" [$__rate_interval]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 32 },
+      "id": 9,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showTime": true,
+        "sortOrder": "Descending"
+      },
+      "title": "Request logs (trace id links to Tempo)",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{service_name=\"naturehood-backend\"} | json | event=~\"http.request|server_action|dependency|sse..+\"",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["naturehood", "observability"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser",
+  "title": "Naturehood backend",
+  "uid": "naturehood-backend",
+  "version": 1
+}

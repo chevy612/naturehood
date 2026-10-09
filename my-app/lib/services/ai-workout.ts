@@ -2,6 +2,7 @@ import type { AthleteSessionLog } from '@/lib/types'
 import { claudeClient as client } from '@/lib/services/ai-client'
 import { getLanguageInstruction, type AiLanguage } from '@/lib/services/ai-language'
 import logger from '@/lib/logger'
+import { withDependency } from '@/lib/observability/spans'
 
 const SYSTEM_PROMPT = `You are an elite athletics log parser. You receive a JSON envelope describing one athlete session and must return a single valid AthleteSessionLog JSON object — no prose, no markdown, no code fences.
 
@@ -306,6 +307,22 @@ If workout_log is empty or unrecognisable, return session_type "unknown" and emp
 Return ONLY the JSON object. No explanation, no markdown.`
 
 export async function formatWorkoutWithAI(params: {
+  workout_log: string
+  title?: string
+  workout_types?: string[]
+  duration_minutes?: number | null
+  notes?: string | null
+  lang?: AiLanguage
+}): Promise<AthleteSessionLog | null> {
+  return withDependency(
+    'ai.format_workout',
+    { 'gen_ai.operation': 'format_workout', 'gen_ai.provider': 'anthropic' },
+    () => runFormatWorkout(params),
+    (result) => (result == null && params.workout_log?.trim() ? 'ai_empty_result' : undefined),
+  )
+}
+
+async function runFormatWorkout(params: {
   workout_log: string
   title?: string
   workout_types?: string[]

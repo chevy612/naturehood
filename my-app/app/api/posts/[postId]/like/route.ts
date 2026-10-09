@@ -1,3 +1,5 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
+import { tracedRpc } from '@/lib/observability/dependencies'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { ok } from '@/lib/social/api-response'
@@ -5,15 +7,15 @@ import { socialFailure, socialJson, socialOptions } from '@/lib/social/http'
 
 type Context = { params: Promise<{ postId: string }> }
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function POST(request: NextRequest, { params }: Context) {
+async function handlePOST(request: NextRequest, { params }: Context) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
   const { postId } = await params
-  const { data, error } = await authenticated.supabase.rpc('toggle_social_post_like', { p_post_id: postId })
+  const { data, error } = await tracedRpc(authenticated.supabase, 'toggle_social_post_like', { p_post_id: postId })
   if (error) {
     const status = error.message.includes('Post not found') ? 404 : 400
     return socialFailure(error.message, status)
@@ -21,3 +23,6 @@ export async function POST(request: NextRequest, { params }: Context) {
   return socialJson(ok({ liked: data }))
 }
 
+
+export const OPTIONS = observeApiRoute('/api/posts/[postId]/like', 'OPTIONS', handleOPTIONS)
+export const POST = observeApiRoute('/api/posts/[postId]/like', 'POST', handlePOST)
