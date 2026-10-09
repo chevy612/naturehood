@@ -1,11 +1,13 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { randomInt } from 'crypto'
 import { Resend } from 'resend'
 import { otpEmailHtml } from '@/app/components/email-template'
 import logger from '@/lib/logger'
+import { tracedEmailSend } from '@/lib/observability/dependencies'
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   const { email } = await req.json()
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -42,12 +44,12 @@ export async function POST(req: NextRequest) {
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const { error: emailError } = await resend.emails.send({
+  const { error: emailError } = await tracedEmailSend(() => resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL ?? 'Naturehood <onboarding@resend.dev>',
     to: normalizedEmail,
     subject: 'Your Naturehood verification code',
     html: otpEmailHtml(code),
-  })
+  }))
 
   if (emailError) {
     logger.error('Resend error:', JSON.stringify(emailError, null, 2))
@@ -56,3 +58,5 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true })
 }
+
+export const POST = observeApiRoute('/api/auth/signup/initiate', 'POST', handlePOST)

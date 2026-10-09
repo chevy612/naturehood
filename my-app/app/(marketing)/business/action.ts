@@ -1,5 +1,7 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { createClient } from '@/lib/supabase/server'
 
 // ─────────────────────────────────────────────
@@ -22,7 +24,7 @@ interface BrandPartnershipData {
   additionalInfo: string
 }
 
-export async function submitBrandPartnership(data: BrandPartnershipData) {
+async function submitBrandPartnershipImpl(data: BrandPartnershipData) {
   const supabase = await createClient()
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -64,4 +66,8 @@ export async function submitBrandPartnership(data: BrandPartnershipData) {
     console.error('Unexpected error:', error)
     return { error: 'An unexpected error occurred' }
   }
+}
+
+export async function submitBrandPartnership(...args: Parameters<typeof submitBrandPartnershipImpl>): Promise<Awaited<ReturnType<typeof submitBrandPartnershipImpl>>> {
+  return withServerAction('submitBrandPartnership', () => submitBrandPartnershipImpl(...args))
 }

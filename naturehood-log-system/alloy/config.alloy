@@ -1,0 +1,52 @@
+// Private OTLP receiver. Caddy is the only public ingress and checks the same
+// bearer token before traffic reaches this port. gRPC is not started.
+
+otelcol.auth.bearer "ingest" {
+  token = sys.env("INGEST_BEARER_TOKEN")
+}
+
+otelcol.receiver.otlp "ingress" {
+  http {
+    endpoint              = "0.0.0.0:4318"
+    auth                  = otelcol.auth.bearer.ingest.handler
+    max_request_body_size = "1MiB"
+  }
+
+  output {
+    logs   = [otelcol.processor.batch.logs.input]
+    traces = [otelcol.processor.batch.traces.input]
+  }
+}
+
+otelcol.processor.batch "logs" {
+  timeout         = "2s"
+  send_batch_size = 512
+
+  output {
+    logs = [otelcol.exporter.otlphttp.loki.input]
+  }
+}
+
+otelcol.processor.batch "traces" {
+  timeout         = "2s"
+  send_batch_size = 512
+
+  output {
+    traces = [otelcol.exporter.otlp.tempo.input]
+  }
+}
+
+otelcol.exporter.otlphttp "loki" {
+  client {
+    endpoint = "http://loki:3100/otlp"
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure = true
+    }
+  }
+}

@@ -1,10 +1,13 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { createClient } from '@/lib/supabase/server'
 import { RESERVED_SLUGS } from '@/lib/username'
 import { redirect } from 'next/navigation'
+import { tracedStorageUpload } from '@/lib/observability/dependencies'
 
-export async function updateProfile(formData: FormData) {
+async function updateProfileImpl(formData: FormData) {
   const supabase = await createClient()
   const { data: authData } = await supabase.auth.getClaims()
   const userId = authData?.claims?.sub
@@ -47,7 +50,7 @@ export async function updateProfile(formData: FormData) {
   return { success: true }
 }
 
-export async function uploadAvatar(formData: FormData): Promise<{ url: string } | { error: string }> {
+async function uploadAvatarImpl(formData: FormData): Promise<{ url: string } | { error: string }> {
   const supabase = await createClient()
   const { data: authData2 } = await supabase.auth.getClaims()
   const userId2 = authData2?.claims?.sub
@@ -69,9 +72,10 @@ export async function uploadAvatar(formData: FormData): Promise<{ url: string } 
   const arrayBuffer = await file.arrayBuffer()
   const path = `${userId2}/avatar`
 
-  const { error: uploadError } = await supabase.storage
-    .from('avatars')
-    .upload(path, arrayBuffer, { contentType: file.type, upsert: true })
+  const { error: uploadError } = await tracedStorageUpload(
+    () => supabase.storage.from('avatars').upload(path, arrayBuffer, { contentType: file.type, upsert: true }),
+    'avatars',
+  )
 
   if (uploadError) {
     console.error('Avatar upload error:', uploadError)
@@ -94,8 +98,22 @@ export async function uploadAvatar(formData: FormData): Promise<{ url: string } 
   return { url: publicUrl }
 }
 
-export async function signOut() {
+async function signOutImpl() {
   const supabase = await createClient()
   await supabase.auth.signOut()
   redirect('/login')
+}
+
+export async function updateProfile(...args: Parameters<typeof updateProfileImpl>): Promise<Awaited<ReturnType<typeof updateProfileImpl>>> {
+  return withServerAction('updateProfile', () => updateProfileImpl(...args))
+}
+
+
+export async function uploadAvatar(...args: Parameters<typeof uploadAvatarImpl>): Promise<Awaited<ReturnType<typeof uploadAvatarImpl>>> {
+  return withServerAction('uploadAvatar', () => uploadAvatarImpl(...args))
+}
+
+
+export async function signOut(...args: Parameters<typeof signOutImpl>): Promise<Awaited<ReturnType<typeof signOutImpl>>> {
+  return withServerAction('signOut', () => signOutImpl(...args))
 }

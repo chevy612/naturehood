@@ -1,3 +1,5 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
+import { tracedRpc } from '@/lib/observability/dependencies'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { decodeSearchCursor, encodeSearchCursor } from '@/lib/social/cursor'
@@ -5,11 +7,11 @@ import { feedResponse, ok } from '@/lib/social/api-response'
 import { readLimit, socialErrorResponse, socialFailure, socialJson, socialOptions } from '@/lib/social/http'
 import { toSocialPostDto, type SocialPostRow } from '@/lib/social/types'
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
 
@@ -21,7 +23,7 @@ export async function GET(request: NextRequest) {
     const limit = readLimit(request.nextUrl.searchParams.get('limit'))
     const cursorParam = request.nextUrl.searchParams.get('cursor')
     const cursor = cursorParam ? decodeSearchCursor(cursorParam) : null
-    const { data, error } = await authenticated.supabase.rpc('search_social_posts', {
+    const { data, error } = await tracedRpc(authenticated.supabase, 'search_social_posts', {
       p_query: query.trim(),
       p_cursor_rank: cursor?.rank ?? null,
       p_cursor_created_at: cursor?.createdAt ?? null,
@@ -43,3 +45,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
+
+export const OPTIONS = observeApiRoute('/api/posts/search', 'OPTIONS', handleOPTIONS)
+export const GET = observeApiRoute('/api/posts/search', 'GET', handleGET)

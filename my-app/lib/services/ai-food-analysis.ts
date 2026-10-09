@@ -9,6 +9,7 @@ import {
 } from '@/lib/services/ai-client';
 import { getLanguageInstruction, type AiLanguage } from '@/lib/services/ai-language';
 import logger from '@/lib/logger';
+import { withDependency } from '@/lib/observability/spans';
 
 const AI_PROVIDER = process.env.FOOD_ANALYSIS_PROVIDER ?? 'kimi';
 
@@ -240,6 +241,25 @@ export async function analyzeFoodImage(params: {
   provider?: AIProvider;
   lang?: AiLanguage;
 }): Promise<AiFoodAnalysis | null> {
+  return withDependency(
+    'ai.analyze_food',
+    {
+      'gen_ai.operation': 'analyze_food',
+      'gen_ai.provider': params.provider ?? AI_PROVIDER,
+    },
+    () => runAnalyzeFoodImage(params),
+    (result) => (result ? undefined : 'ai_empty_result'),
+  );
+}
+
+async function runAnalyzeFoodImage(params: {
+  base64Image: string;
+  mediaType: ImageMediaType;
+  userNotes?: string | null;
+  weight?: number | null;
+  provider?: AIProvider;
+  lang?: AiLanguage;
+}): Promise<AiFoodAnalysis | null> {
   const {
     base64Image,
     mediaType,
@@ -272,7 +292,7 @@ export async function analyzeFoodImage(params: {
       throw new Error(`[food-analysis] No client resolved for provider "${provider}"`);
     }
 
-    logger.debug('[food-analysis] Raw AI response:', rawText ?? 'null');
+    logger.debug('[food-analysis] Model response present:', Boolean(rawText));
 
     if (!rawText) return null;
 
@@ -283,21 +303,17 @@ export async function analyzeFoodImage(params: {
     try {
       parsed = JSON.parse(jsonText);
     } catch (parseErr) {
-      logger.error('[food-analysis] JSON.parse failed:', parseErr);
-      logger.error('[food-analysis] Unparseable text:', jsonText.slice(0, 1000));
+      logger.error('[food-analysis] JSON.parse failed');
       return null;
     }
 
     // Schema validation — reject malformed / partial payloads before persisting.
     if (!validateFoodAnalysis(parsed)) {
-      logger.error(
-        '[food-analysis] Schema validation failed. Payload (first 1000 chars):',
-        jsonText.slice(0, 1000)
-      );
+      logger.error('[food-analysis] Schema validation failed');
       return null;
     }
 
-    logger.debug('[food-analysis] Parse success — description:', parsed.description.slice(0, 100));
+    logger.debug('[food-analysis] Parse success');
     return parsed;
   } catch (err) {
     logger.error('[food-analysis] analyzeFoodImage failed:', err);
