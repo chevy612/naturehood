@@ -92,7 +92,7 @@ Those cover redaction, `/api/log` overwrite protection, traceparent validation, 
 
 Still check on a Vercel preview, because local tests do not reproduce the hobby runtime:
 
-- Cookie session and bearer token requests both return `X-Request-ID` and a `user_ref` that is not the raw user id.
+- Cookie session and bearer token requests both return `X-Request-ID`, a `user_ref` that is not the raw user id, and the profile `username` when one exists.
 - `OPTIONS` preflight allows `traceparent`, `tracestate`, and `X-Request-ID`, and exposes `X-Request-ID`.
 - Validation failures (`400`), handled `4xx`, and thrown errors show up as separate outcomes.
 - Two overlapping requests keep distinct request ids.
