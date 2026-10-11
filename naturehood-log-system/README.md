@@ -50,11 +50,19 @@ Set these on the Vercel project as **server** environment variables. Do not use 
 ```bash
 OTEL_EXPORTER_OTLP_ENDPOINT=https://otel.example.com
 OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
-OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer%20<INGEST_BEARER_TOKEN>
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer%20<URL-encoded-INGEST_BEARER_TOKEN>
 NATUREHOOD_USER_REF_SECRET=<long-random-string>
 ```
 
 `OTEL_EXPORTER_OTLP_ENDPOINT` is the origin only. The SDK appends `/v1/traces` and `/v1/logs`.
+
+Encode the bearer value in `OTEL_EXPORTER_OTLP_HEADERS` (`space` → `%20`, `/` → `%2F`, `+` → `%2B`, trailing `=` → `%3D`). Example for token `ab/c+d=`:
+
+```bash
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer%20ab%2Fc%2Bd%3D
+```
+
+If the ingest hostname is proxied through Cloudflare, keep the proxy on (or set DNS-only) and allow POST to `/v1/logs` and `/v1/traces`. Traces reaching Tempo while Loki stays empty usually means the app flushed traces but not logs — redeploy after the `after()` flush fix in `my-app/lib/observability/flush.ts`.
 
 `NATUREHOOD_USER_REF_SECRET` is the HMAC key for the pseudonymous `user_ref`. Without it, the app still hashes ids so raw user ids are not written, but the salt is not secret. Set the variable in production.
 
