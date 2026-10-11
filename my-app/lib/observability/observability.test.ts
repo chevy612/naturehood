@@ -6,8 +6,13 @@ import { W3CTraceContextPropagator } from '@opentelemetry/core'
 import { BasicTracerProvider, InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NextRequest, NextResponse } from 'next/server'
 import { buildAvatarLogEntry } from './client-log'
-import { pseudonymousUserRef } from './context'
-import { getRequestContext } from './context'
+import {
+  noteVerifiedSubject,
+  normalizeLogUsername,
+  pseudonymousUserRef,
+  runWithRequestContext,
+  getRequestContext,
+} from './context'
 import { flushTelemetry, setTelemetryFlushOverrideForTests } from './otlp'
 import { redactSpan, redactString, sanitizeValue } from './redact'
 import { parseTraceparent } from './traceparent'
@@ -113,29 +118,60 @@ describe('redaction', () => {
 
 describe('client log allowlist', () => {
   it('keeps server-owned identity and event when meta tries to overwrite them', () => {
-    const entry = buildAvatarLogEntry({
-      userId: 'user-1',
-      event: 'avatar.upload.error',
-      reason: 'network',
-      meta: {
-        userId: 'attacker',
-        user_ref: 'attacker',
-        event: 'avatar.upload.success',
-        reason: 'client-reason',
-        password: 'hunter2',
-        stage: 'crop',
-        bytes: 1200,
-        extra: 'ignore-me',
+    const entry = runWithRequestContext(
+      {
+        requestId: 'req-1',
+        route: '/api/log',
+        method: 'POST',
+        startedAt: Date.now(),
+        userRef: pseudonymousUserRef('user-1'),
+        username: 'trailrunner',
       },
-    })
+      () =>
+        buildAvatarLogEntry({
+          userId: 'user-1',
+          event: 'avatar.upload.error',
+          reason: 'network',
+          meta: {
+            userId: 'attacker',
+            user_ref: 'attacker',
+            username: 'hacker',
+            event: 'avatar.upload.success',
+            reason: 'client-reason',
+            password: 'hunter2',
+            stage: 'crop',
+            bytes: 1200,
+            extra: 'ignore-me',
+          },
+        }),
+    )
     assert.equal(entry.event, 'avatar.upload.error')
     assert.equal(entry.user_ref, pseudonymousUserRef('user-1'))
     assert.notEqual(entry.user_ref, 'attacker')
+    assert.equal(entry.username, 'trailrunner')
     assert.equal(entry.reason, 'network')
     assert.equal(entry.stage, 'crop')
     assert.equal(entry.bytes, 1200)
     assert.equal('password' in entry, false)
     assert.equal('userId' in entry, false)
+  })
+})
+
+describe('username on request context', () => {
+  it('stores a normalized profile username beside user_ref', () => {
+    assert.equal(normalizeLogUsername('TrailRunner'), 'trailrunner')
+    assert.equal(normalizeLogUsername('bad name'), undefined)
+    assert.equal(normalizeLogUsername('a@b.com'), undefined)
+
+    runWithRequestContext(
+      { requestId: 'req-2', route: '/api/feed', method: 'GET', startedAt: Date.now() },
+      () => {
+        noteVerifiedSubject('user-2', 'TrailRunner')
+        const ctx = getRequestContext()
+        assert.equal(ctx?.userRef, pseudonymousUserRef('user-2'))
+        assert.equal(ctx?.username, 'trailrunner')
+      },
+    )
   })
 })
 

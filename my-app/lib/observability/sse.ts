@@ -15,6 +15,7 @@ type SseSession = {
   httpRoute?: string
   requestId?: string
   userRef?: string
+  username?: string
   traceId?: string
   spanId?: string
 }
@@ -34,6 +35,7 @@ export function beginSseConnection(signal: AbortSignal): void {
     httpRoute: context?.route,
     requestId: context?.requestId,
     userRef: context?.userRef,
+    username: context?.username,
     traceId: valid ? spanContext.traceId : undefined,
     spanId: valid ? spanContext.spanId : undefined,
   }
@@ -77,6 +79,7 @@ export function finishSseConnection(
     http_route: session.httpRoute,
     request_id: session.requestId,
     user_ref: session.userRef,
+    username: session.username,
     trace_id: session.traceId,
     span_id: session.spanId,
     duration_ms: durationMs,
@@ -100,6 +103,7 @@ export function noteSseSubscriptionError(channelStatus: string, signal?: AbortSi
     http_route: session?.httpRoute,
     request_id: session?.requestId,
     user_ref: session?.userRef,
+    username: session?.username,
     trace_id: session?.traceId,
     span_id: session?.spanId,
   })

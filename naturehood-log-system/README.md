@@ -15,7 +15,7 @@ Ingestion requires `Authorization: Bearer <INGEST_BEARER_TOKEN>`. Caddy and Allo
 
 Logs and traces are kept for 30 days (`720h`). Loki's compactor deletes expired chunks. Tempo's compactor drops blocks older than 30 days. Both use named Docker volumes.
 
-`request_id`, `user_ref`, and `trace_id` are structured metadata, not Loki index labels. Index labels are only `service_name` and `environment`.
+`request_id`, `user_ref`, `username`, and `trace_id` are structured metadata, not Loki index labels. Index labels are only `service_name` and `environment`. Authenticated requests also include the public profile `username` from a server-side `profiles` lookup (never from client metadata).
 
 ## Deploy
 

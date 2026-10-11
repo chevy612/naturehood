@@ -1,4 +1,4 @@
-import { pseudonymousUserRef } from './context'
+import { getRequestContext, pseudonymousUserRef } from './context'
 
 const META_KEYS = new Set(['stage', 'mime', 'bytes', 'duration_ms'])
 const MAX_KEYS = 8
@@ -6,6 +6,7 @@ const MAX_STRING = 64
 
 export type AvatarLogEntry = {
   user_ref: string
+  username?: string
   event: string
   reason?: string
   stage?: string
@@ -43,5 +44,8 @@ export function buildAvatarLogEntry(input: {
   if (input.reason) entry.reason = input.reason.slice(0, 200)
   entry.user_ref = pseudonymousUserRef(input.userId)
   entry.event = input.event
+  const username = getRequestContext()?.username
+  if (username) entry.username = username
+  else delete entry.username
   return entry
 }

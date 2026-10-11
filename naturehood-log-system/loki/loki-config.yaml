@@ -51,8 +51,8 @@ limits_config:
           attributes:
             - service.name
             - environment
-    # request_id, user_ref, and trace_id stay structured metadata (searchable,
-    # not index labels). Log attributes default to structured metadata.
+    # request_id, user_ref, username, and trace_id stay structured metadata
+    # (searchable, not index labels). Log attributes default to structured metadata.
     log_attributes:
       - action: structured_metadata
         attributes:
@@ -60,6 +60,7 @@ limits_config:
           - trace_id
           - span_id
           - user_ref
+          - username
           - http_route
           - http_method
           - http_status

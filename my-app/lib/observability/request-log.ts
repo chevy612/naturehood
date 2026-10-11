@@ -19,6 +19,7 @@ export function writeRecord(
     deployment_version: deploymentVersion(),
     request_id: context?.requestId ?? partial.request_id,
     user_ref: context?.userRef ?? partial.user_ref,
+    username: context?.username ?? partial.username,
     trace_id: valid ? spanContext.traceId : partial.trace_id,
     span_id: valid ? spanContext.spanId : partial.span_id,
   }) as Record<string, unknown>

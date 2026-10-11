@@ -51,6 +51,7 @@ function emit(level: LogLevel, args: unknown[]): void {
     message,
     request_id: context?.requestId,
     user_ref: context?.userRef,
+    username: context?.username,
     trace_id: valid ? spanContext.traceId : undefined,
     span_id: valid ? spanContext.spanId : undefined,
   }
