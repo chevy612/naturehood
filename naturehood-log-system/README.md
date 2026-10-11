@@ -62,7 +62,7 @@ Encode the bearer value in `OTEL_EXPORTER_OTLP_HEADERS` (`space` → `%20`, `/` 
 OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer%20ab%2Fc%2Bd%3D
 ```
 
-If the ingest hostname is proxied through Cloudflare, keep the proxy on (or set DNS-only) and allow POST to `/v1/logs` and `/v1/traces`. Traces reaching Tempo while Loki stays empty usually means the app flushed traces but not logs — redeploy after the `after()` flush fix in `my-app/lib/observability/flush.ts`.
+If the ingest hostname is proxied through Cloudflare, keep the proxy on (or set DNS-only) and allow POST to `/v1/logs` and `/v1/traces`. Traces in Tempo with an empty Loki usually mean the log provider was not visible to route handlers (Next.js can load `instrumentation.ts` in a separate module graph). The log exporter is stored on `globalThis` and flushed from `after()` so request logs reach `/v1/logs`.
 
 `NATUREHOOD_USER_REF_SECRET` is the HMAC key for the pseudonymous `user_ref`. Without it, the app still hashes ids so raw user ids are not written, but the salt is not secret. Set the variable in production.
 

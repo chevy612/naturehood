@@ -70,6 +70,7 @@ export function startTelemetry(): void {
       environment: deploymentEnvironment(),
       deployment_version: deploymentVersion(),
       otlp_endpoint_configured: Boolean(endpoint),
+      otlp_logs_exporter: Boolean(endpoint),
       otlp_host: otlpHost(),
       otlp_header_names: headerNames,
       request_logs_follow_trace_sampling: false,

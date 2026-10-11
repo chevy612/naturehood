@@ -7,9 +7,10 @@ import { flushTelemetry } from './otlp'
  * isolate alive until OTLP log export finishes. Fire-and-forget void drops logs.
  */
 export function scheduleTelemetryFlush(): void {
+  const pending = flushTelemetry()
   try {
-    after(() => flushTelemetry())
+    after(() => pending)
   } catch {
-    void flushTelemetry()
+    void pending
   }
 }

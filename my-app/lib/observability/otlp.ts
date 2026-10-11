@@ -1,11 +1,11 @@
-import { logs, SeverityNumber, type AnyValueMap } from '@opentelemetry/api-logs'
+import { logs, SeverityNumber, type AnyValueMap, type LoggerProvider as ILoggerProvider } from '@opentelemetry/api-logs'
 import { trace } from '@opentelemetry/api'
 import { ExportResultCode, type ExportResult } from '@opentelemetry/core'
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
 import { resourceFromAttributes } from '@opentelemetry/resources'
 import {
-  BatchLogRecordProcessor,
   LoggerProvider,
+  SimpleLogRecordProcessor,
   type LogRecordExporter,
   type ReadableLogRecord,
 } from '@opentelemetry/sdk-logs'
@@ -25,7 +25,13 @@ const SEVERITY: Record<string, SeverityNumber> = {
   error: SeverityNumber.ERROR,
 }
 
-let loggerProvider: LoggerProvider | null = null
+/** Survives Next.js instrumentation vs route module duplication. */
+const PROVIDER_KEY = '__naturehoodLoggerProvider'
+
+type GlobalWithProvider = typeof globalThis & {
+  [PROVIDER_KEY]?: LoggerProvider
+}
+
 let emitting = false
 let flushOverride: (() => Promise<void>) | null = null
 
@@ -55,8 +61,18 @@ class SafeLogExporter implements LogRecordExporter {
   }
 }
 
+function getProvider(): LoggerProvider | null {
+  return (globalThis as GlobalWithProvider)[PROVIDER_KEY] ?? null
+}
+
+function setProvider(provider: LoggerProvider): void {
+  ;(globalThis as GlobalWithProvider)[PROVIDER_KEY] = provider
+}
+
 export function initLogExporter(): void {
-  if (loggerProvider || telemetryDisabled()) return
+  if (telemetryDisabled()) return
+  if (getProvider()) return
+
   const url = otlpLogsEndpoint()
   if (!url) return
 
@@ -64,25 +80,20 @@ export function initLogExporter(): void {
     new OTLPLogExporter({
       url,
       headers: otlpHeaders(),
-      timeoutMillis: 2000,
+      timeoutMillis: 5000,
     }),
   )
-  loggerProvider = new LoggerProvider({
+
+  // Simple processor starts the HTTP export on each emit. Batch timers are a
+  // poor fit for Vercel Hobby freezes even when after()/waitUntil is used.
+  const provider = new LoggerProvider({
     resource: resourceFromAttributes({
       'service.name': SERVICE_NAME,
       'service.version': deploymentVersion(),
       'deployment.environment.name': deploymentEnvironment(),
       environment: deploymentEnvironment(),
     }),
-    processors: [
-      new BatchLogRecordProcessor({
-        exporter,
-        scheduledDelayMillis: 1000,
-        maxExportBatchSize: 64,
-        maxQueueSize: 256,
-        exportTimeoutMillis: 2000,
-      }),
-    ],
+    processors: [new SimpleLogRecordProcessor({ exporter })],
     // Request logs are emitted even when the trace sampler drops the span.
     loggerConfigurator: () => ({
       disabled: false,
@@ -90,15 +101,22 @@ export function initLogExporter(): void {
       traceBased: false,
     }),
   })
-  logs.setGlobalLoggerProvider(loggerProvider)
+
+  setProvider(provider)
+  // Best-effort global registration. Emit/flush use globalThis so they still
+  // work if another package already claimed the API singleton.
+  logs.setGlobalLoggerProvider(provider as unknown as ILoggerProvider)
 }
 
 export function emitOtlpLog(record: Record<string, unknown>): void {
-  if (!loggerProvider || emitting) return
+  if (emitting) return
+  const provider = getProvider()
+  if (!provider) return
+
   emitting = true
   try {
     const severity = typeof record.severity === 'string' ? record.severity : 'info'
-    logs.getLogger(SERVICE_NAME).emit({
+    provider.getLogger(SERVICE_NAME).emit({
       severityNumber: SEVERITY[severity] ?? SeverityNumber.INFO,
       severityText: severity.toUpperCase(),
       body: JSON.stringify(record),
@@ -134,7 +152,7 @@ export async function flushTelemetry(): Promise<void> {
       return
     }
     await Promise.all([
-      loggerProvider?.forceFlush().catch(() => undefined),
+      getProvider()?.forceFlush().catch(() => undefined),
       flushTraces(),
     ])
   } catch {
