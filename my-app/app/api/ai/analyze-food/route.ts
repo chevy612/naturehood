@@ -127,6 +127,7 @@ export async function POST(req: NextRequest) {
     base64Image,
     mediaType,
     userNotes: meal.user_notes ?? null,
+    title: meal.title ?? null,
     weight: meal.weight ?? null,
     lang: normalizeAiLanguage(lang),
   });

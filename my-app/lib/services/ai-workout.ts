@@ -305,6 +305,22 @@ Omit sub-schemas that don't apply (set to null).
 If workout_log is empty or unrecognisable, return session_type "unknown" and empty summary.
 Return ONLY the JSON object. No explanation, no markdown.`
 
+/**
+ * Language rule (NAT-56): the report should follow the language the athlete
+ * actually wrote their log in, not the app UI locale. `lang` is only a fallback
+ * for logs with no determinable language (e.g. numeric/notation-only) or a
+ * language the app doesn't support (anything other than English / Chinese).
+ */
+function buildLanguageRequirement(fallbackLang: AiLanguage): string {
+  return [
+    'LANGUAGE REQUIREMENT:',
+    'Detect the primary language the athlete wrote the `workout_log` (and `notes`) in.',
+    'Write ALL user-facing natural-language strings — session_notes, every notes field, parsing_warnings, coach feedback, and translated exercise names — in that SAME language, and set `language_detected` to it (preserving the same Chinese script, Simplified vs Traditional, the athlete used).',
+    `If that language is neither English nor Chinese, or the log is numeric/notation-only with no determinable language, fall back to this instruction instead: ${getLanguageInstruction(fallbackLang)}`,
+    'Keep enum values, JSON keys, units, and numeric values unchanged regardless of language.',
+  ].join(' ')
+}
+
 export async function formatWorkoutWithAI(params: {
   workout_log: string
   title?: string
@@ -325,8 +341,8 @@ export async function formatWorkoutWithAI(params: {
     workout_types: workout_types ?? [],
     duration_minutes: duration_minutes ?? null,
     notes: notes ?? null,
-    output_language: lang,
-    output_language_instruction: getLanguageInstruction(lang),
+    fallback_language: lang,
+    fallback_language_instruction: getLanguageInstruction(lang),
     workout_log: normalisedLog,
   })
 
@@ -334,7 +350,7 @@ export async function formatWorkoutWithAI(params: {
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 8192,
-      system: `${SYSTEM_PROMPT}\n\nLANGUAGE REQUIREMENT: ${getLanguageInstruction(lang)} Keep enum values, keys, units, and numeric values unchanged. Translate only user-facing text such as summaries, notes, warnings, feedback, and exercise names when appropriate.`,
+      system: `${SYSTEM_PROMPT}\n\n${buildLanguageRequirement(lang)}`,
       messages: [{ role: 'user', content: envelope }],
     })
 

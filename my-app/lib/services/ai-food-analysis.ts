@@ -236,6 +236,7 @@ export async function analyzeFoodImage(params: {
   base64Image: string;
   mediaType: ImageMediaType;
   userNotes?: string | null;
+  title?: string | null;
   weight?: number | null;
   provider?: AIProvider;
   lang?: AiLanguage;
@@ -244,18 +245,31 @@ export async function analyzeFoodImage(params: {
     base64Image,
     mediaType,
     userNotes,
+    title,
     weight,
     provider = AI_PROVIDER as AIProvider,
     lang = 'en',
   } = params;
 
-  // Build the user-facing text prompt with optional context
-  const contextParts: string[] = [
-    'Analyze this meal image.',
-    getLanguageInstruction(lang),
-  ];
+  // Build the user-facing text prompt with optional context.
+  // Language (NAT-56): a photo has no language, so follow the language the user
+  // wrote their notes/title in; fall back to `lang` for image-only meals or an
+  // unsupported input language.
+  const trimmedNotes = userNotes?.trim() || null;
+  const trimmedTitle = title?.trim() || null;
+  const hasTypedText = !!(trimmedNotes || trimmedTitle);
+
+  const contextParts: string[] = ['Analyze this meal image.'];
+  if (hasTypedText) {
+    contextParts.push(
+      `Write the "description" and every "preparation_assumptions" entry in the SAME language the user wrote their notes/title in, as long as that language is English or Chinese (preserve the same Chinese script). Otherwise, follow this instead: ${getLanguageInstruction(lang)}`,
+    );
+  } else {
+    contextParts.push(getLanguageInstruction(lang));
+  }
   if (weight) contextParts.push(`Estimated total weight: ${weight}g.`);
-  if (userNotes?.trim()) contextParts.push(`User notes: ${userNotes.trim()}`);
+  if (trimmedTitle) contextParts.push(`Meal title: ${trimmedTitle}`);
+  if (trimmedNotes) contextParts.push(`User notes: ${trimmedNotes}`);
   const userText = contextParts.join(' ');
 
   try {
