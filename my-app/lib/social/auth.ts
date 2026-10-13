@@ -1,5 +1,6 @@
 import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
+import { observeSupabaseAuth } from '@/lib/observability/supabase-auth'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 
 export type AuthenticatedSocialClient = {
@@ -13,11 +14,11 @@ export async function getAuthenticatedSocialClient(
   const authorization = request.headers.get('authorization')
   const token = authorization?.startsWith('Bearer ') ? authorization.slice('Bearer '.length).trim() : null
   const supabase = token
-    ? createSupabaseClient(
+    ? observeSupabaseAuth(createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!,
         { global: { headers: { Authorization: `Bearer ${token}` } } }
-      )
+      ))
     : await createServerClient()
 
   // A stateless mobile request has no server-side session storage. Verify its

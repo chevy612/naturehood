@@ -1,5 +1,7 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { createClient } from '@/lib/supabase/server'
 
 interface LoginData {
@@ -7,7 +9,7 @@ interface LoginData {
   password: string
 }
 
-export async function loginUser(data: LoginData) {
+async function loginUserImpl(data: LoginData) {
   const supabase = await createClient()
 
   const { emailOrUsername, password } = data
@@ -52,4 +54,8 @@ export async function loginUser(data: LoginData) {
     console.error('Unexpected login error:', error)
     return { error: 'An unexpected error occurred during login' }
   }
+}
+
+export async function loginUser(...args: Parameters<typeof loginUserImpl>): Promise<Awaited<ReturnType<typeof loginUserImpl>>> {
+  return withServerAction('loginUser', () => loginUserImpl(...args))
 }

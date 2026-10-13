@@ -1,0 +1,41 @@
+{
+	email {$ACME_EMAIL}
+	admin off
+}
+
+{$INGEST_DOMAIN} {
+	encode gzip
+
+	request_body {
+		max_size 1MB
+	}
+
+	# Per-source and global caps. Hobby traffic is far below this; the limits
+	# exist so a leaked ingest token cannot fill the disk.
+	rate_limit {
+		zone ingest_per_ip {
+			key {remote_host}
+			events 20
+			window 1s
+		}
+		zone ingest_global {
+			key static
+			events 50
+			window 1s
+		}
+	}
+
+	@authorized header Authorization "Bearer {$INGEST_BEARER_TOKEN}"
+	handle @authorized {
+		reverse_proxy alloy:4318
+	}
+
+	handle {
+		respond "unauthorized" 401
+	}
+}
+
+{$GRAFANA_DOMAIN} {
+	encode gzip
+	reverse_proxy grafana:3000
+}

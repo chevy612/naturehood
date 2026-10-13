@@ -1,13 +1,14 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { ok } from '@/lib/social/api-response'
 import { readLimit, socialErrorResponse, socialFailure, socialJson, socialOptions } from '@/lib/social/http'
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
 
@@ -34,3 +35,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
+
+export const OPTIONS = observeApiRoute('/api/notifications', 'OPTIONS', handleOPTIONS)
+export const GET = observeApiRoute('/api/notifications', 'GET', handleGET)

@@ -1,3 +1,4 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { socialFailure, socialJson, socialOptions } from '@/lib/social/http'
@@ -5,11 +6,11 @@ import { ok } from '@/lib/social/api-response'
 import { toSocialPostDto, type SocialPostRow } from '@/lib/social/types'
 import { parseCreatePost } from '@/lib/social/validation'
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
 
@@ -33,3 +34,6 @@ export async function POST(request: NextRequest) {
     return socialFailure(message, 400)
   }
 }
+
+export const OPTIONS = observeApiRoute('/api/posts', 'OPTIONS', handleOPTIONS)
+export const POST = observeApiRoute('/api/posts', 'POST', handlePOST)

@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
+import { API_CORS_ALLOW_HEADERS, API_CORS_EXPOSE_HEADERS } from '@/lib/observability/cors'
 import { failure } from './api-response'
 
 export const SOCIAL_CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': API_CORS_ALLOW_HEADERS,
+  'Access-Control-Expose-Headers': API_CORS_EXPOSE_HEADERS,
 }
 
 export function socialOptions() {

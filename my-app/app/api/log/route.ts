@@ -1,8 +1,10 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { ok } from '@/lib/social/api-response'
 import { socialFailure, socialJson, socialOptions } from '@/lib/social/http'
 import logger from '@/lib/logger'
+import { buildAvatarLogEntry } from '@/lib/observability/client-log'
 
 const ALLOWED_EVENTS = [
   'avatar.upload.attempt',
@@ -16,11 +18,11 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
 
@@ -41,8 +43,13 @@ export async function POST(request: NextRequest) {
     typeof body.reason === 'string' ? body.reason.slice(0, 200) : undefined
   const meta = isPlainObject(body.meta) ? body.meta : undefined
 
-  // Stamp the server-verified userId; never trust a client-supplied identity.
-  const entry = { userId: authenticated.userId, event, ...(reason ? { reason } : {}), ...meta }
+  // Server-owned identity and event are applied after the allowlisted meta.
+  const entry = buildAvatarLogEntry({
+    userId: authenticated.userId,
+    event,
+    reason,
+    meta,
+  })
 
   if (event === 'avatar.upload.error') {
     logger.error('[avatar]', entry)
@@ -52,3 +59,6 @@ export async function POST(request: NextRequest) {
 
   return socialJson(ok({ received: true }))
 }
+
+export const OPTIONS = observeApiRoute('/api/log', 'OPTIONS', handleOPTIONS)
+export const POST = observeApiRoute('/api/log', 'POST', handlePOST)

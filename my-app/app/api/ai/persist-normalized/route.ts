@@ -1,31 +1,34 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { persistNormalizedSession } from '@/lib/services/session-persist'
 import type { AthleteSessionLog } from '@/lib/types'
+import { observeSupabaseAuth } from '@/lib/observability/supabase-auth'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, traceparent, tracestate, X-Request-ID',
+  'Access-Control-Expose-Headers': 'X-Request-ID',
 }
 
-export async function OPTIONS() {
+async function handleOPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS })
 }
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   // Auth — same Bearer token / cookie pattern as format-workout
   const authHeader = req.headers.get('Authorization')
   const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
 
-  const supabase = bearerToken
+  const supabase = observeSupabaseAuth(bearerToken
     ? createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         { global: { headers: { Authorization: `Bearer ${bearerToken}` } } }
       )
-    : await createClient()
+    : await createClient())
 
   const { data: authData } = await supabase.auth.getClaims()
   const userId = authData?.claims?.sub
@@ -69,3 +72,5 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true }, { headers: CORS_HEADERS })
 }
+export const OPTIONS = observeApiRoute('/api/ai/persist-normalized', 'OPTIONS', handleOPTIONS)
+export const POST = observeApiRoute('/api/ai/persist-normalized', 'POST', handlePOST)

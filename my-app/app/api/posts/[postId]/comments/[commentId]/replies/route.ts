@@ -1,3 +1,5 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
+import { tracedRpc } from '@/lib/observability/dependencies'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { decodeDateCursor, encodeDateCursor } from '@/lib/social/cursor'
@@ -7,11 +9,11 @@ import { readLimit, socialErrorResponse, socialFailure, socialJson, socialOption
 type Context = { params: Promise<{ postId: string; commentId: string }> }
 type CommentRpcRow = { comment: unknown; created_at: string; id: string }
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function GET(request: NextRequest, { params }: Context) {
+async function handleGET(request: NextRequest, { params }: Context) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
   const { postId, commentId } = await params
@@ -29,7 +31,7 @@ export async function GET(request: NextRequest, { params }: Context) {
     const limit = readLimit(request.nextUrl.searchParams.get('limit'))
     const cursorParam = request.nextUrl.searchParams.get('cursor')
     const cursor = cursorParam ? decodeDateCursor(cursorParam) : null
-    const { data, error } = await authenticated.supabase.rpc('list_social_comments', {
+    const { data, error } = await tracedRpc(authenticated.supabase, 'list_social_comments', {
       p_post_id: postId,
       p_parent_comment_id: commentId,
       p_cursor_created_at: cursor?.createdAt ?? null,
@@ -48,3 +50,6 @@ export async function GET(request: NextRequest, { params }: Context) {
   }
 }
 
+
+export const OPTIONS = observeApiRoute('/api/posts/[postId]/comments/[commentId]/replies', 'OPTIONS', handleOPTIONS)
+export const GET = observeApiRoute('/api/posts/[postId]/comments/[commentId]/replies', 'GET', handleGET)

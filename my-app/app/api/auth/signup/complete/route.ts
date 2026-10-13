@@ -1,8 +1,9 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import logger from '@/lib/logger'
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   const { email, fullName, username, password } = await req.json()
 
   if (!email || !fullName || !username || !password) {
@@ -99,3 +100,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true })
 }
+export const POST = observeApiRoute('/api/auth/signup/complete', 'POST', handlePOST)

@@ -1,9 +1,11 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export async function rsvpEvent(
+async function rsvpEventImpl(
   eventId: string
 ): Promise<{ error?: string; success?: boolean }> {
   const supabase = await createClient()
@@ -46,7 +48,7 @@ export async function rsvpEvent(
   return { success: true }
 }
 
-export async function cancelRsvp(
+async function cancelRsvpImpl(
   eventId: string
 ): Promise<{ error?: string; success?: boolean }> {
   const supabase = await createClient()
@@ -63,4 +65,13 @@ export async function cancelRsvp(
   if (error) return { error: 'Failed to cancel. Please try again.' }
 
   return { success: true }
+}
+
+export async function rsvpEvent(...args: Parameters<typeof rsvpEventImpl>): Promise<Awaited<ReturnType<typeof rsvpEventImpl>>> {
+  return withServerAction('rsvpEvent', () => rsvpEventImpl(...args))
+}
+
+
+export async function cancelRsvp(...args: Parameters<typeof cancelRsvpImpl>): Promise<Awaited<ReturnType<typeof cancelRsvpImpl>>> {
+  return withServerAction('cancelRsvp', () => cancelRsvpImpl(...args))
 }

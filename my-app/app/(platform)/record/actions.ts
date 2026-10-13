@@ -1,11 +1,13 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import type { AiStructuredWorkout, AthleteSessionLog } from '@/lib/types'
 import { persistNormalizedSession } from '@/lib/services/session-persist'
 
-export async function getUserWorkoutTypes(): Promise<string[]> {
+async function getUserWorkoutTypesImpl(): Promise<string[]> {
   const supabase = await createClient()
   const { data } = await supabase.auth.getClaims()
   const userId = data?.claims?.sub
@@ -24,7 +26,7 @@ export async function getUserWorkoutTypes(): Promise<string[]> {
   return [...new Set(all)].sort()
 }
 
-export async function saveWorkout(
+async function saveWorkoutImpl(
   formData: FormData
 ): Promise<{ error?: string; id?: string }> {
   const supabase = await createClient()
@@ -66,7 +68,7 @@ export async function saveWorkout(
   return { id: inserted.id }
 }
 
-export async function updateWorkout(
+async function updateWorkoutImpl(
   id: string,
   formData: FormData
 ): Promise<{ error?: string }> {
@@ -121,7 +123,7 @@ export async function updateWorkout(
   redirect('/account')
 }
 
-export async function updateAiStructured(
+async function updateAiStructuredImpl(
   id: string,
   structured: AiStructuredWorkout | AthleteSessionLog
 ): Promise<{ error?: string }> {
@@ -151,7 +153,7 @@ export async function updateAiStructured(
   redirect('/account')
 }
 
-export async function deleteWorkout(id: string): Promise<{ error?: string }> {
+async function deleteWorkoutImpl(id: string): Promise<{ error?: string }> {
   const supabase = await createClient()
   const { data } = await supabase.auth.getClaims()
   const userId = data?.claims?.sub
@@ -166,4 +168,28 @@ export async function deleteWorkout(id: string): Promise<{ error?: string }> {
   if (error) return { error: 'Failed to delete workout.' }
 
   redirect('/account')
+}
+
+export async function getUserWorkoutTypes(...args: Parameters<typeof getUserWorkoutTypesImpl>): Promise<Awaited<ReturnType<typeof getUserWorkoutTypesImpl>>> {
+  return withServerAction('getUserWorkoutTypes', () => getUserWorkoutTypesImpl(...args))
+}
+
+
+export async function saveWorkout(...args: Parameters<typeof saveWorkoutImpl>): Promise<Awaited<ReturnType<typeof saveWorkoutImpl>>> {
+  return withServerAction('saveWorkout', () => saveWorkoutImpl(...args))
+}
+
+
+export async function updateWorkout(...args: Parameters<typeof updateWorkoutImpl>): Promise<Awaited<ReturnType<typeof updateWorkoutImpl>>> {
+  return withServerAction('updateWorkout', () => updateWorkoutImpl(...args))
+}
+
+
+export async function updateAiStructured(...args: Parameters<typeof updateAiStructuredImpl>): Promise<Awaited<ReturnType<typeof updateAiStructuredImpl>>> {
+  return withServerAction('updateAiStructured', () => updateAiStructuredImpl(...args))
+}
+
+
+export async function deleteWorkout(...args: Parameters<typeof deleteWorkoutImpl>): Promise<Awaited<ReturnType<typeof deleteWorkoutImpl>>> {
+  return withServerAction('deleteWorkout', () => deleteWorkoutImpl(...args))
 }

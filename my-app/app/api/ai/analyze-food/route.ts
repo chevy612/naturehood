@@ -1,3 +1,4 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
@@ -5,18 +6,20 @@ import { analyzeFoodImage } from '@/lib/services/ai-food-analysis';
 import { normalizeAiLanguage } from '@/lib/services/ai-language';
 import { extractCalories, extractProtein, extractCarbs, extractFat } from '@/lib/services/meal-macros';
 import logger from '@/lib/logger';
+import { observeSupabaseAuth } from '@/lib/observability/supabase-auth';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, traceparent, tracestate, X-Request-ID',
+  'Access-Control-Expose-Headers': 'X-Request-ID',
 };
 
-export async function OPTIONS() {
+async function handleOPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   logger.debug('[ai-food-route] POST /api/ai/analyze-food called');
 
   // ── Auth — support both cookie auth (web) and Bearer token (mobile) ──────
@@ -29,18 +32,18 @@ export async function POST(req: NextRequest) {
     !!bearerToken
   );
 
-  const supabase = bearerToken
+  const supabase = observeSupabaseAuth(bearerToken
     ? createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         { global: { headers: { Authorization: `Bearer ${bearerToken}` } } }
       )
-    : await createClient();
+    : await createClient());
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   const userId = user?.id;
 
-  logger.debug('[ai-food-route] Auth user:', userId ?? 'null — UNAUTHORIZED');
+  logger.debug('[ai-food-route] Auth user present:', Boolean(userId));
   logger.debug('[ai-food-route] Auth error:', authError?.message ?? 'none');
 
   if (!userId) {
@@ -70,7 +73,7 @@ export async function POST(req: NextRequest) {
     '| error:',
     fetchError?.message ?? 'none'
   );
-  logger.debug('[ai-food-route] s3_link:', meal?.s3_link ?? 'null/missing');
+  logger.debug('[ai-food-route] meal image present:', Boolean(meal?.s3_link));
 
   if (fetchError || !meal) {
     return NextResponse.json(
@@ -91,7 +94,7 @@ export async function POST(req: NextRequest) {
   let mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' = 'image/jpeg';
 
   try {
-    logger.debug('[ai-food-route] Fetching image from:', meal.s3_link);
+    logger.debug('[ai-food-route] Fetching meal image');
     const imageRes = await fetch(meal.s3_link);
     logger.debug('[ai-food-route] Image fetch status:', imageRes.status, imageRes.statusText);
 
@@ -188,3 +191,6 @@ export async function POST(req: NextRequest) {
     { headers: CORS_HEADERS }
   );
 }
+
+export const OPTIONS = observeApiRoute('/api/ai/analyze-food', 'OPTIONS', handleOPTIONS)
+export const POST = observeApiRoute('/api/ai/analyze-food', 'POST', handlePOST)

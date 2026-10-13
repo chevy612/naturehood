@@ -1,11 +1,14 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { randomBytes } from 'crypto'
 import { Resend } from 'resend'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { passwordResetEmailHtml } from '@/app/components/email-template'
+import { tracedEmailSend } from '@/lib/observability/dependencies'
 
-export async function requestPasswordReset(
+async function requestPasswordResetImpl(
   email: string
 ): Promise<{ success: true } | { error: string }> {
   const normalized = email.trim().toLowerCase()
@@ -62,14 +65,14 @@ export async function requestPasswordReset(
     const resetUrl = `${siteUrl}/auth/reset-password?token=${token}`
 
     const resend = new Resend(process.env.RESEND_API_KEY)
-    const { error: emailError } = await resend.emails.send({
+    const { error: emailError } = await tracedEmailSend(() => resend.emails.send({
       from:
         process.env.RESEND_FROM_EMAIL ??
         'Naturehood <onboarding@resend.dev>',
       to: normalized,
       subject: 'Reset your Naturehood password',
       html: passwordResetEmailHtml(resetUrl),
-    })
+    }))
 
     if (emailError) {
       console.error('Resend password reset email error:', emailError)
@@ -79,4 +82,8 @@ export async function requestPasswordReset(
 
   // Always return success to prevent email enumeration
   return { success: true }
+}
+
+export async function requestPasswordReset(...args: Parameters<typeof requestPasswordResetImpl>): Promise<Awaited<ReturnType<typeof requestPasswordResetImpl>>> {
+  return withServerAction('requestPasswordReset', () => requestPasswordResetImpl(...args))
 }

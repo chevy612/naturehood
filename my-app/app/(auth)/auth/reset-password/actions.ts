@@ -1,5 +1,7 @@
 'use server'
 
+import { withServerAction } from '@/lib/observability/with-server-action'
+
 import { createAdminClient } from '@/lib/supabase/admin'
 
 // ─────────────────────────────────────────────
@@ -7,7 +9,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 // Called on page load to gate the form
 // ─────────────────────────────────────────────
 
-export async function verifyResetToken(
+async function verifyResetTokenImpl(
   token: string
 ): Promise<{ valid: true; email: string } | { valid: false; reason: 'expired' | 'invalid' }> {
   if (!token || token.length !== 64) {
@@ -41,7 +43,7 @@ export async function verifyResetToken(
 // Reset the password — re-verifies token atomically before updating
 // ─────────────────────────────────────────────
 
-export async function resetPassword(
+async function resetPasswordImpl(
   token: string,
   password: string,
   confirmPassword: string
@@ -105,4 +107,13 @@ export async function resetPassword(
     .eq('id', tokenRecord.id)
 
   return { success: true }
+}
+
+export async function verifyResetToken(...args: Parameters<typeof verifyResetTokenImpl>): Promise<Awaited<ReturnType<typeof verifyResetTokenImpl>>> {
+  return withServerAction('verifyResetToken', () => verifyResetTokenImpl(...args))
+}
+
+
+export async function resetPassword(...args: Parameters<typeof resetPasswordImpl>): Promise<Awaited<ReturnType<typeof resetPasswordImpl>>> {
+  return withServerAction('resetPassword', () => resetPasswordImpl(...args))
 }

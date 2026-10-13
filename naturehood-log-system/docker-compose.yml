@@ -1,0 +1,95 @@
+name: naturehood-log-system
+
+# Only Caddy publishes ports. Loki, Tempo, Alloy, and Grafana stay on the Docker network.
+services:
+  caddy:
+    build:
+      context: ./caddy
+    image: naturehood-log-caddy:2.10.2
+    restart: unless-stopped
+    depends_on:
+      - alloy
+      - grafana
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL}
+      INGEST_DOMAIN: ${INGEST_DOMAIN:?set INGEST_DOMAIN}
+      GRAFANA_DOMAIN: ${GRAFANA_DOMAIN:?set GRAFANA_DOMAIN}
+      INGEST_BEARER_TOKEN: ${INGEST_BEARER_TOKEN:?set INGEST_BEARER_TOKEN}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [private]
+    mem_limit: 256m
+
+  alloy:
+    image: grafana/alloy:v1.20.1
+    restart: unless-stopped
+    command:
+      - run
+      - --server.http.listen-addr=127.0.0.1:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    environment:
+      INGEST_BEARER_TOKEN: ${INGEST_BEARER_TOKEN:?set INGEST_BEARER_TOKEN}
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - alloy_data:/var/lib/alloy/data
+    networks: [private]
+    mem_limit: 512m
+    depends_on:
+      - loki
+      - tempo
+
+  loki:
+    image: grafana/loki:3.6.17
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    networks: [private]
+    mem_limit: 1536m
+
+  tempo:
+    image: grafana/tempo:3.1.0
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo_data:/var/tempo
+    networks: [private]
+    mem_limit: 1536m
+
+  grafana:
+    image: grafana/grafana:13.2.3
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?set GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SECURITY_COOKIE_SECURE: "true"
+      GF_SERVER_ROOT_URL: https://${GRAFANA_DOMAIN:?set GRAFANA_DOMAIN}
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_AUTH_BASIC_ENABLED: "true"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    networks: [private]
+    mem_limit: 512m
+
+networks:
+  private:
+
+volumes:
+  caddy_data:
+  caddy_config:
+  alloy_data:
+  loki_data:
+  tempo_data:
+  grafana_data:

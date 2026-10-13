@@ -1,18 +1,20 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@supabase/supabase-js'
+import { observeSupabaseAuth } from '@/lib/observability/supabase-auth'
 
-export async function DELETE(req: NextRequest) {
+async function handleDELETE(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
   if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const userClient = createClient(
+  const userClient = observeSupabaseAuth(createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { global: { headers: { Authorization: authHeader } } }
-  )
+  ))
 
   const { data: { user }, error: authError } = await userClient.auth.getUser()
   if (authError || !user) {
@@ -43,3 +45,5 @@ export async function DELETE(req: NextRequest) {
 
   return NextResponse.json({ success: true })
 }
+
+export const DELETE = observeApiRoute('/api/notifications/unregister', 'DELETE', handleDELETE)

@@ -1,3 +1,4 @@
+import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { ok } from '@/lib/social/api-response'
@@ -6,11 +7,11 @@ import { toSocialPostDto, type SocialPostRow } from '@/lib/social/types'
 
 type Context = { params: Promise<{ postId: string }> }
 
-export function OPTIONS() {
+function handleOPTIONS() {
   return socialOptions()
 }
 
-export async function GET(request: NextRequest, { params }: Context) {
+async function handleGET(request: NextRequest, { params }: Context) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
   const { postId } = await params
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest, { params }: Context) {
   return socialJson(ok(toSocialPostDto({ ...(post as SocialPostRow), liked_by_me: Boolean(liked) })))
 }
 
-export async function DELETE(request: NextRequest, { params }: Context) {
+async function handleDELETE(request: NextRequest, { params }: Context) {
   const authenticated = await getAuthenticatedSocialClient(request)
   if (!authenticated) return socialFailure('Unauthorized', 401)
   const { postId } = await params
@@ -52,3 +53,7 @@ export async function DELETE(request: NextRequest, { params }: Context) {
   return socialJson(ok(null))
 }
 
+
+export const OPTIONS = observeApiRoute('/api/posts/[postId]', 'OPTIONS', handleOPTIONS)
+export const GET = observeApiRoute('/api/posts/[postId]', 'GET', handleGET)
+export const DELETE = observeApiRoute('/api/posts/[postId]', 'DELETE', handleDELETE)
