@@ -2,8 +2,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   attachmentFromSearchParams,
+  parseCommentRecordsPayload,
   parseMealLogPostPayload,
   parseWorkoutLogPostPayload,
+  readPostBody,
+  serializeCommentRecordsPayload,
   serializeMealLogPostPayload,
   serializeWorkoutLogPostPayload,
 } from './post-content'
@@ -59,6 +62,40 @@ test('meal payload round-trips meal fields used by the composer', () => {
   assert.equal(parsed?.meal.title, 'Rice bowl')
   assert.equal(parsed?.meal.meal_type, 'LUNCH')
   assert.equal(parsed?.meal.carbs, 70)
+})
+
+test('a comment can carry both a meal and a workout', () => {
+  const serialized = serializeCommentRecordsPayload({
+    version: 1,
+    kind: 'comment_records',
+    userText: 'both',
+    meal: {
+      id: 'm1',
+      title: 'Bowl',
+      calories: 10,
+      protein: 2,
+      carbs: null,
+      fat: null,
+      meal_type: 'LUNCH',
+      image_url: null,
+      notes: null,
+    },
+    workout: {
+      id: 'w1',
+      title: 'Push',
+      logged_date: '2026-10-14',
+      duration_minutes: 20,
+      workout_types: [],
+      workout_log: null,
+    },
+  })
+  const parsed = parseCommentRecordsPayload(serialized)
+  assert.equal(parsed?.meal?.title, 'Bowl')
+  assert.equal(parsed?.workout?.title, 'Push')
+  const body = readPostBody({ content: serialized, contentType: 'COMMENT_RECORDS', images: [] })
+  assert.equal(body.text, 'both')
+  assert.equal(body.meal?.id, 'm1')
+  assert.equal(body.workout?.id, 'w1')
 })
 
 test('search params rebuild a workout attachment the same way mobile does', () => {

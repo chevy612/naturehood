@@ -8,8 +8,12 @@ export type CreateCommentPayload = {
   parentCommentId?: string | null
   content: string
   images?: string[]
+  videos?: string[]
   contentType?: string
 }
+
+export const COMMENT_MEDIA_LIMIT = 3
+export const COMMENT_CONTENT_LIMIT = 5000
 
 function parseImages(value: unknown, max: number, label: string) {
   if (value === undefined || value === null) return []
@@ -36,18 +40,38 @@ export function parseCreatePost(body: unknown): CreatePostPayload {
   return { content, images, contentType: optionalString(source.contentType, 'Post contentType') }
 }
 
+function parseUrlList(value: unknown, max: number, label: string, noun: string) {
+  if (value === undefined || value === null) return []
+  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string' || !item.trim())) {
+    throw new Error(`${label} ${noun} must be an array of strings`)
+  }
+  if (value.length > max) throw new Error(`A ${label.toLowerCase()} can have at most ${max} ${noun}`)
+  return value
+}
+
 export function parseCreateComment(body: unknown): CreateCommentPayload {
   if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error('Request body must be an object')
   const source = body as Record<string, unknown>
-  if (typeof source.content !== 'string' || !source.content.trim()) throw new Error('Comment content must not be blank')
-  if (source.content.length > 300) throw new Error('Comment content must not exceed 300 characters')
+  if (typeof source.content !== 'string') throw new Error('Comment content must be a string')
+  if (source.content.length > COMMENT_CONTENT_LIMIT) {
+    throw new Error(`Comment content must not exceed ${COMMENT_CONTENT_LIMIT} characters`)
+  }
+  const images = parseUrlList(source.images, COMMENT_MEDIA_LIMIT, 'Comment', 'images')
+  const videos = parseUrlList(source.videos, COMMENT_MEDIA_LIMIT, 'Comment', 'videos')
+  if (images.length > 0 && videos.length > 0) {
+    throw new Error('A comment can include images or videos, not both')
+  }
+  if (!source.content.trim() && images.length === 0 && videos.length === 0) {
+    throw new Error('Comment content must not be blank')
+  }
   const parentCommentId = source.parentCommentId === undefined || source.parentCommentId === null
     ? null
     : optionalString(source.parentCommentId, 'Comment parentCommentId')
   return {
     parentCommentId,
     content: source.content,
-    images: parseImages(source.images, 2, 'Comment'),
+    images,
+    videos,
     contentType: optionalString(source.contentType, 'Comment contentType'),
   }
 }

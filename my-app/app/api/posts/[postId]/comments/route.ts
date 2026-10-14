@@ -30,9 +30,10 @@ async function handlePOST(request: NextRequest, { params }: Context) {
         author_id: authenticated.userId,
         content: payload.content,
         images: payload.images ?? [],
+        videos: payload.videos ?? [],
         content_type: payload.contentType ?? null,
       })
-      .select('id, post_id, parent_comment_id, author_id, content, images, content_type, created_at, like_count')
+      .select('id, post_id, parent_comment_id, author_id, content, images, videos, content_type, created_at, like_count')
       .single()
     if (error || !data) {
       const status = error?.message.includes('Parent comment') || error?.message.includes('Post not found') ? 400 : 500

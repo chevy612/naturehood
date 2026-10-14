@@ -276,19 +276,25 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
   )
 }
 
-function RecordPicker({
+export function RecordPicker({
   userId,
   selected,
+  selectedWorkoutId,
+  selectedMealId,
   onSelect,
   onLogWorkout,
   onLogMeal,
 }: {
   userId: string
   selected: PostRecordAttachment | null
+  selectedWorkoutId?: string | null
+  selectedMealId?: string | null
   onSelect: (attachment: PostRecordAttachment) => void
   onLogWorkout: () => void
   onLogMeal: () => void
 }) {
+  const workoutSelection = selectedWorkoutId ?? (selected?.kind === 'workout' ? selected.workout.id : null)
+  const mealSelection = selectedMealId ?? (selected?.kind === 'meal' ? selected.meal.id : null)
   const [tab, setTab] = useState<'workout' | 'meal'>('workout')
   const [workouts, setWorkouts] = useState<WorkoutPostRecord[]>([])
   const [meals, setMeals] = useState<MealPostRecord[]>([])
@@ -344,7 +350,7 @@ function RecordPicker({
       {!loading && !error && tab === 'meal' && meals.length === 0 ? <StatusMessage>No meal records yet.</StatusMessage> : null}
       <div className="flex max-h-80 flex-col gap-2 overflow-auto">
         {tab === 'workout' ? workouts.map((workout) => {
-          const active = selected?.kind === 'workout' && selected.workout.id === workout.id
+          const active = workoutSelection === workout.id
           return (
             <button key={workout.id} type="button" onClick={() => onSelect({ kind: 'workout', workout })} className={`rounded-xl border p-3 text-left ${active ? 'border-[#F5F5F5]' : 'border-[#3A373C]'}`}>
               <p className="text-[14px] text-white" style={sans}>{workout.title}</p>
@@ -352,7 +358,7 @@ function RecordPicker({
             </button>
           )
         }) : meals.map((meal) => {
-          const active = selected?.kind === 'meal' && selected.meal.id === meal.id
+          const active = mealSelection === meal.id
           return (
             <button key={meal.id} type="button" onClick={() => onSelect({ kind: 'meal', meal })} className={`rounded-xl border p-3 text-left ${active ? 'border-[#F5F5F5]' : 'border-[#3A373C]'}`}>
               <p className="text-[14px] text-white" style={sans}>{meal.title || 'Untitled meal'}</p>
@@ -367,7 +373,7 @@ function RecordPicker({
   )
 }
 
-function LogWorkoutPanel({
+export function LogWorkoutPanel({
   onCancel,
   onSaved,
 }: {
@@ -460,7 +466,7 @@ function LogWorkoutPanel({
   )
 }
 
-function LogMealPanel({
+export function LogMealPanel({
   userId,
   onCancel,
   onSaved,

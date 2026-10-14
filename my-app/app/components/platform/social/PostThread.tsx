@@ -9,8 +9,8 @@ import { PostCard } from '@/app/components/platform/social/PostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
+import { CommentComposer } from '@/app/components/platform/social/CommentComposer'
 import {
-  createSocialComment,
   fetchComments,
   fetchPost,
   toggleCommentLike,
@@ -21,8 +21,6 @@ import {
 import { displayName, formatRelativeTime, profileHref, sans } from '@/lib/social/format'
 import { readPostBody } from '@/lib/social/post-content'
 
-const MAX_COMMENT = 280
-
 export function PostThread({ postId }: { postId: string }) {
   const router = useRouter()
   const [post, setPost] = useState<EnrichedPost | null>(null)
@@ -32,9 +30,7 @@ export function PostThread({ postId }: { postId: string }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [commentError, setCommentError] = useState<string | null>(null)
-  const [draft, setDraft] = useState('')
   const [replyTo, setReplyTo] = useState<EnrichedComment | null>(null)
-  const [submitting, setSubmitting] = useState(false)
   const [likePending, setLikePending] = useState(false)
   const [pendingCommentLikes, setPendingCommentLikes] = useState<Record<string, boolean>>({})
 
@@ -114,41 +110,20 @@ export function PostThread({ postId }: { postId: string }) {
     }
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault()
-    const content = draft.trim()
-    if (!content || submitting) return
-    if (content.length > MAX_COMMENT) {
-      setCommentError(`Comments must be ${MAX_COMMENT} characters or fewer.`)
-      return
+  function handleCreated(created: EnrichedComment, parent: EnrichedComment | null) {
+    if (parent) {
+      updateComment(parent.id, (item) => ({
+        ...item,
+        replyCount: item.replyCount + 1,
+        replies: [...(item.replies ?? []), created],
+      }))
+    } else {
+      setComments((current) => [...current, created])
     }
-    setSubmitting(true)
+    setPost((current) => current ? { ...current, commentCount: current.commentCount + 1 } : current)
+    setReplyTo(null)
     setCommentError(null)
-    try {
-      const created = await createSocialComment(postId, {
-        content,
-        parentCommentId: replyTo?.id ?? null,
-        images: [],
-        contentType: 'NORMAL_POST',
-      })
-      if (replyTo) {
-        updateComment(replyTo.id, (item) => ({
-          ...item,
-          replyCount: item.replyCount + 1,
-          replies: [...(item.replies ?? []), created],
-        }))
-      } else {
-        setComments((current) => [...current, created])
-      }
-      setPost((current) => current ? { ...current, commentCount: current.commentCount + 1 } : current)
-      setDraft('')
-      setReplyTo(null)
-      router.refresh()
-    } catch (submitError) {
-      setCommentError(submitError instanceof Error ? submitError.message : 'Could not post comment.')
-    } finally {
-      setSubmitting(false)
-    }
+    router.refresh()
   }
 
   async function handleLoadMore() {
@@ -209,39 +184,13 @@ export function PostThread({ postId }: { postId: string }) {
           </button>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-6 border-t border-[#3A373C] pt-4">
-          {replyTo ? (
-            <div className="mb-3 flex items-center justify-between gap-3 text-[12px] text-[#A09EA3]" style={sans}>
-              <span className="truncate">
-                Replying to {displayName(replyTo.profile, replyTo.authorId)}
-              </span>
-              <button type="button" onClick={() => setReplyTo(null)} className="uppercase tracking-[0.12em]">
-                Cancel
-              </button>
-            </div>
-          ) : null}
-          <textarea
-            value={draft}
-            onChange={(event) => setDraft(event.target.value.slice(0, MAX_COMMENT))}
-            placeholder={replyTo ? 'Write a reply' : 'Write a comment'}
-            rows={3}
-            maxLength={MAX_COMMENT}
-            className="w-full resize-none rounded-2xl bg-[#1E1B1F] px-4 py-3 text-[14px] text-white outline-none placeholder:text-[#6B6870]"
-            style={sans}
-          />
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-[12px] text-[#6B6870]" style={sans}>{draft.length}/{MAX_COMMENT}</span>
-            <button
-              type="submit"
-              disabled={submitting || !draft.trim()}
-              className="rounded-full bg-[#F5F5F5] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141115] disabled:opacity-40"
-              style={sans}
-            >
-              {submitting ? 'Posting…' : 'Reply'}
-            </button>
-          </div>
-          {commentError ? <StatusMessage tone="error">{commentError}</StatusMessage> : null}
-        </form>
+        <CommentComposer
+          postId={postId}
+          replyTo={replyTo}
+          onCancelReply={() => setReplyTo(null)}
+          onCreated={handleCreated}
+        />
+        {commentError ? <StatusMessage tone="error">{commentError}</StatusMessage> : null}
       </div>
     </div>
   )
@@ -279,10 +228,17 @@ function CommentRow({
           {body.workout ? <div className="mt-2"><WorkoutAttachmentCard workout={body.workout} /></div> : null}
           {body.meal ? <div className="mt-2"><MealPostCard meal={body.meal} /></div> : null}
           {body.images.length > 0 && (
-            <div className="mt-2 grid grid-cols-2 gap-2">
+            <div className="mt-2 grid grid-cols-3 gap-2">
               {body.images.map((image) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={image} src={image} alt="" className="aspect-square rounded-lg object-cover" />
+                <img key={image} src={image} alt="" className="aspect-square w-full rounded-lg object-cover" />
+              ))}
+            </div>
+          )}
+          {(comment.videos ?? []).length > 0 && (
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {comment.videos.map((video) => (
+                <video key={video} src={video} controls className="aspect-video w-full rounded-lg bg-black" />
               ))}
             </div>
           )}

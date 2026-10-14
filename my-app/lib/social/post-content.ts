@@ -2,6 +2,7 @@ export const POST_TYPE = {
   WORKOUT_LOG: 'WORKOUT_LOG',
   NORMAL_POST: 'NORMAL_POST',
   MEAL_LOG: 'MEAL_LOG',
+  COMMENT_RECORDS: 'COMMENT_RECORDS',
 } as const
 
 export const MEAL_TYPES = [
@@ -64,6 +65,14 @@ export type MealLogPostPayload = {
 export type PostRecordAttachment =
   | { kind: 'workout'; workout: WorkoutPostRecord }
   | { kind: 'meal'; meal: MealPostRecord }
+
+export type CommentRecordsPayload = {
+  version: 1
+  kind: 'comment_records'
+  userText: string
+  meal: MealPostRecord | null
+  workout: WorkoutPostRecord | null
+}
 
 type UnknownRecord = Record<string, unknown>
 
@@ -166,6 +175,29 @@ export function parseWorkoutLogPostPayload(content: string | undefined | null): 
   }
 }
 
+export function serializeCommentRecordsPayload(payload: CommentRecordsPayload): string {
+  return JSON.stringify(payload)
+}
+
+export function parseCommentRecordsPayload(content: string | undefined | null): CommentRecordsPayload | null {
+  if (!content) return null
+  try {
+    const parsed = JSON.parse(content) as UnknownRecord
+    if (parsed.kind !== 'comment_records') return null
+    const mealRaw = parsed.meal && typeof parsed.meal === 'object' ? parsed.meal as UnknownRecord : null
+    const workoutRaw = parsed.workout && typeof parsed.workout === 'object' ? parsed.workout as UnknownRecord : null
+    return {
+      version: 1,
+      kind: 'comment_records',
+      userText: toStringOrNull(parsed.userText) ?? '',
+      meal: mealRaw ? toMealPostRecord(mealRaw) : null,
+      workout: workoutRaw ? toWorkoutPostRecord(workoutRaw) : null,
+    }
+  } catch {
+    return null
+  }
+}
+
 export function parseMealLogPostPayload(content: string | undefined | null): MealLogPostPayload | null {
   if (!content) return null
   try {
@@ -211,6 +243,15 @@ export function readPostBody(input: {
   if (input.contentType === POST_TYPE.WORKOUT_LOG) {
     const payload = parseWorkoutLogPostPayload(input.content)
     return { text: payload?.userText ?? '', workout: payload?.workout ?? null, meal: null, images }
+  }
+  if (input.contentType === POST_TYPE.COMMENT_RECORDS) {
+    const payload = parseCommentRecordsPayload(input.content)
+    return {
+      text: payload?.userText ?? '',
+      workout: payload?.workout ?? null,
+      meal: payload?.meal ?? null,
+      images,
+    }
   }
   if (input.contentType === POST_TYPE.MEAL_LOG) {
     const payload = parseMealLogPostPayload(input.content)

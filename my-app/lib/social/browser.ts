@@ -61,6 +61,8 @@ function enrichComments(comments: SocialCommentDto[], profiles: Record<string, F
     const { replies, ...rest } = comment
     return {
       ...rest,
+      images: rest.images ?? [],
+      videos: rest.videos ?? [],
       profile: profiles[comment.authorId] ?? null,
       replies: replies ? enrichComments(replies, profiles) : null,
     }
@@ -137,6 +139,7 @@ export async function createSocialComment(postId: string, input: {
   content: string
   parentCommentId?: string | null
   images?: string[]
+  videos?: string[]
   contentType?: string
 }): Promise<EnrichedComment> {
   const comment = await socialFetch<SocialCommentDto>(`/api/posts/${postId}/comments`, {
@@ -147,6 +150,8 @@ export async function createSocialComment(postId: string, input: {
   const { replies, ...rest } = comment
   return {
     ...rest,
+    images: rest.images ?? [],
+    videos: rest.videos ?? [],
     profile: profiles[comment.authorId] ?? null,
     replies: replies ? enrichComments(replies, profiles) : null,
   }
@@ -186,11 +191,21 @@ export async function fetchCurrentProfile(): Promise<{ userId: string; profile: 
   return { userId: data.user.id, profile: profiles[data.user.id] ?? null }
 }
 
+function extensionForUpload(file: File) {
+  if (file.type === 'image/png') return 'png'
+  if (file.type === 'image/webp') return 'webp'
+  if (file.type === 'image/gif') return 'gif'
+  if (file.type === 'video/webm') return 'webm'
+  if (file.type === 'video/quicktime') return 'mov'
+  if (file.type.startsWith('video/')) return 'mp4'
+  return 'jpg'
+}
+
 export async function uploadImages(bucket: string, userId: string, files: File[]): Promise<{ urls: string[]; error: string | null }> {
   const supabase = createClient()
   const urls: string[] = []
   for (const [index, file] of files.entries()) {
-    const extension = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg'
+    const extension = extensionForUpload(file)
     const path = `${userId}/${Date.now()}-${index}-${Math.random().toString(36).slice(2)}.${extension}`
     const { error } = await supabase.storage.from(bucket).upload(path, file, {
       upsert: false,
