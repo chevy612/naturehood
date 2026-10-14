@@ -22,6 +22,9 @@ async function handlePOST(request: NextRequest, { params }: Context) {
 
   try {
     const payload = parseCreateComment(await request.json())
+    const videos = payload.videos ?? []
+    // Only touch the `videos` column when videos are attached so text, image,
+    // meal and workout replies keep working on databases without migration 007.
     const { data, error } = await authenticated.supabase
       .from('social_comments')
       .insert({
@@ -30,16 +33,16 @@ async function handlePOST(request: NextRequest, { params }: Context) {
         author_id: authenticated.userId,
         content: payload.content,
         images: payload.images ?? [],
-        videos: payload.videos ?? [],
         content_type: payload.contentType ?? null,
+        ...(videos.length > 0 ? { videos } : {}),
       })
-      .select('id, post_id, parent_comment_id, author_id, content, images, videos, content_type, created_at, like_count')
+      .select('id, post_id, parent_comment_id, author_id, content, images, content_type, created_at, like_count')
       .single()
     if (error || !data) {
       const status = error?.message.includes('Parent comment') || error?.message.includes('Post not found') ? 400 : 500
       return socialFailure(error?.message ?? 'Failed to create comment', status)
     }
-    return socialJson(ok(toSocialCommentDto(data as SocialCommentRow), { status: 201 }))
+    return socialJson(ok(toSocialCommentDto({ ...(data as Omit<SocialCommentRow, 'videos'>), videos }), { status: 201 }))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Invalid request body'
     return socialFailure(message, 400)

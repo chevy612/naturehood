@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState, type ReactNode } from 'react'
-import { ImagePlus, Video, X } from 'lucide-react'
-import { LogMealPanel, LogWorkoutPanel, RecordPicker } from '@/app/components/platform/social/CreatePostForm'
+import { ImagePlus, Plus, Video, X } from 'lucide-react'
+import { RecordSheet } from '@/app/components/platform/social/CreatePostForm'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
@@ -45,7 +45,7 @@ export function CommentComposer({
   const [videoPreviews, setVideoPreviews] = useState<string[]>([])
   const [meal, setMeal] = useState<MealPostRecord | null>(null)
   const [workout, setWorkout] = useState<WorkoutPostRecord | null>(null)
-  const [panel, setPanel] = useState<'attach' | 'workout' | 'meal' | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -70,7 +70,7 @@ export function CommentComposer({
     setVideoPreviews([])
     setMeal(null)
     setWorkout(null)
-    setPanel(null)
+    setSheetOpen(false)
   }
 
   function addMedia(kind: MediaKind, list: FileList | null) {
@@ -271,12 +271,13 @@ export function CommentComposer({
           </MediaButton>
           <button
             type="button"
-            onClick={() => setPanel(panel === 'attach' ? null : 'attach')}
+            onClick={() => setSheetOpen(true)}
             disabled={submitting || !userId}
-            className="h-10 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
+            className="inline-flex h-10 items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
             style={sans}
           >
-            Attach
+            <Plus size={16} />
+            Record
           </button>
           <span className="ml-auto text-[12px] text-[#6B6870]" style={sans}>{draft.length}/{MAX_NOTE}</span>
           <button
@@ -291,41 +292,18 @@ export function CommentComposer({
         {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       </form>
 
-      {panel === 'attach' && userId ? (
-        <RecordPicker
+      {sheetOpen && userId ? (
+        <RecordSheet
           userId={userId}
-          selected={null}
           selectedWorkoutId={workout?.id ?? null}
           selectedMealId={meal?.id ?? null}
+          onClose={() => setSheetOpen(false)}
           onSelect={(attachment) => {
             if (attachment.kind === 'workout') setWorkout(attachment.workout)
             else setMeal(attachment.meal)
-            setPanel(null)
+            setSheetOpen(false)
             setError(null)
           }}
-          onLogWorkout={() => setPanel('workout')}
-          onLogMeal={() => setPanel('meal')}
-        />
-      ) : null}
-      {panel === 'workout' && userId ? (
-        <LogWorkoutPanel
-          onCancel={() => setPanel('attach')}
-          onSaved={(next) => {
-            setWorkout(next)
-            setPanel(null)
-            setError(null)
-          }}
-        />
-      ) : null}
-      {panel === 'meal' && userId ? (
-        <LogMealPanel
-          userId={userId}
-          onCancel={() => setPanel('attach')}
-          onSaved={(next) => {
-            setMeal(next)
-            setPanel(null)
-          }}
-          onError={setError}
         />
       ) : null}
     </div>
