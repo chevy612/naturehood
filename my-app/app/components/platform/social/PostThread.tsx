@@ -228,10 +228,12 @@ function CommentRow({
           {body.workout ? <div className="mt-2"><WorkoutAttachmentCard workout={body.workout} /></div> : null}
           {body.meal ? <div className="mt-2"><MealPostCard meal={body.meal} /></div> : null}
           {body.images.length > 0 && (
-            <div className="mt-2 grid grid-cols-3 gap-2">
+            <div className="mt-2 grid w-full min-w-0 grid-cols-3 gap-2">
               {body.images.map((image) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={image} src={image} alt="" className="aspect-square w-full rounded-lg object-cover" />
+                <div key={image} className="relative aspect-square w-full min-w-0 overflow-hidden rounded-lg bg-[#1E1B1F]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                </div>
               ))}
             </div>
           )}
