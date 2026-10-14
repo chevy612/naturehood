@@ -30,7 +30,12 @@ async function handleGET(request: NextRequest) {
       p_cursor_id: cursor?.id ?? null,
       p_limit: limit + 1,
     })
-    if (error) return socialFailure(error.message, 500)
+    if (error) {
+      if (/syntax error|websearch_to_tsquery/i.test(error.message)) {
+        return socialJson(ok(feedResponse([], null)))
+      }
+      return socialFailure(error.message, 500)
+    }
 
     const rows = (data ?? []) as SocialPostRow[]
     const hasNext = rows.length > limit
