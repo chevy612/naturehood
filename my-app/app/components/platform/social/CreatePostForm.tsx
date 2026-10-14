@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ImagePlus, X } from 'lucide-react'
+import { ImagePlus, Plus, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { InputDark, TextAreaDark } from '@/app/components/ui/inputs'
 import { WorkoutFormFields } from '@/app/(platform)/record/WorkoutFormFields'
@@ -224,12 +224,13 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
             </label>
             <button
               type="button"
-              onClick={() => setPanel(panel === 'attach' ? null : 'attach')}
-              disabled={posting}
-              className="h-10 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
+              onClick={() => setPanel('attach')}
+              disabled={posting || !userId}
+              className="inline-flex h-10 items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
               style={sans}
             >
-              Attach
+              <Plus size={16} />
+              Record
             </button>
           </div>
           <span className="text-[12px] text-[#6B6870]" style={sans}>{content.length}/{MAX_CONTENT}</span>
@@ -238,37 +239,15 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
         {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
 
         {panel === 'attach' && userId ? (
-          <RecordPicker
+          <RecordSheet
             userId={userId}
             selected={attachment}
+            onClose={() => setPanel(null)}
             onSelect={(next) => {
               setAttachment(next)
               setPanel(null)
               setError(null)
             }}
-            onLogWorkout={() => setPanel('workout')}
-            onLogMeal={() => setPanel('meal')}
-          />
-        ) : null}
-        {panel === 'workout' && userId ? (
-          <LogWorkoutPanel
-            onCancel={() => setPanel('attach')}
-            onSaved={(workout) => {
-              setAttachment({ kind: 'workout', workout })
-              setPanel(null)
-              setError(null)
-            }}
-          />
-        ) : null}
-        {panel === 'meal' && userId ? (
-          <LogMealPanel
-            userId={userId}
-            onCancel={() => setPanel('attach')}
-            onSaved={(meal) => {
-              setAttachment({ kind: 'meal', meal })
-              setPanel(null)
-            }}
-            onError={setError}
           />
         ) : null}
       </div>
@@ -276,7 +255,88 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
   )
 }
 
+export function RecordSheet({
+  userId,
+  selected = null,
+  selectedWorkoutId,
+  selectedMealId,
+  onSelect,
+  onClose,
+}: {
+  userId: string
+  selected?: PostRecordAttachment | null
+  selectedWorkoutId?: string | null
+  selectedMealId?: string | null
+  onSelect: (attachment: PostRecordAttachment) => void
+  onClose: () => void
+}) {
+  const [view, setView] = useState<'pick' | 'workout' | 'meal'>('pick')
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [onClose])
+
+  const title = view === 'workout' ? 'Log a workout' : view === 'meal' ? 'Log a meal' : 'Add a record'
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
+      <button type="button" aria-label="Close record sheet" onClick={onClose} className="absolute inset-0 bg-black/60" />
+      <div className="relative flex max-h-[85vh] w-full max-w-xl flex-col rounded-t-3xl border border-b-0 border-[#3A373C] bg-[#141115] shadow-2xl">
+        <div className="flex shrink-0 flex-col items-center px-4 pt-2">
+          <span className="h-1 w-10 rounded-full bg-[#3A373C]" />
+          <div className="mt-3 flex w-full items-center justify-between">
+            <p className="text-[15px] text-white" style={sans}>{title}</p>
+            <button type="button" aria-label="Close" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B1F] text-white">
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-y-auto px-4 pb-6 pt-2">
+          {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
+          {view === 'pick' ? (
+            <RecordPicker
+              embedded
+              userId={userId}
+              selected={selected}
+              selectedWorkoutId={selectedWorkoutId}
+              selectedMealId={selectedMealId}
+              onSelect={onSelect}
+              onLogWorkout={() => setView('workout')}
+              onLogMeal={() => setView('meal')}
+            />
+          ) : null}
+          {view === 'workout' ? (
+            <LogWorkoutPanel
+              onCancel={() => setView('pick')}
+              onSaved={(workout) => onSelect({ kind: 'workout', workout })}
+            />
+          ) : null}
+          {view === 'meal' ? (
+            <LogMealPanel
+              userId={userId}
+              onCancel={() => setView('pick')}
+              onSaved={(meal) => onSelect({ kind: 'meal', meal })}
+              onError={setError}
+            />
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function RecordPicker({
+  embedded = false,
   userId,
   selected,
   selectedWorkoutId,
@@ -285,6 +345,7 @@ export function RecordPicker({
   onLogWorkout,
   onLogMeal,
 }: {
+  embedded?: boolean
   userId: string
   selected: PostRecordAttachment | null
   selectedWorkoutId?: string | null
@@ -321,8 +382,8 @@ export function RecordPicker({
   }, [userId])
 
   return (
-    <div className="mt-4 rounded-2xl border border-[#3A373C] bg-[#1E1B1F] p-3">
-      <p className="mb-3 text-center text-[14px] text-white" style={sans}>Attach a record</p>
+    <div className={embedded ? '' : 'mt-4 rounded-2xl border border-[#3A373C] bg-[#1E1B1F] p-3'}>
+      {embedded ? null : <p className="mb-3 text-center text-[14px] text-white" style={sans}>Attach a record</p>}
       <div className="mb-3 grid grid-cols-2 rounded-xl border border-[#3A373C] p-1">
         {(['workout', 'meal'] as const).map((key) => (
           <button
