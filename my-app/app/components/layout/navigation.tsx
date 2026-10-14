@@ -75,10 +75,7 @@ export default function Navigation() {
           className={`hidden md:flex items-center justify-between bg-black rounded-[100px] h-[72px] px-[50px] lg:px-[103px] transition-all duration-300 ${
             scrolled ? "shadow-lg shadow-black/20" : ""
           }`}
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
-          }}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <Link href="/" className="shrink-0">
             <Image
@@ -119,10 +116,7 @@ export default function Navigation() {
           className={`flex md:hidden items-center justify-between bg-black rounded-full h-[48px] px-5 transition-all duration-300 ${
             scrolled ? "shadow-lg shadow-black/20" : ""
           }`}
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
-          }}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <Link href="/" className="shrink-0">
             <Image
