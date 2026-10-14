@@ -10,6 +10,7 @@ import { ButtonPrimary } from "@/app/components/ui/buttons";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "About us", href: "/about" },
+  { label: "App", href: "/home" },
 ];
 
 export default function Navigation() {

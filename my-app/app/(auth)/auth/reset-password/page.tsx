@@ -4,6 +4,7 @@ import { useState, useEffect, ChangeEvent, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { verifyResetToken, resetPassword } from "./actions";
+import { LogoSpinner } from "@/app/components/ui/logo-spinner";
 
 // useSearchParams requires a Suspense boundary
 export default function ResetPasswordPage() {
@@ -206,9 +207,8 @@ function ResetPasswordContent() {
 
 function LoadingState() {
   return (
-    <div className="space-y-4">
-      <div className="h-4 bg-[#3A373C] rounded animate-pulse w-3/4" />
-      <div className="h-4 bg-[#3A373C] rounded animate-pulse w-1/2" />
+    <div className="flex justify-center py-6">
+      <LogoSpinner size={32} color="#F5F5F5" />
     </div>
   );
 }

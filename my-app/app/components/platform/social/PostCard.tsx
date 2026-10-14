@@ -6,7 +6,7 @@ import { Avatar } from '@/app/components/platform/Avatar'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
 import { displayName, formatRelativeTime, profileHref, sans } from '@/lib/social/format'
-import { readPostBody } from '@/lib/social/post-content'
+import { isVideoUrl, readPostBody } from '@/lib/social/post-content'
 import type { EnrichedPost } from '@/lib/social/browser'
 
 export function PostCard({
@@ -59,7 +59,9 @@ export function PostCard({
             {body.meal ? <MealPostCard meal={body.meal} /> : null}
             {body.images.length > 0 && (
               <div className={`grid gap-2 ${body.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                {body.images.map((image) => (
+                {body.images.map((image) => isVideoUrl(image) ? (
+                  <video key={image} src={image} controls className="aspect-video w-full rounded-xl bg-black" />
+                ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img key={image} src={image} alt="" className="aspect-square w-full rounded-xl object-cover" />
                 ))}

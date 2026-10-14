@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
-import { ImagePlus, Video, X } from 'lucide-react'
-import { LogMealPanel, LogWorkoutPanel, RecordPicker } from '@/app/components/platform/social/CreatePostForm'
+import { useEffect, useState } from 'react'
+import { ImagePlus, Plus, X } from 'lucide-react'
+import { RecordSheet } from '@/app/components/platform/social/CreatePostForm'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
@@ -45,7 +45,7 @@ export function CommentComposer({
   const [videoPreviews, setVideoPreviews] = useState<string[]>([])
   const [meal, setMeal] = useState<MealPostRecord | null>(null)
   const [workout, setWorkout] = useState<WorkoutPostRecord | null>(null)
-  const [panel, setPanel] = useState<'attach' | 'workout' | 'meal' | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -70,33 +70,40 @@ export function CommentComposer({
     setVideoPreviews([])
     setMeal(null)
     setWorkout(null)
-    setPanel(null)
+    setSheetOpen(false)
   }
 
-  function addMedia(kind: MediaKind, list: FileList | null) {
+  function addMedia(list: FileList | null) {
     if (!list?.length) return
     const incoming = Array.from(list)
-    const otherKind: MediaKind = kind === 'image' ? 'video' : 'image'
-    const wrongType = incoming.some((file) => !file.type.startsWith(`${kind}/`))
-    const oppositeSelected = kind === 'image' ? videoFiles.length > 0 : imageFiles.length > 0
-    if (wrongType || oppositeSelected || incoming.some((file) => file.type.startsWith(`${otherKind}/`))) {
+    const incomingImages = incoming.filter((file) => file.type.startsWith('image/'))
+    const incomingVideos = incoming.filter((file) => file.type.startsWith('video/'))
+    if (incomingImages.length + incomingVideos.length !== incoming.length) {
+      setError('Choose photos or videos.')
+      return
+    }
+    if (
+      (incomingImages.length > 0 && (videoFiles.length > 0 || incomingVideos.length > 0))
+      || (incomingVideos.length > 0 && (imageFiles.length > 0 || incomingImages.length > 0))
+    ) {
       setError('A comment can include images or videos, not both.')
       return
     }
-    const current = kind === 'image' ? imageFiles.length : videoFiles.length
-    if (current + incoming.length > MAX_MEDIA) {
-      setError(kind === 'image'
-        ? 'A comment can have at most 3 images.'
-        : 'A comment can have at most 3 videos.')
+    if (incomingImages.length && imageFiles.length + incomingImages.length > MAX_MEDIA) {
+      setError('A comment can have at most 3 images.')
       return
     }
-    const previews = incoming.map((file) => URL.createObjectURL(file))
-    if (kind === 'image') {
-      setImageFiles((files) => [...files, ...incoming])
-      setImagePreviews((urls) => [...urls, ...previews])
-    } else {
-      setVideoFiles((files) => [...files, ...incoming])
-      setVideoPreviews((urls) => [...urls, ...previews])
+    if (incomingVideos.length && videoFiles.length + incomingVideos.length > MAX_MEDIA) {
+      setError('A comment can have at most 3 videos.')
+      return
+    }
+    if (incomingImages.length) {
+      setImageFiles((files) => [...files, ...incomingImages])
+      setImagePreviews((urls) => [...urls, ...incomingImages.map((file) => URL.createObjectURL(file))])
+    }
+    if (incomingVideos.length) {
+      setVideoFiles((files) => [...files, ...incomingVideos])
+      setVideoPreviews((urls) => [...urls, ...incomingVideos.map((file) => URL.createObjectURL(file))])
     }
     setError(null)
   }
@@ -190,7 +197,7 @@ export function CommentComposer({
   }
 
   return (
-    <div className="mt-6 border-t border-[#3A373C] pt-4">
+    <div className="mt-4">
       <form onSubmit={handleSubmit}>
         {replyTo ? (
           <div className="mb-3 flex items-center justify-between gap-3 text-[12px] text-[#A09EA3]" style={sans}>
@@ -243,40 +250,30 @@ export function CommentComposer({
         ) : null}
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <MediaButton label="Comment photo" icon={<ImagePlus size={16} />} disabled={submitting}>
+          <label className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white ${submitting ? 'pointer-events-none opacity-40' : ''}`} style={sans}>
+            <ImagePlus size={16} />
+            Media
             <input
-              aria-label="Comment photo"
+              aria-label="Comment media"
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               multiple
               className="hidden"
               onChange={(event) => {
-                addMedia('image', event.target.files)
+                addMedia(event.target.files)
                 event.target.value = ''
               }}
             />
-          </MediaButton>
-          <MediaButton label="Comment video" icon={<Video size={16} />} disabled={submitting}>
-            <input
-              aria-label="Comment video"
-              type="file"
-              accept="video/*"
-              multiple
-              className="hidden"
-              onChange={(event) => {
-                addMedia('video', event.target.files)
-                event.target.value = ''
-              }}
-            />
-          </MediaButton>
+          </label>
           <button
             type="button"
-            onClick={() => setPanel(panel === 'attach' ? null : 'attach')}
+            onClick={() => setSheetOpen(true)}
             disabled={submitting || !userId}
-            className="h-10 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
+            className="inline-flex h-10 items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
             style={sans}
           >
-            Attach
+            <Plus size={16} />
+            Record
           </button>
           <span className="ml-auto text-[12px] text-[#6B6870]" style={sans}>{draft.length}/{MAX_NOTE}</span>
           <button
@@ -291,64 +288,21 @@ export function CommentComposer({
         {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       </form>
 
-      {panel === 'attach' && userId ? (
-        <RecordPicker
+      {sheetOpen && userId ? (
+        <RecordSheet
           userId={userId}
-          selected={null}
           selectedWorkoutId={workout?.id ?? null}
           selectedMealId={meal?.id ?? null}
+          onClose={() => setSheetOpen(false)}
           onSelect={(attachment) => {
             if (attachment.kind === 'workout') setWorkout(attachment.workout)
             else setMeal(attachment.meal)
-            setPanel(null)
+            setSheetOpen(false)
             setError(null)
           }}
-          onLogWorkout={() => setPanel('workout')}
-          onLogMeal={() => setPanel('meal')}
-        />
-      ) : null}
-      {panel === 'workout' && userId ? (
-        <LogWorkoutPanel
-          onCancel={() => setPanel('attach')}
-          onSaved={(next) => {
-            setWorkout(next)
-            setPanel(null)
-            setError(null)
-          }}
-        />
-      ) : null}
-      {panel === 'meal' && userId ? (
-        <LogMealPanel
-          userId={userId}
-          onCancel={() => setPanel('attach')}
-          onSaved={(next) => {
-            setMeal(next)
-            setPanel(null)
-          }}
-          onError={setError}
         />
       ) : null}
     </div>
-  )
-}
-
-function MediaButton({
-  label,
-  icon,
-  disabled,
-  children,
-}: {
-  label: string
-  icon: ReactNode
-  disabled?: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <label className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white ${disabled ? 'pointer-events-none opacity-40' : ''}`} style={sans}>
-      {icon}
-      {label === 'Comment photo' ? 'Photo' : 'Video'}
-      {children}
-    </label>
   )
 }
 

@@ -72,3 +72,5 @@ AS $$
   ))
   FROM comment_row row;
 $$;
+
+NOTIFY pgrst, 'reload schema';

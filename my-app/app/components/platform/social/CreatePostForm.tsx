@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ImagePlus, X } from 'lucide-react'
+import { ImagePlus, Plus, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { InputDark, TextAreaDark } from '@/app/components/ui/inputs'
 import { WorkoutFormFields } from '@/app/(platform)/record/WorkoutFormFields'
@@ -34,7 +34,7 @@ import {
 } from '@/lib/social/post-content'
 
 const MAX_CONTENT = 1000
-const MAX_IMAGES = 4
+const MAX_MEDIA = 4
 const MAX_POST_CONTENT = 5000
 
 type Panel = 'attach' | 'workout' | 'meal' | null
@@ -65,10 +65,15 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
   )
 
   function addFiles(list: FileList | null) {
-    if (!list) return
-    const next = [...files, ...Array.from(list)].slice(0, MAX_IMAGES)
-    if (files.length + list.length > MAX_IMAGES) {
-      setError(`A post can have at most ${MAX_IMAGES} images.`)
+    if (!list?.length) return
+    const incoming = Array.from(list)
+    if (incoming.some((file) => !file.type.startsWith('image/') && !file.type.startsWith('video/'))) {
+      setError('Choose photos or videos.')
+      return
+    }
+    const next = [...files, ...incoming].slice(0, MAX_MEDIA)
+    if (files.length + incoming.length > MAX_MEDIA) {
+      setError(`A post can have at most ${MAX_MEDIA} photos or videos.`)
     } else {
       setError(null)
     }
@@ -107,7 +112,7 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
           userText: content.trim(),
           meal: attachment.meal,
         })
-        images = [attachment.meal.image_url, ...uploaded.urls].filter((url): url is string => !!url).slice(0, MAX_IMAGES)
+        images = [attachment.meal.image_url, ...uploaded.urls].filter((url): url is string => !!url).slice(0, MAX_MEDIA)
         contentType = POST_TYPE.MEAL_LOG
       }
 
@@ -185,12 +190,16 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
         {previews.length > 0 && (
           <div className="mt-4 grid grid-cols-2 gap-2">
             {previews.map((preview, index) => (
-              <div key={preview} className="relative aspect-square overflow-hidden rounded-xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={preview} alt="" className="h-full w-full object-cover" />
+              <div key={preview} className="relative aspect-square overflow-hidden rounded-xl bg-black">
+                {files[index]?.type.startsWith('video/') ? (
+                  <video src={preview} className="h-full w-full object-cover" muted />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={preview} alt="" className="h-full w-full object-cover" />
+                )}
                 <button
                   type="button"
-                  aria-label="Remove image"
+                  aria-label="Remove media"
                   onClick={() => {
                     URL.revokeObjectURL(preview)
                     setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))
@@ -207,15 +216,16 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
 
         <div className="mt-6 flex items-center justify-between border-t border-[#3A373C] pt-3">
           <div className="flex items-center gap-2">
-            <label className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white ${files.length >= MAX_IMAGES || posting ? 'opacity-40' : ''}`} style={sans}>
+            <label className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white ${files.length >= MAX_MEDIA || posting ? 'opacity-40' : ''}`} style={sans}>
               <ImagePlus size={16} />
-              Photo
+              Media
               <input
+                aria-label="Post media"
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 multiple
                 className="hidden"
-                disabled={files.length >= MAX_IMAGES || posting}
+                disabled={files.length >= MAX_MEDIA || posting}
                 onChange={(event) => {
                   addFiles(event.target.files)
                   event.target.value = ''
@@ -224,12 +234,13 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
             </label>
             <button
               type="button"
-              onClick={() => setPanel(panel === 'attach' ? null : 'attach')}
-              disabled={posting}
-              className="h-10 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
+              onClick={() => setPanel('attach')}
+              disabled={posting || !userId}
+              className="inline-flex h-10 items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
               style={sans}
             >
-              Attach
+              <Plus size={16} />
+              Record
             </button>
           </div>
           <span className="text-[12px] text-[#6B6870]" style={sans}>{content.length}/{MAX_CONTENT}</span>
@@ -238,37 +249,15 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
         {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
 
         {panel === 'attach' && userId ? (
-          <RecordPicker
+          <RecordSheet
             userId={userId}
             selected={attachment}
+            onClose={() => setPanel(null)}
             onSelect={(next) => {
               setAttachment(next)
               setPanel(null)
               setError(null)
             }}
-            onLogWorkout={() => setPanel('workout')}
-            onLogMeal={() => setPanel('meal')}
-          />
-        ) : null}
-        {panel === 'workout' && userId ? (
-          <LogWorkoutPanel
-            onCancel={() => setPanel('attach')}
-            onSaved={(workout) => {
-              setAttachment({ kind: 'workout', workout })
-              setPanel(null)
-              setError(null)
-            }}
-          />
-        ) : null}
-        {panel === 'meal' && userId ? (
-          <LogMealPanel
-            userId={userId}
-            onCancel={() => setPanel('attach')}
-            onSaved={(meal) => {
-              setAttachment({ kind: 'meal', meal })
-              setPanel(null)
-            }}
-            onError={setError}
           />
         ) : null}
       </div>
@@ -276,7 +265,129 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
   )
 }
 
+export function RecordSheet({
+  userId,
+  selected = null,
+  selectedWorkoutId,
+  selectedMealId,
+  onSelect,
+  onClose,
+}: {
+  userId: string
+  selected?: PostRecordAttachment | null
+  selectedWorkoutId?: string | null
+  selectedMealId?: string | null
+  onSelect: (attachment: PostRecordAttachment) => void
+  onClose: () => void
+}) {
+  const [view, setView] = useState<'pick' | 'workout' | 'meal'>('pick')
+  const [error, setError] = useState<string | null>(null)
+  const [expanded, setExpanded] = useState(false)
+  const [offset, setOffset] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const drag = useRef<{ y: number; offset: number } | null>(null)
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [onClose])
+
+  function onHandlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    drag.current = { y: event.clientY, offset }
+    setDragging(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function onHandlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (!drag.current) return
+    const next = drag.current.offset + (event.clientY - drag.current.y)
+    setOffset(Math.max(next, expanded ? -24 : -160))
+  }
+
+  function finishDrag() {
+    if (!drag.current) return
+    drag.current = null
+    setDragging(false)
+    if (offset > 120) {
+      onClose()
+      return
+    }
+    if (!expanded && offset < -70) setExpanded(true)
+    if (expanded && offset > 70) setExpanded(false)
+    setOffset(0)
+  }
+
+  const title = view === 'workout' ? 'Log a workout' : view === 'meal' ? 'Log a meal' : 'Add a record'
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
+      <button type="button" aria-label="Close record sheet" onClick={onClose} className="absolute inset-0 bg-black/60" />
+      <div
+        className={`relative flex w-full max-w-xl flex-col rounded-t-3xl border border-b-0 border-[#3A373C] bg-[#141115] shadow-2xl ${expanded ? 'h-[92dvh]' : 'h-[min(78dvh,720px)]'}`}
+        style={{
+          transform: `translateY(${offset}px)`,
+          transition: dragging ? 'none' : 'transform 180ms ease, height 180ms ease',
+        }}
+      >
+        <div
+          className="flex shrink-0 cursor-grab touch-none flex-col items-center px-4 pt-2 active:cursor-grabbing"
+          onPointerDown={onHandlePointerDown}
+          onPointerMove={onHandlePointerMove}
+          onPointerUp={finishDrag}
+          onPointerCancel={finishDrag}
+        >
+          <span className="h-1 w-10 rounded-full bg-[#3A373C]" />
+          <div className="mt-3 flex w-full items-center justify-between">
+            <p className="text-[15px] text-white" style={sans}>{title}</p>
+            <button type="button" aria-label="Close" onPointerDown={(event) => event.stopPropagation()} onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B1F] text-white">
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8 pt-2">
+          {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
+          {view === 'pick' ? (
+            <RecordPicker
+              embedded
+              userId={userId}
+              selected={selected}
+              selectedWorkoutId={selectedWorkoutId}
+              selectedMealId={selectedMealId}
+              onSelect={onSelect}
+              onLogWorkout={() => setView('workout')}
+              onLogMeal={() => setView('meal')}
+            />
+          ) : null}
+          {view === 'workout' ? (
+            <LogWorkoutPanel
+              onCancel={() => setView('pick')}
+              onSaved={(workout) => onSelect({ kind: 'workout', workout })}
+            />
+          ) : null}
+          {view === 'meal' ? (
+            <LogMealPanel
+              userId={userId}
+              onCancel={() => setView('pick')}
+              onSaved={(meal) => onSelect({ kind: 'meal', meal })}
+              onError={setError}
+            />
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function RecordPicker({
+  embedded = false,
   userId,
   selected,
   selectedWorkoutId,
@@ -285,6 +396,7 @@ export function RecordPicker({
   onLogWorkout,
   onLogMeal,
 }: {
+  embedded?: boolean
   userId: string
   selected: PostRecordAttachment | null
   selectedWorkoutId?: string | null
@@ -321,8 +433,8 @@ export function RecordPicker({
   }, [userId])
 
   return (
-    <div className="mt-4 rounded-2xl border border-[#3A373C] bg-[#1E1B1F] p-3">
-      <p className="mb-3 text-center text-[14px] text-white" style={sans}>Attach a record</p>
+    <div className={embedded ? '' : 'mt-4 rounded-2xl border border-[#3A373C] bg-[#1E1B1F] p-3'}>
+      {embedded ? null : <p className="mb-3 text-center text-[14px] text-white" style={sans}>Attach a record</p>}
       <div className="mb-3 grid grid-cols-2 rounded-xl border border-[#3A373C] p-1">
         {(['workout', 'meal'] as const).map((key) => (
           <button
@@ -348,7 +460,7 @@ export function RecordPicker({
       {!loading && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       {!loading && !error && tab === 'workout' && workouts.length === 0 ? <StatusMessage>No workout logs yet.</StatusMessage> : null}
       {!loading && !error && tab === 'meal' && meals.length === 0 ? <StatusMessage>No meal records yet.</StatusMessage> : null}
-      <div className="flex max-h-80 flex-col gap-2 overflow-auto">
+      <div className={embedded ? 'flex flex-col gap-2' : 'flex max-h-80 flex-col gap-2 overflow-auto'}>
         {tab === 'workout' ? workouts.map((workout) => {
           const active = workoutSelection === workout.id
           return (

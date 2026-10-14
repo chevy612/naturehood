@@ -37,6 +37,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "expo-server-sdk": "^6.1.0",
+    "lottie-web": "^5.12.2",
     "lucide-react": "^0.562.0",
     "next": "^16.1.6",
     "openai": "^6.33.0",
