@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ImagePlus, Plus, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
@@ -272,6 +272,10 @@ export function RecordSheet({
 }) {
   const [view, setView] = useState<'pick' | 'workout' | 'meal'>('pick')
   const [error, setError] = useState<string | null>(null)
+  const [expanded, setExpanded] = useState(false)
+  const [offset, setOffset] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const drag = useRef<{ y: number; offset: number } | null>(null)
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -286,22 +290,59 @@ export function RecordSheet({
     }
   }, [onClose])
 
+  function onHandlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    drag.current = { y: event.clientY, offset }
+    setDragging(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function onHandlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (!drag.current) return
+    const next = drag.current.offset + (event.clientY - drag.current.y)
+    setOffset(Math.max(next, expanded ? -24 : -160))
+  }
+
+  function finishDrag() {
+    if (!drag.current) return
+    drag.current = null
+    setDragging(false)
+    if (offset > 120) {
+      onClose()
+      return
+    }
+    if (!expanded && offset < -70) setExpanded(true)
+    if (expanded && offset > 70) setExpanded(false)
+    setOffset(0)
+  }
+
   const title = view === 'workout' ? 'Log a workout' : view === 'meal' ? 'Log a meal' : 'Add a record'
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="fixed inset-0 z-[80] flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
       <button type="button" aria-label="Close record sheet" onClick={onClose} className="absolute inset-0 bg-black/60" />
-      <div className="relative flex max-h-[85vh] w-full max-w-xl flex-col rounded-t-3xl border border-b-0 border-[#3A373C] bg-[#141115] shadow-2xl">
-        <div className="flex shrink-0 flex-col items-center px-4 pt-2">
+      <div
+        className={`relative flex w-full max-w-xl flex-col rounded-t-3xl border border-b-0 border-[#3A373C] bg-[#141115] shadow-2xl ${expanded ? 'h-[92dvh]' : 'h-[min(78dvh,720px)]'}`}
+        style={{
+          transform: `translateY(${offset}px)`,
+          transition: dragging ? 'none' : 'transform 180ms ease, height 180ms ease',
+        }}
+      >
+        <div
+          className="flex shrink-0 cursor-grab touch-none flex-col items-center px-4 pt-2 active:cursor-grabbing"
+          onPointerDown={onHandlePointerDown}
+          onPointerMove={onHandlePointerMove}
+          onPointerUp={finishDrag}
+          onPointerCancel={finishDrag}
+        >
           <span className="h-1 w-10 rounded-full bg-[#3A373C]" />
           <div className="mt-3 flex w-full items-center justify-between">
             <p className="text-[15px] text-white" style={sans}>{title}</p>
-            <button type="button" aria-label="Close" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B1F] text-white">
+            <button type="button" aria-label="Close" onPointerDown={(event) => event.stopPropagation()} onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B1F] text-white">
               <X size={16} />
             </button>
           </div>
         </div>
-        <div className="overflow-y-auto px-4 pb-6 pt-2">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8 pt-2">
           {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
           {view === 'pick' ? (
             <RecordPicker
@@ -409,7 +450,7 @@ export function RecordPicker({
       {!loading && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       {!loading && !error && tab === 'workout' && workouts.length === 0 ? <StatusMessage>No workout logs yet.</StatusMessage> : null}
       {!loading && !error && tab === 'meal' && meals.length === 0 ? <StatusMessage>No meal records yet.</StatusMessage> : null}
-      <div className="flex max-h-80 flex-col gap-2 overflow-auto">
+      <div className={embedded ? 'flex flex-col gap-2' : 'flex max-h-80 flex-col gap-2 overflow-auto'}>
         {tab === 'workout' ? workouts.map((workout) => {
           const active = workoutSelection === workout.id
           return (
