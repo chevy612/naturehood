@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { saveWorkout } from './actions'
+import { workoutShareSearch, type WorkoutPostRecord } from '@/lib/social/post-content'
 
 const DRAFT_KEY = 'naturehood_draft_workout'
 
@@ -28,6 +29,7 @@ export interface UseWorkoutFormReturn {
   showSuccess: boolean
   aiFormatting: boolean
   draftRestored: boolean
+  shareHref: string | null
   clearError: () => void
 
   // Handlers — workoutTypes injected at call time so this hook stays independent of useWorkoutTypes
@@ -55,6 +57,7 @@ export function useWorkoutForm(
   const [showSuccess, setShowSuccess] = useState(false)
   const [aiFormatting, setAiFormatting] = useState(false)
   const [draftRestored, setDraftRestored] = useState(false)
+  const [shareHref, setShareHref] = useState<string | null>(null)
 
   const isFirstRender = useRef(true)
 
@@ -114,6 +117,20 @@ export function useWorkoutForm(
 
     setSubmitting(false)
     setShowSuccess(true)
+    if (result.id && isPublic) {
+      const durationValue = duration ? parseInt(duration, 10) : null
+      const workout: WorkoutPostRecord = {
+        id: result.id,
+        title: title.trim(),
+        logged_date: loggedDate,
+        duration_minutes: durationValue && !Number.isNaN(durationValue) ? durationValue : null,
+        workout_types: workoutTypes,
+        workout_log: workoutLog.trim() || null,
+      }
+      setShareHref(`/home/new?${workoutShareSearch(workout)}`)
+    } else {
+      setShareHref(null)
+    }
 
     // Fire AI formatting in background — non-blocking
     if (result.id && workoutLog.trim()) {
@@ -164,6 +181,7 @@ export function useWorkoutForm(
     setWorkoutLog('')
     setIsPublic(true)
     setDraftRestored(false)
+    setShareHref(null)
     resetTypes()
   }
 
@@ -180,6 +198,7 @@ export function useWorkoutForm(
     showSuccess,
     aiFormatting,
     draftRestored,
+    shareHref,
     clearError,
     handleSubmit,
     handleLogWithAI,

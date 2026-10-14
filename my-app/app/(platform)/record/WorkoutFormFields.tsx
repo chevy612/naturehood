@@ -26,6 +26,7 @@ export interface WorkoutFormFieldsProps {
   onRemoveType: (label: string) => void
   onAddType: (label: string) => void
   previousTypes?: string[]
+  showVisibility?: boolean
 }
 
 export function WorkoutFormFields({
@@ -47,6 +48,7 @@ export function WorkoutFormFields({
   onRemoveType,
   onAddType,
   previousTypes = [],
+  showVisibility = true,
 }: WorkoutFormFieldsProps) {
   return (
     <>
@@ -153,7 +155,7 @@ export function WorkoutFormFields({
         rows={8}
       />
 
-      {/* Public toggle */}
+      {showVisibility && (
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -177,6 +179,7 @@ export function WorkoutFormFields({
           {isPublic ? 'Visible to the community' : 'Private — only you can see this'}
         </span>
       </div>
+      )}
     </>
   )
 }
