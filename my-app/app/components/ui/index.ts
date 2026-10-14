@@ -7,3 +7,4 @@ export * from "./tags";
 export * from "./tokens";
 export * from "./notification";
 export * from "./profile-card";
+export * from "./logo-spinner";
