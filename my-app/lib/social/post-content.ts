@@ -319,3 +319,9 @@ export function attachmentFromSearchParams(params: URLSearchParams): PostRecordA
     },
   }
 }
+
+const VIDEO_URL = /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i
+
+export function isVideoUrl(url: string) {
+  return VIDEO_URL.test(url)
+}

@@ -19,7 +19,7 @@ import {
   type EnrichedPost,
 } from '@/lib/social/browser'
 import { displayName, formatRelativeTime, profileHref, sans } from '@/lib/social/format'
-import { readPostBody } from '@/lib/social/post-content'
+import { isVideoUrl, readPostBody } from '@/lib/social/post-content'
 
 export function PostThread({ postId }: { postId: string }) {
   const router = useRouter()
@@ -231,8 +231,12 @@ function CommentRow({
             <div className="mt-2 grid w-full min-w-0 grid-cols-3 gap-2">
               {body.images.map((image) => (
                 <div key={image} className="relative aspect-square w-full min-w-0 overflow-hidden rounded-lg bg-[#1E1B1F]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  {isVideoUrl(image) ? (
+                    <video src={image} controls className="absolute inset-0 h-full w-full object-cover" />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  )}
                 </div>
               ))}
             </div>

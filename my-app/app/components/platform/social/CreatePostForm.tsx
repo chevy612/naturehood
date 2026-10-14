@@ -34,7 +34,7 @@ import {
 } from '@/lib/social/post-content'
 
 const MAX_CONTENT = 1000
-const MAX_IMAGES = 4
+const MAX_MEDIA = 4
 const MAX_POST_CONTENT = 5000
 
 type Panel = 'attach' | 'workout' | 'meal' | null
@@ -65,10 +65,15 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
   )
 
   function addFiles(list: FileList | null) {
-    if (!list) return
-    const next = [...files, ...Array.from(list)].slice(0, MAX_IMAGES)
-    if (files.length + list.length > MAX_IMAGES) {
-      setError(`A post can have at most ${MAX_IMAGES} images.`)
+    if (!list?.length) return
+    const incoming = Array.from(list)
+    if (incoming.some((file) => !file.type.startsWith('image/') && !file.type.startsWith('video/'))) {
+      setError('Choose photos or videos.')
+      return
+    }
+    const next = [...files, ...incoming].slice(0, MAX_MEDIA)
+    if (files.length + incoming.length > MAX_MEDIA) {
+      setError(`A post can have at most ${MAX_MEDIA} photos or videos.`)
     } else {
       setError(null)
     }
@@ -107,7 +112,7 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
           userText: content.trim(),
           meal: attachment.meal,
         })
-        images = [attachment.meal.image_url, ...uploaded.urls].filter((url): url is string => !!url).slice(0, MAX_IMAGES)
+        images = [attachment.meal.image_url, ...uploaded.urls].filter((url): url is string => !!url).slice(0, MAX_MEDIA)
         contentType = POST_TYPE.MEAL_LOG
       }
 
@@ -185,12 +190,16 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
         {previews.length > 0 && (
           <div className="mt-4 grid grid-cols-2 gap-2">
             {previews.map((preview, index) => (
-              <div key={preview} className="relative aspect-square overflow-hidden rounded-xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={preview} alt="" className="h-full w-full object-cover" />
+              <div key={preview} className="relative aspect-square overflow-hidden rounded-xl bg-black">
+                {files[index]?.type.startsWith('video/') ? (
+                  <video src={preview} className="h-full w-full object-cover" muted />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={preview} alt="" className="h-full w-full object-cover" />
+                )}
                 <button
                   type="button"
-                  aria-label="Remove image"
+                  aria-label="Remove media"
                   onClick={() => {
                     URL.revokeObjectURL(preview)
                     setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))
@@ -207,15 +216,16 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
 
         <div className="mt-6 flex items-center justify-between border-t border-[#3A373C] pt-3">
           <div className="flex items-center gap-2">
-            <label className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white ${files.length >= MAX_IMAGES || posting ? 'opacity-40' : ''}`} style={sans}>
+            <label className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white ${files.length >= MAX_MEDIA || posting ? 'opacity-40' : ''}`} style={sans}>
               <ImagePlus size={16} />
-              Photo
+              Media
               <input
+                aria-label="Post media"
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 multiple
                 className="hidden"
-                disabled={files.length >= MAX_IMAGES || posting}
+                disabled={files.length >= MAX_MEDIA || posting}
                 onChange={(event) => {
                   addFiles(event.target.files)
                   event.target.value = ''
