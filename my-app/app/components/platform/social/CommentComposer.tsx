@@ -190,7 +190,7 @@ export function CommentComposer({
   }
 
   return (
-    <div className="mt-6 border-t border-[#3A373C] pt-4">
+    <div className="mt-4">
       <form onSubmit={handleSubmit}>
         {replyTo ? (
           <div className="mb-3 flex items-center justify-between gap-3 text-[12px] text-[#A09EA3]" style={sans}>
