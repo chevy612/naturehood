@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { InputDark, ButtonSubmit } from "@/app/components/ui";
+import { InputDark, ButtonSubmit, LogoSpinner } from "@/app/components/ui";
 import { setUserPassword } from "../actions";
 
 // ─────────────────────────────────────────────
@@ -116,7 +116,7 @@ export default function SetPasswordPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#141115] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#F5F5F5] border-t-transparent rounded-full animate-spin" />
+        <LogoSpinner size={24} color="#F5F5F5" />
       </div>
     }>
       <SetPasswordForm />
