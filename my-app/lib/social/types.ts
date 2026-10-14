@@ -18,6 +18,7 @@ export type SocialCommentDto = {
   authorId: string
   content: string
   images: string[]
+  videos: string[]
   contentType?: string
   createdAt: string
   likeCount: number
@@ -48,6 +49,7 @@ export type SocialCommentRow = {
   author_id: string
   content: string
   images: string[] | null
+  videos: string[] | null
   content_type: string | null
   created_at: string
   like_count: number
@@ -76,6 +78,7 @@ export function toSocialCommentDto(row: SocialCommentRow): SocialCommentDto {
     authorId: row.author_id,
     content: row.content,
     images: row.images ?? [],
+    videos: row.videos ?? [],
     contentType: row.content_type ?? undefined,
     createdAt: row.created_at,
     likeCount: row.like_count,

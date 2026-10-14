@@ -99,6 +99,8 @@ export default function RecordForm({ previousTypes = [] }: { previousTypes?: str
               ? 'Saved. AI is structuring your workout log…'
               : 'Your workout has been saved. Keep it up.'
           }
+          actionHref={form.shareHref ?? undefined}
+          actionLabel={form.shareHref ? 'Share to feed' : undefined}
           onClose={() => form.handleSuccessClose(types.reset)}
         />
       )}

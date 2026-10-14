@@ -1,0 +1,366 @@
+'use client'
+
+import { useEffect, useState, type ReactNode } from 'react'
+import { ImagePlus, Video, X } from 'lucide-react'
+import { LogMealPanel, LogWorkoutPanel, RecordPicker } from '@/app/components/platform/social/CreatePostForm'
+import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
+import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
+import {
+  createSocialComment,
+  fetchCurrentProfile,
+  uploadImages,
+  type EnrichedComment,
+} from '@/lib/social/browser'
+import { displayName, sans } from '@/lib/social/format'
+import {
+  POST_TYPE,
+  serializeCommentRecordsPayload,
+  type MealPostRecord,
+  type WorkoutPostRecord,
+} from '@/lib/social/post-content'
+
+const MAX_NOTE = 280
+const MAX_MEDIA = 3
+const MAX_STORED = 5000
+
+type MediaKind = 'image' | 'video'
+
+export function CommentComposer({
+  postId,
+  replyTo,
+  onCancelReply,
+  onCreated,
+}: {
+  postId: string
+  replyTo: EnrichedComment | null
+  onCancelReply: () => void
+  onCreated: (comment: EnrichedComment, parent: EnrichedComment | null) => void
+}) {
+  const [userId, setUserId] = useState<string | null>(null)
+  const [draft, setDraft] = useState('')
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [videoFiles, setVideoFiles] = useState<File[]>([])
+  const [videoPreviews, setVideoPreviews] = useState<string[]>([])
+  const [meal, setMeal] = useState<MealPostRecord | null>(null)
+  const [workout, setWorkout] = useState<WorkoutPostRecord | null>(null)
+  const [panel, setPanel] = useState<'attach' | 'workout' | 'meal' | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetchCurrentProfile().then((current) => {
+      if (!cancelled && current) setUserId(current.userId)
+    }).catch(() => {
+      if (!cancelled) setError('Could not load your profile.')
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  function resetAttachments() {
+    imagePreviews.forEach((preview) => URL.revokeObjectURL(preview))
+    videoPreviews.forEach((preview) => URL.revokeObjectURL(preview))
+    setImageFiles([])
+    setImagePreviews([])
+    setVideoFiles([])
+    setVideoPreviews([])
+    setMeal(null)
+    setWorkout(null)
+    setPanel(null)
+  }
+
+  function addMedia(kind: MediaKind, list: FileList | null) {
+    if (!list?.length) return
+    const incoming = Array.from(list)
+    const otherKind: MediaKind = kind === 'image' ? 'video' : 'image'
+    const wrongType = incoming.some((file) => !file.type.startsWith(`${kind}/`))
+    const oppositeSelected = kind === 'image' ? videoFiles.length > 0 : imageFiles.length > 0
+    if (wrongType || oppositeSelected || incoming.some((file) => file.type.startsWith(`${otherKind}/`))) {
+      setError('A comment can include images or videos, not both.')
+      return
+    }
+    const current = kind === 'image' ? imageFiles.length : videoFiles.length
+    if (current + incoming.length > MAX_MEDIA) {
+      setError(kind === 'image'
+        ? 'A comment can have at most 3 images.'
+        : 'A comment can have at most 3 videos.')
+      return
+    }
+    const previews = incoming.map((file) => URL.createObjectURL(file))
+    if (kind === 'image') {
+      setImageFiles((files) => [...files, ...incoming])
+      setImagePreviews((urls) => [...urls, ...previews])
+    } else {
+      setVideoFiles((files) => [...files, ...incoming])
+      setVideoPreviews((urls) => [...urls, ...previews])
+    }
+    setError(null)
+  }
+
+  function removeMedia(kind: MediaKind, index: number) {
+    if (kind === 'image') {
+      URL.revokeObjectURL(imagePreviews[index])
+      setImageFiles((files) => files.filter((_, itemIndex) => itemIndex !== index))
+      setImagePreviews((urls) => urls.filter((_, itemIndex) => itemIndex !== index))
+    } else {
+      URL.revokeObjectURL(videoPreviews[index])
+      setVideoFiles((files) => files.filter((_, itemIndex) => itemIndex !== index))
+      setVideoPreviews((urls) => urls.filter((_, itemIndex) => itemIndex !== index))
+    }
+  }
+
+  const canSubmit = Boolean(draft.trim() || imageFiles.length || videoFiles.length || meal || workout) && !submitting
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault()
+    if (!canSubmit || submitting) return
+    if (imageFiles.length > 0 && videoFiles.length > 0) {
+      setError('A comment can include images or videos, not both.')
+      return
+    }
+    if (imageFiles.length > MAX_MEDIA) {
+      setError('A comment can have at most 3 images.')
+      return
+    }
+    if (videoFiles.length > MAX_MEDIA) {
+      setError('A comment can have at most 3 videos.')
+      return
+    }
+    if ((imageFiles.length > 0 || videoFiles.length > 0) && !userId) {
+      setError('You need to be logged in to attach media.')
+      return
+    }
+
+    setSubmitting(true)
+    setError(null)
+    try {
+      const images = imageFiles.length && userId
+        ? await uploadImages('post_images', userId, imageFiles)
+        : { urls: [], error: null }
+      if (images.error) {
+        setError(images.error)
+        setSubmitting(false)
+        return
+      }
+      const videos = videoFiles.length && userId
+        ? await uploadImages('post_images', userId, videoFiles)
+        : { urls: [], error: null }
+      if (videos.error) {
+        setError(videos.error)
+        setSubmitting(false)
+        return
+      }
+
+      const note = draft.trim()
+      const hasRecords = Boolean(meal || workout)
+      const content = hasRecords
+        ? serializeCommentRecordsPayload({
+            version: 1,
+            kind: 'comment_records',
+            userText: note,
+            meal,
+            workout,
+          })
+        : note
+      if (content.length > MAX_STORED) {
+        setError('This reply is too long to publish. Shorten the note or the attached log.')
+        setSubmitting(false)
+        return
+      }
+
+      const created = await createSocialComment(postId, {
+        content,
+        parentCommentId: replyTo?.id ?? null,
+        images: images.urls,
+        videos: videos.urls,
+        contentType: hasRecords ? POST_TYPE.COMMENT_RECORDS : POST_TYPE.NORMAL_POST,
+      })
+      onCreated(created, replyTo)
+      setDraft('')
+      resetAttachments()
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Could not post comment.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="mt-6 border-t border-[#3A373C] pt-4">
+      <form onSubmit={handleSubmit}>
+        {replyTo ? (
+          <div className="mb-3 flex items-center justify-between gap-3 text-[12px] text-[#A09EA3]" style={sans}>
+            <span className="truncate">Replying to {displayName(replyTo.profile, replyTo.authorId)}</span>
+            <button type="button" onClick={onCancelReply} className="uppercase tracking-[0.12em]">Cancel</button>
+          </div>
+        ) : null}
+        <textarea
+          value={draft}
+          onChange={(event) => setDraft(event.target.value.slice(0, MAX_NOTE))}
+          placeholder={replyTo ? 'Write a reply' : 'Write a comment'}
+          rows={3}
+          maxLength={MAX_NOTE}
+          className="w-full resize-none rounded-2xl bg-[#1E1B1F] px-4 py-3 text-[14px] text-white outline-none placeholder:text-[#6B6870]"
+          style={sans}
+        />
+
+        {imagePreviews.length > 0 && (
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {imagePreviews.map((preview, index) => (
+              <div key={preview} className="relative aspect-square overflow-hidden rounded-xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img data-testid="comment-image-preview" src={preview} alt="" className="h-full w-full object-cover" />
+                <RemoveButton label="Remove image" onClick={() => removeMedia('image', index)} />
+              </div>
+            ))}
+          </div>
+        )}
+        {videoPreviews.length > 0 && (
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {videoPreviews.map((preview, index) => (
+              <div key={preview} className="relative overflow-hidden rounded-xl bg-black">
+                <video data-testid="comment-video-preview" src={preview} className="aspect-video w-full" muted />
+                <RemoveButton label="Remove video" onClick={() => removeMedia('video', index)} />
+              </div>
+            ))}
+          </div>
+        )}
+        {workout ? (
+          <div className="relative mt-3">
+            <WorkoutAttachmentCard workout={workout} />
+            <RemoveButton label="Remove workout" onClick={() => setWorkout(null)} />
+          </div>
+        ) : null}
+        {meal ? (
+          <div className="relative mt-3">
+            <MealPostCard meal={meal} />
+            <RemoveButton label="Remove meal" onClick={() => setMeal(null)} />
+          </div>
+        ) : null}
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <MediaButton label="Comment photo" icon={<ImagePlus size={16} />} disabled={submitting}>
+            <input
+              aria-label="Comment photo"
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(event) => {
+                addMedia('image', event.target.files)
+                event.target.value = ''
+              }}
+            />
+          </MediaButton>
+          <MediaButton label="Comment video" icon={<Video size={16} />} disabled={submitting}>
+            <input
+              aria-label="Comment video"
+              type="file"
+              accept="video/*"
+              multiple
+              className="hidden"
+              onChange={(event) => {
+                addMedia('video', event.target.files)
+                event.target.value = ''
+              }}
+            />
+          </MediaButton>
+          <button
+            type="button"
+            onClick={() => setPanel(panel === 'attach' ? null : 'attach')}
+            disabled={submitting || !userId}
+            className="h-10 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white disabled:opacity-40"
+            style={sans}
+          >
+            Attach
+          </button>
+          <span className="ml-auto text-[12px] text-[#6B6870]" style={sans}>{draft.length}/{MAX_NOTE}</span>
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="rounded-full bg-[#F5F5F5] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141115] disabled:opacity-40"
+            style={sans}
+          >
+            {submitting ? 'Posting…' : 'Reply'}
+          </button>
+        </div>
+        {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
+      </form>
+
+      {panel === 'attach' && userId ? (
+        <RecordPicker
+          userId={userId}
+          selected={null}
+          selectedWorkoutId={workout?.id ?? null}
+          selectedMealId={meal?.id ?? null}
+          onSelect={(attachment) => {
+            if (attachment.kind === 'workout') setWorkout(attachment.workout)
+            else setMeal(attachment.meal)
+            setPanel(null)
+            setError(null)
+          }}
+          onLogWorkout={() => setPanel('workout')}
+          onLogMeal={() => setPanel('meal')}
+        />
+      ) : null}
+      {panel === 'workout' && userId ? (
+        <LogWorkoutPanel
+          onCancel={() => setPanel('attach')}
+          onSaved={(next) => {
+            setWorkout(next)
+            setPanel(null)
+            setError(null)
+          }}
+        />
+      ) : null}
+      {panel === 'meal' && userId ? (
+        <LogMealPanel
+          userId={userId}
+          onCancel={() => setPanel('attach')}
+          onSaved={(next) => {
+            setMeal(next)
+            setPanel(null)
+          }}
+          onError={setError}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+function MediaButton({
+  label,
+  icon,
+  disabled,
+  children,
+}: {
+  label: string
+  icon: ReactNode
+  disabled?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <label className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3 text-[12px] uppercase tracking-[0.12em] text-white ${disabled ? 'pointer-events-none opacity-40' : ''}`} style={sans}>
+      {icon}
+      {label === 'Comment photo' ? 'Photo' : 'Video'}
+      {children}
+    </label>
+  )
+}
+
+function RemoveButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white"
+    >
+      <X size={12} />
+    </button>
+  )
+}

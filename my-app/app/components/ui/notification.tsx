@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 // ─────────────────────────────────────────────
 // SUCCESS MODAL
 // Use: Post-action confirmation popup with close icon
@@ -8,6 +10,8 @@ interface SuccessModalProps {
   message?: string;
   onClose: () => void;
   variant?: "dark" | "light";
+  actionHref?: string;
+  actionLabel?: string;
 }
 
 export function SuccessModal({
@@ -15,6 +19,8 @@ export function SuccessModal({
   message = "We've received your submission.",
   onClose,
   variant = "dark",
+  actionHref,
+  actionLabel,
 }: SuccessModalProps) {
   const isDark = variant === "dark";
 
@@ -76,6 +82,15 @@ export function SuccessModal({
           >
             {message}
           </p>
+          {actionHref && actionLabel ? (
+            <Link
+              href={actionHref}
+              className="mt-6 inline-flex rounded-full bg-[#F5F5F5] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141115]"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {actionLabel}
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>
