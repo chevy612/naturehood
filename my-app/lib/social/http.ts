@@ -29,6 +29,7 @@ export function socialErrorResponse(error: unknown) {
   if (
     message === 'Invalid pagination cursor' ||
     message.includes('limit must') ||
+    message.includes('before must') ||
     message.includes('Request body')
   ) return socialFailure(message, 400)
   if (message.includes('not found')) return socialFailure(message, 404)
@@ -42,4 +43,16 @@ export function readLimit(value: string | null, fallback = 20, maximum = 50) {
   const limit = Number.parseInt(value, 10)
   if (limit < 1) throw new Error('limit must be greater than zero')
   return Math.min(limit, maximum)
+}
+
+const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/
+
+// Returns the original string so Postgres compares at its own microsecond
+// precision; round-tripping through Date would truncate to milliseconds.
+export function readBefore(value: string | null) {
+  if (value === null) return null
+  if (!ISO_TIMESTAMP.test(value) || Number.isNaN(Date.parse(value))) {
+    throw new Error('before must be an ISO 8601 timestamp')
+  }
+  return value
 }
