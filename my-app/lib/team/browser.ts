@@ -123,6 +123,36 @@ export async function createShareLink(athleteId: string, scope: ShareScope): Pro
   }
 }
 
+export async function listActiveShareLinks(): Promise<ShareLink[]> {
+  const userId = await fetchCurrentUserId()
+  if (!userId) return []
+  const rows = unwrap(await createClient()
+    .from('athlete_share_links')
+    .select('id, token, share_meals, share_workouts, created_at, expires_at')
+    .eq('athlete_id', userId)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false }))
+  return rows
+    .filter((row) => !row.expires_at || new Date(row.expires_at).getTime() > Date.now())
+    .map((row) => ({
+      id: row.id,
+      token: row.token,
+      shareMeals: row.share_meals,
+      shareWorkouts: row.share_workouts,
+      createdAt: row.created_at,
+      url: buildShareUrl(row.token),
+    }))
+}
+
+export async function deactivateShareLink(linkId: string): Promise<void> {
+  unwrap(await createClient()
+    .from('athlete_share_links')
+    .update({ is_active: false })
+    .eq('id', linkId)
+    .select('id')
+    .single())
+}
+
 function escapeLike(value: string) {
   return value.replace(/[\\%_]/g, (char) => `\\${char}`)
 }
