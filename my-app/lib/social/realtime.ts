@@ -1,5 +1,6 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { toNotificationDto, type NotificationDto } from './notifications'
 import type { SocialPostDto } from './types'
 
 type SocialPostInsert = {
@@ -37,3 +38,41 @@ export function subscribeToSocialPosts(onPost: (post: SocialPostDto) => void): R
     .subscribe()
 }
 
+
+type SocialNotificationRow = {
+  id: string
+  recipient_user_id: string
+  actor_user_id: string
+  type: string
+  post_id: string | null
+  comment_id: string | null
+  created_at: string
+  read_at: string | null
+}
+
+export function subscribeToSocialNotifications(
+  userId: string,
+  handlers: {
+    onInsert: (notification: NotificationDto) => void
+    onUpdate: (notification: NotificationDto) => void
+    onSubscribed?: () => void
+  }
+): RealtimeChannel {
+  const supabase = createClient()
+  const filter = `recipient_user_id=eq.${userId}`
+  return supabase
+    .channel(`social-notifications:${userId}`)
+    .on<SocialNotificationRow>(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'social_notifications', filter },
+      ({ new: row }) => handlers.onInsert(toNotificationDto(row))
+    )
+    .on<SocialNotificationRow>(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'social_notifications', filter },
+      ({ new: row }) => handlers.onUpdate(toNotificationDto(row))
+    )
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') handlers.onSubscribed?.()
+    })
+}
