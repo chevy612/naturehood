@@ -57,7 +57,8 @@ export function startMealAnalysis(mealId: string) {
   emit()
   analyzeMeal(mealId)
     .catch((error: unknown) => {
-      const message = error instanceof Error && error.message ? error.message : 'Could not analyse the image.'
+      const raw = error instanceof Error ? error.message : ''
+      const message = !raw || raw === 'AI analysis failed' ? 'We could not analyse this photo.' : raw
       const sentence = /[.!?]$/.test(message) ? message : `${message}.`
       pushNotice(mealId, 'AI analysis failed', `${sentence} ${SAVED_WITHOUT_AI}`)
     })
