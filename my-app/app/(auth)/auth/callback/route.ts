@@ -44,14 +44,15 @@ export async function GET(request: Request) {
         }
       }
 
-      const forwardedHost = request.headers.get('x-forwarded-host')
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
       const isLocalEnv = process.env.NODE_ENV === 'development'
       if (isLocalEnv) {
         return NextResponse.redirect(`${origin}${next}`)
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+      } else if (siteUrl) {
+        return NextResponse.redirect(`${siteUrl}${next}`)
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        const forwardedHost = request.headers.get('x-forwarded-host')
+        return NextResponse.redirect(forwardedHost ? `https://${forwardedHost}${next}` : `${origin}${next}`)
       }
     }
   }

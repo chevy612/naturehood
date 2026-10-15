@@ -130,6 +130,7 @@ async function handlePOST(req: NextRequest) {
     base64Image,
     mediaType,
     userNotes: meal.user_notes ?? null,
+    title: meal.title ?? null,
     weight: meal.weight ?? null,
     lang: normalizeAiLanguage(lang),
   });
