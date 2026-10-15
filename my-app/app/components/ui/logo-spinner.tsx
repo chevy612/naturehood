@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import type { AnimationItem } from "lottie-web";
-import loadingLogo from "./loading-logo.json";
+import loadingLogo from "./loading-logo-hires.json";
 
 function hexToLottieColor(hex: string): [number, number, number, number] {
   const raw = hex.trim().replace("#", "");
