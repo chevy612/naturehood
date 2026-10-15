@@ -27,6 +27,30 @@ export type SocialCommentDto = {
   replies: SocialCommentDto[] | null
 }
 
+export type LogType = 'workout' | 'meal'
+
+// `postId` mirrors `logId` so components written for post comments can render these too.
+export type LogCommentDto = Omit<SocialCommentDto, 'replies'> & {
+  logType: LogType
+  logId: string
+  athleteId: string
+  replies: LogCommentDto[] | null
+}
+
+export type LogCommentRow = {
+  id: string
+  log_type: LogType
+  log_id: string
+  athlete_id: string
+  parent_comment_id: string | null
+  author_id: string
+  content: string
+  images: string[] | null
+  videos: string[] | null
+  content_type: string | null
+  created_at: string
+}
+
 export type SocialPostRow = {
   id: string
   author_id: string
@@ -88,3 +112,24 @@ export function toSocialCommentDto(row: SocialCommentRow): SocialCommentDto {
   }
 }
 
+
+export function toLogCommentDto(row: LogCommentRow): LogCommentDto {
+  return {
+    id: row.id,
+    postId: row.log_id,
+    logType: row.log_type,
+    logId: row.log_id,
+    athleteId: row.athlete_id,
+    parentCommentId: row.parent_comment_id,
+    authorId: row.author_id,
+    content: row.content,
+    images: row.images ?? [],
+    videos: row.videos ?? [],
+    contentType: row.content_type ?? undefined,
+    createdAt: row.created_at,
+    likeCount: 0,
+    likedByMe: false,
+    replyCount: 0,
+    replies: null,
+  }
+}
