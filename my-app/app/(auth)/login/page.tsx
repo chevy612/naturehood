@@ -28,8 +28,10 @@ export default function LoginPage() {
       }
 
       // Keep spinner active through navigation — component unmounts on arrival
-      router.prefetch("/home");
-      router.push("/home");
+      const next = new URLSearchParams(window.location.search).get("next");
+      const target = next && next.startsWith("/") && !next.startsWith("//") ? next : "/home";
+      router.prefetch(target);
+      router.push(target);
     } catch {
       setError("An unexpected error occurred");
       setLoading(false);

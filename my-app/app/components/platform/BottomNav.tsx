@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Plus, Calendar, Bell, User, Utensils } from 'lucide-react'
+import { Home, Plus, Calendar, Bell, User, Utensils, Users } from 'lucide-react'
 import { useNotifications } from '@/app/components/platform/notifications/NotificationsProvider'
 import { UnreadBadge } from '@/app/components/platform/notifications/UnreadBadge'
 
@@ -11,6 +11,7 @@ const TABS = [
   { label: 'Record',  href: '/record',             Icon: Plus,     badge: false },
   { label: 'Meals',   href: '/meals',              Icon: Utensils, badge: false },
   { label: 'Events',  href: '/events',             Icon: Calendar, badge: false },
+  { label: 'Team',    href: '/my-team',            Icon: Users,    badge: false },
   { label: 'Alerts',  href: '/home/notifications', Icon: Bell,     badge: true  },
   { label: 'Account', href: '/account',            Icon: User,     badge: false },
 ]
