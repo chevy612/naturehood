@@ -257,6 +257,7 @@ async function runAnalyzeFoodImage(params: {
   base64Image: string;
   mediaType: ImageMediaType;
   userNotes?: string | null;
+  title?: string | null;
   weight?: number | null;
   provider?: AIProvider;
   lang?: AiLanguage;
