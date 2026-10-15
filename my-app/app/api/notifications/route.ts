@@ -2,7 +2,7 @@ import { observeApiRoute } from '@/lib/observability/with-api-route'
 import { NextRequest } from 'next/server'
 import { getAuthenticatedSocialClient } from '@/lib/social/auth'
 import { ok } from '@/lib/social/api-response'
-import { readLimit, socialErrorResponse, socialFailure, socialJson, socialOptions } from '@/lib/social/http'
+import { readBefore, readLimit, socialErrorResponse, socialFailure, socialJson, socialOptions } from '@/lib/social/http'
 
 function handleOPTIONS() {
   return socialOptions()
@@ -14,11 +14,16 @@ async function handleGET(request: NextRequest) {
 
   try {
     const limit = readLimit(request.nextUrl.searchParams.get('limit'), 20, 50)
-    const { data, error } = await authenticated.supabase
+    const before = readBefore(request.nextUrl.searchParams.get('before'))
+    let query = authenticated.supabase
       .from('social_notifications')
       .select('id, actor_user_id, type, post_id, comment_id, created_at, read_at')
       .eq('recipient_user_id', authenticated.userId)
+    // A recipient never gets two rows from one transaction, so created_at is a safe page cursor.
+    if (before) query = query.lt('created_at', before)
+    const { data, error } = await query
       .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
       .limit(limit)
     if (error) return socialFailure(error.message, 500)
     return socialJson(ok((data ?? []).map((notification) => ({

@@ -79,7 +79,7 @@ export function SocialHome() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={sans}>
             Home
           </p>
-          <Link href="/home/search" aria-label="Search posts" className="text-white">
+          <Link href="/home/search" aria-label="Search posts and people" className="text-white">
             <Search size={20} />
           </Link>
         </div>

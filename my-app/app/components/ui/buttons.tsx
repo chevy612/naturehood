@@ -239,3 +239,37 @@ export function ButtonSubmit({ submitting = false, label = "Submit Application",
     </button>
   );
 }
+
+// ─────────────────────────────────────────────
+// BUTTON - SMALL (compact actions inside list rows)
+// ─────────────────────────────────────────────
+
+interface ButtonSmallProps {
+  children: ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  variant?: "accent" | "outline" | "danger";
+  type?: "button" | "submit";
+  ariaLabel?: string;
+}
+
+export function ButtonSmall({ children, onClick, disabled, variant = "outline", type = "button", ariaLabel }: ButtonSmallProps) {
+  const variants = {
+    accent: "bg-[#F5F5F5] text-[#141115] hover:bg-white",
+    outline: "border border-[#3A373C] text-white hover:bg-white/5",
+    danger: "border border-[#FF4D4D]/40 text-[#FF4D4D] hover:bg-[#FF4D4D]/10",
+  };
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40 ${variants[variant]}`}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {children}
+    </button>
+  );
+}

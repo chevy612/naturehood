@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import type { SocialCommentDto, SocialPostDto } from '@/lib/social/types'
 import type { MealPostRecord, MealType, WorkoutPostRecord } from '@/lib/social/post-content'
+import { USER_SEARCH_LIMIT, usernameSearchPattern } from '@/lib/social/user-search'
 
 export type FeedProfile = {
   id: string
@@ -10,6 +11,13 @@ export type FeedProfile = {
   name: string | null
   avatar_url: string | null
 }
+
+export type ProfileDetail = FeedProfile & {
+  bio: string | null
+  role: string | null
+}
+
+export type UserSearchResult = FeedProfile
 
 export type EnrichedPost = SocialPostDto & { profile: FeedProfile | null }
 export type EnrichedComment = Omit<SocialCommentDto, 'replies'> & {
@@ -29,7 +37,7 @@ type ApiResponse<T> = {
   error: string | null
 }
 
-async function socialFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function socialFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers)
   if (init?.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json')
   const response = await fetch(path, { ...init, headers })
@@ -50,6 +58,31 @@ export async function fetchProfiles(userIds: string[]): Promise<Record<string, F
     .in('id', ids)
   if (error) throw new Error(error.message)
   return Object.fromEntries((data ?? []).map((profile) => [profile.id, profile as FeedProfile]))
+}
+
+export async function fetchProfileDetail(userId: string): Promise<ProfileDetail | null> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, name, avatar_url, bio, role')
+    .eq('id', userId)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return (data as ProfileDetail | null) ?? null
+}
+
+export async function searchUsers(query: string): Promise<UserSearchResult[]> {
+  const pattern = usernameSearchPattern(query)
+  if (!pattern) return []
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, name, avatar_url')
+    .ilike('username', pattern)
+    .order('username', { ascending: true })
+    .limit(USER_SEARCH_LIMIT)
+  if (error) throw new Error(error.message)
+  return (data ?? []) as UserSearchResult[]
 }
 
 function enrichPosts(posts: SocialPostDto[], profiles: Record<string, FeedProfile>): EnrichedPost[] {
@@ -177,6 +210,8 @@ export async function fetchFollowCounts(userId: string): Promise<{ followerCount
   return socialFetch<{ followerCount: number; followingCount: number }>(`/api/users/${userId}/follow-counts`)
 }
 
+// Single write path for follow/unfollow (PUT/DELETE /api/users/[userId]/follow ->
+// follow_social_user / unfollow_social_user). Hook follow side effects there.
 export async function setFollowing(userId: string, following: boolean): Promise<{ following: boolean }> {
   return socialFetch<{ following: boolean }>(`/api/users/${userId}/follow`, {
     method: following ? 'PUT' : 'DELETE',
@@ -310,6 +345,8 @@ export async function insertMealRecord(input: {
   title: string
   calories: number | null
   protein: number | null
+  carbs?: number | null
+  fat?: number | null
   mealType: MealType | null
   notes: string | null
   imageUrl: string | null
@@ -322,8 +359,8 @@ export async function insertMealRecord(input: {
     weight: null,
     calories: input.calories,
     protein: input.protein,
-    carbs: null,
-    fat: null,
+    carbs: input.carbs ?? null,
+    fat: input.fat ?? null,
     meal_type: input.mealType,
     user_notes: input.notes,
     ai_analysis: null,
@@ -341,7 +378,10 @@ export async function analyzeMeal(mealId: string): Promise<{
   const response = await fetch('/api/ai/analyze-food', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ meal_id: mealId }),
+    body: JSON.stringify({
+      meal_id: mealId,
+      lang: typeof navigator !== 'undefined' ? navigator.language : undefined,
+    }),
   })
   const payload = await response.json().catch(() => null) as {
     error?: string
