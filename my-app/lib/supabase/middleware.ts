@@ -67,7 +67,7 @@ export async function updateSession(request: NextRequest) {
 
   // Only redirect unauthenticated users away from protected platform routes.
   // Public routes (/, /signup, /business, /login, /auth/*) remain open.
-  const PROTECTED_PATHS = ['/dashboard', '/profile', '/settings', '/home', '/record', '/events', '/account']
+  const PROTECTED_PATHS = ['/dashboard', '/profile', '/settings', '/home', '/record', '/meals', '/events', '/account']
   const isProtected = PROTECTED_PATHS.some(p => pathname.startsWith(p))
 
   if (!user && isProtected) {

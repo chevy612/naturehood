@@ -259,6 +259,9 @@ export function InputDark({
   error,
   placeholder,
   required,
+  inputMode,
+  maxLength,
+  disabled,
 }: {
   label: string;
   name: string;
@@ -268,6 +271,9 @@ export function InputDark({
   error?: string;
   placeholder?: string;
   required?: boolean;
+  inputMode?: "text" | "numeric" | "decimal";
+  maxLength?: number;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -285,6 +291,9 @@ export function InputDark({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        inputMode={inputMode}
+        maxLength={maxLength}
+        disabled={disabled}
         className={`w-full bg-[#1E1B1F] border-none rounded-full px-6 py-3.5 text-[14px] text-white placeholder:text-[#6B6870] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all duration-200 focus:ring-1 focus:ring-white/20 ${
           error ? "ring-1 ring-[#FF4D4D]" : ""
         }`}

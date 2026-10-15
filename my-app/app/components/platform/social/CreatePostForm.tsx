@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ImagePlus, Plus, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
-import { InputDark, TextAreaDark } from '@/app/components/ui/inputs'
+import { AiAnalysisToggle, MealFormFields } from '@/app/components/platform/meals/MealFormFields'
+import { MealPhotoField } from '@/app/components/platform/meals/MealPhotoField'
 import { WorkoutFormFields } from '@/app/(platform)/record/WorkoutFormFields'
 import { useWorkoutTypes } from '@/app/(platform)/record/useWorkoutTypes'
 import { getUserWorkoutTypes, saveWorkout } from '@/app/(platform)/record/actions'
@@ -16,19 +17,19 @@ import {
   createSocialPost,
   fetchCurrentProfile,
   fetchOwnRecords,
-  insertMealRecord,
   uploadImages,
   type FeedProfile,
 } from '@/lib/social/browser'
+import { createMeal, validateMealForm } from '@/lib/meals/browser'
+import { EMPTY_MEAL_FORM, type MealFormValues } from '@/lib/meals/types'
+import { parseNullableNumber } from '@/lib/meals/utils'
 import { sans } from '@/lib/social/format'
 import {
   MEAL_TYPE_LABELS,
-  MEAL_TYPES,
   POST_TYPE,
   serializeMealLogPostPayload,
   serializeWorkoutLogPostPayload,
   type MealPostRecord,
-  type MealType,
   type PostRecordAttachment,
   type WorkoutPostRecord,
 } from '@/lib/social/post-content'
@@ -589,70 +590,41 @@ export function LogMealPanel({
   onSaved: (meal: MealPostRecord) => void
   onError: (message: string | null) => void
 }) {
-  const [title, setTitle] = useState('')
-  const [calories, setCalories] = useState('')
-  const [protein, setProtein] = useState('')
-  const [mealType, setMealType] = useState<MealType | null>(null)
-  const [notes, setNotes] = useState('')
+  const [values, setValues] = useState<MealFormValues>(EMPTY_MEAL_FORM)
   const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
   const [analyzeWithAI, setAnalyzeWithAI] = useState(false)
-  const [titleError, setTitleError] = useState(false)
+  const [titleError, setTitleError] = useState<string | undefined>()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => () => {
-    if (preview) URL.revokeObjectURL(preview)
-  }, [preview])
-
-  function digits(value: string) {
-    return value.replace(/\D/g, '').slice(0, 6)
+  function patchValues(patch: Partial<MealFormValues>) {
+    setValues((current) => ({ ...current, ...patch }))
+    if (patch.title?.trim()) setTitleError(undefined)
   }
 
   async function handleSave(event: React.FormEvent) {
     event.preventDefault()
-    if (!title.trim()) {
-      setTitleError(true)
+    const problems = validateMealForm(values)
+    if (problems.title) {
+      setTitleError(problems.title)
       return
     }
     setSaving(true)
     setError(null)
     onError(null)
     try {
-      let imageUrl: string | null = null
-      if (file) {
-        const uploaded = await uploadImages('food_images', userId, [file])
-        if (uploaded.error || !uploaded.urls[0]) {
-          setError(uploaded.error ?? 'Could not upload the meal photo.')
-          setSaving(false)
-          return
-        }
-        imageUrl = uploaded.urls[0]
-      }
-      const mealId = crypto.randomUUID()
-      const parsedCalories = calories ? Number(calories) : null
-      const parsedProtein = protein ? Number(protein) : null
-      await insertMealRecord({
-        mealId,
-        userId,
-        title: title.trim(),
-        calories: parsedCalories,
-        protein: parsedProtein,
-        mealType,
-        notes: notes.trim() || null,
-        imageUrl,
-      })
+      const { mealId, imageUrl } = await createMeal({ userId, values, photo: file })
 
       let meal: MealPostRecord = {
         id: mealId,
-        title: title.trim(),
-        calories: parsedCalories,
-        protein: parsedProtein,
-        carbs: null,
-        fat: null,
-        meal_type: mealType,
+        title: values.title.trim(),
+        calories: parseNullableNumber(values.calories),
+        protein: parseNullableNumber(values.protein),
+        carbs: parseNullableNumber(values.carbs),
+        fat: parseNullableNumber(values.fat),
+        meal_type: values.mealType,
         image_url: imageUrl,
-        notes: notes.trim() || null,
+        notes: values.notes.trim() || null,
       }
 
       if (analyzeWithAI && imageUrl) {
@@ -686,105 +658,24 @@ export function LogMealPanel({
         <button type="button" onClick={onCancel} className="text-[12px] uppercase tracking-[0.12em] text-[#A09EA3]" style={sans}>Back</button>
       </div>
 
-      {preview ? (
-        <div className="relative overflow-hidden rounded-xl border border-[#3A373C]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="" className="h-56 w-full object-cover" />
-          <button
-            type="button"
-            aria-label="Remove meal photo"
-            onClick={() => {
-              if (preview) URL.revokeObjectURL(preview)
-              setPreview(null)
-              setFile(null)
-              setAnalyzeWithAI(false)
-            }}
-            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white"
-          >
-            <X size={14} />
-          </button>
-        </div>
-      ) : (
-        <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#3A373C] bg-[#1E1B1F] px-5 py-8 text-[14px] text-[#A09EA3]" style={sans}>
-          Choose a photo
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(event) => {
-              const next = event.target.files?.[0]
-              if (!next) return
-              if (preview) URL.revokeObjectURL(preview)
-              setFile(next)
-              setPreview(URL.createObjectURL(next))
-              event.target.value = ''
-            }}
-          />
-        </label>
-      )}
-
-      <InputDark
-        label="Title"
-        name="meal-title"
-        value={title}
-        required
-        error={titleError ? 'Title is required' : undefined}
-        placeholder="What did you eat?"
-        onChange={(event) => {
-          setTitle(event.target.value.slice(0, 100))
-          if (event.target.value.trim()) setTitleError(false)
-        }}
-      />
-      <InputDark
-        label="Calories"
-        name="meal-calories"
-        value={calories}
-        placeholder="Optional"
-        onChange={(event) => setCalories(digits(event.target.value))}
-      />
-      <InputDark
-        label="Protein (g)"
-        name="meal-protein"
-        value={protein}
-        placeholder="Optional"
-        onChange={(event) => setProtein(digits(event.target.value))}
-      />
-      <div>
-        <p className="mb-2 text-[11px] uppercase tracking-[0.04em] text-[#6B6870]" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Meal type</p>
-        <div className="flex flex-wrap gap-2">
-          {MEAL_TYPES.map((type) => {
-            const selected = mealType === type
-            return (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setMealType(selected ? null : type)}
-                className={`rounded-full px-3 py-1 text-[12px] ${selected ? 'bg-[#F5F5F5] text-[#141115]' : 'border border-[#3A373C] text-[#A09EA3]'}`}
-                style={sans}
-              >
-                {MEAL_TYPE_LABELS[type]}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-      <TextAreaDark
-        label="Notes"
-        name="meal-notes"
-        value={notes}
-        rows={4}
-        placeholder="Optional notes"
-        onChange={(event) => setNotes(event.target.value.slice(0, 400))}
-      />
-      <label className="flex items-center justify-between gap-3 text-[13px] text-[#A09EA3]" style={sans}>
-        Analyze photo with AI
-        <input
-          type="checkbox"
-          checked={analyzeWithAI}
-          disabled={!file || saving}
-          onChange={(event) => setAnalyzeWithAI(event.target.checked)}
+      <fieldset disabled={saving} className="min-w-0 space-y-5 border-0 p-0">
+        <MealPhotoField
+          file={file}
+          onChange={(next) => {
+            setFile(next)
+            if (!next) setAnalyzeWithAI(false)
+          }}
+          disabled={saving}
         />
-      </label>
+        <MealFormFields
+          values={values}
+          onChange={patchValues}
+          titleError={titleError}
+          showCarbsFat={false}
+          idPrefix="meal"
+        />
+        <AiAnalysisToggle checked={analyzeWithAI} disabled={!file || saving} onChange={setAnalyzeWithAI} />
+      </fieldset>
       {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       <button type="submit" disabled={saving} className="w-full rounded-full bg-[#F5F5F5] py-3 text-[12px] font-bold uppercase tracking-[0.16em] text-[#141115] disabled:opacity-40" style={sans}>
         {saving ? 'Saving…' : 'Save and attach'}

@@ -24,7 +24,7 @@ export const RESERVED_SLUGS = new Set([
   // App routes
   'home', 'dashboard', 'profile', 'settings',
   // Platform sections
-  'record', 'events', 'account',
+  'record', 'meals', 'events', 'account',
   // Marketing routes
   'business', 'team', 'about', 'privacy', 'terms', 'cookies',
   // Auth routes
