@@ -345,6 +345,8 @@ export async function insertMealRecord(input: {
   title: string
   calories: number | null
   protein: number | null
+  carbs?: number | null
+  fat?: number | null
   mealType: MealType | null
   notes: string | null
   imageUrl: string | null
@@ -357,8 +359,8 @@ export async function insertMealRecord(input: {
     weight: null,
     calories: input.calories,
     protein: input.protein,
-    carbs: null,
-    fat: null,
+    carbs: input.carbs ?? null,
+    fat: input.fat ?? null,
     meal_type: input.mealType,
     user_notes: input.notes,
     ai_analysis: null,
@@ -376,7 +378,10 @@ export async function analyzeMeal(mealId: string): Promise<{
   const response = await fetch('/api/ai/analyze-food', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ meal_id: mealId }),
+    body: JSON.stringify({
+      meal_id: mealId,
+      lang: typeof navigator !== 'undefined' ? navigator.language : undefined,
+    }),
   })
   const payload = await response.json().catch(() => null) as {
     error?: string

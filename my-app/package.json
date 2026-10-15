@@ -13,6 +13,7 @@
     "backfill:meal-macros": "npx tsx scripts/backfill-meal-macros.ts",
     "lint": "eslint",
     "test:observability": "tsx --test lib/observability/*.test.ts",
+    "test:meals": "tsx --test lib/meals/*.test.ts",
     "build:prod": "NODE_ENV=production next build",
     "brand:build": "npm run brand:build:web && npm run brand:build:mobile",
     "brand:build:web": "npx tsx ../brand/scripts/build-web-tokens.ts",
