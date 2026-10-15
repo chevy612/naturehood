@@ -7,22 +7,29 @@ import { ChevronLeft } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { PostCard } from '@/app/components/platform/social/PostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { PillTag } from '@/app/components/ui/tags'
 import {
   fetchCurrentProfile,
   fetchFollowCounts,
   fetchFollowStatus,
-  fetchProfiles,
+  fetchProfileDetail,
   fetchUserPosts,
   setFollowing,
   togglePostLike,
   type EnrichedPost,
-  type FeedProfile,
+  type ProfileDetail,
 } from '@/lib/social/browser'
-import { displayName, sans } from '@/lib/social/format'
+import { displayName, roleLabel, sans } from '@/lib/social/format'
 
-export function ProfilePosts({ userId }: { userId: string }) {
+export function ProfilePosts({
+  userId,
+  initialProfile,
+}: {
+  userId: string
+  initialProfile?: ProfileDetail | null
+}) {
   const router = useRouter()
-  const [profile, setProfile] = useState<FeedProfile | null>(null)
+  const [profile, setProfile] = useState<ProfileDetail | null>(initialProfile ?? null)
   const [posts, setPosts] = useState<EnrichedPost[]>([])
   const [cursor, setCursor] = useState<string | null>(null)
   const [hasNext, setHasNext] = useState(false)
@@ -38,14 +45,14 @@ export function ProfilePosts({ userId }: { userId: string }) {
     let cancelled = false
     setLoading(true)
     Promise.all([
-      fetchProfiles([userId]),
+      initialProfile !== undefined ? Promise.resolve(initialProfile) : fetchProfileDetail(userId),
       fetchUserPosts(userId),
       fetchFollowCounts(userId),
       fetchFollowStatus(userId),
       fetchCurrentProfile(),
-    ]).then(([profiles, page, nextCounts, status, current]) => {
+    ]).then(([loadedProfile, page, nextCounts, status, current]) => {
       if (cancelled) return
-      setProfile(profiles[userId] ?? null)
+      setProfile(loadedProfile)
       setPosts(page.data)
       setCursor(page.nextCursor)
       setHasNext(page.hasNext)
@@ -60,7 +67,7 @@ export function ProfilePosts({ userId }: { userId: string }) {
     return () => {
       cancelled = true
     }
-  }, [userId])
+  }, [userId, initialProfile])
 
   async function handleFollow() {
     if (busy) return
@@ -96,12 +103,18 @@ export function ProfilePosts({ userId }: { userId: string }) {
     }
   }
 
+  function handleBack() {
+    if (window.history.length > 1) router.back()
+    else router.push('/home')
+  }
+
   const name = displayName(profile, userId)
+  const bio = profile?.bio?.trim()
 
   return (
     <div className="min-h-screen bg-[#141115] px-4 py-6">
       <div className="mx-auto max-w-2xl">
-        <button type="button" onClick={() => router.back()} className="mb-4 inline-flex items-center gap-1 text-[12px] uppercase tracking-[0.16em] text-[#A09EA3]" style={sans}>
+        <button type="button" onClick={handleBack} className="mb-4 inline-flex items-center gap-1 text-[12px] uppercase tracking-[0.16em] text-[#A09EA3]" style={sans}>
           <ChevronLeft size={16} />
           Back
         </button>
@@ -116,11 +129,19 @@ export function ProfilePosts({ userId }: { userId: string }) {
                 {profile?.username ? (
                   <Link href={`/${profile.username}`} className="text-[13px] text-[#A09EA3]" style={sans}>@{profile.username}</Link>
                 ) : null}
+                {profile ? (
+                  <div className="mt-2">
+                    <PillTag label={roleLabel(profile.role)} size="sm" variant="ghost-green" />
+                  </div>
+                ) : null}
                 <p className="mt-1 text-[12px] text-[#6B6870]" style={sans}>
                   {counts.followerCount} followers · {counts.followingCount} following
                 </p>
               </div>
             </div>
+            {bio ? (
+              <p className="mb-4 whitespace-pre-wrap text-[14px] leading-6 text-[#A09EA3]" style={sans}>{bio}</p>
+            ) : null}
             {viewerId && viewerId !== userId ? (
               <button
                 type="button"
@@ -129,7 +150,7 @@ export function ProfilePosts({ userId }: { userId: string }) {
                 className="mb-4 rounded-full bg-[#F5F5F5] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141115] disabled:opacity-40"
                 style={sans}
               >
-                {following ? 'Following' : 'Follow'}
+                {following ? 'Unfollow' : 'Follow'}
               </button>
             ) : null}
             {followError ? <StatusMessage tone="error">{followError}</StatusMessage> : null}

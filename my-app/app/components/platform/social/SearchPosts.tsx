@@ -5,20 +5,37 @@ import Link from 'next/link'
 import { Search, X } from 'lucide-react'
 import { PostCard } from '@/app/components/platform/social/PostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
-import { searchPostsPage, togglePostLike, type EnrichedPost } from '@/lib/social/browser'
+import { UserSearchResults } from '@/app/components/platform/social/UserSearchResults'
+import {
+  searchPostsPage,
+  searchUsers,
+  togglePostLike,
+  type EnrichedPost,
+  type UserSearchResult,
+} from '@/lib/social/browser'
 import { sans } from '@/lib/social/format'
 
 const DEBOUNCE_MS = 300
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="pb-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3]" style={sans}>
+      {children}
+    </h2>
+  )
+}
 
 export function SearchPosts() {
   const [inputValue, setInputValue] = useState('')
   const [query, setQuery] = useState('')
   const [posts, setPosts] = useState<EnrichedPost[]>([])
+  const [users, setUsers] = useState<UserSearchResult[]>([])
   const [cursor, setCursor] = useState<string | null>(null)
   const [hasNext, setHasNext] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [usersError, setUsersError] = useState<string | null>(null)
   const [likePending, setLikePending] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
@@ -29,9 +46,11 @@ export function SearchPosts() {
   useEffect(() => {
     if (!query) {
       setPosts([])
+      setUsers([])
       setCursor(null)
       setHasNext(false)
       setError(null)
+      setUsersError(null)
       setLoading(false)
       return
     }
@@ -39,17 +58,25 @@ export function SearchPosts() {
     let cancelled = false
     setLoading(true)
     setError(null)
-    searchPostsPage(query)
-      .then((page) => {
+    setUsersError(null)
+    Promise.allSettled([searchPostsPage(query), searchUsers(query)])
+      .then(([postsResult, usersResult]) => {
         if (cancelled) return
-        setPosts(page.data)
-        setCursor(page.nextCursor)
-        setHasNext(page.hasNext)
-      })
-      .catch((searchError) => {
-        if (!cancelled) {
+        if (postsResult.status === 'fulfilled') {
+          setPosts(postsResult.value.data)
+          setCursor(postsResult.value.nextCursor)
+          setHasNext(postsResult.value.hasNext)
+        } else {
           setPosts([])
-          setError(searchError instanceof Error ? searchError.message : 'Search failed.')
+          setCursor(null)
+          setHasNext(false)
+          setError(postsResult.reason instanceof Error ? postsResult.reason.message : 'Search failed.')
+        }
+        if (usersResult.status === 'fulfilled') {
+          setUsers(usersResult.value)
+        } else {
+          setUsers([])
+          setUsersError(usersResult.reason instanceof Error ? usersResult.reason.message : 'Could not search people.')
         }
       })
       .finally(() => {
@@ -99,6 +126,11 @@ export function SearchPosts() {
     }
   }
 
+  const hasResults = users.length > 0 || posts.length > 0
+  const searching = Boolean(query) && loading && !hasResults
+  const failed = Boolean(query) && !loading && !hasResults && (error || usersError)
+  const empty = Boolean(query) && !loading && !hasResults && !error && !usersError
+
   return (
     <div className="min-h-screen bg-[#141115] px-4 py-6">
       <div className="mx-auto max-w-2xl">
@@ -112,8 +144,11 @@ export function SearchPosts() {
               autoFocus
               value={inputValue}
               onChange={(event) => setInputValue(event.target.value)}
-              placeholder="Search posts…"
-              aria-label="Search posts"
+              placeholder="Search posts and people…"
+              aria-label="Search posts and people"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               className="w-full bg-transparent text-[14px] text-white outline-none placeholder:text-[#6B6870]"
               style={sans}
             />
@@ -125,18 +160,37 @@ export function SearchPosts() {
           </div>
         </div>
 
-        {!query ? <StatusMessage>Search for posts by keyword</StatusMessage> : null}
-        {query && loading ? <StatusMessage>Searching…</StatusMessage> : null}
-        {query && !loading && error && posts.length === 0 ? <StatusMessage tone="error">{error}</StatusMessage> : null}
-        {query && !loading && !error && posts.length === 0 ? (
-          <StatusMessage>No posts found for “{query}”</StatusMessage>
+        {!query ? (
+          <div className="flex flex-col items-center pt-10">
+            <Search size={40} className="text-[#3A373C]" />
+            <StatusMessage>Search posts, or people by username</StatusMessage>
+          </div>
+        ) : null}
+        {searching ? <StatusMessage>Searching…</StatusMessage> : null}
+        {failed ? <StatusMessage tone="error">{error ?? usersError}</StatusMessage> : null}
+        {empty ? <StatusMessage>No results for “{query}”</StatusMessage> : null}
+
+        {users.length > 0 ? (
+          <section>
+            <SectionLabel>People</SectionLabel>
+            <UserSearchResults users={users} />
+          </section>
         ) : null}
 
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} likePending={likePending[post.id]} onLike={() => handleLike(post)} />
-        ))}
+        {hasResults ? (
+          <section>
+            {users.length > 0 ? <SectionLabel>Posts</SectionLabel> : null}
+            {posts.length === 0 && !loading ? (
+              <StatusMessage>No posts found for “{query}”</StatusMessage>
+            ) : null}
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} likePending={likePending[post.id]} onLike={() => handleLike(post)} />
+            ))}
+          </section>
+        ) : null}
 
-        {error && posts.length > 0 ? <StatusMessage tone="error">{error}</StatusMessage> : null}
+        {hasResults && usersError ? <StatusMessage tone="error">{usersError}</StatusMessage> : null}
+        {hasResults && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
         {hasNext && (
           <button
             type="button"

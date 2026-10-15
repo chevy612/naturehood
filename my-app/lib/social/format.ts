@@ -26,4 +26,10 @@ export function profileHref(profile: { username?: string | null } | null, author
   return `/home/profile/${authorId}`
 }
 
+export function roleLabel(role: string | null | undefined) {
+  if (role === 'brand') return 'Brand'
+  if (role === 'other') return 'Explorer'
+  return 'Athlete'
+}
+
 export const sans = { fontFamily: "'DM Sans', sans-serif" } as const
