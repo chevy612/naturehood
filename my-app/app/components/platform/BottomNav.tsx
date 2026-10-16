@@ -12,7 +12,7 @@ const TABS = [
   { label: 'Meals',   href: '/meals',              Icon: Utensils, badge: false },
   { label: 'Events',  href: '/events',             Icon: Calendar, badge: false },
   { label: 'Team',    href: '/my-team',            Icon: Users,    badge: false },
-  { label: 'Alerts',  href: '/home/notifications', Icon: Bell,     badge: true  },
+  { label: 'Notification', href: '/home/notifications', Icon: Bell, badge: true },
   { label: 'Account', href: '/account',            Icon: User,     badge: false },
 ]
 
