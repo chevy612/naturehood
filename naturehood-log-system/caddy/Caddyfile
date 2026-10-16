@@ -15,12 +15,12 @@
 	rate_limit {
 		zone ingest_per_ip {
 			key {remote_host}
-			events 20
+			events 60
 			window 1s
 		}
 		zone ingest_global {
 			key static
-			events 50
+			events 150
 			window 1s
 		}
 	}

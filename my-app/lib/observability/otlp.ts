@@ -4,11 +4,12 @@ import { ExportResultCode, type ExportResult } from '@opentelemetry/core'
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
 import { resourceFromAttributes } from '@opentelemetry/resources'
 import {
+  BatchLogRecordProcessor,
   LoggerProvider,
-  SimpleLogRecordProcessor,
   type LogRecordExporter,
   type ReadableLogRecord,
 } from '@opentelemetry/sdk-logs'
+import { redactString } from './redact'
 import {
   deploymentEnvironment,
   deploymentVersion,
@@ -35,19 +36,45 @@ type GlobalWithProvider = typeof globalThis & {
 let emitting = false
 let flushOverride: (() => Promise<void>) | null = null
 
+const FAILURE_NOTICE_INTERVAL_MS = 30_000
+let lastFailureNoticeAt = 0
+
+/**
+ * Export failures (collector 401/429/5xx, DNS, timeouts) are otherwise silent.
+ * One bounded console line per interval makes them visible in Vercel logs
+ * without ever failing the request or exporting through the broken path.
+ */
+function noteExportFailure(error: unknown): void {
+  const now = Date.now()
+  if (now - lastFailureNoticeAt < FAILURE_NOTICE_INTERVAL_MS) return
+  lastFailureNoticeAt = now
+  const message =
+    error instanceof Error ? redactString(error.message).slice(0, 200) : 'unknown export error'
+  console.warn(
+    JSON.stringify({
+      event: 'telemetry.export_failed',
+      severity: 'warn',
+      signal: 'logs',
+      error_message: message,
+    }),
+  )
+}
+
 class SafeLogExporter implements LogRecordExporter {
   constructor(private readonly inner: LogRecordExporter) {}
 
   export(records: ReadableLogRecord[], resultCallback: (result: ExportResult) => void): void {
     try {
       this.inner.export(records, (result) => {
+        if (result.code !== ExportResultCode.SUCCESS) noteExportFailure(result.error)
         try {
           resultCallback(result)
         } catch {
           // exporter callbacks must not escape into the request
         }
       })
-    } catch {
+    } catch (error) {
+      noteExportFailure(error)
       resultCallback({ code: ExportResultCode.FAILED })
     }
   }
@@ -84,8 +111,9 @@ export function initLogExporter(): void {
     }),
   )
 
-  // Simple processor starts the HTTP export on each emit. Batch timers are a
-  // poor fit for Vercel Hobby freezes even when after()/waitUntil is used.
+  // Batching keeps one request's records in a single POST (the collector rate
+  // limits per request, and one log line per POST trips it). Delivery does not
+  // depend on the timer: flushTelemetry() runs from after() and drains the queue.
   const provider = new LoggerProvider({
     resource: resourceFromAttributes({
       'service.name': SERVICE_NAME,
@@ -93,7 +121,15 @@ export function initLogExporter(): void {
       'deployment.environment.name': deploymentEnvironment(),
       environment: deploymentEnvironment(),
     }),
-    processors: [new SimpleLogRecordProcessor({ exporter })],
+    processors: [
+      new BatchLogRecordProcessor({
+        exporter,
+        scheduledDelayMillis: 5000,
+        maxExportBatchSize: 256,
+        maxQueueSize: 2048,
+        exportTimeoutMillis: 5000,
+      }),
+    ],
     // Request logs are emitted even when the trace sampler drops the span.
     loggerConfigurator: () => ({
       disabled: false,

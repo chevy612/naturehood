@@ -19,8 +19,13 @@ import OpenAI from 'openai';
 //   ANTHROPIC_API_KEY    = sk-ant-...                     (used when provider = anthropic)
 //   GLM_API_KEY          = your-zhipuai-api-key           (used when provider = glm)
 //   GLM_BASE_URL         = https://open.bigmodel.cn/api/anthropic  (optional override)
-//   MOONSHOT_API_KEY     = your-moonshot-api-key           (used when provider = kimi)
+//   KIMI_API_KEY         = your-moonshot-api-key           (used when provider = kimi;
+//                          MOONSHOT_API_KEY is accepted as an alias)
 //   KIMI_BASE_URL        = https://api.moonshot.ai/v1     (optional override)
+//
+// Clients are created on first use, not at import. A missing key therefore
+// fails the AI call that needs it (and is logged with a specific reason)
+// instead of crashing every route that imports this module.
 //
 // Default models per provider:
 //   anthropic → claude-haiku-4-5-20251001
@@ -58,17 +63,25 @@ function buildGlmClient(): Anthropic {
 }
 
 function buildKimiClient(): OpenAI {
-  const apiKey = process.env.KIMI_API_KEY;
+  const apiKey = process.env.KIMI_API_KEY || process.env.MOONSHOT_API_KEY;
   if (!apiKey) throw new Error('[ai-client] KIMI_API_KEY is not set');
   return new OpenAI({ apiKey, baseURL: KIMI_BASE_URL });
 }
 
-// ── Convenience singleton ─────────────────────────────────────────────────────
-// Pre-built client using the env-configured provider.
-// Import this directly when you don't need per-call provider switching.
-//
-//   import { aiClient, aiModel } from '@/lib/services/ai-client'
+// ── Lazy singletons ───────────────────────────────────────────────────────────
+// Built on first use so that importing this module never throws.
 
-export const claudeClient = buildAnthropicClient();
-// export const glmClient = buildGlmClient();
-export const kimiClient = buildKimiClient();
+let claudeClient: Anthropic | undefined;
+let kimiClient: OpenAI | undefined;
+
+export function getClaudeClient(): Anthropic {
+  claudeClient ??= buildAnthropicClient();
+  return claudeClient;
+}
+
+// export function getGlmClient(): Anthropic { return buildGlmClient(); }
+
+export function getKimiClient(): OpenAI {
+  kimiClient ??= buildKimiClient();
+  return kimiClient;
+}

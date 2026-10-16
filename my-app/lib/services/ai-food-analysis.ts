@@ -2,14 +2,14 @@ import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import {
   type AIProvider,
-  claudeClient,
-  // glmClient,
-  kimiClient,
+  getClaudeClient,
+  getKimiClient,
   DEFAULT_MODELS,
 } from '@/lib/services/ai-client';
 import { getLanguageInstruction, type AiLanguage } from '@/lib/services/ai-language';
 import logger from '@/lib/logger';
 import { withDependency } from '@/lib/observability/spans';
+import { aiFailureReason } from '@/lib/observability/ai-failure';
 
 const AI_PROVIDER = process.env.FOOD_ANALYSIS_PROVIDER ?? 'kimi';
 
@@ -62,24 +62,18 @@ type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif';
 
 // ── Provider → client + model mapping ───────────────────────────────────────
 
-const ANTHROPIC_CLIENTS: Record<string, Anthropic> = {
-  anthropic: claudeClient,
-  // glm: glmClient,
-};
-
 function getClientAndModel(provider: AIProvider): {
   anthropicClient?: Anthropic;
   openaiClient?: OpenAI;
   model: string;
 } {
   if (provider === 'kimi') {
-    return { openaiClient: kimiClient, model: DEFAULT_MODELS.kimi };
+    return { openaiClient: getKimiClient(), model: DEFAULT_MODELS.kimi };
   }
-  const client = ANTHROPIC_CLIENTS[provider];
-  if (!client) {
-    throw new Error(`[food-analysis] Unknown provider "${provider}"`);
+  if (provider === 'anthropic') {
+    return { anthropicClient: getClaudeClient(), model: DEFAULT_MODELS.anthropic };
   }
-  return { anthropicClient: client, model: DEFAULT_MODELS[provider] };
+  throw new Error(`[food-analysis] Unknown provider "${provider}"`);
 }
 
 // ── SDK-specific call adapters ──────────────────────────────────────────────
@@ -91,7 +85,8 @@ async function callAnthropic(
   model: string,
   base64Image: string,
   mediaType: ImageMediaType,
-  userText: string
+  userText: string,
+  fail: (reason: string) => void
 ): Promise<string | null> {
   const message = await client.messages.create({
     model,
@@ -117,11 +112,15 @@ async function callAnthropic(
 
   if (message.stop_reason === 'max_tokens') {
     logger.error('[food-analysis] Anthropic response truncated: max_tokens reached.');
+    fail('truncated_max_tokens');
     return null;
   }
 
   const block = message.content[0];
-  if (block.type !== 'text') return null;
+  if (block.type !== 'text') {
+    fail('empty_response');
+    return null;
+  }
   return block.text;
 }
 
@@ -130,7 +129,8 @@ async function callOpenAI(
   model: string,
   base64Image: string,
   mediaType: ImageMediaType,
-  userText: string
+  userText: string,
+  fail: (reason: string) => void
 ): Promise<string | null> {
   const completion = await client.chat.completions.create({
     model,
@@ -151,10 +151,14 @@ async function callOpenAI(
   });
 
   const choice = completion.choices[0];
-  if (!choice) return null;
+  if (!choice) {
+    fail('empty_response');
+    return null;
+  }
 
   if (choice.finish_reason === 'length') {
     logger.error('[food-analysis] OpenAI response truncated: max_tokens reached.');
+    fail('truncated_max_tokens');
     return null;
   }
 
@@ -242,26 +246,30 @@ export async function analyzeFoodImage(params: {
   provider?: AIProvider;
   lang?: AiLanguage;
 }): Promise<AiFoodAnalysis | null> {
+  let failure: string | undefined;
   return withDependency(
     'ai.analyze_food',
     {
       'gen_ai.operation': 'analyze_food',
       'gen_ai.provider': params.provider ?? AI_PROVIDER,
     },
-    () => runAnalyzeFoodImage(params),
-    (result) => (result ? undefined : 'ai_empty_result'),
+    () => runAnalyzeFoodImage(params, (reason) => { failure = reason; }),
+    (result) => (result ? undefined : (failure ?? 'ai_empty_result')),
   );
 }
 
-async function runAnalyzeFoodImage(params: {
-  base64Image: string;
-  mediaType: ImageMediaType;
-  userNotes?: string | null;
-  title?: string | null;
-  weight?: number | null;
-  provider?: AIProvider;
-  lang?: AiLanguage;
-}): Promise<AiFoodAnalysis | null> {
+async function runAnalyzeFoodImage(
+  params: {
+    base64Image: string;
+    mediaType: ImageMediaType;
+    userNotes?: string | null;
+    title?: string | null;
+    weight?: number | null;
+    provider?: AIProvider;
+    lang?: AiLanguage;
+  },
+  fail: (reason: string) => void,
+): Promise<AiFoodAnalysis | null> {
   const {
     base64Image,
     mediaType,
@@ -300,16 +308,19 @@ async function runAnalyzeFoodImage(params: {
     // Dispatch to the correct SDK adapter
     let rawText: string | null;
     if (anthropicClient) {
-      rawText = await callAnthropic(anthropicClient, model, base64Image, mediaType, userText);
+      rawText = await callAnthropic(anthropicClient, model, base64Image, mediaType, userText, fail);
     } else if (openaiClient) {
-      rawText = await callOpenAI(openaiClient, model, base64Image, mediaType, userText);
+      rawText = await callOpenAI(openaiClient, model, base64Image, mediaType, userText, fail);
     } else {
       throw new Error(`[food-analysis] No client resolved for provider "${provider}"`);
     }
 
     logger.debug('[food-analysis] Model response present:', Boolean(rawText));
 
-    if (!rawText) return null;
+    if (!rawText) {
+      fail('empty_response');
+      return null;
+    }
 
     const jsonText = stripCodeFences(rawText);
     // console.log('[food-analysis] After stripCodeFences (first 300 chars):', jsonText.slice(0, 300));
@@ -319,12 +330,14 @@ async function runAnalyzeFoodImage(params: {
       parsed = JSON.parse(jsonText);
     } catch (parseErr) {
       logger.error('[food-analysis] JSON.parse failed');
+      fail('json_parse');
       return null;
     }
 
     // Schema validation — reject malformed / partial payloads before persisting.
     if (!validateFoodAnalysis(parsed)) {
       logger.error('[food-analysis] Schema validation failed');
+      fail('schema_validation');
       return null;
     }
 
@@ -332,6 +345,7 @@ async function runAnalyzeFoodImage(params: {
     return parsed;
   } catch (err) {
     logger.error('[food-analysis] analyzeFoodImage failed:', err);
+    fail(aiFailureReason(err));
     return null;
   }
 }

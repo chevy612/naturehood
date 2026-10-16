@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -7,9 +9,22 @@
   "links": [],
   "panels": [
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
       "id": 1,
       "title": "Request volume",
       "type": "timeseries",
@@ -21,8 +36,16 @@
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
       "id": 2,
       "title": "Status distribution",
       "type": "piechart",
@@ -34,9 +57,23 @@
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0 }, "overrides": [] },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 8
+      },
       "id": 3,
       "title": "Error rate (5xx)",
       "type": "timeseries",
@@ -48,9 +85,22 @@
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
-      "gridPos": { "h": 8, "w": 16, "x": 8, "y": 8 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 8,
+        "y": 8
+      },
       "id": 4,
       "title": "Latency p50 / p95 / p99",
       "type": "timeseries",
@@ -73,9 +123,22 @@
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
       "id": 5,
       "title": "Slow routes (mean duration)",
       "type": "barchart",
@@ -87,21 +150,37 @@
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
       "id": 6,
       "title": "Dependency failures",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (dependency) (count_over_time({service_name=\"naturehood-backend\"} | json | event=\"dependency\" | outcome=~\"error|exception\" [$__rate_interval]))",
+          "expr": "sum by (dependency, error_type) (count_over_time({service_name=\"naturehood-backend\"} | json | event=\"dependency\" | outcome=~\"error|exception\" [$__rate_interval]))",
           "refId": "A"
         }
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
       "id": 7,
       "title": "SSE lifecycle",
       "type": "timeseries",
@@ -113,8 +192,16 @@
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
       "id": 8,
       "title": "Server action outcomes",
       "type": "timeseries",
@@ -126,8 +213,16 @@
       ]
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 32 },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
       "id": 9,
       "options": {
         "dedupStrategy": "none",
@@ -140,16 +235,46 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{service_name=\"naturehood-backend\"} | json | event=~\"http.request|server_action|dependency|sse..+\"",
+          "expr": "{service_name=\"naturehood-backend\"} | json | event=~\"http.request|http.unhandled_error|server_action|dependency|sse..+\"",
           "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 10,
+      "title": "Unhandled server errors (outside route wrappers)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (http_route, error_type) (count_over_time({service_name=\"naturehood-backend\"} | json | event=\"http.unhandled_error\" [$__rate_interval]))",
+          "refId": "A",
+          "legendFormat": "{{http_route}} {{error_type}}"
         }
       ]
     }
   ],
   "schemaVersion": 39,
-  "tags": ["naturehood", "observability"],
-  "templating": { "list": [] },
-  "time": { "from": "now-6h", "to": "now" },
+  "tags": [
+    "naturehood",
+    "observability"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
   "timezone": "browser",
   "title": "Naturehood backend",
   "uid": "naturehood-backend",

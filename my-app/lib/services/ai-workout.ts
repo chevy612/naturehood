@@ -1,8 +1,9 @@
 import type { AthleteSessionLog } from '@/lib/types'
-import { claudeClient as client } from '@/lib/services/ai-client'
+import { getClaudeClient } from '@/lib/services/ai-client'
 import { getLanguageInstruction, type AiLanguage } from '@/lib/services/ai-language'
 import logger from '@/lib/logger'
 import { withDependency } from '@/lib/observability/spans'
+import { aiFailureReason } from '@/lib/observability/ai-failure'
 
 const SYSTEM_PROMPT = `You are an elite athletics log parser. You receive a JSON envelope describing one athlete session and must return a single valid AthleteSessionLog JSON object — no prose, no markdown, no code fences.
 
@@ -330,22 +331,27 @@ export async function formatWorkoutWithAI(params: {
   notes?: string | null
   lang?: AiLanguage
 }): Promise<AthleteSessionLog | null> {
+  let failure: string | undefined
   return withDependency(
     'ai.format_workout',
     { 'gen_ai.operation': 'format_workout', 'gen_ai.provider': 'anthropic' },
-    () => runFormatWorkout(params),
-    (result) => (result == null && params.workout_log?.trim() ? 'ai_empty_result' : undefined),
+    () => runFormatWorkout(params, (reason) => { failure = reason }),
+    (result) =>
+      result == null && params.workout_log?.trim() ? (failure ?? 'ai_empty_result') : undefined,
   )
 }
 
-async function runFormatWorkout(params: {
-  workout_log: string
-  title?: string
-  workout_types?: string[]
-  duration_minutes?: number | null
-  notes?: string | null
-  lang?: AiLanguage
-}): Promise<AthleteSessionLog | null> {
+async function runFormatWorkout(
+  params: {
+    workout_log: string
+    title?: string
+    workout_types?: string[]
+    duration_minutes?: number | null
+    notes?: string | null
+    lang?: AiLanguage
+  },
+  fail: (reason: string) => void,
+): Promise<AthleteSessionLog | null> {
   const { workout_log, title, workout_types, duration_minutes, notes, lang = 'en' } = params
 
   if (!workout_log?.trim()) return null
@@ -364,7 +370,7 @@ async function runFormatWorkout(params: {
   })
 
   try {
-    const message = await client.messages.create({
+    const message = await getClaudeClient().messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 8192,
       system: `${SYSTEM_PROMPT}\n\n${buildLanguageRequirement(lang)}`,
@@ -374,22 +380,30 @@ async function runFormatWorkout(params: {
     // If the model hit the token limit the JSON will be truncated — fail fast
     if (message.stop_reason === 'max_tokens') {
       logger.error('[ai-workout] Response truncated: max_tokens reached. Workout log may be too large.')
+      fail('truncated_max_tokens')
       return null
     }
 
     const raw = message.content[0]
-    if (raw.type !== 'text') return null
+    if (raw.type !== 'text') {
+      fail('empty_response')
+      return null
+    }
 
     // Strip markdown code fences if model adds them despite instructions
     const jsonText = raw.text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '')
     const parsed: AthleteSessionLog = JSON.parse(jsonText)
 
     // Minimal validation
-    if (!parsed.session_type || !parsed.summary) return null
+    if (!parsed.session_type || !parsed.summary) {
+      fail('schema_validation')
+      return null
+    }
 
     return parsed
   } catch (err) {
     logger.error('[ai-workout] formatWorkoutWithAI failed:', err)
+    fail(aiFailureReason(err))
     return null
   }
 }

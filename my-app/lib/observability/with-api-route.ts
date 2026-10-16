@@ -4,6 +4,7 @@ import { SERVICE_NAME } from './config'
 import { applyCorrelationHeaders } from './cors'
 import { runWithRequestContext } from './context'
 import { scheduleTelemetryFlush } from './flush'
+import { markErrorRecorded } from './request-error'
 import { writeRecord } from './request-log'
 import { sanitizeError } from './redact'
 import { beginSseConnection } from './sse'
@@ -103,6 +104,7 @@ export function observeApiRoute<C>(
                   })
                   throw error
                 }
+                markErrorRecorded(error)
                 const sanitized = sanitizeError(error)
                 span.setStatus({ code: SpanStatusCode.ERROR, message: sanitized.error_type })
                 span.setAttribute('error.type', sanitized.error_type)

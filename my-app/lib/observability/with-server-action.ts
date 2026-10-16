@@ -2,6 +2,7 @@ import { SpanKind, SpanStatusCode, trace } from '@opentelemetry/api'
 import { SERVICE_NAME } from './config'
 import { runWithRequestContext } from './context'
 import { scheduleTelemetryFlush } from './flush'
+import { markErrorRecorded } from './request-error'
 import { writeRecord } from './request-log'
 import { redactString, sanitizeError } from './redact'
 
@@ -74,6 +75,7 @@ export async function withServerAction<T>(name: string, fn: () => Promise<T>): P
               })
               throw error
             }
+            markErrorRecorded(error)
             const sanitized = sanitizeError(error)
             span.setStatus({ code: SpanStatusCode.ERROR, message: sanitized.error_type })
             span.setAttribute('error.type', sanitized.error_type)

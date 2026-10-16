@@ -6,8 +6,9 @@
  * Structured request, action, and dependency records are emitted separately
  * and are not filtered by LOG_LEVEL.
  *
- * Console lines are JSON for Vercel troubleshooting. The same sanitized
- * record is exported to Loki when OTLP is configured. Passwords, OTPs,
+ * Console lines are JSON for Vercel troubleshooting. Sanitized records at
+ * info and above are also exported to Loki when OTLP is configured; debug
+ * stays console-only to keep ingestion volume bounded. Passwords, OTPs,
  * cookies, authorization headers, API keys, signed URL queries, bodies,
  * and food/workout content are removed before either sink.
  */
@@ -62,7 +63,7 @@ function emit(level: LogLevel, args: unknown[]): void {
   else if (level === 'debug') console.debug(line)
   else console.info(line)
 
-  emitOtlpLog(record)
+  if (level !== 'debug') emitOtlpLog(record)
 }
 
 const logger = {

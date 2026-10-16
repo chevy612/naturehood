@@ -11,7 +11,7 @@ Suggested VPS: 2–4 vCPU, 8 GB RAM, 80–100 GB SSD, in the same region as the 
 | `https://$INGEST_DOMAIN` → Alloy OTLP HTTP | Alloy `:4318` |
 | `https://$GRAFANA_DOMAIN` → Grafana | Loki `:3100`, Tempo `:3200` and `:4317` |
 
-Ingestion requires `Authorization: Bearer <INGEST_BEARER_TOKEN>`. Caddy and Alloy both check it. Caddy also caps request bodies at 1 MB and rate-limits each source IP (20 requests/second) plus a global cap (50 requests/second). Grafana anonymous access and sign-up are off; sign in with the admin user from `.env`.
+Ingestion requires `Authorization: Bearer <INGEST_BEARER_TOKEN>`. Caddy and Alloy both check it. Caddy also caps request bodies at 1 MB and rate-limits each source IP (60 requests/second) plus a global cap (150 requests/second). Grafana anonymous access and sign-up are off; sign in with the admin user from `.env`.
 
 Logs and traces are kept for 30 days (`720h`). Loki's compactor deletes expired chunks. Tempo's compactor drops blocks older than 30 days. Both use named Docker volumes.
 
@@ -81,6 +81,18 @@ Server Actions emit `event=server_action`. `redirect()` is `outcome=redirect`, n
 Dependency spans cover Supabase RPC, storage upload, AI analysis, email, and push. Returned `{ error }` values are recorded even when the SDK does not throw. Supabase HTTP timing shows up on automatic fetch spans. PostgreSQL execution time inside Supabase does not.
 
 ## Verification that this repo cannot finish on Vercel
+
+## What is and is not recorded
+
+- Every API route wrapped by `observeApiRoute` writes one `http.request` record per request at the end of the request, for every status. `2xx` is `info`, `4xx` is `warn`, `5xx` and thrown errors are `error`.
+- Log records are batched (up to 256 per export, every 5 seconds or when the request ends and flushes) instead of one HTTP call per line, so a request with many log lines stays under the ingest rate limits. If an export fails, the Vercel function logs one `telemetry.export_failed` warning at most every 30 seconds with the sanitized reason. Check the Vercel logs for it if Loki looks empty.
+- `logger.debug` stays on the Vercel console only. `info`, `warn` and `error` are also exported.
+- `instrumentation.ts` exports `onRequestError`. It writes an `http.unhandled_error` record for failures that never reach a wrapper, such as an unwrapped handler throwing, render errors and proxy errors. Next.js does not call it for every route module load failure in dev, which is why the AI clients no longer throw at import. Errors a wrapper already recorded are not written twice.
+- AI routes (`/api/ai/analyze-food`, `/api/ai/format-workout`) create their provider clients lazily. A missing key now produces a `dependency` record with `error_type` `ai_not_configured` and a normal error response, not a module crash. Other failure reasons are `provider_http_<status>`, `provider_timeout`, `provider_unreachable`, `json_parse`, `schema_validation`, `truncated_max_tokens` and `empty_response`. No prompt, image or response body is logged.
+- Meal analysis needs `KIMI_API_KEY` (or the alias `MOONSHOT_API_KEY`) and workout formatting needs `ANTHROPIC_API_KEY` on Vercel for the environment you deploy. Environment variables only apply to new deployments.
+- Not covered by the backend: meal and workout rows that the browser reads or writes straight through the Supabase client, and server-rendered page loads. Those go to Supabase without touching a route handler, so there is no request to record. Use the Supabase logs for them, or move the call behind an API route.
+
+After changing `caddy/Caddyfile`, run `docker compose restart caddy` on the VPS.
 
 Run the local checks from `my-app`:
 
