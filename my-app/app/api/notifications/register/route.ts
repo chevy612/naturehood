@@ -33,6 +33,20 @@ async function handlePOST(req: NextRequest) {
   }
 
   const admin = createAdminClient()
+
+  // An Expo push token identifies one app install. A reinstall generates a new
+  // deviceId but keeps the token, so drop stale rows that hold the same token
+  // or every push would be delivered once per row.
+  const { error: cleanupError } = await admin
+    .from('push_tokens')
+    .delete()
+    .eq('expo_push_token', expoPushToken)
+    .or(`user_id.neq.${user.id},device_id.neq.${deviceId}`)
+
+  if (cleanupError) {
+    return NextResponse.json({ error: 'Failed to register token' }, { status: 500 })
+  }
+
   const { error } = await admin
     .from('push_tokens')
     .upsert(
