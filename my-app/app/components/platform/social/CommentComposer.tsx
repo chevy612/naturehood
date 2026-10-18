@@ -26,13 +26,27 @@ const MAX_STORED = 5000
 
 type MediaKind = 'image' | 'video'
 
+type CommentInput = {
+  content: string
+  parentCommentId?: string | null
+  images?: string[]
+  videos?: string[]
+  contentType?: string
+}
+
 export function CommentComposer({
   postId,
   replyTo,
   onCancelReply,
   onCreated,
+  submitComment,
+  allowRecords = true,
+  placeholder,
 }: {
   postId: string
+  submitComment?: (input: CommentInput) => Promise<EnrichedComment>
+  allowRecords?: boolean
+  placeholder?: string
   replyTo: EnrichedComment | null
   onCancelReply: () => void
   onCreated: (comment: EnrichedComment, parent: EnrichedComment | null) => void
@@ -179,7 +193,7 @@ export function CommentComposer({
         return
       }
 
-      const created = await createSocialComment(postId, {
+      const created = await (submitComment ?? ((input: CommentInput) => createSocialComment(postId, input)))({
         content,
         parentCommentId: replyTo?.id ?? null,
         images: images.urls,
@@ -208,7 +222,7 @@ export function CommentComposer({
         <textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value.slice(0, MAX_NOTE))}
-          placeholder={replyTo ? 'Write a reply' : 'Write a comment'}
+          placeholder={replyTo ? 'Write a reply' : (placeholder ?? 'Write a comment')}
           rows={3}
           maxLength={MAX_NOTE}
           className="w-full resize-none rounded-2xl bg-[#1E1B1F] px-4 py-3 text-[14px] text-white outline-none placeholder:text-[#6B6870]"
@@ -265,7 +279,7 @@ export function CommentComposer({
               }}
             />
           </label>
-          <button
+          {allowRecords ? <button
             type="button"
             onClick={() => setSheetOpen(true)}
             disabled={submitting || !userId}
@@ -274,7 +288,7 @@ export function CommentComposer({
           >
             <Plus size={16} />
             Record
-          </button>
+          </button> : null}
           <span className="ml-auto text-[12px] text-[#6B6870]" style={sans}>{draft.length}/{MAX_NOTE}</span>
           <button
             type="submit"

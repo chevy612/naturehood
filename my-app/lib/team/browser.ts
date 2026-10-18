@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import type {
+  LogType,
   PeerProfile,
   ShareLink,
   ShareLinkPeek,
@@ -239,4 +240,53 @@ export async function fetchSharedMeals(athleteId: string, offset = 0): Promise<S
     notes: row.user_notes,
     created_at: row.created_at,
   }))
+}
+
+export async function fetchSharedWorkout(logId: string): Promise<SharedWorkout | null> {
+  const { data, error } = await createClient()
+    .from('training_logs')
+    .select('id, user_id, title, logged_date, duration_minutes, workout_types, workout_log, created_at')
+    .eq('id', logId)
+    .eq('is_deleted', false)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  if (!data) return null
+  return {
+    id: data.id,
+    title: data.title,
+    logged_date: data.logged_date,
+    duration_minutes: data.duration_minutes,
+    workout_types: data.workout_types ?? [],
+    workout_log: data.workout_log,
+    created_at: data.created_at,
+  }
+}
+
+export async function fetchSharedMeal(logId: string): Promise<SharedMeal | null> {
+  const { data, error } = await createClient()
+    .from('meal_records')
+    .select('meal_id, title, calories, protein, carbs, fat, meal_type, user_notes, s3_link, created_at')
+    .eq('meal_id', logId)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  if (!data) return null
+  return {
+    id: data.meal_id,
+    title: data.title,
+    calories: data.calories,
+    protein: data.protein,
+    carbs: data.carbs,
+    fat: data.fat,
+    meal_type: data.meal_type,
+    image_url: data.s3_link,
+    notes: data.user_notes,
+    created_at: data.created_at,
+  }
+}
+
+export async function fetchLogCommentCounts(logType: LogType, logIds: string[]): Promise<Record<string, number>> {
+  if (logIds.length === 0) return {}
+  const { data, error } = await createClient().rpc('log_comment_counts', { p_log_type: logType, p_log_ids: logIds.slice(0, 200) })
+  if (error) throw new Error(error.message)
+  return Object.fromEntries(((data ?? []) as { log_id: string; comment_count: number | string }[]).map((row) => [row.log_id, Number(row.comment_count)]))
 }
