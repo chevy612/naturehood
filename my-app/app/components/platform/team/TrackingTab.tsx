@@ -70,7 +70,7 @@ export function TrackingTab() {
           await updateShareNote(share.share_id, note)
           await load()
         }}
-        avatarHref={isPending ? undefined : `/my-team/athletes/${share.peer_id}`}
+        href={isPending ? undefined : `/my-team/athletes/${share.peer_id}`}
         badge={<StatusBadge status={share.status} />}
         details={
           <div>
@@ -109,7 +109,7 @@ export function TrackingTab() {
       {!loading && !error && shares.length === 0 ? (
         <EmptyCard
           title="You are not tracking any Athletes"
-          body="When an Athlete invites you or sends a share link, they show up here. Tap an Athlete's avatar to see their logs."
+          body="When an Athlete invites you or sends a share link, they show up here. Tap an Athlete to see their logs."
         />
       ) : null}
 

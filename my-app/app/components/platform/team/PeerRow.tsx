@@ -20,7 +20,7 @@ type PeerRowProps = {
   note: string | null
   notePlaceholder: string
   onSaveNote: (note: string) => Promise<void>
-  avatarHref?: string
+  href?: string
   badge?: React.ReactNode
   details?: React.ReactNode
   actions?: React.ReactNode
@@ -54,7 +54,7 @@ function NoteEditor({
   }
 
   return (
-    <div className="mt-3">
+    <div className="relative z-10 mt-3">
       <textarea
         value={value}
         onChange={(event) => setValue(event.target.value.slice(0, NOTE_MAX_LENGTH))}
@@ -84,24 +84,34 @@ function NoteEditor({
   )
 }
 
-export function PeerRow({ peer, note, notePlaceholder, onSaveNote, avatarHref, badge, details, actions }: PeerRowProps) {
+export function PeerRow({ peer, note, notePlaceholder, onSaveNote, href, badge, details, actions }: PeerRowProps) {
   const [editing, setEditing] = useState(false)
   const username = peer.username ? `@${peer.username}` : 'Unknown user'
   const avatarName = peer.name?.trim() || peer.username || '?'
   const avatar = <Avatar name={avatarName} photoUrl={peer.avatar_url} size="md" />
 
   return (
-    <li className="rounded-2xl bg-[#1E1B1F] p-4" data-testid="team-row">
+    <li
+      className={`relative rounded-2xl bg-[#1E1B1F] p-4 ${href ? 'transition-colors hover:bg-[#252227]' : ''}`}
+      data-testid="team-row"
+    >
       <div className="flex items-start gap-3">
-        {avatarHref ? (
-          <Link href={avatarHref} aria-label={`Open ${username}`} className="shrink-0 transition-opacity hover:opacity-80">
-            {avatar}
-          </Link>
-        ) : avatar}
+        <div className="shrink-0">{avatar}</div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="truncate text-[15px] font-semibold text-white" style={sans}>{username}</p>
+            {href ? (
+              <Link
+                href={href}
+                aria-label={`Open ${username}`}
+                className="truncate text-[15px] font-semibold text-white after:absolute after:inset-0 after:rounded-2xl after:content-['']"
+                style={sans}
+              >
+                {username}
+              </Link>
+            ) : (
+              <p className="truncate text-[15px] font-semibold text-white" style={sans}>{username}</p>
+            )}
             {badge}
           </div>
           {peer.name && peer.name !== peer.username ? (
@@ -119,7 +129,7 @@ export function PeerRow({ peer, note, notePlaceholder, onSaveNote, avatarHref, b
         </div>
 
         {!editing ? (
-          <div className="shrink-0">
+          <div className="relative z-10 shrink-0">
             <ButtonSmall onClick={() => setEditing(true)} ariaLabel={`Edit description for ${username}`}>
               <Pencil size={12} />
               Edit
@@ -138,7 +148,7 @@ export function PeerRow({ peer, note, notePlaceholder, onSaveNote, avatarHref, b
       ) : null}
 
       {details ? <div className="mt-3">{details}</div> : null}
-      {actions ? <div className="mt-3 flex flex-wrap items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="relative z-10 mt-3 flex flex-wrap items-center gap-2">{actions}</div> : null}
     </li>
   )
 }
