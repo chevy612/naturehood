@@ -2,7 +2,7 @@ import type { WorkoutPostRecord } from '@/lib/social/post-content'
 import { formatShortDate, sans } from '@/lib/social/format'
 import { PillTag } from '@/app/components/ui/tags'
 
-export function WorkoutAttachmentCard({ workout }: { workout: WorkoutPostRecord }) {
+export function WorkoutAttachmentCard({ workout, expanded = false }: { workout: WorkoutPostRecord; expanded?: boolean }) {
   const meta = [
     formatShortDate(workout.logged_date),
     workout.duration_minutes ? `${workout.duration_minutes} min` : null,
@@ -25,7 +25,7 @@ export function WorkoutAttachmentCard({ workout }: { workout: WorkoutPostRecord 
         </div>
       )}
       {workout.workout_log ? (
-        <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-[13px] text-[#A09EA3]" style={sans}>
+        <p className={`mt-2 ${expanded ? '' : 'line-clamp-3'} whitespace-pre-wrap text-[13px] text-[#A09EA3]`} style={sans}>
           {workout.workout_log}
         </p>
       ) : null}

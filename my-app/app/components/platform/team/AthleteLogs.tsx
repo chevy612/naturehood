@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Dumbbell, Lock, Utensils } from 'lucide-react'
+import { ChevronLeft, Dumbbell, Lock, MessageCircle, Utensils } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
-import { LogCommentsSlot } from '@/app/components/platform/team/LogCommentsSlot'
+import { SwipePanel, TabBar, type SwipeTab } from '@/app/components/platform/team/SwipeTabs'
 import { EmptyCard, ScopePills, TeamLoading } from '@/app/components/platform/team/shared'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
@@ -13,6 +13,7 @@ import { ButtonSmall } from '@/app/components/ui/buttons'
 import {
   LOG_PAGE_SIZE,
   fetchAcceptedAccess,
+  fetchLogCommentCounts,
   fetchPeerProfile,
   fetchSharedMeals,
   fetchSharedWorkouts,
@@ -31,20 +32,31 @@ function LogCard({
   logType,
   logId,
   athleteId,
+  commentCount,
   caption,
   children,
 }: {
   logType: LogType
   logId: string
   athleteId: string
+  commentCount: number
   caption?: string
   children: React.ReactNode
 }) {
   return (
-    <li className="flex flex-col gap-2" data-testid={`team-log-${logType}`}>
+    <li className="relative flex flex-col gap-2" data-testid={`team-log-${logType}`}>
       {caption ? <p className="px-1 text-[11px] text-[#6B6870]" style={sans}>{caption}</p> : null}
-      {children}
-      <LogCommentsSlot logType={logType} logId={logId} athleteId={athleteId} />
+      <Link
+        href={`/my-team/athletes/${athleteId}/logs/${logType}/${logId}`}
+        aria-label={`Open ${logType} log`}
+        className="block rounded-2xl transition-opacity hover:opacity-90"
+      >
+        {children}
+      </Link>
+      <p className="flex items-center gap-1.5 px-1 text-[12px] text-[#A09EA3]" style={sans}>
+        <MessageCircle size={13} />
+        {commentCount > 0 ? `${commentCount} comment${commentCount === 1 ? '' : 's'}` : 'No comments yet'}
+      </p>
     </li>
   )
 }
@@ -83,6 +95,7 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
   const [mealsDone, setMealsDone] = useState(false)
   const [mealsLoading, setMealsLoading] = useState(false)
   const [mealsError, setMealsError] = useState<string | null>(null)
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({})
 
   useEffect(() => {
     let cancelled = false
@@ -109,6 +122,9 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
     setWorkoutsError(null)
     try {
       const page = await fetchSharedWorkouts(athleteId, offset)
+      fetchLogCommentCounts('workout', page.map((item) => item.id))
+        .then((counts) => setCommentCounts((current) => ({ ...current, ...counts })))
+        .catch(() => undefined)
       setWorkouts((current) => (offset === 0 ? page : [...current, ...page]))
       setWorkoutsDone(page.length < LOG_PAGE_SIZE)
     } catch (error) {
@@ -123,6 +139,9 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
     setMealsError(null)
     try {
       const page = await fetchSharedMeals(athleteId, offset)
+      fetchLogCommentCounts('meal', page.map((item) => item.id))
+        .then((counts) => setCommentCounts((current) => ({ ...current, ...counts })))
+        .catch(() => undefined)
       setMeals((current) => (offset === 0 ? page : [...current, ...page]))
       setMealsDone(page.length < LOG_PAGE_SIZE)
     } catch (error) {
@@ -137,6 +156,11 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
     if (access.shareWorkouts) void loadWorkouts(0)
     if (access.shareMeals) void loadMeals(0)
   }, [access, loadWorkouts, loadMeals])
+
+  const sectionTabs: SwipeTab<Section>[] = [
+    { id: 'workouts', label: 'Workouts', icon: access?.shareWorkouts ? <Dumbbell size={14} /> : <Lock size={14} /> },
+    { id: 'meals', label: 'Meals', icon: access?.shareMeals ? <Utensils size={14} /> : <Lock size={14} /> },
+  ]
 
   const name = profile?.username ? `@${profile.username}` : 'This Athlete'
 
@@ -174,28 +198,9 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
               </div>
             </header>
 
-            <div className="mb-5 flex rounded-full bg-[#1E1B1F] p-1" role="tablist" aria-label="Log type">
-              {([
-                { id: 'workouts', label: 'Workouts', Icon: Dumbbell, shared: access.shareWorkouts },
-                { id: 'meals', label: 'Meals', Icon: Utensils, shared: access.shareMeals },
-              ] as const).map(({ id, label, Icon, shared }) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  aria-selected={section === id}
-                  onClick={() => setSection(id)}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors ${
-                    section === id ? 'bg-[#F5F5F5] text-[#141115]' : 'text-[#6B6870] hover:text-white'
-                  }`}
-                  style={sans}
-                >
-                  {shared ? <Icon size={14} /> : <Lock size={14} />}
-                  {label}
-                </button>
-              ))}
-            </div>
+            <TabBar tabs={sectionTabs} active={section} onChange={setSection} label="Log type" />
 
+            <SwipePanel tabs={sectionTabs} active={section} onChange={setSection}>
             {section === 'workouts' ? (
               !access.shareWorkouts ? (
                 <LockedState label="Workout logs" name={name} />
@@ -209,7 +214,7 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
                 <>
                   <ul className="flex flex-col gap-6">
                     {workouts.map((workout) => (
-                      <LogCard key={workout.id} logType="workout" logId={workout.id} athleteId={athleteId}>
+                      <LogCard key={workout.id} logType="workout" logId={workout.id} athleteId={athleteId} commentCount={commentCounts[workout.id] ?? 0}>
                         <WorkoutAttachmentCard workout={workout} />
                       </LogCard>
                     ))}
@@ -236,7 +241,7 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
               <>
                 <ul className="flex flex-col gap-6">
                   {meals.map((meal) => (
-                    <LogCard key={meal.id} logType="meal" logId={meal.id} athleteId={athleteId} caption={formatMealDate(meal.created_at)}>
+                    <LogCard key={meal.id} logType="meal" logId={meal.id} athleteId={athleteId} commentCount={commentCounts[meal.id] ?? 0} caption={formatMealDate(meal.created_at)}>
                       <MealPostCard meal={meal} />
                     </LogCard>
                   ))}
@@ -251,6 +256,7 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
                 ) : null}
               </>
             )}
+            </SwipePanel>
           </>
         ) : null}
       </div>

@@ -89,7 +89,7 @@ function enrichPosts(posts: SocialPostDto[], profiles: Record<string, FeedProfil
   return posts.map((post) => ({ ...post, profile: profiles[post.authorId] ?? null }))
 }
 
-function enrichComments(comments: SocialCommentDto[], profiles: Record<string, FeedProfile>): EnrichedComment[] {
+export function enrichComments(comments: SocialCommentDto[], profiles: Record<string, FeedProfile>): EnrichedComment[] {
   return comments.map((comment) => {
     const { replies, ...rest } = comment
     return {
@@ -102,7 +102,7 @@ function enrichComments(comments: SocialCommentDto[], profiles: Record<string, F
   })
 }
 
-function collectCommentAuthorIds(comments: SocialCommentDto[], ids: Set<string>) {
+export function collectCommentAuthorIds(comments: SocialCommentDto[], ids: Set<string>) {
   for (const comment of comments) {
     ids.add(comment.authorId)
     if (comment.replies?.length) collectCommentAuthorIds(comment.replies, ids)
