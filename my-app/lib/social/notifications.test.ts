@@ -7,6 +7,8 @@ import {
   notificationHref,
   notificationsReducer,
   notificationText,
+  TEAM_SHARING_ROUTE,
+  TEAM_TRACKING_ROUTE,
   type NotificationDto,
   type NotificationsState,
 } from './notifications'
@@ -27,14 +29,18 @@ function withItems(items: NotificationDto[], unreadCount: number): Notifications
   return { ...initialNotificationsState, items, unreadCount, status: 'ready' }
 }
 
-test('post events open the post, follows open the actor profile, sharing rows do not navigate', () => {
+test('post events open the post, follows open the actor profile, sharing rows open Team', () => {
   assert.equal(notificationHref({ type: 'like', postId: 'p1', actorUserId: 'u1' }), '/home/post/p1')
   assert.equal(notificationHref({ type: 'comment', postId: 'p1', actorUserId: 'u1' }), '/home/post/p1')
   assert.equal(notificationHref({ type: 'reply', postId: 'p1', actorUserId: 'u1' }), '/home/post/p1')
   assert.equal(notificationHref({ type: 'like', postId: null, actorUserId: 'u1' }), null)
   assert.equal(notificationHref({ type: 'follow', postId: null, actorUserId: 'u1' }), '/home/profile/u1')
-  for (const type of ['share_invite', 'share_accepted', 'share_declined']) {
-    assert.equal(notificationHref({ type, postId: null, actorUserId: 'u1' }), null)
+  assert.equal(
+    notificationHref({ type: 'share_invite', postId: null, actorUserId: 'u1' }),
+    TEAM_TRACKING_ROUTE,
+  )
+  for (const type of ['share_accepted', 'share_declined']) {
+    assert.equal(notificationHref({ type, postId: null, actorUserId: 'u1' }), TEAM_SHARING_ROUTE)
   }
   assert.equal(notificationHref({ type: 'log_comment', postId: null, actorUserId: 'u1' }), null)
 })

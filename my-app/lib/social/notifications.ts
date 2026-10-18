@@ -2,12 +2,11 @@ export const NOTIFICATION_PAGE_SIZE = 20
 
 export const SHARE_NOTIFICATION_TYPES = ['share_invite', 'share_accepted', 'share_declined'] as const
 
-/**
- * Destination for record-sharing notifications. The Team tab does not exist
- * yet, so these rows render without navigating. Set this to the Team route
- * (for example `/my-team/sharing`) when that tab ships.
- */
-export const TEAM_ROUTE: string | null = null
+/** Coach inbox: pending tracking invites and athletes you follow. */
+export const TEAM_TRACKING_ROUTE = '/my-team/tracking#team-invites'
+
+/** Athlete inbox: coaches you share with and invite outcomes. */
+export const TEAM_SHARING_ROUTE = '/my-team/sharing'
 
 export type NotificationDto = {
   id: string
@@ -68,9 +67,10 @@ export function notificationHref(notification: Pick<NotificationDto, 'type' | 'p
     case 'follow':
       return `/home/profile/${notification.actorUserId}`
     case 'share_invite':
+      return TEAM_TRACKING_ROUTE
     case 'share_accepted':
     case 'share_declined':
-      return TEAM_ROUTE
+      return TEAM_SHARING_ROUTE
     default:
       return null
   }

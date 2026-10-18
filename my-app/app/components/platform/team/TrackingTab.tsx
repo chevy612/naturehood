@@ -41,6 +41,12 @@ export function TrackingTab() {
     void load()
   }, [load])
 
+  useEffect(() => {
+    if (loading || typeof window === 'undefined') return
+    if (window.location.hash !== '#team-invites') return
+    document.getElementById('team-invites')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [loading, shares])
+
   async function runAction(shareId: string, action: () => Promise<void>) {
     setBusyId(shareId)
     setActionError(null)
@@ -114,7 +120,7 @@ export function TrackingTab() {
       ) : null}
 
       {pending.length > 0 ? (
-        <section aria-label="Pending invites">
+        <section id="team-invites" aria-label="Pending invites">
           <SectionLabel>Invites ({pending.length})</SectionLabel>
           <ul className="flex flex-col gap-3">{pending.map(renderRow)}</ul>
         </section>
