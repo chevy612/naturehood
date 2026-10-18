@@ -33,7 +33,12 @@ async function handlePOST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch tokens' }, { status: 500 })
   }
 
-  const validTokens = tokens.filter(t => Expo.isExpoPushToken(t.expo_push_token))
+  const seen = new Set<string>()
+  const validTokens = tokens.filter(t => {
+    if (!Expo.isExpoPushToken(t.expo_push_token) || seen.has(t.expo_push_token)) return false
+    seen.add(t.expo_push_token)
+    return true
+  })
   if (validTokens.length === 0) {
     return NextResponse.json({ success: true, sent: 0 })
   }
