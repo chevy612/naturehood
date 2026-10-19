@@ -329,71 +329,82 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
     )
   }
 
-  // ── Account variant ───────────────────────────────────────────────────────
-  return (
-    <div className="py-4">
-      {/* Title row: title + badges + edit */}
-      <div className="flex items-start justify-between gap-4 mb-1">
-        <p
-          className="text-[14px] font-semibold text-white leading-snug"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {log.title}
-        </p>
-        <div className="flex items-center gap-2 shrink-0">
-          {log.is_public === false && (
-            <PillTag label="Private" variant="ghost-dark" size="sm" />
-          )}
-          {log.duration_minutes && (
-            <PillTag label={`${log.duration_minutes} min`} variant="ghost-green" size="sm" />
-          )}
-          {showEdit && (
-            <Link
-              href={`/record/${log.id}/edit`}
-              className="text-[11px] font-medium text-[#6B6870] hover:text-[#F5F5F5] transition-colors"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Edit
-            </Link>
-          )}
-        </div>
+  // ── Account variant — mirrors mobile WorkoutCard (compact · detailed) ────
+  const ai = log.ai_structured
+  const aiSummary = ai?.summary as unknown
+  const description =
+    typeof aiSummary === 'string'
+      ? aiSummary.trim() || null
+      : (aiSummary as { session_notes?: string | null } | undefined)?.session_notes?.trim() || null
+  const exercises = Array.isArray(ai?.exercises) ? ai.exercises : []
+  const loggedDate = new Date(log.logged_date + 'T00:00:00')
+  const isoDate = `${loggedDate.getFullYear()}-${String(loggedDate.getMonth() + 1).padStart(2, '0')}-${String(loggedDate.getDate()).padStart(2, '0')}`
+  const weekday = loggedDate.toLocaleDateString('en-US', { weekday: 'short' })
+  const tagClass = 'shrink-0 rounded-full border px-2.5 py-0.5 text-[12px]'
+
+  const content = (
+    <>
+      {/* Date + day */}
+      <div className="mb-1.5 flex justify-between text-[12px] tracking-wide text-[#847E89]">
+        <span>{isoDate}</span>
+        <span>{weekday}</span>
       </div>
 
-      {/* Date */}
-      <p
-        className="text-[12px] text-[#6B6870] mb-2"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      >
-        {formatDate(log.logged_date)}
-      </p>
+      {/* Title */}
+      <p className="mb-2 text-[24px] font-bold leading-tight tracking-tight text-white">{log.title}</p>
 
-      {/* Workout type pills */}
-      {log.workout_types && log.workout_types.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-2">
-          {log.workout_types.map((type) => (
-            <PillTag key={type} label={type} variant="ghost-green" size="sm" />
+      {/* Tags */}
+      {((log.workout_types?.length ?? 0) > 0 || log.duration_minutes != null || ai?.estimated_intensity || log.is_public === false) && (
+        <div className="mb-2 flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]">
+          {log.workout_types?.map((type) => (
+            <span key={type} className={`${tagClass} border-[#4F9D69] bg-[#4F9D69] text-black`}>{type}</span>
+          ))}
+          {log.duration_minutes != null && (
+            <span className={`${tagClass} border-[#3D3940] bg-[#2B282C] text-[#847E89]`}>{log.duration_minutes} min</span>
+          )}
+          {ai?.estimated_intensity && (
+            <span
+              className={`${tagClass} ${
+                ai.estimated_intensity === 'high'
+                  ? 'border-[#FF4D4D]/40 bg-[#FF4D4D]/15 text-[#FF4D4D]'
+                  : 'border-[#3D3940] bg-[#2B282C] text-[#847E89]'
+              }`}
+            >
+              {ai.estimated_intensity} intensity
+            </span>
+          )}
+          {log.is_public === false && (
+            <span className={`${tagClass} border-[#3D3940] bg-[#2B282C] text-[#847E89]`}>Private</span>
+          )}
+        </div>
+      )}
+
+      {/* Description */}
+      {description && <p className="text-[14px] leading-relaxed text-[#847E89]">{description}</p>}
+
+      {/* Exercises */}
+      {exercises.length > 0 && (
+        <div className="mt-5 flex flex-col gap-1 border-t border-[#3D3940] pt-5">
+          {exercises.map((ex, i) => (
+            <p key={i} className="text-[14px] leading-relaxed text-[#847E89]">· {ex.name}</p>
           ))}
         </div>
       )}
+    </>
+  )
 
-      {/* Log preview */}
-      {log.workout_log && (
-        <p
-          className="text-[12px] text-[#6B6870] leading-relaxed whitespace-pre-line"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {log.workout_log.length > TRUNCATE_LENGTH
-            ? log.workout_log.slice(0, TRUNCATE_LENGTH).trimEnd() + '…'
-            : log.workout_log}
-        </p>
+  return (
+    <div className="rounded-2xl bg-[#201D22] p-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      {showEdit ? (
+        <Link href={`/record/${log.id}/edit`} className="block transition-opacity hover:opacity-90">
+          {content}
+        </Link>
+      ) : (
+        content
       )}
 
-      {/* AI section — full exercise list if structured, button if not */}
-      {log.ai_structured ? (
-        <AiSection ai={log.ai_structured} showExercises={true} />
-      ) : showAnalyze && log.workout_log ? (
-        <AnalyzeButton id={log.id} />
-      ) : null}
+      {/* No AI yet — offer analysis */}
+      {!ai && showAnalyze && log.workout_log ? <AnalyzeButton id={log.id} /> : null}
     </div>
   )
 }

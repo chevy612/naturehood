@@ -37,15 +37,16 @@ const emptyState = <T,>(initial: T): AsyncState<T> => ({ data: initial, loaded: 
 
 function TabSpinner() {
   return (
-    <div className="flex justify-center py-16">
-      <LogoSpinner size={48} />
+    <div className="mx-5 my-3 flex items-center gap-2">
+      <LogoSpinner size={20} />
+      <span className="text-[14px] text-[#847E89]" style={sans}>Loading…</span>
     </div>
   )
 }
 
 function EmptyCTA({ message, href, cta }: { message: string; href: string; cta: string }) {
   return (
-    <p className="py-10 text-center text-[13px] text-[#6B6870]" style={sans}>
+    <p className="px-5 pb-4 pt-1 text-[14px] text-[#847E89]" style={sans}>
       {message}{' '}
       <Link href={href} className="text-[#F5F5F5] hover:underline">
         {cta} →
@@ -125,17 +126,15 @@ export default function AccountTabs({ userId, workouts }: { userId: string; work
   return (
     <div>
       {/* ── Tab switcher ── */}
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 px-4 py-4">
         {TABS.map((tab) => {
           const active = activeTab === tab.key
           return (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`rounded-full border px-5 py-2 text-[12px] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                active
-                  ? 'border-[#F5F5F5] bg-[#F5F5F5] text-[#141115]'
-                  : 'border-[#3A373C] text-[#A09EA3] hover:border-[#F5F5F5]/40 hover:text-white'
+              className={`rounded-full border border-white px-5 py-2 text-[14px] font-semibold transition-opacity ${
+                active ? 'bg-white text-black' : 'bg-transparent text-white hover:opacity-75'
               }`}
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
@@ -150,7 +149,7 @@ export default function AccountTabs({ userId, workouts }: { userId: string; work
         (workouts.length === 0 ? (
           <EmptyCTA message="No workouts logged yet." href="/record" cta="Log your first workout" />
         ) : (
-          <div className="divide-y divide-[#3A373C]">
+          <div className="flex flex-col gap-4 px-4">
             {workouts.map((log) => (
               <WorkoutCard key={log.id} log={log} variant="account" showEdit showAnalyze />
             ))}
@@ -162,11 +161,11 @@ export default function AccountTabs({ userId, workouts }: { userId: string; work
         (meals.loading ? (
           <TabSpinner />
         ) : meals.error ? (
-          <StatusMessage tone="error">{meals.error}</StatusMessage>
+          <div className="px-4"><StatusMessage tone="error">{meals.error}</StatusMessage></div>
         ) : meals.data.length === 0 ? (
           <EmptyCTA message="No meals logged yet." href="/meals/new" cta="Log a meal" />
         ) : (
-          <ul className="space-y-2.5">
+          <ul className="space-y-4 px-4">
             {meals.data.map((meal) => (
               <li key={meal.meal_id}>
                 <MealCard meal={meal} />
@@ -180,11 +179,11 @@ export default function AccountTabs({ userId, workouts }: { userId: string; work
         (posts.loading ? (
           <TabSpinner />
         ) : posts.error ? (
-          <StatusMessage tone="error">{posts.error}</StatusMessage>
+          <div className="px-4"><StatusMessage tone="error">{posts.error}</StatusMessage></div>
         ) : posts.data.length === 0 ? (
           <EmptyCTA message="No posts yet." href="/home/new" cta="Share something" />
         ) : (
-          <>
+          <div className="px-2">
             {posts.data.map((post) => (
               <PostCard key={post.id} post={post} onLike={() => handleLike(post)} />
             ))}
@@ -199,7 +198,7 @@ export default function AccountTabs({ userId, workouts }: { userId: string; work
                 {loadingMore ? 'Loading…' : 'Load more'}
               </button>
             ) : null}
-          </>
+          </div>
         ))}
     </div>
   )

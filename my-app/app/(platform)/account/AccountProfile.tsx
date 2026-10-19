@@ -1,35 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Avatar } from '@/app/components/platform/Avatar'
-import { PillTag } from '@/app/components/ui/tags'
-import DashboardEditForm from './DashboardEditForm'
+import EditProfileModal from './EditProfileModal'
 
 // ─────────────────────────────────────────────
-// ACCOUNT PROFILE HEADER (client — handles edit toggle + share)
+// ACCOUNT PROFILE HEADER (client — handles edit modal + share)
+//   Mirrors the mobile ProfileSection: avatar, username + bio,
+//   then side-by-side Edit / Share buttons.
 // ─────────────────────────────────────────────
 
 type Props = {
   name: string
   username: string
   bio: string
-  role: string | null
   avatarUrl: string | null
-  workoutCount: number
-}
-
-function roleLabel(role: string | null): string {
-  if (role === 'brand') return 'Brand'
-  if (role === 'other') return 'Explorer'
-  return 'Athlete'
 }
 
 const buttonClass =
-  'flex-1 rounded-full border border-[#3A373C] py-2.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-white transition-colors hover:border-[#F5F5F5]/40 hover:text-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-40'
+  'h-10 flex-1 rounded-lg bg-[#2B282C] px-4 text-[14px] font-medium text-white shadow-sm shadow-black/5 transition-colors hover:bg-[#2B282C]/80 disabled:cursor-not-allowed disabled:opacity-50'
 
-export default function AccountProfile({ name, username, bio, role, avatarUrl, workoutCount }: Props) {
+export default function AccountProfile({ name, username, bio, avatarUrl }: Props) {
   const [editOpen, setEditOpen] = useState(false)
   const [shareLabel, setShareLabel] = useState('Share Profile')
+  const closeEdit = useCallback(() => setEditOpen(false), [])
 
   async function handleShare() {
     if (!username) return
@@ -54,43 +48,32 @@ export default function AccountProfile({ name, username, bio, role, avatarUrl, w
   return (
     <div>
       {/* ── Profile header ── */}
-      <div className="mb-5 flex items-start gap-5">
-        <Avatar name={name} size="lg" photoUrl={avatarUrl} />
+      <div className="flex items-start gap-4 px-5 pt-6">
+        <Avatar name={name || username} size="lg" photoUrl={avatarUrl} />
 
-        <div className="min-w-0 flex-1 pt-1">
-          <h1
-            className="text-[22px] font-bold leading-tight text-white"
+        <div className="flex min-w-0 flex-1 flex-col gap-2 pt-1">
+          <h2
+            className="break-words text-[24px] font-bold leading-tight text-white"
             style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
           >
-            {name}
-          </h1>
-          {username && (
-            <p className="mt-0.5 text-[13px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              @{username}
-            </p>
-          )}
+            {username || name}
+          </h2>
           {bio && (
-            <p className="mt-2 whitespace-pre-wrap text-[14px] leading-6 text-[#A09EA3]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <p className="whitespace-pre-wrap text-[14px] leading-5 text-[#847E89]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               {bio}
             </p>
           )}
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <PillTag label={roleLabel(role)} size="sm" variant="ghost-green" />
-            <span className="text-[12px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              {workoutCount} {workoutCount === 1 ? 'workout' : 'workouts'}
-            </span>
-          </div>
         </div>
       </div>
 
       {/* ── CTA buttons ── */}
-      <div className="mb-8 flex gap-3">
+      <div className="flex gap-2.5 px-5 py-4">
         <button
-          onClick={() => setEditOpen((v) => !v)}
+          onClick={() => setEditOpen(true)}
           className={buttonClass}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
-          {editOpen ? 'Close' : 'Edit Profile'}
+          Edit Profile
         </button>
         <button
           onClick={handleShare}
@@ -103,16 +86,14 @@ export default function AccountProfile({ name, username, bio, role, avatarUrl, w
         </button>
       </div>
 
-      {/* ── Edit form (toggleable) ── */}
       {editOpen && (
-        <div className="mb-8 rounded-2xl border border-[#3A373C] bg-[#1A1719] p-5">
-          <DashboardEditForm
-            initialName={name}
-            initialUsername={username}
-            initialBio={bio}
-            initialAvatarUrl={avatarUrl}
-          />
-        </div>
+        <EditProfileModal
+          onClose={closeEdit}
+          initialName={name}
+          initialUsername={username}
+          initialBio={bio}
+          initialAvatarUrl={avatarUrl}
+        />
       )}
     </div>
   )

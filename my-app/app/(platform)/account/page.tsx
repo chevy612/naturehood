@@ -4,7 +4,6 @@ import { Bell } from 'lucide-react'
 import type { WorkoutCardLog } from '@/app/components/platform/WorkoutCard'
 import AccountProfile from './AccountProfile'
 import AccountTabs from './AccountTabs'
-import { signOut } from './actions'
 
 // ─────────────────────────────────────────────
 // ACCOUNT PAGE
@@ -18,7 +17,7 @@ export default async function AccountPage() {
   const [{ data: profile }, { data: trainingLogs }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('name, username, bio, role, avatar_url, email')
+      .select('name, username, bio, avatar_url, email')
       .eq('id', userId)
       .single(),
     supabase
@@ -33,54 +32,35 @@ export default async function AccountPage() {
   const name = profile?.name ?? profile?.email?.split('@')[0] ?? 'Member'
   const username = profile?.username ?? ''
   const bio = profile?.bio ?? ''
-  const role = profile?.role ?? null
   const avatarUrl = profile?.avatar_url ?? null
   const logs = (trainingLogs ?? []) as WorkoutCardLog[]
 
   return (
-    <div className="min-h-screen bg-[#141115] px-6 py-10">
+    <div className="min-h-screen bg-[#141115] pb-10 pt-4">
       <div className="mx-auto max-w-2xl">
 
-        {/* ── Top bar ── */}
-        <div className="mb-8 flex items-center justify-between">
+        {/* ── Top bar (mirrors mobile AccountHeader) ── */}
+        <div className="flex items-center justify-between px-5 pt-2">
           <h1
-            className="text-[22px] font-bold text-white"
+            className="text-[20px] font-bold text-white"
             style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
           >
             Account
           </h1>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/home/notifications"
-              aria-label="Notifications"
-              className="text-[#A09EA3] transition-colors hover:text-white"
-            >
-              <Bell size={20} />
-            </Link>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="text-[12px] font-medium text-[#6B6870] transition-colors hover:text-white"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Sign out
-              </button>
-            </form>
-          </div>
+          <Link
+            href="/home/notifications"
+            aria-label="Notifications"
+            className="p-1 text-white transition-opacity hover:opacity-75"
+          >
+            <Bell size={22} />
+          </Link>
         </div>
 
-        {/* ── Profile header (client — handles edit toggle + share) ── */}
-        <AccountProfile
-          name={name}
-          username={username}
-          bio={bio}
-          role={role}
-          avatarUrl={avatarUrl}
-          workoutCount={logs.length}
-        />
+        {/* ── Profile header (client — handles edit modal + share) ── */}
+        <AccountProfile name={name} username={username} bio={bio} avatarUrl={avatarUrl} />
 
-        {/* ── Section divider ── */}
-        <div className="mb-6 h-px bg-[#3A373C]" />
+        {/* ── Separator ── */}
+        <div className="h-px bg-[#3D3940]" />
 
         {/* ── Tabbed content: Workouts · Meals · Posts ── */}
         <AccountTabs userId={userId} workouts={logs} />
