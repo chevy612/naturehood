@@ -168,7 +168,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
     <div className="space-y-6">
       <p
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         Competition Details
       </p>
@@ -197,7 +197,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
 
       {/* Status */}
       <div>
-        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
           Status
         </p>
         <div className="flex gap-2">
@@ -231,16 +231,16 @@ export default function CompetitionPanel({ result, onChange }: Props) {
 
       {/* Rounds */}
       <div>
-        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
           Rounds
         </p>
         <div className="flex items-center gap-2 pb-1">
-          <span className="flex-[2] text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Type</span>
-          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Time (s)</span>
-          <span className="w-16 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Wind</span>
-          <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Rank</span>
-          <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Flags</span>
-          <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Note</span>
+          <span className="flex-[2] text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Type</span>
+          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Time (s)</span>
+          <span className="w-16 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Wind</span>
+          <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Rank</span>
+          <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Flags</span>
+          <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Note</span>
         </div>
         {result.rounds.map((round, i) => (
           <RoundRow
@@ -254,7 +254,7 @@ export default function CompetitionPanel({ result, onChange }: Props) {
           type="button"
           onClick={addRound}
           className="mt-3 flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           <Plus size={12} /> Add Round
         </button>

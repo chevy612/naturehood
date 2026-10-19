@@ -64,7 +64,7 @@ export default async function EventDetailPage({
 
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Event
         </p>
@@ -72,7 +72,7 @@ export default async function EventDetailPage({
         {/* Title */}
         <h1
           className="text-[28px] font-bold text-white leading-tight mb-6"
-          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
         >
           {event.title}
         </h1>
@@ -82,7 +82,7 @@ export default async function EventDetailPage({
           <div>
             <p
               className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#6B6870] mb-0.5"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               Date
             </p>
@@ -98,7 +98,7 @@ export default async function EventDetailPage({
             <div>
               <p
                 className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#6B6870] mb-0.5"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Sk Modernist', sans-serif" }}
               >
                 Time
               </p>
@@ -115,7 +115,7 @@ export default async function EventDetailPage({
             <div>
               <p
                 className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#6B6870] mb-0.5"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Sk Modernist', sans-serif" }}
               >
                 Location
               </p>

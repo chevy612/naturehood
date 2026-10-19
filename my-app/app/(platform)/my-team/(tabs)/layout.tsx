@@ -6,7 +6,7 @@ export default function MyTeamTabsLayout({ children }: { children: React.ReactNo
       <div className="mx-auto max-w-2xl">
         <p
           className="mb-6 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Team
         </p>

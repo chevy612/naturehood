@@ -13,13 +13,13 @@ import {
   type EnrichedPost,
   type UserSearchResult,
 } from '@/lib/social/browser'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 
 const DEBOUNCE_MS = 300
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="pb-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3]" style={sans}>
+    <h2 className="pb-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3]" style={display}>
       {children}
     </h2>
   )

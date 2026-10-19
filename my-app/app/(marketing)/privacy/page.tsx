@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         {/* Header */}
         <h1
           className="text-3xl font-bold text-white mb-2"
-          style={{ fontFamily: tokens.font.heading }}
+          style={{ fontFamily: tokens.font.display }}
         >
           Privacy Policy
         </h1>
@@ -256,7 +256,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <section className="mb-10">
       <h2
         className="text-lg font-semibold text-white mb-3 pb-2 border-b border-[#3A373C]"
-        style={{ fontFamily: tokens.font.heading }}
+        style={{ fontFamily: tokens.font.display }}
       >
         {title}
       </h2>

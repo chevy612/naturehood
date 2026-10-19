@@ -6,7 +6,7 @@ import { Plus, Search } from 'lucide-react'
 import { PostCard } from '@/app/components/platform/social/PostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { fetchFeedPage, togglePostLike, type EnrichedPost } from '@/lib/social/browser'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 
 export function SocialHome() {
   const [posts, setPosts] = useState<EnrichedPost[]>([])
@@ -76,7 +76,7 @@ export function SocialHome() {
     <div className="min-h-screen bg-[#141115] px-4 py-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-6 flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={sans}>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={display}>
             Home
           </p>
           <Link href="/home/search" aria-label="Search posts and people" className="text-white">

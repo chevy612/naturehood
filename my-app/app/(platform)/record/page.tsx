@@ -10,14 +10,14 @@ export default async function RecordPage() {
 
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Record
         </p>
 
         <h1
           className="text-2xl font-bold text-white mb-8"
-          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
         >
           Log a Workout
         </h1>

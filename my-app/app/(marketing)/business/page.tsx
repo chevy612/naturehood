@@ -168,7 +168,7 @@ export default function BusinessPage() {
           </div>
           <h2
             className="text-[32px] font-bold text-[#141115] mb-4"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             Application Submitted!
           </h2>
@@ -393,14 +393,14 @@ export default function BusinessPage() {
             <div className="bg-[#141115] border border-[#3A373C] p-10 sm:p-12 text-center mb-8">
               <p
                 className="text-[10px] font-semibold tracking-[0.35em] uppercase text-[#F5F5F5] mb-5"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Sk Modernist', sans-serif" }}
               >
                 Skip the Form
               </p>
               <h2
                 className="text-[#F5F5F5] mb-4"
                 style={{
-                  fontFamily: "'DM Sans', sans-serif",
+                  fontFamily: "'Sk Modernist', sans-serif",
                   fontSize: "clamp(28px, 4vw, 40px)",
                   fontWeight: 700,
                   lineHeight: 1.05,
@@ -471,7 +471,7 @@ export default function BusinessPage() {
               <h2
                 className="text-[24px] font-bold text-[#141115] mb-2"
                 style={{
-                  fontFamily: "'DM Sans', sans-serif",
+                  fontFamily: "'Sk Modernist', sans-serif",
                   letterSpacing: "-0.01em",
                 }}
               >

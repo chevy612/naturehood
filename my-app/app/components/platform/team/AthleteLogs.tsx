@@ -19,7 +19,7 @@ import {
   fetchSharedWorkouts,
   teamErrorMessage,
 } from '@/lib/team/browser'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 import type { LogType, PeerProfile, ShareScope, SharedMeal, SharedWorkout } from '@/lib/team/types'
 
 type Section = 'workouts' | 'meals'
@@ -190,7 +190,7 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
             <header className="mb-6 flex items-center gap-4">
               <Avatar name={profile?.name?.trim() || profile?.username || '?'} photoUrl={profile?.avatar_url} size="lg" />
               <div className="min-w-0">
-                <h1 className="truncate text-[22px] font-bold text-white" style={sans}>{name}</h1>
+                <h1 className="truncate text-[22px] font-bold text-white" style={display}>{name}</h1>
                 {profile?.name && profile.name !== profile.username ? (
                   <p className="truncate text-[13px] text-[#6B6870]" style={sans}>{profile.name}</p>
                 ) : null}

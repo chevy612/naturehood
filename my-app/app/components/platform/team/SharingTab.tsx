@@ -27,7 +27,7 @@ import {
   updateShareNote,
   updateShareOptions,
 } from '@/lib/team/browser'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 import type { PeerProfile, ShareLink, ShareRow, ShareScope } from '@/lib/team/types'
 
 const DEBOUNCE_MS = 300
@@ -143,7 +143,7 @@ function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () 
                   {profile.name ? <p className="truncate text-[11px] text-[#6B6870]" style={sans}>{profile.name}</p> : null}
                 </div>
                 {status === 'accepted' || status === 'pending' ? (
-                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#6B6870]" style={sans}>
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#6B6870]" style={display}>
                     {status === 'accepted' ? 'Sharing' : 'Invited'}
                   </span>
                 ) : (

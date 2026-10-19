@@ -1,5 +1,5 @@
 import { MEAL_TYPE_LABELS, type MealPostRecord } from '@/lib/social/post-content'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 
 export function MealPostCard({ meal }: { meal: MealPostRecord }) {
   const typeLabel = meal.meal_type ? MEAL_TYPE_LABELS[meal.meal_type] : 'Meal'
@@ -24,7 +24,7 @@ export function MealPostCard({ meal }: { meal: MealPostRecord }) {
         )}
       </div>
       <div className="min-w-0 flex-1 py-1">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3]" style={sans}>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3]" style={display}>
           {typeLabel}
         </p>
         <p className="mt-1 truncate text-[14px] text-white" style={sans}>
@@ -36,7 +36,7 @@ export function MealPostCard({ meal }: { meal: MealPostRecord }) {
               <p className="text-[12px] font-semibold text-white" style={sans}>
                 {column.value != null ? Math.round(column.value) : '—'}
               </p>
-              <p className="text-[10px] uppercase tracking-wide text-[#6B6870]" style={sans}>
+              <p className="text-[10px] uppercase tracking-wide text-[#6B6870]" style={display}>
                 {column.label}
               </p>
             </div>

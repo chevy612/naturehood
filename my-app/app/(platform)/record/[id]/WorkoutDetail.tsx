@@ -139,14 +139,14 @@ function AiSection({ ai }: { ai: AiStructuredWorkout }) {
       <div className="flex items-center gap-3 mb-4">
         <span
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           AI Analysis
         </span>
         {ai.estimated_intensity && (
           <span
             className="text-[11px] font-medium uppercase tracking-[0.1em]"
-            style={{ fontFamily: "'DM Sans', sans-serif", color: intensityColor }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif", color: intensityColor }}
           >
             {ai.estimated_intensity} intensity
           </span>

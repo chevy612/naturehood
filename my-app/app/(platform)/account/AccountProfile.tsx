@@ -38,7 +38,7 @@ export default function AccountProfile({ name, username, bio, role, avatarUrl, w
           {/* Name + role */}
           <h1
             className="text-[20px] font-bold text-white leading-tight mb-0.5"
-            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
           >
             {name}
           </h1>

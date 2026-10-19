@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 import type { MealListItem, NutritionTargets } from '@/lib/meals/types'
 import { sumMacros } from '@/lib/meals/utils'
 
@@ -38,7 +38,7 @@ export function DailySummaryCard({
   return (
     <section aria-label={mode === 'weekly' ? 'Weekly summary' : 'Daily summary'} className="rounded-2xl bg-[#1E1B1F] p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-[13px] font-semibold text-white" style={sans}>
+        <h2 className="text-[13px] font-semibold text-white" style={display}>
           {mode === 'weekly' ? 'Weekly summary' : 'Daily summary'}
         </h2>
         <div className="flex rounded-lg bg-[#141115] p-[3px]" role="group" aria-label="Summary range">
@@ -62,7 +62,7 @@ export function DailySummaryCard({
             <span className="text-[20px] font-bold" style={{ ...sans, color: statColor(stat.value, stat.target) }}>
               {Math.round(stat.value)}
             </span>
-            <span className="text-[11px] uppercase tracking-[0.08em] text-[#A09EA3]" style={sans}>{stat.label}</span>
+            <span className="text-[11px] uppercase tracking-[0.08em] text-[#A09EA3]" style={display}>{stat.label}</span>
             {stat.target != null ? (
               <span className="text-[10px] text-[#6B6870]" style={sans}>of {Math.round(stat.target)} {stat.unit}</span>
             ) : null}

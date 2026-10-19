@@ -232,11 +232,11 @@ function ExerciseCard({
           {/* Column headers */}
           <div className="flex items-center gap-2 pt-2 pb-1">
             <span className="w-5" />
-            <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Flags</span>
-            <span className="w-16 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Weight</span>
-            <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Reps</span>
-            <span className="w-12 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Effort</span>
-            <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Note</span>
+            <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Flags</span>
+            <span className="w-16 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Weight</span>
+            <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Reps</span>
+            <span className="w-12 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Effort</span>
+            <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Note</span>
           </div>
 
           {exercise.sets.map((set, i) => (
@@ -252,7 +252,7 @@ function ExerciseCard({
             type="button"
             onClick={addSet}
             className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#F5F5F5] transition-colors uppercase tracking-[0.1em] font-semibold"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             <Plus size={10} /> Add Set
           </button>
@@ -339,7 +339,7 @@ function BlockCard({
         type="button"
         onClick={addExercise}
         className="flex items-center gap-2 px-3 py-1.5 border border-[#3A373C] text-[#6B6870] text-[10px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         <Plus size={10} /> Add Exercise
       </button>
@@ -366,7 +366,7 @@ export default function StrengthPanel({ blocks, onChange }: Props) {
     <div className="space-y-4">
       <p
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         Blocks &amp; Exercises
       </p>
@@ -384,7 +384,7 @@ export default function StrengthPanel({ blocks, onChange }: Props) {
         type="button"
         onClick={addBlock}
         className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         <Plus size={12} /> Add Block
       </button>

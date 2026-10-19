@@ -33,3 +33,4 @@ export function roleLabel(role: string | null | undefined) {
 }
 
 export const sans = { fontFamily: "'DM Sans', sans-serif" } as const
+export const display = { fontFamily: "'Sk Modernist', sans-serif" } as const

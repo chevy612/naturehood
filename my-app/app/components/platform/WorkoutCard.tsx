@@ -83,7 +83,7 @@ function AiSection({ ai, showExercises }: { ai: AiStructuredWorkout; showExercis
       <div className="flex items-center gap-2 mb-1">
         <span
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           AI
         </span>
@@ -202,7 +202,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
             {log.ai_structured && (
               <span
                 className="text-[9px] font-semibold tracking-[0.25em] uppercase text-[#F5F5F5]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Sk Modernist', sans-serif" }}
               >
                 AI
               </span>

@@ -7,7 +7,7 @@ import { Avatar } from '@/app/components/platform/Avatar'
 import { ScopePills, TeamLoading } from '@/app/components/platform/team/shared'
 import { ButtonSmall } from '@/app/components/ui/buttons'
 import { peekShareLink, redeemShareLink, teamErrorMessage } from '@/lib/team/browser'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 import type { ShareLinkInvalidReason, ShareLinkPeek } from '@/lib/team/types'
 
 const INVALID_COPY: Record<ShareLinkInvalidReason, { title: string; body: string }> = {
@@ -82,7 +82,7 @@ export function ShareLanding({ token }: { token: string }) {
     const copy = INVALID_COPY[peek?.reason ?? 'not_found']
     return (
       <Shell>
-        <h1 className="text-[20px] font-bold text-white" style={sans}>{copy.title}</h1>
+        <h1 className="text-[20px] font-bold text-white" style={display}>{copy.title}</h1>
         <p className="mt-2 text-[14px] text-[#A09EA3]" style={sans}>{copy.body}</p>
         <div className="mt-6 flex justify-center">
           <Link href="/my-team/tracking" className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#F5F5F5]" style={sans}>
@@ -102,8 +102,8 @@ export function ShareLanding({ token }: { token: string }) {
       <div className="mb-5 flex justify-center">
         <Avatar name={athlete.name?.trim() || athlete.username || '?'} photoUrl={athlete.avatar_url} size="lg" />
       </div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={sans}>Share invite</p>
-      <h1 className="mt-2 text-[22px] font-bold text-white" style={sans}>{handle} wants you as their Coach</h1>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={display}>Share invite</p>
+      <h1 className="mt-2 text-[22px] font-bold text-white" style={display}>{handle} wants you as their Coach</h1>
       {athlete.name && athlete.name !== athlete.username ? (
         <p className="mt-1 text-[13px] text-[#6B6870]" style={sans}>{athlete.name}</p>
       ) : null}

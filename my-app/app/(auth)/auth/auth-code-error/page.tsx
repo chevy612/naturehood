@@ -6,13 +6,13 @@ export default function AuthCodeError() {
       <div className="w-full max-w-md text-center">
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#FF4D4D] mb-3"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Authentication Error
         </p>
         <h1
           className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-4"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Something went wrong
         </h1>

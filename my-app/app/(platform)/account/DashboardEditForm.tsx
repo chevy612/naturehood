@@ -94,7 +94,7 @@ export default function DashboardEditForm({
       <div className="flex flex-col items-start gap-2">
         <p
           className="text-[11px] font-medium text-[#6B6870] uppercase tracking-[0.1em]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Profile photo
         </p>

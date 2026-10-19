@@ -31,7 +31,7 @@ import {
   shiftDateKey,
   todayDateKey,
 } from '@/lib/meals/utils'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 
 const DAYS_LOADED = 60
 
@@ -116,8 +116,8 @@ export function MealLog({ userId }: { userId: string }) {
       <div className="mx-auto max-w-2xl">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={sans}>Meals</p>
-            <h1 className="text-2xl font-bold text-white" style={{ ...sans, letterSpacing: '-0.02em' }}>Meal log</h1>
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={display}>Meals</p>
+            <h1 className="text-2xl font-bold text-white" style={{ ...display, letterSpacing: '-0.02em' }}>Meal log</h1>
             <p className="mt-1 text-[13px] text-[#6B6870]" style={sans}>{monthNameForKey(selectedDate)}</p>
           </div>
           <div className="flex items-center gap-1">
@@ -189,7 +189,7 @@ export function MealLog({ userId }: { userId: string }) {
         </div>
 
         <div className="mb-3 mt-6 flex items-center justify-between">
-          <h2 className="text-[13px] font-semibold text-white" style={sans}>{formatDayHeading(selectedDate)}</h2>
+          <h2 className="text-[13px] font-semibold text-white" style={display}>{formatDayHeading(selectedDate)}</h2>
           <div className="flex items-center gap-1">
             <button
               type="button"

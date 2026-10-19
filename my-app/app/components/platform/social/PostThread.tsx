@@ -18,7 +18,7 @@ import {
   type EnrichedComment,
   type EnrichedPost,
 } from '@/lib/social/browser'
-import { displayName, formatRelativeTime, profileHref, sans } from '@/lib/social/format'
+import { displayName, formatRelativeTime, profileHref, sans, display } from '@/lib/social/format'
 import { isVideoUrl, readPostBody } from '@/lib/social/post-content'
 
 export function PostThread({ postId }: { postId: string }) {
@@ -159,7 +159,7 @@ export function PostThread({ postId }: { postId: string }) {
           <PostCard post={post} linked={false} likePending={likePending} onLike={handleLike} />
         ) : null}
 
-        <h2 className="mt-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F5F5F5]" style={sans}>
+        <h2 className="mt-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F5F5F5]" style={display}>
           Replies
         </h2>
 

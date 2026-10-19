@@ -8,7 +8,7 @@ import { MealPhotoField } from '@/app/components/platform/meals/MealPhotoField'
 import { createMeal, validateMealForm } from '@/lib/meals/browser'
 import { startMealAnalysis } from '@/lib/meals/analysis-store'
 import { EMPTY_MEAL_FORM, type MealFormValues } from '@/lib/meals/types'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 
 export function NewMealForm({ userId }: { userId: string }) {
   const router = useRouter()
@@ -60,7 +60,7 @@ export function NewMealForm({ userId }: { userId: string }) {
           >
             <X size={22} />
           </button>
-          <h1 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={sans}>Log your meal</h1>
+          <h1 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={display}>Log your meal</h1>
           <span className="w-[22px]" aria-hidden />
         </div>
 

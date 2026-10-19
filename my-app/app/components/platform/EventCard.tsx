@@ -59,7 +59,7 @@ export function EventCard({
           </span>
           <span
             className="text-[9px] font-semibold tracking-[0.2em] uppercase text-[#F5F5F5]/70 mt-0.5"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             {date.month}
           </span>

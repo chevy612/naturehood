@@ -115,7 +115,7 @@ export function OAuthButtons({ mode = "login" }: { mode?: "login" | "signup" }) 
         <div className="flex-1 h-px bg-white/10" />
         <span
           className="text-[12px] text-[#6B6870] uppercase tracking-wider"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           or
         </span>

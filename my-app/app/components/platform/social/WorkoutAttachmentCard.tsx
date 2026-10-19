@@ -1,5 +1,5 @@
 import type { WorkoutPostRecord } from '@/lib/social/post-content'
-import { formatShortDate, sans } from '@/lib/social/format'
+import { formatShortDate, sans, display } from '@/lib/social/format'
 import { PillTag } from '@/app/components/ui/tags'
 
 export function WorkoutAttachmentCard({ workout, expanded = false }: { workout: WorkoutPostRecord; expanded?: boolean }) {
@@ -10,7 +10,7 @@ export function WorkoutAttachmentCard({ workout, expanded = false }: { workout: 
 
   return (
     <div className="rounded-2xl border border-[#3A373C] bg-[#1E1B1F] p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3]" style={sans}>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3]" style={display}>
         Workout
       </p>
       <p className="mt-1 text-[15px] text-white" style={sans}>{workout.title}</p>

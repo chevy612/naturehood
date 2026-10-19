@@ -78,7 +78,7 @@ function SetRow({ set }: { set: AthleteSetLog }) {
           {set.is_warmup && (
             <span
               className="text-[9px] font-semibold tracking-widest uppercase text-[#6B6870] border border-[#3A373C] px-1.5 py-0.5 leading-none"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               WU
             </span>
@@ -86,7 +86,7 @@ function SetRow({ set }: { set: AthleteSetLog }) {
           {set.is_failure && (
             <span
               className="text-[9px] font-semibold tracking-widest uppercase text-[#FF4D4D] border border-[#FF4D4D]/30 px-1.5 py-0.5 leading-none"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               FAIL
             </span>
@@ -94,7 +94,7 @@ function SetRow({ set }: { set: AthleteSetLog }) {
           {set.is_dropset && !set.is_failure && (
             <span
               className="text-[9px] font-semibold tracking-widest uppercase text-[#6B6870] border border-[#3A373C] px-1.5 py-0.5 leading-none"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               DROP
             </span>
@@ -217,7 +217,7 @@ function StrengthBlocks({ blocks }: { blocks: AthleteBlock[] }) {
           {block.block_name && (
             <p
               className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               {block.block_name}
               {block.block_type === 'emom' && block.emom_interval_seconds && (
@@ -253,7 +253,7 @@ function SprintEfforts({ sprint }: { sprint: SprintSession }) {
           <div className="flex items-center gap-2 mb-3">
             <span
               className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               {effort.drill_type.replace(/_/g, ' ')}
             </span>
@@ -314,7 +314,7 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
         )}
         <span
           className="text-[11px] font-semibold uppercase tracking-widest"
-          style={{ color: statusColor[result.status] ?? '#A09EA3', fontFamily: "'DM Sans', sans-serif" }}
+          style={{ color: statusColor[result.status] ?? '#A09EA3', fontFamily: "'Sk Modernist', sans-serif" }}
         >
           {result.status}
         </span>
@@ -358,7 +358,7 @@ function CompetitionResultView({ result }: { result: CompetitionResult }) {
 
       {result.best_time_seconds != null && (
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
             Best
           </span>
           <span className="text-[18px] font-semibold text-[#F5F5F5]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -395,7 +395,7 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
         {physio.clearance_status && (
           <span
             className="text-[11px] font-semibold uppercase tracking-widest"
-            style={{ color: clearanceColors[physio.clearance_status] ?? '#A09EA3', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ color: clearanceColors[physio.clearance_status] ?? '#A09EA3', fontFamily: "'Sk Modernist', sans-serif" }}
           >
             {physio.clearance_status.replace(/_/g, ' ')}
           </span>
@@ -404,7 +404,7 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
 
       {physio.body_areas && physio.body_areas.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
             Areas
           </p>
           {physio.body_areas.map((area, i) => (
@@ -430,7 +430,7 @@ function PhysioView({ physio }: { physio: PhysioSession }) {
 
       {physio.exercises && physio.exercises.length > 0 && (
         <div>
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
             Exercises
           </p>
           {physio.exercises.map((ex, i) => <ExerciseCard key={i} ex={ex} />)}
@@ -455,7 +455,7 @@ function StatPill({ label, value }: { label: string; value: string }) {
       <span className="text-[18px] font-semibold text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         {value}
       </span>
-      <span className="text-[10px] text-[#6B6870] uppercase tracking-widest mt-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <span className="text-[10px] text-[#6B6870] uppercase tracking-widest mt-0.5" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
         {label}
       </span>
     </div>
@@ -483,7 +483,7 @@ export function SessionResult({ session }: SessionResultProps) {
       {/* Title */}
       <p
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         AI Report
       </p>

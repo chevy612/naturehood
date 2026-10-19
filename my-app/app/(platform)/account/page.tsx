@@ -43,7 +43,7 @@ export default async function AccountPage() {
         <div className="flex items-center justify-between mb-8">
           <p
             className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             My Account
           </p>
@@ -72,7 +72,7 @@ export default async function AccountPage() {
         <div className="flex items-center gap-4 mb-5">
           <p
             className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             My Training
           </p>

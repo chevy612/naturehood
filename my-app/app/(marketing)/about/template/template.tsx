@@ -231,7 +231,7 @@ export default function AboutPage() {
                         <span
                           key={i}
                           className="px-3 py-1 bg-[#F5F5F5] text-xs font-semibold uppercase tracking-wider text-[#141115]"
-                          style={{ fontFamily: "'DM Sans', sans-serif" }}
+                          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
                         >
                           {skill}
                         </span>

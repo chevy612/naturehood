@@ -35,7 +35,7 @@ export default function AiReportForm({
       <div className="space-y-2">
         <h2
           className="text-[18px] font-bold text-white"
-          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
         >
           {workout.title}
         </h2>

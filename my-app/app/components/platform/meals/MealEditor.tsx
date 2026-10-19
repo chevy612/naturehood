@@ -16,7 +16,7 @@ import {
   type MealRecord,
 } from '@/lib/meals/types'
 import { dateKey, formatTime, numberToField, weekdayForKey } from '@/lib/meals/utils'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 
 const SECTION_LABEL = { fontFamily: "'Sk Modernist', sans-serif" } as const
 
@@ -185,7 +185,7 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
           <Link href={backHref} aria-label="Back to meals" className="text-white">
             <ArrowLeft size={22} />
           </Link>
-          <h1 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={sans}>Meal summary</h1>
+          <h1 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={display}>Meal summary</h1>
           <span className="w-[22px]" aria-hidden />
         </div>
 

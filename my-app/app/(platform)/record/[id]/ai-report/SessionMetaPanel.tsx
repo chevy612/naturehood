@@ -35,7 +35,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       <div>
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Session Type
         </p>
@@ -62,7 +62,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       <div>
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Intensity
         </p>
@@ -89,7 +89,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       <div>
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Readiness
         </p>
@@ -138,7 +138,7 @@ export default function SessionMetaPanel({ details, onChange }: Props) {
       <div>
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Session Notes
         </p>

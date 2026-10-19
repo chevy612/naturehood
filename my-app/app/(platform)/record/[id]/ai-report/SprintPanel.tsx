@@ -205,10 +205,10 @@ function EffortCard({
       <div className="border-t border-[#2A272C]">
         <div className="flex items-center gap-2 pt-2 pb-1">
           <span className="w-5" />
-          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Time (s)</span>
-          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Wind</span>
-          <span className="w-10 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Status</span>
-          <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'DM Sans', sans-serif" }}>Note</span>
+          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Time (s)</span>
+          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Wind</span>
+          <span className="w-10 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Status</span>
+          <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Note</span>
         </div>
         {effort.reps.map((rep, i) => (
           <RepRow
@@ -222,7 +222,7 @@ function EffortCard({
           type="button"
           onClick={addRep}
           className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#F5F5F5] transition-colors uppercase tracking-[0.1em] font-semibold"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           <Plus size={10} /> Add Rep
         </button>
@@ -253,7 +253,7 @@ export default function SprintPanel({ efforts, surface, footwear, onEffortsChang
     <div className="space-y-4">
       <p
         className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         Sprint Session
       </p>
@@ -298,7 +298,7 @@ export default function SprintPanel({ efforts, surface, footwear, onEffortsChang
         type="button"
         onClick={addEffort}
         className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
       >
         <Plus size={12} /> Add Effort
       </button>

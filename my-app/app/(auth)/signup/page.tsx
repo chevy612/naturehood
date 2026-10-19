@@ -107,13 +107,13 @@ function SignUpForm() {
           <div className="mb-10">
             <p
               className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               Get Started
             </p>
             <h1
               className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Sk Modernist', sans-serif" }}
             >
               Join Naturehood
             </h1>

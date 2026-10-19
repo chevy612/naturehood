@@ -146,7 +146,7 @@ export default function EditForm({
       <div>
         <p
           className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#6B6870] mb-2"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Workout Type
         </p>

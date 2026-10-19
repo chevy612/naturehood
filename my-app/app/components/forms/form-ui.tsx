@@ -448,7 +448,7 @@ export function FormSection({
       <h2
         className="text-[24px] font-bold leading-tight mb-2"
         style={{
-          fontFamily: "'DM Sans', sans-serif",
+          fontFamily: "'Sk Modernist', sans-serif",
           letterSpacing: "-0.01em",
           color: c.sectionTitle,
         }}

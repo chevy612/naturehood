@@ -213,7 +213,7 @@ export function ProfileCard({
         {/* Content: stacked on mobile, row on desktop */}
         <div className="flex-1 flex flex-col justify-between p-4 sm:flex-row sm:items-center sm:px-4 sm:py-3 sm:gap-2">
           <div>
-            <span className="font-bold text-[#141115] uppercase tracking-wider text-sm leading-tight block" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <span className="font-bold text-[#141115] uppercase tracking-wider text-sm leading-tight block" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
               {name}
             </span>
             {/* Sport as pill — mobile only */}

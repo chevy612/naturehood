@@ -6,7 +6,7 @@ import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import { NotificationItem } from '@/app/components/platform/notifications/NotificationItem'
 import { useNotifications } from '@/app/components/platform/notifications/NotificationsProvider'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 
 export function NotificationsScreen() {
   const {
@@ -37,7 +37,7 @@ export function NotificationsScreen() {
         <div className="mb-6 flex items-center justify-between gap-3">
           <h1
             className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]"
-            style={sans}
+            style={display}
           >
             Notifications
             {unreadCount > 0 ? (

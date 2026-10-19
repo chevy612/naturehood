@@ -23,7 +23,7 @@ import {
 import { createMeal, validateMealForm } from '@/lib/meals/browser'
 import { EMPTY_MEAL_FORM, type MealFormValues } from '@/lib/meals/types'
 import { parseNullableNumber } from '@/lib/meals/utils'
-import { sans } from '@/lib/social/format'
+import { sans, display } from '@/lib/social/format'
 import {
   MEAL_TYPE_LABELS,
   POST_TYPE,
@@ -146,7 +146,7 @@ export function CreatePostForm({ initialAttachment = null }: { initialAttachment
           <button type="button" onClick={() => router.push('/home')} aria-label="Close" className="text-white">
             <X size={22} />
           </button>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={sans}>New post</p>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={display}>New post</p>
           <button
             type="button"
             onClick={handlePost}
@@ -547,7 +547,7 @@ export function LogWorkoutPanel({
   return (
     <form onSubmit={handleSave} className="mt-4 space-y-5 rounded-2xl border border-[#3A373C] bg-[#1A1719] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[12px] uppercase tracking-[0.16em] text-white" style={sans}>New workout</p>
+        <p className="text-[12px] uppercase tracking-[0.16em] text-white" style={display}>New workout</p>
         <button type="button" onClick={onCancel} className="text-[12px] uppercase tracking-[0.12em] text-[#A09EA3]" style={sans}>Back</button>
       </div>
       <WorkoutFormFields
@@ -654,7 +654,7 @@ export function LogMealPanel({
   return (
     <form onSubmit={handleSave} className="mt-4 space-y-5 rounded-2xl border border-[#3A373C] bg-[#1A1719] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[12px] uppercase tracking-[0.16em] text-white" style={sans}>Log meal</p>
+        <p className="text-[12px] uppercase tracking-[0.16em] text-white" style={display}>Log meal</p>
         <button type="button" onClick={onCancel} className="text-[12px] uppercase tracking-[0.12em] text-[#A09EA3]" style={sans}>Back</button>
       </div>
 

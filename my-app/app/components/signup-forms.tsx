@@ -129,7 +129,7 @@ export function AthleteSignUpForm({
           </div>
           <h2
             className="text-[32px] font-bold text-white mb-4"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             Welcome to Naturehood
           </h2>
@@ -158,13 +158,13 @@ export function AthleteSignUpForm({
         <div className="mb-12">
           <p
             className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             Athlete Application
           </p>
           <h1
             className="text-[48px] md:text-[60px] font-bold text-white leading-none mb-4"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             Join Naturehood
           </h1>
@@ -468,7 +468,7 @@ export function BrandSignUpForm({
           </div>
           <h2
             className="text-[32px] font-bold text-[#141115] mb-4"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             Thank You for Your Interest
           </h2>
@@ -497,13 +497,13 @@ export function BrandSignUpForm({
         <div className="mb-12">
           <p
             className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-3"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             Brand Partnership
           </p>
           <h1
             className="text-[48px] md:text-[60px] font-bold text-[#141115] leading-none mb-4"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
           >
             Partner with Naturehood
           </h1>

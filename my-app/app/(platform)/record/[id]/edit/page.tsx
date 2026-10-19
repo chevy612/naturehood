@@ -30,7 +30,7 @@ export default async function EditWorkoutPage({ params }: { params: Promise<{ id
       <div className="max-w-xl mx-auto">
         <p
           className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-8"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
           Edit Workout
         </p>
