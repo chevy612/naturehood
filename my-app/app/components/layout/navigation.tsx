@@ -109,7 +109,7 @@ export default function Navigation() {
             })}
           </div>
 
-          <Link href="/#subscribe" className="shrink-0">
+          <Link href="/signup" className="shrink-0">
             <ButtonPrimary variant="white">Join us</ButtonPrimary>
           </Link>
         </nav>
@@ -212,7 +212,7 @@ export default function Navigation() {
 
             <div className="mt-8 pt-6 border-t border-white/10">
               <Link
-                href="/#subscribe"
+                href="/signup"
                 onClick={closeMobileMenu}
                 className="block"
               >

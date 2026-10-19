@@ -31,6 +31,22 @@ export async function fetchMealsInRange(
   return (data ?? []) as MealListItem[]
 }
 
+/**
+ * The most recent meals for a user, newest first. Used by the account page's Meals
+ * tab, which lists meals as a simple feed rather than scoping to a single day.
+ */
+export async function fetchRecentMeals(userId: string, limit = 60): Promise<MealListItem[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('meal_records')
+    .select(LIST_COLUMNS)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) throw new Error(error.message)
+  return (data ?? []) as MealListItem[]
+}
+
 export async function countMeals(userId: string): Promise<number> {
   const supabase = createClient()
   const { count, error } = await supabase

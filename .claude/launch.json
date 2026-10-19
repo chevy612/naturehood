@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "coach-prototype",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4321", "--bind", "127.0.0.1", "--directory", "/private/tmp/claude-501/-Users-chevy-Developer-NATUREHOOD/07c38e3e-a65b-4fd7-b97d-82da359d3794/scratchpad/preview"],
+      "port": 4321
+    },
+    {
+      "name": "my-app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "my-app", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}

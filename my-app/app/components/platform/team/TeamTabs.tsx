@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation'
 import { sans } from '@/lib/social/format'
 
 const TABS = [
-  { label: 'Sharing', href: '/my-team/sharing', hint: 'Coaches who can see my logs' },
-  { label: 'Tracking', href: '/my-team/tracking', hint: 'Athletes I follow as a Coach' },
+  { label: 'Shared with you', href: '/my-team/tracking', hint: 'People who share their progress with you' },
+  { label: 'Sharing', href: '/my-team/sharing', hint: 'People who can see your logs' },
 ]
 
 export function TeamTabs() {

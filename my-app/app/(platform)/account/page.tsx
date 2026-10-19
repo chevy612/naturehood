@@ -1,7 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { WorkoutCard } from '@/app/components/platform/WorkoutCard'
+import { Bell } from 'lucide-react'
+import type { WorkoutCardLog } from '@/app/components/platform/WorkoutCard'
 import AccountProfile from './AccountProfile'
+import AccountTabs from './AccountTabs'
 import { signOut } from './actions'
 
 // ─────────────────────────────────────────────
@@ -33,32 +35,41 @@ export default async function AccountPage() {
   const bio = profile?.bio ?? ''
   const role = profile?.role ?? null
   const avatarUrl = profile?.avatar_url ?? null
-  const logs = trainingLogs ?? []
+  const logs = (trainingLogs ?? []) as WorkoutCardLog[]
 
   return (
     <div className="min-h-screen bg-[#141115] px-6 py-10">
-      <div className="max-w-2xl mx-auto">
+      <div className="mx-auto max-w-2xl">
 
         {/* ── Top bar ── */}
-        <div className="flex items-center justify-between mb-8">
-          <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+        <div className="mb-8 flex items-center justify-between">
+          <h1
+            className="text-[22px] font-bold text-white"
+            style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
           >
-            My Account
-          </p>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="text-[12px] font-medium text-[#6B6870] hover:text-white transition-colors"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            Account
+          </h1>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/home/notifications"
+              aria-label="Notifications"
+              className="text-[#A09EA3] transition-colors hover:text-white"
             >
-              Sign out
-            </button>
-          </form>
+              <Bell size={20} />
+            </Link>
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="text-[12px] font-medium text-[#6B6870] transition-colors hover:text-white"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
 
-        {/* ── Profile header (client — handles edit toggle) ── */}
+        {/* ── Profile header (client — handles edit toggle + share) ── */}
         <AccountProfile
           name={name}
           username={username}
@@ -69,52 +80,10 @@ export default async function AccountPage() {
         />
 
         {/* ── Section divider ── */}
-        <div className="flex items-center gap-4 mb-5">
-          <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]"
-            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-          >
-            My Training
-          </p>
-          <div className="flex-1 h-px bg-[#3A373C]" />
-        </div>
+        <div className="mb-6 h-px bg-[#3A373C]" />
 
-        {/* ── Log action buttons ── */}
-        <div className="flex gap-3 mb-6">
-          <Link
-            href="/record"
-            className="flex-1 py-3 border border-[#3A373C] text-center text-white text-[12px] font-semibold uppercase tracking-widest hover:border-[#F5F5F5]/40 hover:text-[#F5F5F5] transition-colors"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            + Log Workout
-          </Link>
-          <Link
-            href="/record"
-            className="flex-1 py-3 bg-[#F5F5F5] text-center text-[#141115] text-[12px] font-bold uppercase tracking-widest hover:bg-white transition-colors"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            + Log with AI
-          </Link>
-        </div>
-
-        {/* ── Workout grid ── */}
-        {logs.length === 0 ? (
-          <p
-            className="text-[13px] text-[#6B6870] py-8 text-center"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            No workouts logged yet.{' '}
-            <Link href="/record" className="text-[#F5F5F5] hover:underline">
-              Log your first workout →
-            </Link>
-          </p>
-        ) : (
-          <div className="grid grid-cols-3 gap-1">
-            {logs.map((log) => (
-              <WorkoutCard key={log.id} log={log} variant="grid" />
-            ))}
-          </div>
-        )}
+        {/* ── Tabbed content: Workouts · Meals · Posts ── */}
+        <AccountTabs userId={userId} workouts={logs} />
 
       </div>
     </div>
