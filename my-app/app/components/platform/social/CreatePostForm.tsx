@@ -10,7 +10,7 @@ import { WorkoutFormFields } from '@/app/(platform)/record/WorkoutFormFields'
 import { useWorkoutTypes } from '@/app/(platform)/record/useWorkoutTypes'
 import { getUserWorkoutTypes, saveWorkout } from '@/app/(platform)/record/actions'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
 import {
   analyzeMeal,
@@ -457,7 +457,7 @@ export function RecordPicker({
       >
         {tab === 'workout' ? 'Log a workout' : 'Log a meal'}
       </button>
-      {loading ? <StatusMessage>Loading records…</StatusMessage> : null}
+      {loading ? <SocialLoading label="Loading records" /> : null}
       {!loading && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       {!loading && !error && tab === 'workout' && workouts.length === 0 ? <StatusMessage>No workout logs yet.</StatusMessage> : null}
       {!loading && !error && tab === 'meal' && meals.length === 0 ? <StatusMessage>No meal records yet.</StatusMessage> : null}

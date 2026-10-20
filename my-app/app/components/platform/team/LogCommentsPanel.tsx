@@ -6,7 +6,7 @@ import { Heart } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { CommentComposer } from '@/app/components/platform/social/CommentComposer'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
 import type { EnrichedComment } from '@/lib/social/browser'
 import { displayName, formatRelativeTime, profileHref, sans } from '@/lib/social/format'
@@ -151,7 +151,7 @@ export function LogCommentsPanel({
 
   return (
     <div data-testid="log-comments">
-      {loading ? <StatusMessage>Loading comments…</StatusMessage> : null}
+      {loading ? <SocialLoading label="Loading comments" /> : null}
       {!loading && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       {!loading && !error && comments.length === 0 ? (
         <StatusMessage>No comments yet. Start the conversation.</StatusMessage>

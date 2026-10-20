@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { PostCard } from '@/app/components/platform/social/PostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { PillTag } from '@/app/components/ui/tags'
 import {
   fetchCurrentProfile,
@@ -119,7 +119,7 @@ export function ProfilePosts({
           <ChevronLeft size={16} />
           Back
         </button>
-        {loading ? <StatusMessage>Loading profile…</StatusMessage> : null}
+        {loading ? <SocialLoading label="Loading profile" /> : null}
         {!loading && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
         {!loading && !error && (
           <>

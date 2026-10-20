@@ -14,7 +14,7 @@ import {
   StatusBadge,
   TeamLoading,
 } from '@/app/components/platform/team/shared'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import {
   createShareLink,
   deactivateShareLink,
@@ -128,7 +128,7 @@ export function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvit
         <ScopeSwitches scope={scope} onChange={setScope} />
       </div>
 
-      {searching ? <p className="mt-4 text-[13px] text-[#6B6870]" style={sans}>Searching…</p> : null}
+      {searching ? <SocialLoading label="Searching coaches" /> : null}
       {!searching && query.replace(/^@/, '').length >= 2 && results.length === 0 && !error ? (
         <p className="mt-4 text-[13px] text-[#6B6870]" style={sans}>No users found for “{query}”.</p>
       ) : null}

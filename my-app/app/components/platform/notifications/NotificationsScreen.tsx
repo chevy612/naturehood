@@ -5,7 +5,7 @@ import { Bell, CheckCheck } from 'lucide-react'
 import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import { NotificationItem } from '@/app/components/platform/notifications/NotificationItem'
 import { useNotifications } from '@/app/components/platform/notifications/NotificationsProvider'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { LoadMoreButton, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { sans, display } from '@/lib/social/format'
 
 export function NotificationsScreen() {
@@ -114,15 +114,7 @@ export function NotificationsScreen() {
         ) : null}
 
         {status === 'ready' && hasMore ? (
-          <button
-            type="button"
-            onClick={() => void loadMore()}
-            disabled={loadingMore}
-            className="mt-6 w-full border border-[#3A373C] py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3] disabled:opacity-50"
-            style={sans}
-          >
-            {loadingMore ? 'Loading…' : 'Load more'}
-          </button>
+          <LoadMoreButton loading={loadingMore} onClick={() => void loadMore()} />
         ) : null}
       </div>
     </div>

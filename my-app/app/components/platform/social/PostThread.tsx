@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { ChevronLeft, Heart } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { PostCard } from '@/app/components/platform/social/PostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
 import { CommentComposer } from '@/app/components/platform/social/CommentComposer'
@@ -151,7 +151,7 @@ export function PostThread({ postId }: { postId: string }) {
           Back
         </button>
 
-        {loading ? <StatusMessage>Loading post…</StatusMessage> : null}
+        {loading ? <SocialLoading label="Loading post" /> : null}
         {!loading && error && !post ? <StatusMessage tone="error">{error}</StatusMessage> : null}
         {!loading && !post && !error ? <StatusMessage>This post is no longer available.</StatusMessage> : null}
 

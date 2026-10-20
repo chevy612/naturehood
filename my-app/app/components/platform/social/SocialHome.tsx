@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Plus, Search } from 'lucide-react'
 import { PostCard } from '@/app/components/platform/social/PostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { LoadMoreButton, SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { fetchFeedPage, togglePostLike, type EnrichedPost } from '@/lib/social/browser'
 import { sans, display } from '@/lib/social/format'
 
@@ -84,7 +84,7 @@ export function SocialHome() {
           </Link>
         </div>
 
-        {loading && posts.length === 0 ? <StatusMessage>Loading posts…</StatusMessage> : null}
+        {loading && posts.length === 0 ? <SocialLoading label="Loading posts" /> : null}
         {!loading && error && posts.length === 0 ? <StatusMessage tone="error">{error}</StatusMessage> : null}
         {!loading && !error && posts.length === 0 ? (
           <StatusMessage>No posts yet. Share a workout, a meal, or a note.</StatusMessage>
@@ -101,17 +101,7 @@ export function SocialHome() {
 
         {error && posts.length > 0 ? <StatusMessage tone="error">{error}</StatusMessage> : null}
 
-        {hasNext && (
-          <button
-            type="button"
-            onClick={handleLoadMore}
-            disabled={loadingMore}
-            className="mt-6 w-full border border-[#3A373C] py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3] disabled:opacity-50"
-            style={sans}
-          >
-            {loadingMore ? 'Loading…' : 'Load more'}
-          </button>
-        )}
+        {hasNext ? <LoadMoreButton loading={loadingMore} onClick={() => void handleLoadMore()} /> : null}
       </div>
 
       <Link
