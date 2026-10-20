@@ -262,6 +262,7 @@ export function InputDark({
   inputMode,
   maxLength,
   disabled,
+  readOnly,
 }: {
   label: string;
   name: string;
@@ -274,6 +275,7 @@ export function InputDark({
   inputMode?: "text" | "numeric" | "decimal";
   maxLength?: number;
   disabled?: boolean;
+  readOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -294,6 +296,7 @@ export function InputDark({
         inputMode={inputMode}
         maxLength={maxLength}
         disabled={disabled}
+        readOnly={readOnly}
         className={`w-full bg-[#1E1B1F] border-none rounded-full px-6 py-3.5 text-[14px] text-white placeholder:text-[#6B6870] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all duration-200 focus:ring-1 focus:ring-white/20 ${
           error ? "ring-1 ring-[#FF4D4D]" : ""
         }`}
@@ -389,6 +392,7 @@ export function TextAreaDark({
   rows = 4,
   error,
   required,
+  readOnly,
 }: {
   label: string;
   name: string;
@@ -398,6 +402,7 @@ export function TextAreaDark({
   rows?: number;
   error?: string;
   required?: boolean;
+  readOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -415,6 +420,7 @@ export function TextAreaDark({
         onChange={onChange}
         placeholder={placeholder}
         rows={rows}
+        readOnly={readOnly}
         className={`w-full bg-[#1E1B1F] border-none rounded-2xl px-6 py-4 text-[14px] text-white placeholder:text-[#6B6870] outline-none resize-none transition-all duration-200 focus:ring-1 focus:ring-white/20 ${
           error ? "ring-1 ring-[#FF4D4D]" : ""
         }`}

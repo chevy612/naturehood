@@ -3,12 +3,15 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
+import WorkoutDetail from '@/app/(platform)/record/[id]/WorkoutDetail'
+import WorkoutLogToggle from '@/app/(platform)/record/[id]/WorkoutLogToggle'
 import { LogCommentsPanel } from '@/app/components/platform/team/LogCommentsPanel'
 import { SwipePanel, TabBar, type SwipeTab } from '@/app/components/platform/team/SwipeTabs'
 import { EmptyCard, TeamLoading } from '@/app/components/platform/team/shared'
-import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
+import { MealEditor } from '@/app/components/platform/meals/MealEditor'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
-import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
+import { PillTag } from '@/app/components/ui/tags'
+import type { MealRecord } from '@/lib/meals/types'
 import { sans } from '@/lib/social/format'
 import { fetchCurrentUserId, fetchPeerProfile, fetchSharedMeal, fetchSharedWorkout, teamErrorMessage } from '@/lib/team/browser'
 import type { LogType, PeerProfile, SharedMeal, SharedWorkout } from '@/lib/team/types'
@@ -19,6 +22,31 @@ function formatDateTime(iso: string) {
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return ''
   return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+}
+
+function formatLoggedDate(dateStr: string) {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+  })
+}
+
+function mealRecordFromShared(meal: SharedMeal, athleteId: string): MealRecord {
+  return {
+    meal_id: meal.id,
+    user_id: meal.user_id ?? athleteId,
+    title: meal.title,
+    weight: meal.weight ?? null,
+    calories: meal.calories,
+    protein: meal.protein,
+    carbs: meal.carbs,
+    fat: meal.fat,
+    meal_type: meal.meal_type,
+    user_notes: meal.notes,
+    ai_analysis: meal.ai_analysis ?? null,
+    s3_link: meal.image_url,
+    created_at: meal.created_at,
+    updated_at: meal.updated_at ?? null,
+  }
 }
 
 export function LogDetail({
@@ -103,15 +131,36 @@ export function LogDetail({
             <TabBar tabs={tabs} active={tab} onChange={setTab} label="Log sections" />
             <SwipePanel tabs={tabs} active={tab} onChange={setTab}>
               <div hidden={tab !== 'details'} data-testid="log-details">
-                {workout ? <WorkoutAttachmentCard workout={workout} expanded /> : null}
-                {meal ? (
-                  <div className="flex flex-col gap-3">
-                    <MealPostCard meal={meal} />
-                    {meal.notes ? (
-                      <p className="whitespace-pre-wrap rounded-2xl bg-[#1E1B1F] p-3 text-[13px] text-[#A09EA3]" style={sans}>{meal.notes}</p>
+                {workout ? (
+                  <div>
+                    <h1
+                      className="mb-2 text-[22px] font-bold leading-tight text-white"
+                      style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.02em' }}
+                    >
+                      {workout.title}
+                    </h1>
+                    <div className="mb-6 flex flex-wrap items-center gap-2">
+                      <span className="text-[12px] text-[#6B6870]" style={sans}>{formatLoggedDate(workout.logged_date)}</span>
+                      {workout.duration_minutes ? <PillTag label={`${workout.duration_minutes} min`} variant="ghost-green" size="sm" /> : null}
+                      {workout.workout_types.map((type) => (
+                        <PillTag key={type} label={type} variant="ghost-dark" size="sm" />
+                      ))}
+                    </div>
+                    <WorkoutDetail
+                      id={workout.id}
+                      hasWorkoutLog={!!workout.workout_log}
+                      aiStructured={workout.ai_structured ?? null}
+                      aiNeedsRefresh={workout.ai_needs_refresh ?? false}
+                      readOnly
+                    />
+                    {workout.workout_log ? (
+                      <div className="mt-6">
+                        <WorkoutLogToggle workoutLog={workout.workout_log} defaultOpen />
+                      </div>
                     ) : null}
                   </div>
                 ) : null}
+                {meal ? <MealEditor meal={mealRecordFromShared(meal, athleteId)} readOnly /> : null}
               </div>
               <div hidden={tab !== 'comments'}>
                 <LogCommentsPanel logType={logType} logId={logId} athleteId={athleteId} onCountChange={setCommentCount} />

@@ -17,6 +17,7 @@ import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import {
   createShareLink,
   deactivateShareLink,
+  rotateShareLink,
   endShare,
   fetchCurrentUserId,
   inviteCoach,
@@ -175,7 +176,10 @@ export function ShareLinkPanel() {
 
   const load = useCallback(async () => {
     try {
-      setLinks(await listActiveShareLinks())
+      const next = await listActiveShareLinks()
+      setLinks(next)
+      const current = next[0]
+      if (current) setScope({ shareMeals: current.shareMeals, shareWorkouts: current.shareWorkouts })
     } catch (loadError) {
       setError(errorText(loadError, 'Could not load your share links.'))
     } finally {
@@ -224,6 +228,24 @@ export function ShareLinkPanel() {
     await handleCopy(link)
   }
 
+  async function handleScopeChange(next: ShareScope) {
+    setScope(next)
+    if (links.length === 0) return
+    setBusy(true)
+    setError(null)
+    try {
+      await rotateShareLink(next)
+    } catch (scopeError) {
+      setError(errorText(scopeError, 'Could not update the share link.'))
+    } finally {
+      try {
+        await load()
+      } finally {
+        setBusy(false)
+      }
+    }
+  }
+
   async function handleDeactivate(link: ShareLink) {
     setBusyLinkId(link.id)
     setError(null)
@@ -242,15 +264,17 @@ export function ShareLinkPanel() {
       <SectionLabel>Share link</SectionLabel>
       <p className="mb-3 text-[13px] text-[#A09EA3]" style={sans}>
         Anyone who opens the link while signed in can accept and become your Coach. Share it only with people you trust.
-        Stopping a share does not turn a link off, so a Coach could accept again. Turn the link off to prevent that.
+        Changing Meal logs or Workout logs turns the current link off and creates a new one.
       </p>
-      <ScopeSwitches scope={scope} onChange={setScope} />
-      <div className="mt-3">
-        <ButtonSmall variant="accent" onClick={handleCreate} disabled={busy}>
-          <Link2 size={12} />
-          {busy ? 'Creating…' : 'Create share link'}
-        </ButtonSmall>
-      </div>
+      <ScopeSwitches scope={scope} busy={busy} onChange={(next) => void handleScopeChange(next)} />
+      {!loading && links.length === 0 ? (
+        <div className="mt-3">
+          <ButtonSmall variant="accent" onClick={handleCreate} disabled={busy}>
+            <Link2 size={12} />
+            {busy ? 'Creating…' : 'Create shareable link'}
+          </ButtonSmall>
+        </div>
+      ) : null}
 
       {loading ? <p className="mt-4 text-[13px] text-[#6B6870]" style={sans}>Loading links…</p> : null}
       {!loading && links.length > 0 ? (
@@ -279,9 +303,9 @@ export function ShareLinkPanel() {
                 <span className="text-[11px] text-[#6B6870]" style={sans}>
                   Created {new Date(link.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </span>
-                <ButtonSmall variant="danger" disabled={busyLinkId === link.id} onClick={() => void handleDeactivate(link)}>
+                <ButtonSmall variant="danger" disabled={busyLinkId === link.id || busy} onClick={() => void handleDeactivate(link)}>
                   <Ban size={12} />
-                  {busyLinkId === link.id ? 'Turning off…' : 'Turn off link'}
+                  {busyLinkId === link.id ? 'Disabling…' : 'Disable link'}
                 </ButtonSmall>
               </div>
             </li>

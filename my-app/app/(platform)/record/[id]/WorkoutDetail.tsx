@@ -212,22 +212,22 @@ type Props = {
   hasWorkoutLog: boolean
   aiStructured: AiStructuredWorkout | AthleteSessionLog | null
   aiNeedsRefresh: boolean
+  /** Coach view: show the same report, without analyze or edit actions. */
+  readOnly?: boolean
 }
 
-export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeedsRefresh }: Props) {
+export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeedsRefresh, readOnly = false }: Props) {
   return (
     <div className="space-y-4">
-      {/* Stale banner — shown when workout_log was edited after AI analysis */}
-      {aiStructured && aiNeedsRefresh && (
+      {aiStructured && aiNeedsRefresh && !readOnly ? (
         <StaleBanner id={id} />
-      )}
+      ) : null}
 
-      {/* AI section */}
       {aiStructured ? (
         isV2(aiStructured)
           ? <SessionResult session={aiStructured} />
           : <AiSection ai={aiStructured} />
-      ) : hasWorkoutLog ? (
+      ) : hasWorkoutLog && !readOnly ? (
         <div>
           <p
             className="text-[12px] text-[#6B6870] mb-3"
@@ -237,10 +237,13 @@ export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeeds
           </p>
           <AnalyzeButton id={id} />
         </div>
+      ) : hasWorkoutLog ? (
+        <p className="text-[12px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          No AI analysis yet.
+        </p>
       ) : null}
 
-      {/* Re-review AI report */}
-      {aiStructured && (
+      {aiStructured && !readOnly ? (
         <Link
           href={`/record/${id}/ai-report`}
           className="inline-block text-[12px] font-medium text-[#F5F5F5] hover:text-white transition-colors"
@@ -248,7 +251,7 @@ export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeeds
         >
           Edit AI report →
         </Link>
-      )}
+      ) : null}
     </div>
   )
 }

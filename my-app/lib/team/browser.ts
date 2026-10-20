@@ -244,7 +244,7 @@ export async function fetchSharedMeals(athleteId: string, offset = 0): Promise<S
 export async function fetchSharedWorkout(logId: string): Promise<SharedWorkout | null> {
   const { data, error } = await createClient()
     .from('training_logs')
-    .select('id, user_id, title, logged_date, duration_minutes, workout_types, workout_log, created_at')
+    .select('id, user_id, title, logged_date, duration_minutes, workout_types, workout_log, ai_structured, ai_needs_refresh, created_at')
     .eq('id', logId)
     .eq('is_deleted', false)
     .maybeSingle()
@@ -257,6 +257,8 @@ export async function fetchSharedWorkout(logId: string): Promise<SharedWorkout |
     duration_minutes: data.duration_minutes,
     workout_types: data.workout_types ?? [],
     workout_log: data.workout_log,
+    ai_structured: data.ai_structured,
+    ai_needs_refresh: data.ai_needs_refresh ?? false,
     created_at: data.created_at,
   }
 }
@@ -264,14 +266,16 @@ export async function fetchSharedWorkout(logId: string): Promise<SharedWorkout |
 export async function fetchSharedMeal(logId: string): Promise<SharedMeal | null> {
   const { data, error } = await createClient()
     .from('meal_records')
-    .select('meal_id, title, calories, protein, carbs, fat, meal_type, user_notes, s3_link, created_at')
+    .select('meal_id, user_id, title, weight, calories, protein, carbs, fat, meal_type, user_notes, ai_analysis, s3_link, created_at, updated_at')
     .eq('meal_id', logId)
     .maybeSingle()
   if (error) throw new Error(error.message)
   if (!data) return null
   return {
     id: data.meal_id,
+    user_id: data.user_id,
     title: data.title,
+    weight: data.weight,
     calories: data.calories,
     protein: data.protein,
     carbs: data.carbs,
@@ -279,8 +283,20 @@ export async function fetchSharedMeal(logId: string): Promise<SharedMeal | null>
     meal_type: data.meal_type,
     image_url: data.s3_link,
     notes: data.user_notes,
+    ai_analysis: data.ai_analysis,
     created_at: data.created_at,
+    updated_at: data.updated_at,
   }
+}
+
+/** Issues a new link for the scope and turns off every link that was already active. */
+export async function rotateShareLink(scope: ShareScope): Promise<ShareLink> {
+  const userId = await fetchCurrentUserId()
+  if (!userId) throw new Error('not_authenticated')
+  const existing = await listActiveShareLinks()
+  const created = await createShareLink(userId, scope)
+  await Promise.all(existing.filter((link) => link.id !== created.id).map((link) => deactivateShareLink(link.id)))
+  return created
 }
 
 export async function fetchLogCommentCounts(logType: LogType, logIds: string[]): Promise<Record<string, number>> {
