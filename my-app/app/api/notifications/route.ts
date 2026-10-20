@@ -17,7 +17,7 @@ async function handleGET(request: NextRequest) {
     const before = readBefore(request.nextUrl.searchParams.get('before'))
     let query = authenticated.supabase
       .from('social_notifications')
-      .select('id, actor_user_id, type, post_id, comment_id, created_at, read_at')
+      .select('id, actor_user_id, type, post_id, comment_id, log_comment_id, log_type, log_id, athlete_id, created_at, read_at')
       .eq('recipient_user_id', authenticated.userId)
     // A recipient never gets two rows from one transaction, so created_at is a safe page cursor.
     if (before) query = query.lt('created_at', before)
@@ -32,6 +32,10 @@ async function handleGET(request: NextRequest) {
       type: notification.type,
       postId: notification.post_id,
       commentId: notification.comment_id,
+      logCommentId: notification.log_comment_id,
+      logType: notification.log_type === 'workout' || notification.log_type === 'meal' ? notification.log_type : null,
+      logId: notification.log_id,
+      athleteId: notification.athlete_id,
       createdAt: notification.created_at,
       readAt: notification.read_at,
     }))))

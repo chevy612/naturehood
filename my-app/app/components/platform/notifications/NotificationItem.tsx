@@ -21,6 +21,9 @@ const TYPE_ICONS: Record<string, LucideIcon> = {
   share_invite: Share2,
   share_accepted: Check,
   share_declined: X,
+  log_comment: MessageCircle,
+  log_reply: Reply,
+  log_comment_like: Heart,
 }
 
 export function NotificationItem({

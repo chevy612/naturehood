@@ -10,9 +10,11 @@ const LABEL_FONT = { fontFamily: "'Sk Modernist', sans-serif" } as const
 export function MealTypeChips({
   value,
   onChange,
+  readOnly = false,
 }: {
   value: MealType | null
   onChange: (next: MealType | null) => void
+  readOnly?: boolean
 }) {
   return (
     <div>
@@ -25,8 +27,11 @@ export function MealTypeChips({
               key={type}
               type="button"
               aria-pressed={selected}
-              onClick={() => onChange(selected ? null : type)}
-              className={`rounded-full px-3 py-1 text-[12px] ${selected ? 'bg-[#F5F5F5] text-[#141115]' : 'border border-[#3A373C] text-[#A09EA3]'}`}
+              disabled={readOnly}
+              onClick={() => {
+                if (!readOnly) onChange(selected ? null : type)
+              }}
+              className={`rounded-full px-3 py-1 text-[12px] disabled:cursor-default disabled:opacity-100 ${selected ? 'bg-[#F5F5F5] text-[#141115]' : 'border border-[#3A373C] text-[#A09EA3]'}`}
               style={sans}
             >
               {MEAL_TYPE_LABELS[type]}
@@ -49,6 +54,7 @@ export function MealFormFields({
   showCarbsFat = true,
   macroPlaceholder = 'Optional',
   idPrefix = 'meal',
+  readOnly = false,
 }: {
   values: MealFormValues
   onChange: (patch: Partial<MealFormValues>) => void
@@ -56,6 +62,7 @@ export function MealFormFields({
   showCarbsFat?: boolean
   macroPlaceholder?: string
   idPrefix?: string
+  readOnly?: boolean
 }) {
   const macro = (key: 'calories' | 'protein' | 'carbs' | 'fat', label: string) => (
     <InputDark
@@ -65,6 +72,7 @@ export function MealFormFields({
       inputMode="numeric"
       maxLength={MEAL_LIMITS.numberDigits}
       placeholder={macroPlaceholder}
+      readOnly={readOnly}
       onChange={(event) => onChange({ [key]: digitsOnly(event.target.value, MEAL_LIMITS.numberDigits) })}
     />
   )
@@ -79,6 +87,7 @@ export function MealFormFields({
         maxLength={MEAL_LIMITS.title}
         error={titleError}
         placeholder="e.g. Grilled chicken salad"
+        readOnly={readOnly}
         onChange={(event) => onChange({ title: event.target.value.slice(0, MEAL_LIMITS.title) })}
       />
       <div className={showCarbsFat ? 'grid grid-cols-2 gap-4' : 'space-y-5'}>
@@ -87,13 +96,14 @@ export function MealFormFields({
         {showCarbsFat ? macro('carbs', 'Carbs (g)') : null}
         {showCarbsFat ? macro('fat', 'Fat (g)') : null}
       </div>
-      <MealTypeChips value={values.mealType} onChange={(mealType) => onChange({ mealType })} />
+      <MealTypeChips value={values.mealType} readOnly={readOnly} onChange={(mealType) => onChange({ mealType })} />
       <TextAreaDark
         label="Notes"
         name={`${idPrefix}-notes`}
         value={values.notes}
         rows={4}
         placeholder="Ingredients, quantities, when you ate, how you felt"
+        readOnly={readOnly}
         onChange={(event) => onChange({ notes: event.target.value.slice(0, MEAL_LIMITS.notes) })}
       />
     </div>

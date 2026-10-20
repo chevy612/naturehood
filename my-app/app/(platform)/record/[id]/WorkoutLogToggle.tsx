@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
-export default function WorkoutLogToggle({ workoutLog }: { workoutLog: string }) {
-  const [show, setShow] = useState(false)
+export default function WorkoutLogToggle({ workoutLog, defaultOpen = false }: { workoutLog: string; defaultOpen?: boolean }) {
+  const [show, setShow] = useState(defaultOpen)
 
   return (
     <div>
