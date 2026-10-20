@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Ban, Check, Copy, Link2, Search, Share2, UserPlus, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { ButtonSmall } from '@/app/components/ui/buttons'
+import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import { PeerRow } from '@/app/components/platform/team/PeerRow'
 import {
   EmptyCard,
@@ -267,17 +268,33 @@ export function ShareLinkPanel() {
         Changing Meal logs or Workout logs turns the current link off and creates a new one.
       </p>
       <ScopeSwitches scope={scope} busy={busy} onChange={(next) => void handleScopeChange(next)} />
-      {!loading && links.length === 0 ? (
+      {busy ? (
+        <div
+          className="mt-4 flex flex-col items-center gap-3 rounded-xl bg-[#1E1B1F] px-4 py-8"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+          data-testid="share-link-generating"
+        >
+          <LogoSpinner size={48} />
+          <p className="text-[13px] text-[#A09EA3]" style={sans}>Generating shareable link…</p>
+        </div>
+      ) : null}
+      {!busy && !loading && links.length === 0 ? (
         <div className="mt-3">
-          <ButtonSmall variant="accent" onClick={handleCreate} disabled={busy}>
+          <ButtonSmall variant="accent" onClick={handleCreate}>
             <Link2 size={12} />
-            {busy ? 'Creating…' : 'Create shareable link'}
+            Create shareable link
           </ButtonSmall>
         </div>
       ) : null}
 
-      {loading ? <p className="mt-4 text-[13px] text-[#6B6870]" style={sans}>Loading links…</p> : null}
-      {!loading && links.length > 0 ? (
+      {loading ? (
+        <div className="mt-4 flex justify-center py-6" aria-busy="true" aria-label="Loading share links">
+          <LogoSpinner size={40} />
+        </div>
+      ) : null}
+      {!loading && !busy && links.length > 0 ? (
         <ul className="mt-4 flex flex-col gap-3" aria-label="Active share links">
           {links.map((link) => (
             <li key={link.id} className="rounded-xl bg-[#1E1B1F] p-3" data-testid="team-share-link">
@@ -312,7 +329,7 @@ export function ShareLinkPanel() {
           ))}
         </ul>
       ) : null}
-      {!loading && links.length === 0 ? (
+      {!loading && !busy && links.length === 0 ? (
         <p className="mt-4 text-[12px] text-[#6B6870]" style={sans}>No active links.</p>
       ) : null}
       {error ? <p className="mt-3 text-[13px] text-[#FF4D4D]" style={sans} role="alert">{error}</p> : null}
