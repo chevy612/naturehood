@@ -18,6 +18,10 @@ function make(id: string, minutesAgo: number, readAt: string | null = null, type
     type,
     postId: 'post-1',
     commentId: null,
+    logCommentId: null,
+    logType: null,
+    logId: null,
+    athleteId: null,
     createdAt: new Date(Date.UTC(2026, 9, 15, 12, 0, 0) - minutesAgo * 60_000).toISOString(),
     readAt,
   }
@@ -27,16 +31,22 @@ function withItems(items: NotificationDto[], unreadCount: number): Notifications
   return { ...initialNotificationsState, items, unreadCount, status: 'ready' }
 }
 
-test('post events open the post, follows open the actor profile, sharing rows do not navigate', () => {
+test('post events open the post, follows open the actor profile, log events open the comment thread', () => {
   assert.equal(notificationHref({ type: 'like', postId: 'p1', actorUserId: 'u1' }), '/home/post/p1')
   assert.equal(notificationHref({ type: 'comment', postId: 'p1', actorUserId: 'u1' }), '/home/post/p1')
   assert.equal(notificationHref({ type: 'reply', postId: 'p1', actorUserId: 'u1' }), '/home/post/p1')
   assert.equal(notificationHref({ type: 'like', postId: null, actorUserId: 'u1' }), null)
   assert.equal(notificationHref({ type: 'follow', postId: null, actorUserId: 'u1' }), '/home/profile/u1')
-  for (const type of ['share_invite', 'share_accepted', 'share_declined']) {
-    assert.equal(notificationHref({ type, postId: null, actorUserId: 'u1' }), null)
-  }
+  assert.equal(notificationHref({ type: 'share_invite', postId: null, actorUserId: 'u1' }), '/my-team/message#invitations')
+  assert.equal(notificationHref({ type: 'share_accepted', postId: null, actorUserId: 'u1' }), '/my-team/sharing')
+  assert.equal(notificationHref({ type: 'share_declined', postId: null, actorUserId: 'u1' }), '/my-team/sharing')
+  assert.equal(
+    notificationHref({ type: 'log_comment', postId: null, actorUserId: 'u1', logType: 'workout', logId: 'log-1', athleteId: 'ath-1' }),
+    '/my-team/athletes/ath-1/logs/workout/log-1?tab=comments',
+  )
   assert.equal(notificationHref({ type: 'log_comment', postId: null, actorUserId: 'u1' }), null)
+  assert.match(notificationText('log_comment'), /commented on your log/)
+  assert.match(notificationText('log_comment_like'), /liked a comment/)
 })
 
 test('sharing events read as record sharing invitations', () => {

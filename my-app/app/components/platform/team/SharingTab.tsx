@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Ban, Check, Copy, Link2, Search, UserPlus, X } from 'lucide-react'
+import { Ban, Check, Copy, Link2, Search, Share2, UserPlus, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { ButtonSmall } from '@/app/components/ui/buttons'
 import { PeerRow } from '@/app/components/platform/team/PeerRow'
@@ -37,7 +37,7 @@ function errorText(error: unknown, fallback: string) {
   return teamErrorMessage(error instanceof Error ? error : null, fallback)
 }
 
-function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () => Promise<void> }) {
+export function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () => Promise<void> }) {
   const [input, setInput] = useState('')
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<PeerProfile[]>([])
@@ -164,7 +164,7 @@ function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () 
   )
 }
 
-function ShareLinkPanel() {
+export function ShareLinkPanel() {
   const [scope, setScope] = useState<ShareScope>(BOTH)
   const [links, setLinks] = useState<ShareLink[]>([])
   const [loading, setLoading] = useState(true)
@@ -212,6 +212,18 @@ function ShareLinkPanel() {
     }
   }
 
+  async function handleShare(link: ShareLink) {
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: 'Naturehood', url: link.url })
+        return
+      } catch (shareError) {
+        if (shareError instanceof DOMException && shareError.name === 'AbortError') return
+      }
+    }
+    await handleCopy(link)
+  }
+
   async function handleDeactivate(link: ShareLink) {
     setBusyLinkId(link.id)
     setError(null)
@@ -246,15 +258,18 @@ function ShareLinkPanel() {
           {links.map((link) => (
             <li key={link.id} className="rounded-xl bg-[#1E1B1F] p-3" data-testid="team-share-link">
               <div className="mb-2"><ScopePills scope={link} /></div>
-              <div className="flex items-center gap-2">
-                <input
-                  readOnly
-                  value={link.url}
-                  aria-label="Share link URL"
-                  onFocus={(event) => event.currentTarget.select()}
-                  className="min-w-0 flex-1 rounded-lg bg-[#141115] px-3 py-2 text-[12px] text-[#A09EA3] outline-none"
-                  style={sans}
-                />
+              <a
+                href={link.url}
+                className="block break-all text-[13px] leading-[18px] text-[#F5F5F5] underline decoration-[#3A373C] underline-offset-2"
+                style={sans}
+              >
+                {link.url}
+              </a>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <ButtonSmall onClick={() => void handleShare(link)}>
+                  <Share2 size={12} />
+                  Share
+                </ButtonSmall>
                 <ButtonSmall onClick={() => void handleCopy(link)}>
                   {copiedId === link.id ? <Check size={12} /> : <Copy size={12} />}
                   {copiedId === link.id ? 'Copied' : 'Copy'}

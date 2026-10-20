@@ -1,6 +1,7 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { buildShareUrl } from '@/lib/team/share-url'
 import type {
   LogType,
   PeerProfile,
@@ -12,6 +13,8 @@ import type {
   SharedMeal,
   SharedWorkout,
 } from '@/lib/team/types'
+
+export { buildShareUrl }
 
 export const NOTE_MAX_LENGTH = 200
 
@@ -94,10 +97,6 @@ function randomToken() {
   const bytes = new Uint8Array(16)
   crypto.getRandomValues(bytes)
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-export function buildShareUrl(token: string) {
-  return `${window.location.origin}/share/${token}`
 }
 
 // Link rows are owner-only under RLS, so creating one is a plain insert.

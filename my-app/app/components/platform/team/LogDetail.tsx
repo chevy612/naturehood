@@ -21,8 +21,18 @@ function formatDateTime(iso: string) {
   return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
 
-export function LogDetail({ athleteId, logType, logId }: { athleteId: string; logType: LogType; logId: string }) {
-  const [tab, setTab] = useState<DetailTab>('details')
+export function LogDetail({
+  athleteId,
+  logType,
+  logId,
+  initialTab = 'details',
+}: {
+  athleteId: string
+  logType: LogType
+  logId: string
+  initialTab?: DetailTab
+}) {
+  const [tab, setTab] = useState<DetailTab>(initialTab)
   const [commentCount, setCommentCount] = useState<number | null>(null)
   const [workout, setWorkout] = useState<SharedWorkout | null>(null)
   const [meal, setMeal] = useState<SharedMeal | null>(null)
@@ -69,11 +79,11 @@ export function LogDetail({ athleteId, logType, logId }: { athleteId: string; lo
     <div className="min-h-screen bg-[#141115] px-4 py-8">
       <div className="mx-auto max-w-2xl">
         <Link
-          href={isOwner ? '/my-team/sharing' : `/my-team/athletes/${athleteId}`}
+          href={isOwner ? '/my-team/message' : `/my-team/athletes/${athleteId}`}
           className="mb-6 inline-flex items-center gap-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3] hover:text-white"
           style={sans}
         >
-          <ChevronLeft size={16} /> {isOwner ? 'Sharing' : name}
+          <ChevronLeft size={16} /> {isOwner ? 'Messages' : name}
         </Link>
 
         {loading ? <TeamLoading /> : null}

@@ -2,13 +2,6 @@ export const NOTIFICATION_PAGE_SIZE = 20
 
 export const SHARE_NOTIFICATION_TYPES = ['share_invite', 'share_accepted', 'share_declined'] as const
 
-/**
- * Destination for record-sharing notifications. The Team tab does not exist
- * yet, so these rows render without navigating. Set this to the Team route
- * (for example `/my-team/sharing`) when that tab ships.
- */
-export const TEAM_ROUTE: string | null = null
-
 export type NotificationDto = {
   id: string
   actorUserId: string
@@ -16,6 +9,10 @@ export type NotificationDto = {
   type: string
   postId: string | null
   commentId: string | null
+  logCommentId: string | null
+  logType: 'workout' | 'meal' | null
+  logId: string | null
+  athleteId: string | null
   createdAt: string
   readAt: string | null
 }
@@ -26,17 +23,26 @@ export type NotificationRow = {
   type: string
   post_id: string | null
   comment_id: string | null
+  log_comment_id?: string | null
+  log_type?: 'workout' | 'meal' | null
+  log_id?: string | null
+  athlete_id?: string | null
   created_at: string
   read_at: string | null
 }
 
 export function toNotificationDto(row: NotificationRow): NotificationDto {
+  const logType = row.log_type === 'workout' || row.log_type === 'meal' ? row.log_type : null
   return {
     id: row.id,
     actorUserId: row.actor_user_id,
     type: row.type,
     postId: row.post_id,
     commentId: row.comment_id,
+    logCommentId: row.log_comment_id ?? null,
+    logType,
+    logId: row.log_id ?? null,
+    athleteId: row.athlete_id ?? null,
     createdAt: row.created_at,
     readAt: row.read_at,
   }
@@ -55,11 +61,16 @@ export function notificationText(type: string) {
     case 'share_invite': return 'invited you to view their records'
     case 'share_accepted': return 'accepted your record sharing invitation'
     case 'share_declined': return 'declined your record sharing invitation'
+    case 'log_comment': return 'commented on your log'
+    case 'log_reply': return 'replied to your comment'
+    case 'log_comment_like': return 'liked a comment'
     default: return 'sent you a notification'
   }
 }
 
-export function notificationHref(notification: Pick<NotificationDto, 'type' | 'postId' | 'actorUserId'>) {
+export function notificationHref(
+  notification: Pick<NotificationDto, 'type' | 'postId' | 'actorUserId'> & Partial<Pick<NotificationDto, 'logType' | 'logId' | 'athleteId'>>,
+) {
   switch (notification.type) {
     case 'like':
     case 'comment':
@@ -67,10 +78,18 @@ export function notificationHref(notification: Pick<NotificationDto, 'type' | 'p
       return notification.postId ? `/home/post/${notification.postId}` : null
     case 'follow':
       return `/home/profile/${notification.actorUserId}`
+    case 'log_comment':
+    case 'log_reply':
+    case 'log_comment_like':
+      if (notification.logType && notification.logId && notification.athleteId) {
+        return `/my-team/athletes/${notification.athleteId}/logs/${notification.logType}/${notification.logId}?tab=comments`
+      }
+      return null
     case 'share_invite':
+      return '/my-team/message#invitations'
     case 'share_accepted':
     case 'share_declined':
-      return TEAM_ROUTE
+      return '/my-team/sharing'
     default:
       return null
   }

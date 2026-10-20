@@ -46,6 +46,10 @@ type SocialNotificationRow = {
   type: string
   post_id: string | null
   comment_id: string | null
+  log_comment_id: string | null
+  log_type: 'workout' | 'meal' | null
+  log_id: string | null
+  athlete_id: string | null
   created_at: string
   read_at: string | null
 }
