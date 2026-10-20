@@ -16,7 +16,7 @@ export default async function AccountPage() {
   const [{ data: profile }, { data: trainingLogs }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('name, username, bio, role, avatar_url, email')
+      .select('name, username, bio, avatar_url, email')
       .eq('id', userId)
       .single(),
     supabase
@@ -31,7 +31,6 @@ export default async function AccountPage() {
   const name = profile?.name ?? profile?.email?.split('@')[0] ?? 'Member'
   const username = profile?.username ?? ''
   const bio = profile?.bio ?? ''
-  const role = profile?.role ?? null
   const avatarUrl = profile?.avatar_url ?? null
   const logs = trainingLogs ?? []
 
@@ -63,7 +62,6 @@ export default async function AccountPage() {
           name={name}
           username={username}
           bio={bio}
-          role={role}
           avatarUrl={avatarUrl}
           workoutCount={logs.length}
         />

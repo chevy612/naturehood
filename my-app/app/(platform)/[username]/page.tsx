@@ -18,7 +18,7 @@ export default async function PublicProfilePage({
   const supabase = await createClient()
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, name, username, bio, role, avatar_url')
+    .select('id, name, username, bio, role, team_mode, avatar_url')
     .eq('username', username)
     .maybeSingle()
 

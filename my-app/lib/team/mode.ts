@@ -7,3 +7,7 @@ export function parseTeamMode(value: string | null | undefined): TeamMode {
 export function otherTeamMode(mode: TeamMode): TeamMode {
   return mode === 'coach' ? 'athlete' : 'coach'
 }
+
+export function teamModeLabel(mode: string | null | undefined): string {
+  return parseTeamMode(mode) === 'coach' ? 'Coach' : 'Athlete'
+}
