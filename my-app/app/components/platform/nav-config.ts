@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Home, Bell, Calendar, Dumbbell, Utensils, Users, Share2, User } from 'lucide-react'
+import { Home, Bell, Calendar, Dumbbell, Utensils, Users, Share2, User, LayoutDashboard } from 'lucide-react'
 
 export type NavItem = { label: string; href: string; Icon: LucideIcon; badge?: boolean }
 export type NavGroup = { key: 'community' | 'personal' | 'team'; label: string; items: NavItem[] }
@@ -21,6 +21,7 @@ export const NAV_GROUPS: NavGroup[] = [
     key: 'personal',
     label: 'Personal',
     items: [
+      { label: 'Dashboard', href: '/personal/dashboard', Icon: LayoutDashboard },
       { label: 'Workouts', href: '/record', Icon: Dumbbell },
       { label: 'Meals', href: '/meals', Icon: Utensils },
     ],
@@ -39,7 +40,7 @@ export const NAV_GROUPS: NavGroup[] = [
 // route prefix the tab owns, so e.g. Personal stays active on both /meals and /record.
 export const MOBILE_TABS: MobileTab[] = [
   { label: 'Community', href: '/home', Icon: Home, match: ['/home', '/events'] },
-  { label: 'Personal', href: '/meals', Icon: Utensils, match: ['/meals', '/record'] },
+  { label: 'Personal', href: '/personal/dashboard', Icon: Utensils, match: ['/personal', '/meals', '/record'] },
   { label: 'Team', href: '/my-team', Icon: Users, match: ['/my-team'] },
   { label: 'Alerts', href: '/home/notifications', Icon: Bell, badge: true, match: ['/home/notifications'] },
   { label: 'Account', href: '/account', Icon: User, match: ['/account'] },
