@@ -1,9 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { ChevronRight, CircleAlert } from 'lucide-react'
+import { Button } from '@/app/components/ui/buttons'
+import { Tag } from '@/app/components/ui/tags'
 import type { TrainingLog, NormalizedSession } from '@/lib/types'
 import { useAiReportForm } from './useAiReportForm'
-import SessionMetaPanel from './SessionMetaPanel'
+import SessionMetaPanel, { SessionProperties } from './SessionMetaPanel'
 import StrengthPanel from './StrengthPanel'
 import SprintPanel from './SprintPanel'
 import CompetitionPanel from './CompetitionPanel'
@@ -29,122 +32,122 @@ export default function AiReportForm({
   const workoutTypes = (workout as Record<string, unknown>)['workout_types'] as string[] | undefined
 
   return (
-    <div className="space-y-8">
+    <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* ── Workout header ── */}
-      <div className="space-y-2">
-        <h2
-          className="text-[18px] font-bold text-white"
-          style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
-        >
+      {/* ── Breadcrumb ── */}
+      <nav aria-label="Breadcrumb" className="mb-6 flex min-w-0 items-center gap-1 text-[13px] text-[#847E89]">
+        <Link href="/account" className="shrink-0 rounded px-1 -ml-1 hover:text-white transition-colors">
+          My training
+        </Link>
+        <ChevronRight size={14} className="shrink-0 text-[#4A464D]" />
+        <Link href={`/record/${workout.id}`} className="min-w-0 truncate rounded px-1 hover:text-white transition-colors">
           {workout.title}
-        </h2>
-        <div
-          className="flex flex-wrap items-center gap-3 text-[12px] text-[#6B6870]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {formattedDate && <span>{formattedDate}</span>}
-          {workout.duration_minutes && <span>{workout.duration_minutes} min</span>}
-        </div>
-        {workoutTypes && workoutTypes.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-1">
-            {workoutTypes.map((t) => (
-              <span
-                key={t}
-                className="px-2.5 py-0.5 text-[11px] rounded-full border border-[#3A373C] text-[#A09EA3]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {t}
-              </span>
-            ))}
+        </Link>
+        <ChevronRight size={14} className="shrink-0 text-[#4A464D]" />
+        <span className="shrink-0 px-1 text-[#E8E8E8]">AI report</span>
+      </nav>
+
+      {/* ── Title + meta ── */}
+      <h1
+        className="text-[22px] font-bold leading-tight text-white"
+        style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
+      >
+        {workout.title}
+      </h1>
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[#847E89]">
+        {formattedDate && <span>{formattedDate}</span>}
+        {formattedDate && workout.duration_minutes && <span className="text-[#4A464D]">·</span>}
+        {workout.duration_minutes && <span>{workout.duration_minutes} min</span>}
+        {workoutTypes?.map((t) => (
+          <Tag key={t} variant="secondary" size="sm">{t}</Tag>
+        ))}
+      </div>
+
+      {/* ── Properties (Linear-style chips) ── */}
+      <div className="mt-5">
+        <SessionProperties
+          details={form.details}
+          onChange={(patch) => form.setDetails((prev) => ({ ...prev, ...patch }))}
+        />
+      </div>
+
+      <div className="mt-5 space-y-10 pb-10">
+
+        {/* ── No AI data fallback ── */}
+        {!workout.ai_structured && !normalizedSession.details && (
+          <div className="flex items-start gap-2 rounded-lg border border-[#3D3940] bg-[#1A1719] px-3 py-2.5 text-[12px] text-[#A09EA3]">
+            <CircleAlert size={14} className="mt-px shrink-0 text-[#847E89]" />
+            AI hasn&apos;t structured this workout yet. You can still fill in the details manually.
           </div>
+        )}
+
+        {/* ── Notes + AI confidence ── */}
+        <SessionMetaPanel
+          details={form.details}
+          onChange={(patch) => form.setDetails((prev) => ({ ...prev, ...patch }))}
+        />
+
+        {/* ── Session-type-specific panels ── */}
+        {['strength', 'conditioning', 'mixed', 'recovery'].includes(sessionType) && (
+          <StrengthPanel blocks={form.blocks} onChange={form.setBlocks} />
+        )}
+
+        {sessionType === 'sprint' && (
+          <SprintPanel
+            efforts={form.sprintEfforts}
+            surface={form.details.sprint_surface ?? null}
+            footwear={form.details.sprint_footwear ?? null}
+            onEffortsChange={form.setSprintEfforts}
+            onMetaChange={(patch) =>
+              form.setDetails((prev) => ({
+                ...prev,
+                sprint_surface: patch.surface !== undefined ? patch.surface : prev.sprint_surface,
+                sprint_footwear: patch.footwear !== undefined ? patch.footwear : prev.sprint_footwear,
+              }))
+            }
+          />
+        )}
+
+        {sessionType === 'competition' && (
+          <CompetitionPanel
+            result={form.competitionResult}
+            onChange={(patch) =>
+              form.setCompetitionResult((prev) => ({ ...prev, ...patch }))
+            }
+          />
+        )}
+
+        {['physio', 'rehab', 'prehab'].includes(sessionType) && (
+          <PhysioPanel
+            bodyAreas={form.physioBodyAreas}
+            exerciseBlocks={form.physioExerciseBlocks}
+            details={{
+              physio_provider: form.details.physio_provider,
+              physio_clearance_status: form.details.physio_clearance_status,
+              physio_notes: form.details.physio_notes,
+            }}
+            onBodyAreasChange={form.setPhysioBodyAreas}
+            onExerciseBlocksChange={form.setPhysioExerciseBlocks}
+            onDetailsChange={(patch) => form.setDetails((prev) => ({ ...prev, ...patch }))}
+          />
         )}
       </div>
 
-      {/* ── No AI data fallback ── */}
-      {!workout.ai_structured && !normalizedSession.details && (
-        <div className="border border-[#FF4D4D]/30 bg-[#FF4D4D]/5 p-4">
-          <p className="text-[13px] text-[#FF4D4D]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            AI hasn&apos;t structured this workout yet. You can still fill in the details manually.
+      {/* ── Sticky action bar ── */}
+      <div className="sticky bottom-14 md:bottom-0 -mx-4 sm:-mx-6 border-t border-[#2A272C] bg-[#141115]/90 px-4 sm:px-6 py-3 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <p className="min-w-0 flex-1 truncate text-[12px]">
+            {form.error
+              ? <span className="text-[#FF4D4D]">{form.error}</span>
+              : <span className="hidden text-[#6B6870] sm:inline">Saving updates this workout&apos;s AI report.</span>}
           </p>
+          <Button href={`/record/${workout.id}`} variant="ghost">
+            Cancel
+          </Button>
+          <Button onClick={form.handleSave} disabled={form.saving}>
+            {form.saving ? 'Saving…' : 'Confirm & save'}
+          </Button>
         </div>
-      )}
-
-      {/* ── Session meta (type, intensity, readiness, notes) ── */}
-      <SessionMetaPanel
-        details={form.details}
-        onChange={(patch) => form.setDetails((prev) => ({ ...prev, ...patch }))}
-      />
-
-      {/* ── Session-type-specific panels ── */}
-      {['strength', 'conditioning', 'mixed', 'recovery'].includes(sessionType) && (
-        <StrengthPanel blocks={form.blocks} onChange={form.setBlocks} />
-      )}
-
-      {sessionType === 'sprint' && (
-        <SprintPanel
-          efforts={form.sprintEfforts}
-          surface={form.details.sprint_surface ?? null}
-          footwear={form.details.sprint_footwear ?? null}
-          onEffortsChange={form.setSprintEfforts}
-          onMetaChange={(patch) =>
-            form.setDetails((prev) => ({
-              ...prev,
-              sprint_surface: patch.surface !== undefined ? patch.surface : prev.sprint_surface,
-              sprint_footwear: patch.footwear !== undefined ? patch.footwear : prev.sprint_footwear,
-            }))
-          }
-        />
-      )}
-
-      {sessionType === 'competition' && (
-        <CompetitionPanel
-          result={form.competitionResult}
-          onChange={(patch) =>
-            form.setCompetitionResult((prev) => ({ ...prev, ...patch }))
-          }
-        />
-      )}
-
-      {['physio', 'rehab', 'prehab'].includes(sessionType) && (
-        <PhysioPanel
-          bodyAreas={form.physioBodyAreas}
-          exerciseBlocks={form.physioExerciseBlocks}
-          details={{
-            physio_provider: form.details.physio_provider,
-            physio_clearance_status: form.details.physio_clearance_status,
-            physio_notes: form.details.physio_notes,
-          }}
-          onBodyAreasChange={form.setPhysioBodyAreas}
-          onExerciseBlocksChange={form.setPhysioExerciseBlocks}
-          onDetailsChange={(patch) => form.setDetails((prev) => ({ ...prev, ...patch }))}
-        />
-      )}
-
-      {form.error && (
-        <p className="text-[13px] text-[#FF4D4D]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-          {form.error}
-        </p>
-      )}
-
-      {/* ── Actions ── */}
-      <div className="flex items-center justify-between pt-2">
-        <Link
-          href={`/record/${workout.id}`}
-          className="text-[12px] text-[#6B6870] hover:text-white transition-colors"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          ← Back
-        </Link>
-        <button
-          type="button"
-          onClick={form.handleSave}
-          disabled={form.saving}
-          className="px-8 py-3 bg-[#F5F5F5] text-[#141115] text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-[#b8e038] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {form.saving ? 'Saving…' : 'Confirm & Save'}
-        </button>
       </div>
     </div>
   )

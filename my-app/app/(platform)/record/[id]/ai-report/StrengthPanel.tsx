@@ -1,8 +1,11 @@
 'use client'
 
-import { Plus, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, X, ChevronDown, ChevronRight, Layers } from 'lucide-react'
 import { useState } from 'react'
 import type { SessionBlockRow, SessionExerciseRow, ExerciseSetRow, BlockType } from '@/lib/types'
+import { Button, ButtonPropertySelect, ButtonToggle } from '@/app/components/ui/buttons'
+import { InputInline } from '@/app/components/ui/inputs'
+import { ReportSection, ReportCard, ColumnLabel, toNum } from './ReportSection'
 
 // ── Types used locally for draft state ───────────────────────────────────────
 
@@ -82,6 +85,10 @@ const BLOCK_TYPES: { value: BlockType; label: string }[] = [
   { value: 'superset', label: 'Superset' },
 ]
 
+// # · weight · reps · effort · flags · note · delete  (note drops to its own line on mobile)
+const SET_GRID =
+  'grid items-center gap-x-1 grid-cols-[1.25rem_1fr_1fr_1fr_auto_1.75rem] sm:grid-cols-[1.25rem_4.5rem_4rem_3.5rem_auto_minmax(0,1fr)_1.75rem]'
+
 // ── Set row ───────────────────────────────────────────────────────────────────
 
 function SetRow({
@@ -93,89 +100,48 @@ function SetRow({
   onChange: (patch: Partial<DraftSet>) => void
   onDelete: () => void
 }) {
-  const num = (val: string) => (val === '' ? null : isNaN(Number(val)) ? null : Number(val))
+  const note = (
+    <InputInline
+      value={set.notes}
+      placeholder="Add note"
+      onValueChange={(v) => onChange({ notes: v || null })}
+    />
+  )
 
   return (
-    <div className="flex items-center gap-2 py-1.5 border-t border-[#2A272C]">
-      <span className="text-[11px] text-[#6B6870] w-5 shrink-0 text-right" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-        {set.set_index + 1}
-      </span>
-
-      {/* Flags */}
-      <div className="flex gap-1">
-        {(['is_warmup', 'is_failure', 'is_dropset'] as const).map((flag) => (
-          <button
-            key={flag}
-            type="button"
-            onClick={() => onChange({ [flag]: !set[flag] })}
-            className={`px-1.5 py-0.5 text-[9px] font-bold uppercase border transition-colors ${
-              set[flag]
-                ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                : 'border-[#3A373C] text-[#3A373C] hover:border-[#6B6870]'
-            }`}
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            {flag === 'is_warmup' ? 'WU' : flag === 'is_failure' ? 'F' : 'D'}
-          </button>
-        ))}
+    <div className="group border-t border-[#2A272C] px-2 py-0.5">
+      <div className={SET_GRID}>
+        <span className="text-right text-[12px] tabular-nums text-[#6B6870]">{set.set_index + 1}</span>
+        <InputInline type="number" step="0.5" value={set.weight_kg} placeholder="kg" ariaLabel="Weight (kg)"
+          onValueChange={(v) => onChange({ weight_kg: toNum(v) })} />
+        <InputInline type="number" value={set.reps} placeholder="—" ariaLabel="Reps"
+          onValueChange={(v) => onChange({ reps: toNum(v) })} />
+        <InputInline type="number" min={0} max={100} value={set.effort_percent} placeholder="%" ariaLabel="Effort %"
+          onValueChange={(v) => onChange({ effort_percent: toNum(v) })} />
+        <div className="flex gap-1 px-1">
+          {(['is_warmup', 'is_failure', 'is_dropset'] as const).map((flag) => (
+            <ButtonToggle
+              key={flag}
+              pressed={set[flag]}
+              onPressedChange={(pressed) => onChange({ [flag]: pressed })}
+              ariaLabel={flag === 'is_warmup' ? 'Warm-up set' : flag === 'is_failure' ? 'To failure' : 'Drop set'}
+            >
+              {flag === 'is_warmup' ? 'WU' : flag === 'is_failure' ? 'F' : 'D'}
+            </ButtonToggle>
+          ))}
+        </div>
+        <div className="hidden sm:block">{note}</div>
+        <Button variant="ghost" size="icon-sm" onClick={onDelete} ariaLabel="Remove set"
+          className="opacity-60 group-hover:opacity-100 focus-visible:opacity-100">
+          <X size={14} />
+        </Button>
       </div>
-
-      {/* Weight */}
-      <input
-        type="number"
-        step="0.5"
-        value={set.weight_kg ?? ''}
-        placeholder="kg"
-        onChange={(e) => onChange({ weight_kg: num(e.target.value) })}
-        className="w-16 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      />
-
-      {/* Reps */}
-      <input
-        type="number"
-        value={set.reps ?? ''}
-        placeholder="reps"
-        onChange={(e) => onChange({ reps: num(e.target.value) as number | null })}
-        className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      />
-
-      {/* Effort % */}
-      <input
-        type="number"
-        min={0}
-        max={100}
-        value={set.effort_percent ?? ''}
-        placeholder="%"
-        onChange={(e) => onChange({ effort_percent: num(e.target.value) as number | null })}
-        className="w-12 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      />
-
-      {/* Notes */}
-      <input
-        type="text"
-        value={set.notes ?? ''}
-        placeholder="note"
-        onChange={(e) => onChange({ notes: e.target.value || null })}
-        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      />
-
-      <button
-        type="button"
-        onClick={onDelete}
-        className="text-[#3A373C] hover:text-[#FF4D4D] transition-colors shrink-0"
-        aria-label="Remove set"
-      >
-        <X size={12} />
-      </button>
+      <div className="pl-6 sm:hidden">{note}</div>
     </div>
   )
 }
 
-// ── Exercise card ─────────────────────────────────────────────────────────────
+// ── Exercise ──────────────────────────────────────────────────────────────────
 
 function ExerciseCard({
   exercise,
@@ -198,45 +164,41 @@ function ExerciseCard({
     onChange({ sets: [...exercise.sets, blankSet(exercise.sets.length)] })
 
   return (
-    <div className="border border-[#3A373C] bg-[#1A1719]">
+    <div className="border-t border-[#2A272C] first:border-t-0">
       {/* Exercise header */}
-      <div className="flex items-center gap-2 px-4 pt-3 pb-2">
-        <input
-          type="text"
-          value={exercise.name}
-          onChange={(e) => onChange({ name: e.target.value })}
-          placeholder="Exercise name"
-          className="flex-1 bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C]"
-          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
-        />
-        <button
-          type="button"
+      <div className="flex items-center gap-1 px-2 py-1.5">
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={() => setCollapsed((c) => !c)}
-          className="text-[#6B6870] hover:text-white transition-colors shrink-0"
-          aria-label={collapsed ? 'Expand' : 'Collapse'}
+          ariaLabel={collapsed ? 'Expand exercise' : 'Collapse exercise'}
         >
-          {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-[#3A373C] hover:text-[#FF4D4D] transition-colors shrink-0"
-          aria-label="Remove exercise"
-        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+        </Button>
+        <InputInline
+          value={exercise.name}
+          onValueChange={(v) => onChange({ name: v })}
+          placeholder="Exercise name"
+          className="flex-1 text-[14px] font-medium"
+        />
+        <span className="shrink-0 px-1 text-[12px] tabular-nums text-[#6B6870]">
+          {exercise.sets.length} {exercise.sets.length === 1 ? 'set' : 'sets'}
+        </span>
+        <Button variant="ghost" size="icon-sm" onClick={onDelete} ariaLabel="Remove exercise">
           <X size={14} />
-        </button>
+        </Button>
       </div>
 
       {!collapsed && (
-        <div className="px-4 pb-3 border-t border-[#3A373C]">
-          {/* Column headers */}
-          <div className="flex items-center gap-2 pt-2 pb-1">
-            <span className="w-5" />
-            <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Flags</span>
-            <span className="w-16 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Weight</span>
-            <span className="w-14 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Reps</span>
-            <span className="w-12 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Effort</span>
-            <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Note</span>
+        <div className="pb-1">
+          <div className={`${SET_GRID} px-2 pb-1`}>
+            <span />
+            <ColumnLabel>Kg</ColumnLabel>
+            <ColumnLabel>Reps</ColumnLabel>
+            <ColumnLabel>Effort</ColumnLabel>
+            <ColumnLabel className="px-1">Flags</ColumnLabel>
+            <ColumnLabel className="hidden sm:block">Note</ColumnLabel>
+            <span />
           </div>
 
           {exercise.sets.map((set, i) => (
@@ -248,21 +210,18 @@ function ExerciseCard({
             />
           ))}
 
-          <button
-            type="button"
-            onClick={addSet}
-            className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#F5F5F5] transition-colors uppercase tracking-[0.1em] font-semibold"
-            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-          >
-            <Plus size={10} /> Add Set
-          </button>
+          <div className="border-t border-[#2A272C] px-2 pt-1">
+            <Button variant="ghost" size="sm" onClick={addSet}>
+              <Plus size={14} /> Add set
+            </Button>
+          </div>
         </div>
       )}
     </div>
   )
 }
 
-// ── Block card ────────────────────────────────────────────────────────────────
+// ── Block ─────────────────────────────────────────────────────────────────────
 
 function BlockCard({
   block,
@@ -283,67 +242,43 @@ function BlockCard({
     onChange({ exercises: [...block.exercises, blankExercise(block.exercises.length)] })
 
   return (
-    <div className="border border-[#3A373C] p-4 space-y-3">
+    <ReportCard>
       {/* Block header */}
-      <div className="flex items-start gap-3">
-        <div className="flex-1 space-y-2">
-          <input
-            type="text"
-            value={block.block_name ?? ''}
-            onChange={(e) => onChange({ block_name: e.target.value || null })}
-            placeholder="Block name (optional)"
-            className="w-full bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C] border-b border-[#3A373C] focus:border-[#F5F5F5] pb-1 transition-colors"
-            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
-          />
-          <div className="flex flex-wrap gap-1.5">
-            {BLOCK_TYPES.map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => onChange({ block_type: value })}
-                className={`px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] border transition-colors ${
-                  block.block_type === value
-                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                    : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
-                }`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-[#3A373C] hover:text-[#FF4D4D] transition-colors mt-1 shrink-0"
-          aria-label="Remove block"
-        >
+      <div className="flex items-center gap-2 border-b border-[#2A272C] px-2 py-2">
+        <InputInline
+          value={block.block_name}
+          onValueChange={(v) => onChange({ block_name: v || null })}
+          placeholder="Untitled block"
+          className="flex-1 text-[14px] font-semibold"
+        />
+        <ButtonPropertySelect
+          label="Block type"
+          options={BLOCK_TYPES}
+          value={block.block_type}
+          onChange={(v) => v && onChange({ block_type: v })}
+          icon={<Layers />}
+          align="right"
+        />
+        <Button variant="ghost" size="icon-sm" onClick={onDelete} ariaLabel="Remove block">
           <X size={14} />
-        </button>
+        </Button>
       </div>
 
-      {/* Exercises */}
-      <div className="space-y-2">
-        {block.exercises.map((ex, i) => (
-          <ExerciseCard
-            key={i}
-            exercise={ex}
-            onChange={(patch) => updateExercise(i, patch)}
-            onDelete={() => deleteExercise(i)}
-          />
-        ))}
-      </div>
+      {block.exercises.map((ex, i) => (
+        <ExerciseCard
+          key={i}
+          exercise={ex}
+          onChange={(patch) => updateExercise(i, patch)}
+          onDelete={() => deleteExercise(i)}
+        />
+      ))}
 
-      <button
-        type="button"
-        onClick={addExercise}
-        className="flex items-center gap-2 px-3 py-1.5 border border-[#3A373C] text-[#6B6870] text-[10px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-      >
-        <Plus size={10} /> Add Exercise
-      </button>
-    </div>
+      <div className="border-t border-[#2A272C] px-2 py-1.5">
+        <Button variant="ghost" size="sm" onClick={addExercise}>
+          <Plus size={14} /> Add exercise
+        </Button>
+      </div>
+    </ReportCard>
   )
 }
 
@@ -352,9 +287,10 @@ function BlockCard({
 type Props = {
   blocks: DraftBlock[]
   onChange: (blocks: DraftBlock[]) => void
+  title?: string
 }
 
-export default function StrengthPanel({ blocks, onChange }: Props) {
+export default function StrengthPanel({ blocks, onChange, title = 'Blocks' }: Props) {
   const updateBlock = (i: number, patch: Partial<DraftBlock>) =>
     onChange(blocks.map((b, idx) => (idx === i ? { ...b, ...patch } : b)))
 
@@ -363,31 +299,25 @@ export default function StrengthPanel({ blocks, onChange }: Props) {
   const addBlock = () => onChange([...blocks, blankBlock(blocks.length)])
 
   return (
-    <div className="space-y-4">
-      <p
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-      >
-        Blocks &amp; Exercises
-      </p>
-
-      {blocks.map((block, i) => (
-        <BlockCard
-          key={i}
-          block={block}
-          onChange={(patch) => updateBlock(i, patch)}
-          onDelete={() => deleteBlock(i)}
-        />
-      ))}
-
-      <button
-        type="button"
-        onClick={addBlock}
-        className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-      >
-        <Plus size={12} /> Add Block
-      </button>
-    </div>
+    <ReportSection
+      title={title}
+      count={blocks.length}
+      action={
+        <Button variant="ghost" size="sm" onClick={addBlock}>
+          <Plus size={14} /> Add block
+        </Button>
+      }
+    >
+      <div className="space-y-3">
+        {blocks.map((block, i) => (
+          <BlockCard
+            key={i}
+            block={block}
+            onChange={(patch) => updateBlock(i, patch)}
+            onDelete={() => deleteBlock(i)}
+          />
+        ))}
+      </div>
+    </ReportSection>
   )
 }

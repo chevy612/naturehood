@@ -1,7 +1,11 @@
 'use client'
 
-import { Plus, X } from 'lucide-react'
+import type { ReactNode } from 'react'
+import { Plus, X, Zap } from 'lucide-react'
 import type { SprintEffortRow, SprintRepRow } from '@/lib/types'
+import { Button, ButtonPropertySelect, ButtonToggle } from '@/app/components/ui/buttons'
+import { InputInline } from '@/app/components/ui/inputs'
+import { ReportSection, ReportCard, ColumnLabel, PropertyRow, toNum } from './ReportSection'
 
 export type DraftSprintRep = Omit<SprintRepRow, 'id' | 'effort_id' | 'training_log_id' | 'user_id'>
 export type DraftSprintEffort = Omit<SprintEffortRow, 'id' | 'training_log_id' | 'user_id'> & {
@@ -12,6 +16,11 @@ const DRILL_TYPES = [
   'block_start', 'fly', 'acceleration', 'tempo',
   'speed_endurance', 'hill_sprint', 'hurdle', 'relay_exchange', 'time_trial',
 ] as const
+
+const DRILL_OPTIONS = DRILL_TYPES.map((dt) => {
+  const label = dt.replace(/_/g, ' ')
+  return { value: dt, label: label.charAt(0).toUpperCase() + label.slice(1) }
+})
 
 function blankRep(rep_index: number): DraftSprintRep {
   return { rep_index, time_seconds: null, split_times_seconds: null, wind_ms: null, completed: true, notes: null }
@@ -33,6 +42,10 @@ function blankEffort(effort_index: number): DraftSprintEffort {
   }
 }
 
+// # · time · wind · status · note · delete  (note drops to its own line on mobile)
+const REP_GRID =
+  'grid items-center gap-x-1 grid-cols-[1.25rem_1fr_1fr_auto_1.75rem] sm:grid-cols-[1.25rem_5rem_5rem_auto_minmax(0,1fr)_1.75rem]'
+
 // ── Rep row ───────────────────────────────────────────────────────────────────
 
 function RepRow({
@@ -44,69 +57,50 @@ function RepRow({
   onChange: (patch: Partial<DraftSprintRep>) => void
   onDelete: () => void
 }) {
-  const num = (v: string) => (v === '' ? null : isNaN(Number(v)) ? null : Number(v))
+  const note = (
+    <InputInline value={rep.notes} placeholder="Add note" onValueChange={(v) => onChange({ notes: v || null })} />
+  )
 
   return (
-    <div className="flex items-center gap-2 py-1.5 border-t border-[#2A272C]">
-      <span className="text-[11px] text-[#6B6870] w-5 shrink-0 text-right" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-        {rep.rep_index + 1}
-      </span>
-
-      <input
-        type="number"
-        step="0.01"
-        value={rep.time_seconds ?? ''}
-        placeholder="time (s)"
-        onChange={(e) => onChange({ time_seconds: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      />
-
-      <input
-        type="number"
-        step="0.01"
-        value={rep.wind_ms ?? ''}
-        placeholder="wind m/s"
-        onChange={(e) => onChange({ wind_ms: num(e.target.value) })}
-        className="w-20 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      />
-
-      <button
-        type="button"
-        onClick={() => onChange({ completed: !rep.completed })}
-        className={`px-2 py-1 text-[9px] font-bold uppercase border transition-colors shrink-0 ${
-          rep.completed
-            ? 'border-[#3A373C] text-[#6B6870]'
-            : 'border-[#FF4D4D] text-[#FF4D4D]'
-        }`}
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      >
-        {rep.completed ? 'OK' : 'DNF'}
-      </button>
-
-      <input
-        type="text"
-        value={rep.notes ?? ''}
-        placeholder="note"
-        onChange={(e) => onChange({ notes: e.target.value || null })}
-        className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors min-w-0"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      />
-
-      <button
-        type="button"
-        onClick={onDelete}
-        className="text-[#3A373C] hover:text-[#FF4D4D] transition-colors shrink-0"
-        aria-label="Remove rep"
-      >
-        <X size={12} />
-      </button>
+    <div className="group border-t border-[#2A272C] px-2 py-0.5">
+      <div className={REP_GRID}>
+        <span className="text-right text-[12px] tabular-nums text-[#6B6870]">{rep.rep_index + 1}</span>
+        <InputInline type="number" step="0.01" value={rep.time_seconds} placeholder="s" ariaLabel="Time (s)"
+          onValueChange={(v) => onChange({ time_seconds: toNum(v) })} />
+        <InputInline type="number" step="0.1" value={rep.wind_ms} placeholder="m/s" ariaLabel="Wind (m/s)"
+          onValueChange={(v) => onChange({ wind_ms: toNum(v) })} />
+        <div className="px-1">
+          <ButtonToggle
+            pressed={!rep.completed}
+            onPressedChange={(dnf) => onChange({ completed: !dnf })}
+            tone="destructive"
+            ariaLabel="Did not finish"
+          >
+            {rep.completed ? 'OK' : 'DNF'}
+          </ButtonToggle>
+        </div>
+        <div className="hidden sm:block">{note}</div>
+        <Button variant="ghost" size="icon-sm" onClick={onDelete} ariaLabel="Remove rep"
+          className="opacity-60 group-hover:opacity-100 focus-visible:opacity-100">
+          <X size={14} />
+        </Button>
+      </div>
+      <div className="pl-6 sm:hidden">{note}</div>
     </div>
   )
 }
 
 // ── Effort card ───────────────────────────────────────────────────────────────
+
+function Metric({ label, unit, children }: { label: string; unit?: string; children: ReactNode }) {
+  return (
+    <label className="flex items-center gap-1 text-[12px] text-[#847E89]">
+      <span className="shrink-0">{label}</span>
+      <span className="w-16">{children}</span>
+      {unit && <span className="shrink-0 text-[#6B6870]">{unit}</span>}
+    </label>
+  )
+}
 
 function EffortCard({
   effort,
@@ -117,8 +111,6 @@ function EffortCard({
   onChange: (patch: Partial<DraftSprintEffort>) => void
   onDelete: () => void
 }) {
-  const num = (v: string) => (v === '' ? null : isNaN(Number(v)) ? null : Number(v))
-
   const updateRep = (i: number, patch: Partial<DraftSprintRep>) =>
     onChange({ reps: effort.reps.map((r, idx) => (idx === i ? { ...r, ...patch } : r)) })
 
@@ -129,105 +121,56 @@ function EffortCard({
     onChange({ reps: [...effort.reps, blankRep(effort.reps.length)] })
 
   return (
-    <div className="border border-[#3A373C] bg-[#1A1719] p-4 space-y-3">
+    <ReportCard>
       {/* Effort header */}
-      <div className="flex items-start gap-3">
-        <div className="flex-1 space-y-3">
-          {/* Drill type */}
-          <div className="flex flex-wrap gap-1.5">
-            {DRILL_TYPES.map((dt) => (
-              <button
-                key={dt}
-                type="button"
-                onClick={() => onChange({ drill_type: dt })}
-                className={`px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] border transition-colors ${
-                  effort.drill_type === dt
-                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                    : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
-                }`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {dt.replace(/_/g, ' ')}
-              </button>
-            ))}
-          </div>
-
-          {/* Metrics row */}
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Distance (m)</span>
-              <input
-                type="number"
-                value={effort.distance_m ?? ''}
-                placeholder="—"
-                onChange={(e) => onChange({ distance_m: num(e.target.value) })}
-                className="w-16 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Effort %</span>
-              <input
-                type="number"
-                min={0}
-                max={100}
-                value={effort.effort_percent ?? ''}
-                placeholder="—"
-                onChange={(e) => onChange({ effort_percent: num(e.target.value) as number | null })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Rest (s)</span>
-              <input
-                type="number"
-                value={effort.rest_between_reps_seconds ?? ''}
-                placeholder="—"
-                onChange={(e) => onChange({ rest_between_reps_seconds: num(e.target.value) as number | null })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              />
-            </div>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-[#3A373C] hover:text-[#FF4D4D] transition-colors shrink-0 mt-1"
-          aria-label="Remove effort"
-        >
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-[#2A272C] px-3 py-2">
+        <ButtonPropertySelect
+          label="Drill type"
+          options={DRILL_OPTIONS}
+          value={effort.drill_type}
+          onChange={(v) => v && onChange({ drill_type: v })}
+          icon={<Zap />}
+        />
+        <Metric label="Distance" unit="m">
+          <InputInline type="number" value={effort.distance_m} placeholder="—" ariaLabel="Distance (m)"
+            onValueChange={(v) => onChange({ distance_m: toNum(v) })} />
+        </Metric>
+        <Metric label="Effort" unit="%">
+          <InputInline type="number" min={0} max={100} value={effort.effort_percent} placeholder="—" ariaLabel="Effort %"
+            onValueChange={(v) => onChange({ effort_percent: toNum(v) })} />
+        </Metric>
+        <Metric label="Rest" unit="s">
+          <InputInline type="number" value={effort.rest_between_reps_seconds} placeholder="—" ariaLabel="Rest (s)"
+            onValueChange={(v) => onChange({ rest_between_reps_seconds: toNum(v) })} />
+        </Metric>
+        <Button variant="ghost" size="icon-sm" onClick={onDelete} ariaLabel="Remove effort" className="ml-auto">
           <X size={14} />
-        </button>
+        </Button>
       </div>
 
       {/* Reps */}
-      <div className="border-t border-[#2A272C]">
-        <div className="flex items-center gap-2 pt-2 pb-1">
-          <span className="w-5" />
-          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Time (s)</span>
-          <span className="w-20 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Wind</span>
-          <span className="w-10 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Status</span>
-          <span className="flex-1 text-[9px] text-[#3A373C] uppercase tracking-widest" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>Note</span>
-        </div>
-        {effort.reps.map((rep, i) => (
-          <RepRow
-            key={i}
-            rep={rep}
-            onChange={(patch) => updateRep(i, patch)}
-            onDelete={() => deleteRep(i)}
-          />
-        ))}
-        <button
-          type="button"
-          onClick={addRep}
-          className="mt-2 flex items-center gap-1.5 text-[11px] text-[#6B6870] hover:text-[#F5F5F5] transition-colors uppercase tracking-[0.1em] font-semibold"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          <Plus size={10} /> Add Rep
-        </button>
+      <div className={`${REP_GRID} px-2 pb-1 pt-2`}>
+        <span />
+        <ColumnLabel>Time</ColumnLabel>
+        <ColumnLabel>Wind</ColumnLabel>
+        <ColumnLabel className="px-1">Status</ColumnLabel>
+        <ColumnLabel className="hidden sm:block">Note</ColumnLabel>
+        <span />
       </div>
-    </div>
+      {effort.reps.map((rep, i) => (
+        <RepRow
+          key={i}
+          rep={rep}
+          onChange={(patch) => updateRep(i, patch)}
+          onDelete={() => deleteRep(i)}
+        />
+      ))}
+      <div className="border-t border-[#2A272C] px-2 py-1.5">
+        <Button variant="ghost" size="sm" onClick={addRep}>
+          <Plus size={14} /> Add rep
+        </Button>
+      </div>
+    </ReportCard>
   )
 }
 
@@ -250,58 +193,38 @@ export default function SprintPanel({ efforts, surface, footwear, onEffortsChang
   const addEffort = () => onEffortsChange([...efforts, blankEffort(efforts.length)])
 
   return (
-    <div className="space-y-4">
-      <p
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-      >
-        Sprint Session
-      </p>
-
-      {/* Session-level meta */}
-      <div className="flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[12px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Surface</span>
-          <input
-            type="text"
-            value={surface ?? ''}
-            placeholder="track, grass…"
-            onChange={(e) => onMetaChange({ surface: e.target.value || null })}
-            className="bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors w-28"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          />
+    <div className="space-y-10">
+      <ReportSection title="Conditions">
+        <div>
+          <PropertyRow label="Surface">
+            <InputInline value={surface} placeholder="Track, grass…" onValueChange={(v) => onMetaChange({ surface: v || null })} />
+          </PropertyRow>
+          <PropertyRow label="Footwear">
+            <InputInline value={footwear} placeholder="Spikes, flats…" onValueChange={(v) => onMetaChange({ footwear: v || null })} />
+          </PropertyRow>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[12px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Footwear</span>
-          <input
-            type="text"
-            value={footwear ?? ''}
-            placeholder="spikes, flats…"
-            onChange={(e) => onMetaChange({ footwear: e.target.value || null })}
-            className="bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors w-28"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          />
-        </div>
-      </div>
+      </ReportSection>
 
-      {/* Efforts */}
-      {efforts.map((effort, i) => (
-        <EffortCard
-          key={i}
-          effort={effort}
-          onChange={(patch) => updateEffort(i, patch)}
-          onDelete={() => deleteEffort(i)}
-        />
-      ))}
-
-      <button
-        type="button"
-        onClick={addEffort}
-        className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+      <ReportSection
+        title="Efforts"
+        count={efforts.length}
+        action={
+          <Button variant="ghost" size="sm" onClick={addEffort}>
+            <Plus size={14} /> Add effort
+          </Button>
+        }
       >
-        <Plus size={12} /> Add Effort
-      </button>
+        <div className="space-y-3">
+          {efforts.map((effort, i) => (
+            <EffortCard
+              key={i}
+              effort={effort}
+              onChange={(patch) => updateEffort(i, patch)}
+              onDelete={() => deleteEffort(i)}
+            />
+          ))}
+        </div>
+      </ReportSection>
     </div>
   )
 }

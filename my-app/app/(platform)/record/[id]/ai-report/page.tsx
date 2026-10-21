@@ -80,22 +80,8 @@ export default async function AiReportPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="min-h-screen bg-[#141115] px-6 py-10">
+    <div className="min-h-screen bg-[#141115] px-4 pt-6 sm:px-6 sm:pt-8">
       <div className="max-w-2xl mx-auto">
-        <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          AI Report
-        </p>
-
-        <h1
-          className="text-2xl font-bold text-white mb-8"
-          style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
-        >
-          Review Your Workout
-        </h1>
-
         <AiReportForm workout={data as TrainingLog} normalizedSession={normalizedSession} />
       </div>
     </div>

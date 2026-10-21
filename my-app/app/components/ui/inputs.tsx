@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, ChangeEvent } from "react";
+import { cn } from "@/lib/utils";
 
 // ─────────────────────────────────────────────
 // INTERFACES
@@ -493,5 +494,125 @@ export function CheckboxDark({
         </p>
       )}
     </div>
+  );
+}
+
+// Mirrors naturehood-mobile `@/components/ui/switch`
+export function SwitchDark({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label?: ReactNode;
+}) {
+  return (
+    <label className="inline-flex items-center gap-3 cursor-pointer">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={`flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent px-px transition-colors duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-[#009245]/50 ${
+          checked ? "bg-[#F5F5F5]" : "bg-[#3D3940]"
+        }`}
+      >
+        <span
+          className={`block size-4 rounded-full transition-transform duration-200 ${
+            checked ? "translate-x-3.5 bg-[#141115]" : "translate-x-0 bg-white"
+          }`}
+        />
+      </button>
+      {label && (
+        <span
+          className="text-[13px] text-[#847E89]"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {label}
+        </span>
+      )}
+    </label>
+  );
+}
+
+// ─────────────────────────────────────────────
+// INLINE FIELDS (Linear-style, borderless until hover/focus)
+//    Use: dense editable tables and property lists on dark platform pages
+// ─────────────────────────────────────────────
+
+export function InputInline({
+  value,
+  onValueChange,
+  type = "text",
+  placeholder,
+  ariaLabel,
+  step,
+  min,
+  max,
+  align = "left",
+  className,
+}: {
+  value: string | number | null | undefined;
+  onValueChange: (value: string) => void;
+  type?: "text" | "number";
+  placeholder?: string;
+  ariaLabel?: string;
+  step?: number | string;
+  min?: number;
+  max?: number;
+  align?: "left" | "right";
+  className?: string;
+}) {
+  return (
+    <input
+      type={type}
+      inputMode={type === "number" ? "decimal" : undefined}
+      value={value ?? ""}
+      onChange={(e) => onValueChange(e.target.value)}
+      placeholder={placeholder}
+      aria-label={ariaLabel ?? placeholder}
+      step={step}
+      min={min}
+      max={max}
+      className={cn(
+        "h-8 w-full min-w-0 rounded-md border border-transparent bg-transparent px-2 text-[13px] text-white tabular-nums outline-none transition-colors duration-150",
+        "placeholder:text-[#6B6870] hover:border-[#3D3940] focus:border-[#847E89] focus:bg-[#1E1B1F]",
+        "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+        align === "right" && "text-right",
+        className,
+      )}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    />
+  );
+}
+
+export function TextAreaInline({
+  value,
+  onValueChange,
+  placeholder,
+  ariaLabel,
+  className,
+}: {
+  value: string | null | undefined;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+  ariaLabel?: string;
+  className?: string;
+}) {
+  return (
+    <textarea
+      value={value ?? ""}
+      onChange={(e) => onValueChange(e.target.value)}
+      placeholder={placeholder}
+      aria-label={ariaLabel ?? placeholder}
+      rows={2}
+      className={cn(
+        "field-sizing-content min-h-[3.25rem] w-full resize-none rounded-md border border-transparent bg-transparent px-2 py-1.5 text-[14px] leading-relaxed text-[#E8E8E8] outline-none transition-colors duration-150",
+        "placeholder:text-[#6B6870] hover:border-[#3D3940] focus:border-[#847E89] focus:bg-[#1E1B1F]",
+        className,
+      )}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    />
   );
 }

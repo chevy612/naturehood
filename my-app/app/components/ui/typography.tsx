@@ -60,7 +60,7 @@ export function SectionHeader({ content, className = "" ,color = "gray"}: Sectio
 
   return (
     <p
-      className={`text-[11px] font-normal tracking-[0.04em] uppercase mb-4 ${color === "green" ? "text-[#F5F5F5]" : "text-[#6B6870]"} ${className}`}
+      className={twMerge("text-[11px] font-normal tracking-[0.04em] uppercase mb-4", color === "green" ? "text-[#F5F5F5]" : "text-[#6B6870]", className)}
       style={{ fontFamily: "'Sk Modernist', sans-serif" }}
     >
       {body}

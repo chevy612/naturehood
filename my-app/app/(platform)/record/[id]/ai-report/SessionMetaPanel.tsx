@@ -1,188 +1,137 @@
 'use client'
 
+import {
+  Dumbbell, Zap, HeartPulse, Trophy, Stethoscope, Bandage, Waves, Shuffle,
+  SignalLow, SignalMedium, SignalHigh, Signal, Gauge,
+  Laugh, Smile, BatteryLow, Frown, Activity, Sparkles, TriangleAlert,
+} from 'lucide-react'
+import type { ReactNode } from 'react'
 import type { SessionDetailsRow, SessionType, PerceivedIntensity } from '@/lib/types'
+import { ButtonPropertySelect } from '@/app/components/ui/buttons'
+import { TextAreaInline } from '@/app/components/ui/inputs'
 
-const SESSION_TYPES: { value: SessionType; label: string }[] = [
-  { value: 'strength',     label: 'Strength' },
-  { value: 'sprint',       label: 'Sprint' },
-  { value: 'conditioning', label: 'Conditioning' },
-  { value: 'competition',  label: 'Competition' },
-  { value: 'physio',       label: 'Physio' },
-  { value: 'rehab',        label: 'Rehab' },
-  { value: 'recovery',     label: 'Recovery' },
-  { value: 'mixed',        label: 'Mixed' },
+const SESSION_TYPES: { value: SessionType; label: string; icon: ReactNode }[] = [
+  { value: 'strength',     label: 'Strength',     icon: <Dumbbell /> },
+  { value: 'sprint',       label: 'Sprint',       icon: <Zap /> },
+  { value: 'conditioning', label: 'Conditioning', icon: <HeartPulse /> },
+  { value: 'competition',  label: 'Competition',  icon: <Trophy /> },
+  { value: 'physio',       label: 'Physio',       icon: <Stethoscope /> },
+  { value: 'rehab',        label: 'Rehab',        icon: <Bandage /> },
+  { value: 'recovery',     label: 'Recovery',     icon: <Waves /> },
+  { value: 'mixed',        label: 'Mixed',        icon: <Shuffle /> },
 ]
 
-const INTENSITIES: { value: PerceivedIntensity; label: string }[] = [
-  { value: 'low',      label: 'Low' },
-  { value: 'moderate', label: 'Moderate' },
-  { value: 'high',     label: 'High' },
-  { value: 'max',      label: 'Max' },
+const INTENSITIES: { value: PerceivedIntensity; label: string; icon: ReactNode }[] = [
+  { value: 'low',      label: 'Low',      icon: <SignalLow /> },
+  { value: 'moderate', label: 'Moderate', icon: <SignalMedium /> },
+  { value: 'high',     label: 'High',     icon: <SignalHigh /> },
+  { value: 'max',      label: 'Max',      icon: <Signal /> },
 ]
 
-const READINESS_FEELS = ['good', 'great', 'tired', 'sore'] as const
+const READINESS_FEELS = [
+  { value: 'great', label: 'Great', icon: <Laugh /> },
+  { value: 'good',  label: 'Good',  icon: <Smile /> },
+  { value: 'tired', label: 'Tired', icon: <BatteryLow /> },
+  { value: 'sore',  label: 'Sore',  icon: <Frown /> },
+] as const
+
+const PAIN_SCORES = Array.from({ length: 11 }, (_, n) => ({
+  value: String(n),
+  label: `Pain ${n}/10`,
+  icon: <Activity />,
+}))
 
 type Props = {
   details: Partial<SessionDetailsRow>
   onChange: (patch: Partial<SessionDetailsRow>) => void
 }
 
-export default function SessionMetaPanel({ details, onChange }: Props) {
+// Linear-style property chips — rendered directly under the workout title
+export function SessionProperties({ details, onChange }: Props) {
   return (
-    <div className="space-y-6">
+    <div className="flex flex-wrap items-center gap-1.5">
+      <ButtonPropertySelect
+        label="Session type"
+        options={SESSION_TYPES}
+        value={details.session_type}
+        onChange={(v) => v && onChange({ session_type: v })}
+      />
+      <ButtonPropertySelect
+        label="Intensity"
+        options={INTENSITIES}
+        value={details.perceived_intensity}
+        onChange={(v) => onChange({ perceived_intensity: v })}
+        icon={<Gauge />}
+        allowClear
+      />
+      <ButtonPropertySelect
+        label="Readiness"
+        options={READINESS_FEELS}
+        value={details.readiness_feel}
+        onChange={(v) => onChange({ readiness_feel: v })}
+        icon={<Smile />}
+        allowClear
+      />
+      <ButtonPropertySelect
+        label="Pain score"
+        options={PAIN_SCORES}
+        value={details.readiness_pain_score != null ? String(details.readiness_pain_score) : null}
+        onChange={(v) => onChange({ readiness_pain_score: v == null ? null : Number(v) })}
+        icon={<Activity />}
+        placeholder="Pain"
+        allowClear
+      />
+    </div>
+  )
+}
 
-      {/* Session type */}
-      <div>
-        <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          Session Type
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {SESSION_TYPES.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => onChange({ session_type: value })}
-              className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] border transition-colors duration-150 ${
-                details.session_type === value
-                  ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#F5F5F5]/50 hover:text-[#A09EA3]'
-              }`}
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+// Session notes as the page "description", plus AI parse confidence + warnings
+export default function SessionMetaPanel({ details, onChange }: Props) {
+  const confidence = details.parser_confidence
+  const warnings = details.parsing_warnings ?? []
+  const pct = confidence != null ? Math.round(confidence * 100) : null
+  const tone = pct == null ? '#6B6870' : pct >= 80 ? '#E8E8E8' : pct >= 60 ? '#A09EA3' : '#FF4D4D'
 
-      {/* Perceived intensity */}
-      <div>
-        <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          Intensity
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {INTENSITIES.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => onChange({ perceived_intensity: details.perceived_intensity === value ? null : value })}
-              className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] border transition-colors duration-150 ${
-                details.perceived_intensity === value
-                  ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#F5F5F5]/50 hover:text-[#A09EA3]'
-              }`}
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+  return (
+    <div className="space-y-4">
+      <TextAreaInline
+        value={details.session_notes}
+        onValueChange={(v) => onChange({ session_notes: v || null })}
+        placeholder="Add session notes…"
+        ariaLabel="Session notes"
+        className="-mx-2 w-[calc(100%+1rem)]"
+      />
 
-      {/* Readiness */}
-      <div>
-        <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          Readiness
-        </p>
-        <div className="flex flex-wrap gap-2 mb-3">
-          {READINESS_FEELS.map((feel) => (
-            <button
-              key={feel}
-              type="button"
-              onClick={() => onChange({ readiness_feel: details.readiness_feel === feel ? null : feel })}
-              className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] border transition-colors duration-150 ${
-                details.readiness_feel === feel
-                  ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                  : 'border-[#3A373C] text-[#6B6870] hover:border-[#F5F5F5]/50 hover:text-[#A09EA3]'
-              }`}
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {feel}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-4">
-          <label
-            className="text-[12px] text-[#6B6870] shrink-0 w-24"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Pain score
-          </label>
-          <input
-            type="number"
-            min={0}
-            max={10}
-            value={details.readiness_pain_score ?? ''}
-            placeholder="0–10"
-            onChange={(e) =>
-              onChange({
-                readiness_pain_score: e.target.value === '' ? null : Math.min(10, Math.max(0, Number(e.target.value))),
-              })
-            }
-            className="w-20 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[13px] px-3 py-2 transition-colors duration-150 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          />
-        </div>
-      </div>
-
-      {/* Session notes */}
-      <div>
-        <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          Session Notes
-        </p>
-        <textarea
-          value={details.session_notes ?? ''}
-          onChange={(e) => onChange({ session_notes: e.target.value || null })}
-          placeholder="AI summary or your own notes…"
-          rows={3}
-          className="w-full bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[13px] p-3 placeholder-[#3A373C] transition-colors duration-150 resize-none leading-relaxed"
+      {(pct != null || warnings.length > 0) && (
+        <div
+          className="rounded-lg border border-[#2A272C] bg-[#1A1719] px-3 py-2.5"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
-        />
-      </div>
-
-      {/* Parser confidence (read-only) */}
-      {details.parser_confidence != null && (
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Parser confidence
-          </span>
-          <span
-            className={`text-[11px] font-semibold ${
-              details.parser_confidence >= 0.8 ? 'text-[#F5F5F5]' :
-              details.parser_confidence >= 0.6 ? 'text-[#A09EA3]' : 'text-[#FF4D4D]'
-            }`}
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            {Math.round(details.parser_confidence * 100)}%
-          </span>
-          {details.parser_version && (
-            <span className="text-[10px] text-[#3A373C]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              v{details.parser_version}
-            </span>
+        >
+          <div className="flex items-center gap-2 text-[12px] text-[#A09EA3]">
+            <Sparkles size={14} className="shrink-0 text-[#847E89]" />
+            <span>Structured by AI — check the details below before saving.</span>
+            {pct != null && (
+              <span className="ml-auto flex shrink-0 items-center gap-2">
+                <span className="hidden h-1 w-16 overflow-hidden rounded-full bg-[#2B282C] sm:block">
+                  <span className="block h-full rounded-full" style={{ width: `${pct}%`, background: tone }} />
+                </span>
+                <span className="tabular-nums font-medium" style={{ color: tone }}>{pct}%</span>
+                {details.parser_version && (
+                  <span className="text-[11px] text-[#6B6870]">v{details.parser_version}</span>
+                )}
+              </span>
+            )}
+          </div>
+          {warnings.length > 0 && (
+            <ul className="mt-2 space-y-1 border-t border-[#2A272C] pt-2">
+              {warnings.map((w, i) => (
+                <li key={i} className="flex gap-2 text-[12px] leading-snug text-[#A09EA3]">
+                  <TriangleAlert size={13} className="mt-px shrink-0 text-[#F0B429]" />
+                  {w}
+                </li>
+              ))}
+            </ul>
           )}
-        </div>
-      )}
-
-      {/* Parsing warnings (read-only) */}
-      {details.parsing_warnings && details.parsing_warnings.length > 0 && (
-        <div className="border border-[#3A373C] p-3 space-y-1">
-          {details.parsing_warnings.map((w, i) => (
-            <p key={i} className="text-[12px] text-[#A09EA3]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              {w}
-            </p>
-          ))}
         </div>
       )}
     </div>

@@ -1,6 +1,9 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState, KeyboardEvent } from "react";
+import Link from "next/link";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 
 // ─────────────────────────────────────────────
@@ -155,7 +158,7 @@ export function ButtonAccent({ children, onClick, disabled, fullWidth, className
         text-xs sm:text-sm font-bold tracking-widest uppercase
         rounded-full
         transition-all duration-300 ease-out
-        hover:bg-[#b8e038] hover:shadow-lg hover:shadow-[#F5F5F5]/30
+        hover:bg-white hover:shadow-lg hover:shadow-[#F5F5F5]/30
         active:scale-[0.97]
         disabled:opacity-40 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
@@ -271,5 +274,316 @@ export function ButtonSmall({ children, onClick, disabled, variant = "outline", 
     >
       {children}
     </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// BUTTON — mirrors naturehood-mobile `@/components/ui/button`
+//    Sentence case, DM Sans 14px medium. Default for platform pages.
+//    Pass `href` to render a Next.js Link with the same styling.
+// ─────────────────────────────────────────────
+
+type ButtonVariant = "primary" | "outline" | "secondary" | "destructive" | "ghost" | "link";
+type ButtonSize = "sm" | "default" | "lg" | "xl" | "icon" | "icon-sm";
+
+interface ButtonProps {
+  children: ReactNode;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  href?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  fullWidth?: boolean;
+  type?: "button" | "submit" | "reset";
+  ariaLabel?: string;
+  className?: string;
+}
+
+const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
+  primary:     "bg-[#F5F5F5] text-[#141115] hover:bg-[#F5F5F5]/90 active:bg-[#F5F5F5]/90",
+  outline:     "border border-[#F5F5F5] bg-transparent text-[#F5F5F5] hover:bg-[#F5F5F5]/10 active:border-[#F5F5F5]/70",
+  secondary:   "rounded-lg bg-[#2B282C] text-white hover:bg-[#2B282C]/80",
+  destructive: "bg-[#E3170A]/60 text-white hover:bg-[#E3170A]/90",
+  ghost:       "text-[#847E89] hover:bg-[#2B282C] hover:text-white active:bg-[#4F9D69]/50",
+  link:        "text-[#F5F5F5] underline-offset-4 hover:underline",
+};
+
+const BUTTON_SIZES: Record<ButtonSize, string> = {
+  sm:        "h-8 gap-1.5 px-3",
+  default:   "h-9 px-4 py-2",
+  lg:        "h-10 px-6 text-base",
+  xl:        "h-[52px] px-5 text-lg",
+  icon:      "h-9 w-9",
+  "icon-sm": "h-7 w-7",
+};
+
+export function Button({
+  children,
+  variant = "primary",
+  size = "default",
+  href,
+  onClick,
+  disabled,
+  fullWidth,
+  type = "button",
+  ariaLabel,
+  className,
+}: ButtonProps) {
+  const classes = cn(
+    "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-colors duration-150",
+    "disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
+    BUTTON_VARIANTS[variant],
+    BUTTON_SIZES[size],
+    variant === "link" && "h-auto px-0",
+    fullWidth && "w-full",
+    className,
+  );
+  const style = { fontFamily: "'DM Sans', sans-serif" };
+
+  if (href) {
+    return (
+      <Link href={href} aria-label={ariaLabel} className={classes} style={style}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <button type={type} onClick={onClick} disabled={disabled} aria-label={ariaLabel} className={classes} style={style}>
+      {children}
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// BUTTON — TOGGLE (on/off flag, mirrors mobile `Toggle` outline sm)
+//    Use: per-row flags (WU / F / D, PB / SB, OK / DNF)
+// ─────────────────────────────────────────────
+
+interface ButtonToggleProps {
+  children: ReactNode;
+  pressed: boolean;
+  onPressedChange: (pressed: boolean) => void;
+  tone?: "default" | "destructive";
+  ariaLabel?: string;
+}
+
+export function ButtonToggle({ children, pressed, onPressedChange, tone = "default", ariaLabel }: ButtonToggleProps) {
+  return (
+    <button
+      type="button"
+      aria-pressed={pressed}
+      aria-label={ariaLabel}
+      onClick={() => onPressedChange(!pressed)}
+      className={cn(
+        "inline-flex h-7 min-w-7 shrink-0 items-center justify-center rounded-sm border px-2 text-[10px] font-medium uppercase transition-colors duration-150",
+        !pressed && "border-[#3D3940] text-[#847E89] hover:bg-[#2B282C]",
+        pressed && tone === "default" && "border-[#F5F5F5] bg-[#F5F5F5] text-[#141115]",
+        pressed && tone === "destructive" && "border-[#E3170A] bg-[#E3170A] text-white",
+      )}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// BUTTON — SEGMENTED (single-select, mirrors mobile `TabsList variant="primary"`)
+//    Use: picking one value from a short list (session type, intensity…)
+//    `allowDeselect` lets a second click clear the value.
+// ─────────────────────────────────────────────
+
+interface SegmentOption<T extends string> {
+  value: T;
+  label: ReactNode;
+}
+
+interface ButtonSegmentedProps<T extends string> {
+  options: readonly SegmentOption<T>[];
+  value: T | null | undefined;
+  onChange: (value: T | null) => void;
+  allowDeselect?: boolean;
+  size?: "sm" | "md";
+  ariaLabel?: string;
+}
+
+export function ButtonSegmented<T extends string>({
+  options,
+  value,
+  onChange,
+  allowDeselect = false,
+  size = "md",
+  ariaLabel,
+}: ButtonSegmentedProps<T>) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={ariaLabel}
+      className="inline-flex max-w-full flex-wrap items-center gap-0.5 rounded-lg border border-[#3D3940] p-[3px]"
+    >
+      {options.map((opt) => {
+        const active = opt.value === value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(active && allowDeselect ? null : opt.value)}
+            className={cn(
+              "inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors duration-150",
+              size === "md" ? "h-8 px-3 text-sm" : "h-7 px-2 text-xs",
+              active ? "bg-[#F5F5F5] text-[#141115]" : "text-[#847E89] hover:text-white",
+            )}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// BUTTON — PROPERTY SELECT (Linear-style property chip)
+//    Use: compact metadata labels that open a picker
+//    (session type, intensity, block type, status…)
+//    Shows the selected option's icon + label; empty state shows `placeholder`.
+// ─────────────────────────────────────────────
+
+interface PropertyOption<T extends string> {
+  value: T;
+  label: string;
+  icon?: ReactNode;
+}
+
+interface ButtonPropertySelectProps<T extends string> {
+  label: string;
+  options: readonly PropertyOption<T>[];
+  value: T | null | undefined;
+  onChange: (value: T | null) => void;
+  placeholder?: string;
+  icon?: ReactNode;
+  allowClear?: boolean;
+  align?: "left" | "right";
+  className?: string;
+}
+
+export function ButtonPropertySelect<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+  placeholder,
+  icon,
+  allowClear = false,
+  align = "left",
+  className,
+}: ButtonPropertySelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const selected = options.find((o) => o.value === value);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    // Focus the selected (or first) item when the menu opens
+    const items = menuRef.current?.querySelectorAll<HTMLButtonElement>("[role=option]");
+    const idx = Math.max(0, options.findIndex((o) => o.value === value));
+    items?.[idx]?.focus();
+    return () => document.removeEventListener("pointerdown", onPointer);
+  }, [open, options, value]);
+
+  const onMenuKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    const items = Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>("[role=option]") ?? []);
+    const i = items.indexOf(document.activeElement as HTMLButtonElement);
+    if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length]?.focus(); }
+    if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length]?.focus(); }
+    if (e.key === "Escape" || e.key === "Tab") setOpen(false);
+  };
+
+  const pick = (v: T | null) => {
+    onChange(v);
+    setOpen(false);
+  };
+
+  return (
+    <div ref={rootRef} className={cn("relative inline-flex", className)}>
+      <button
+        type="button"
+        title={label}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "inline-flex h-7 items-center gap-1.5 rounded-md border border-[#3D3940] px-2 text-[12px] font-medium transition-colors duration-150",
+          "hover:border-[#4A464D] hover:bg-[#2B282C] [&_svg]:size-3.5 [&_svg]:shrink-0",
+          open && "border-[#4A464D] bg-[#2B282C]",
+          selected ? "text-[#E8E8E8]" : "text-[#847E89]",
+        )}
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        <span className={selected ? "text-[#A09EA3]" : "text-[#6B6870]"}>{selected?.icon ?? icon}</span>
+        {selected?.label ?? placeholder ?? label}
+      </button>
+
+      {open && (
+        <div
+          ref={menuRef}
+          role="listbox"
+          aria-label={label}
+          onKeyDown={onMenuKey}
+          className={cn(
+            "absolute top-full z-30 mt-1 min-w-[200px] rounded-lg border border-[#3D3940] bg-[#1E1B1F] p-1 shadow-xl shadow-black/50",
+            align === "right" ? "right-0" : "left-0",
+          )}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          <p
+            className="px-2 pb-1 pt-1.5 text-[11px] font-normal uppercase tracking-[0.04em] text-[#6B6870]"
+            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+          >
+            {label}
+          </p>
+          {options.map((opt) => {
+            const active = opt.value === value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => pick(opt.value)}
+                className="flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-[13px] text-[#E8E8E8] outline-none hover:bg-[#2B282C] focus:bg-[#2B282C] [&_svg]:size-3.5 [&_svg]:shrink-0"
+              >
+                <span className="text-[#A09EA3]">{opt.icon}</span>
+                <span className="flex-1">{opt.label}</span>
+                {active && <Check className="text-[#E8E8E8]" />}
+              </button>
+            );
+          })}
+          {allowClear && value != null && (
+            <>
+              <div className="my-1 h-px bg-[#3D3940]" />
+              <button
+                type="button"
+                role="option"
+                aria-selected={false}
+                onClick={() => pick(null)}
+                className="flex h-8 w-full items-center rounded-md px-2 text-left text-[13px] text-[#847E89] outline-none hover:bg-[#2B282C] focus:bg-[#2B282C]"
+              >
+                Clear
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

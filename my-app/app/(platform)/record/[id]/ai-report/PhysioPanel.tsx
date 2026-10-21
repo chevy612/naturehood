@@ -1,13 +1,24 @@
 'use client'
 
-import { Plus, X } from 'lucide-react'
+import { Plus, X, MoveHorizontal, UserRound, ShieldCheck } from 'lucide-react'
 import type { PhysioBodyAreaRow, SessionDetailsRow } from '@/lib/types'
+import { Button, ButtonPropertySelect } from '@/app/components/ui/buttons'
+import { InputInline, TextAreaInline } from '@/app/components/ui/inputs'
 import StrengthPanel, { type DraftBlock } from './StrengthPanel'
+import { ReportSection, ReportCard, PropertyRow } from './ReportSection'
 
 export type DraftBodyArea = Omit<PhysioBodyAreaRow, 'id' | 'training_log_id' | 'user_id'>
 
-const SIDES = ['left', 'right', 'bilateral'] as const
-const PROVIDERS = ['physiotherapist', 'coach', 'self'] as const
+const SIDES = [
+  { value: 'left',      label: 'Left' },
+  { value: 'right',     label: 'Right' },
+  { value: 'bilateral', label: 'Bilateral' },
+] as const
+const PROVIDERS = [
+  { value: 'physiotherapist', label: 'Physiotherapist' },
+  { value: 'coach',           label: 'Coach' },
+  { value: 'self',            label: 'Self' },
+] as const
 const CLEARANCE_STATUSES = [
   { value: 'cleared',          label: 'Cleared' },
   { value: 'modified_training', label: 'Modified' },
@@ -38,107 +49,56 @@ function BodyAreaCard({
   onChange: (patch: Partial<DraftBodyArea>) => void
   onDelete: () => void
 }) {
-  const num = (v: string, max = 10) =>
-    v === '' ? null : Math.min(max, Math.max(0, Number(v)))
+  const pain = (v: string) => (v === '' || isNaN(Number(v)) ? null : Math.min(10, Math.max(0, Number(v))))
 
   return (
-    <div className="border border-[#3A373C] bg-[#1A1719] p-4 space-y-3">
-      <div className="flex items-start gap-3">
-        <div className="flex-1 space-y-3">
-          {/* Area name */}
-          <input
-            type="text"
-            value={area.area}
-            onChange={(e) => onChange({ area: e.target.value })}
-            placeholder="Body area (e.g. left hamstring)"
-            className="w-full bg-transparent outline-none text-[13px] font-semibold text-white placeholder-[#3A373C] border-b border-[#3A373C] focus:border-[#F5F5F5] pb-1 transition-colors"
-            style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
-          />
-
-          {/* Side */}
-          <div className="flex gap-1.5">
-            {SIDES.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => onChange({ side: area.side === s ? null : s })}
-                className={`px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] border transition-colors ${
-                  area.side === s
-                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                    : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
-                }`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-
-          {/* Pain scores + treatment */}
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Pain before</span>
-              <input
-                type="number"
-                min={0}
-                max={10}
-                value={area.pain_score_before ?? ''}
-                placeholder="0–10"
-                onChange={(e) => onChange({ pain_score_before: num(e.target.value) })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#6B6870]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Pain after</span>
-              <input
-                type="number"
-                min={0}
-                max={10}
-                value={area.pain_score_after ?? ''}
-                placeholder="0–10"
-                onChange={(e) => onChange({ pain_score_after: num(e.target.value) })}
-                className="w-14 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-[#6B6870] shrink-0" style={{ fontFamily: "'DM Sans', sans-serif" }}>Injury</span>
-            <input
-              type="text"
-              value={area.injury_name ?? ''}
-              placeholder="e.g. hamstring strain"
-              onChange={(e) => onChange({ injury_name: e.target.value || null })}
-              className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-[#6B6870] shrink-0" style={{ fontFamily: "'DM Sans', sans-serif" }}>Treatment</span>
-            <input
-              type="text"
-              value={area.treatment_type ?? ''}
-              placeholder="e.g. dry needling, massage"
-              onChange={(e) => onChange({ treatment_type: e.target.value || null })}
-              className="flex-1 bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-[12px] text-white px-2 py-1 transition-colors"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            />
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-[#3A373C] hover:text-[#FF4D4D] transition-colors shrink-0 mt-1"
-          aria-label="Remove area"
-        >
+    <ReportCard>
+      <div className="flex items-center gap-2 border-b border-[#2A272C] px-2 py-2">
+        <InputInline
+          value={area.area}
+          onValueChange={(v) => onChange({ area: v })}
+          placeholder="Body area (e.g. left hamstring)"
+          className="flex-1 text-[14px] font-semibold"
+        />
+        <ButtonPropertySelect
+          label="Side"
+          options={SIDES}
+          value={area.side}
+          onChange={(v) => onChange({ side: v })}
+          icon={<MoveHorizontal />}
+          allowClear
+          align="right"
+        />
+        <Button variant="ghost" size="icon-sm" onClick={onDelete} ariaLabel="Remove area">
           <X size={14} />
-        </button>
+        </Button>
       </div>
-    </div>
+
+      <div className="px-3 py-1.5">
+        <PropertyRow label="Pain">
+          <div className="flex items-center gap-1 text-[12px] text-[#6B6870]">
+            <span className="w-14">
+              <InputInline type="number" min={0} max={10} value={area.pain_score_before} placeholder="—" ariaLabel="Pain before"
+                onValueChange={(v) => onChange({ pain_score_before: pain(v) })} />
+            </span>
+            <span>→</span>
+            <span className="w-14">
+              <InputInline type="number" min={0} max={10} value={area.pain_score_after} placeholder="—" ariaLabel="Pain after"
+                onValueChange={(v) => onChange({ pain_score_after: pain(v) })} />
+            </span>
+            <span>/ 10 · before → after</span>
+          </div>
+        </PropertyRow>
+        <PropertyRow label="Injury">
+          <InputInline value={area.injury_name} placeholder="e.g. hamstring strain"
+            onValueChange={(v) => onChange({ injury_name: v || null })} />
+        </PropertyRow>
+        <PropertyRow label="Treatment">
+          <InputInline value={area.treatment_type} placeholder="e.g. dry needling, massage"
+            onValueChange={(v) => onChange({ treatment_type: v || null })} />
+        </PropertyRow>
+      </div>
+    </ReportCard>
   )
 }
 
@@ -169,108 +129,73 @@ export default function PhysioPanel({
   const addArea = () => onBodyAreasChange([...bodyAreas, blankArea(bodyAreas.length)])
 
   return (
-    <div className="space-y-6">
-      <p
-        className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-        style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+    <div className="space-y-10">
+      <ReportSection
+        title="Physio"
+        action={
+          <div className="flex items-center gap-1.5">
+            <ButtonPropertySelect
+              label="Provider"
+              options={PROVIDERS}
+              value={details.physio_provider}
+              onChange={(v) => onDetailsChange({ physio_provider: v })}
+              icon={<UserRound />}
+              allowClear
+              align="right"
+            />
+            <ButtonPropertySelect
+              label="Clearance"
+              options={CLEARANCE_STATUSES}
+              value={details.physio_clearance_status}
+              onChange={(v) => onDetailsChange({ physio_clearance_status: v })}
+              icon={<ShieldCheck />}
+              allowClear
+              align="right"
+            />
+          </div>
+        }
       >
-        Physio Session
-      </p>
-
-      {/* Provider + clearance */}
-      <div className="space-y-3">
-        <div>
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
-            Provider
-          </p>
-          <div className="flex gap-2">
-            {PROVIDERS.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => onDetailsChange({ physio_provider: details.physio_provider === p ? null : p })}
-                className={`px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] border transition-colors capitalize ${
-                  details.physio_provider === p
-                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                    : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
-                }`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870] mb-2" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
-            Clearance
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {CLEARANCE_STATUSES.map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => onDetailsChange({ physio_clearance_status: details.physio_clearance_status === value ? null : value })}
-                className={`px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] border transition-colors ${
-                  details.physio_clearance_status === value
-                    ? 'bg-[#F5F5F5] border-[#F5F5F5] text-[#141115]'
-                    : 'border-[#3A373C] text-[#6B6870] hover:border-[#6B6870]'
-                }`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <textarea
-          value={details.physio_notes ?? ''}
-          onChange={(e) => onDetailsChange({ physio_notes: e.target.value || null })}
-          placeholder="Physio session notes…"
-          rows={2}
-          className="w-full bg-transparent border border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[13px] p-3 placeholder-[#3A373C] transition-colors resize-none leading-relaxed"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        <TextAreaInline
+          value={details.physio_notes}
+          onValueChange={(v) => onDetailsChange({ physio_notes: v || null })}
+          placeholder="Add physio notes…"
+          ariaLabel="Physio notes"
+          className="-mx-2 w-[calc(100%+1rem)]"
         />
-      </div>
+      </ReportSection>
 
-      {/* Body areas */}
-      <div className="space-y-3">
-        <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#6B6870]" style={{ fontFamily: "'Sk Modernist', sans-serif" }}>
-          Body Areas
-        </p>
-        {bodyAreas.map((area, i) => (
-          <BodyAreaCard
-            key={i}
-            area={area}
-            onChange={(patch) => updateArea(i, patch)}
-            onDelete={() => deleteArea(i)}
-          />
-        ))}
-        <button
-          type="button"
-          onClick={addArea}
-          className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          <Plus size={12} /> Add Body Area
-        </button>
-      </div>
+      <ReportSection
+        title="Body areas"
+        count={bodyAreas.length}
+        action={
+          <Button variant="ghost" size="sm" onClick={addArea}>
+            <Plus size={14} /> Add area
+          </Button>
+        }
+      >
+        <div className="space-y-3">
+          {bodyAreas.map((area, i) => (
+            <BodyAreaCard
+              key={i}
+              area={area}
+              onChange={(patch) => updateArea(i, patch)}
+              onDelete={() => deleteArea(i)}
+            />
+          ))}
+        </div>
+      </ReportSection>
 
       {/* Rehab exercises (reuse StrengthPanel) */}
-      {exerciseBlocks.length > 0 && (
-        <StrengthPanel blocks={exerciseBlocks} onChange={onExerciseBlocksChange} />
-      )}
-      {exerciseBlocks.length === 0 && (
-        <button
-          type="button"
+      {exerciseBlocks.length > 0 ? (
+        <StrengthPanel title="Rehab exercises" blocks={exerciseBlocks} onChange={onExerciseBlocksChange} />
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => onExerciseBlocksChange([{ block_index: 0, block_name: 'Rehab Exercises', block_type: 'main', emom_interval_seconds: null, circuit_rounds: null, intensity_percent: null, notes: null, exercises: [] }])}
-          className="flex items-center gap-2 px-4 py-2 border border-[#3A373C] text-[#6B6870] text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
-          <Plus size={12} /> Add Rehab Exercises
-        </button>
+          <Plus size={14} /> Add rehab exercises
+        </Button>
       )}
     </div>
   )
