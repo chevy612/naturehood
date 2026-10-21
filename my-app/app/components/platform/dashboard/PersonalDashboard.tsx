@@ -7,6 +7,7 @@ import {
   Shield, Shuffle, Stethoscope, Trophy, Waves, Zap, type LucideIcon,
 } from 'lucide-react'
 import { TrainingCalendar } from '@/app/components/platform/dashboard/TrainingCalendar'
+import { TabBar, type SwipeTab } from '@/app/components/platform/team/SwipeTabs'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { fetchMealsInRange } from '@/lib/meals/browser'
 import { dateKey, formatDayHeading, sumMacros, todayDateKey } from '@/lib/meals/utils'
@@ -16,23 +17,28 @@ import type { PerceivedIntensity, SessionType } from '@/lib/types'
 import {
   CATEGORY_META,
   PAIN_COLOR,
+  PERIOD_DAYS,
+  PERFORMANCE_META,
   bodyCheck,
   daysInMonth,
   firstOfMonth,
   formatMinutes,
   groupByDate,
   monthOf,
+  performanceBand,
+  performanceScore,
   shiftMonth,
   weeklyStreak,
   workoutCategory,
   type BodyCheck,
+  type BodyCheckPeriod,
   type DashboardWorkout,
   type LoadStatus,
 } from '@/lib/dashboard/utils'
 
 // ─────────────────────────────────────────────
 // PERSONAL DASHBOARD (client)
-//   Month stats · training calendar · selected-day detail · body check.
+//   Body check (week / month) · month stats · training calendar · selected-day detail.
 //   Workouts arrive from the server (12-month window); meals load per visible month
 //   because their day is the viewer's local day of `created_at`.
 // ─────────────────────────────────────────────
@@ -56,6 +62,7 @@ export function PersonalDashboard(props: { userId: string; workouts: DashboardWo
 function DashboardSkeleton() {
   return (
     <div className="flex animate-pulse flex-col gap-4" aria-busy="true" aria-label="Loading dashboard">
+      <div className="h-[150px] rounded-2xl bg-[#1E1B1F]" />
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {[0, 1, 2, 3].map((i) => <div key={i} className="h-[92px] rounded-2xl bg-[#1E1B1F]" />)}
       </div>
@@ -79,6 +86,7 @@ function DashboardBody({
   const [selectedDate, setSelectedDate] = useState(today)
   const [mealsByMonth, setMealsByMonth] = useState<Record<string, MealListItem[]>>({})
   const [mealsError, setMealsError] = useState<string | null>(null)
+  const [bodyPeriod, setBodyPeriod] = useState<BodyCheckPeriod>('week')
 
   useEffect(() => {
     if (mealsByMonth[month]) return
@@ -103,7 +111,7 @@ function DashboardBody({
     [mealsByMonth],
   )
   const streak = useMemo(() => weeklyStreak(new Set(workoutsByDate.keys()), today), [workoutsByDate, today])
-  const body = useMemo(() => bodyCheck(workouts, today), [workouts, today])
+  const body = useMemo(() => bodyCheck(workouts, today, PERIOD_DAYS[bodyPeriod]), [workouts, today, bodyPeriod])
 
   const monthStats = useMemo(() => {
     const inMonth = workouts.filter((w) => monthOf(w.logged_date) === month)
@@ -124,6 +132,8 @@ function DashboardBody({
 
   return (
     <div className="flex flex-col gap-4">
+      <BodyCheckCard body={body} period={bodyPeriod} onPeriodChange={setBodyPeriod} />
+
       {/* ── Month at a glance ── */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <StatTile
@@ -156,7 +166,7 @@ function DashboardBody({
           {mealsError ? <StatusMessage tone="error">{mealsError}</StatusMessage> : null}
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div>
           <DayDetail
             dateKey={selectedDate}
             workouts={workoutsByDate.get(selectedDate) ?? []}
@@ -164,7 +174,6 @@ function DashboardBody({
             mealsLoaded={!!mealsByMonth[monthOf(selectedDate)]}
             today={today}
           />
-          <BodyCheckCard body={body} />
         </div>
       </div>
     </div>
@@ -285,6 +294,8 @@ function WorkoutRow({ workout }: { workout: DashboardWorkout }) {
   const type = workout.session_type ? SESSION_TYPE_META[workout.session_type] : undefined
   const TypeIcon = type?.Icon ?? Dumbbell
   const color = CATEGORY_META[workoutCategory(workout.session_type)].color
+  const score = performanceScore(workout)
+  const band = performanceBand(score)
   const meta = [
     workout.duration_minutes ? formatMinutes(workout.duration_minutes) : null,
     workout.perceived_intensity ? `${INTENSITY_LABELS[workout.perceived_intensity]} intensity` : null,
@@ -321,6 +332,14 @@ function WorkoutRow({ workout }: { workout: DashboardWorkout }) {
           </span>
         ) : null}
       </span>
+      {band ? (
+        <span className="flex shrink-0 flex-col items-end" title="Performance score: how you felt and the pain you reported">
+          <span className="text-[15px] font-bold leading-none" style={{ ...display, color: PERFORMANCE_META[band].color }}>
+            {score}
+          </span>
+          <span className="text-[10px] text-[#847E89]" style={sans}>{PERFORMANCE_META[band].label}</span>
+        </span>
+      ) : null}
       <ChevronRight size={16} className="shrink-0 text-[#6B6870] group-hover:text-white" />
     </Link>
   )
@@ -328,65 +347,117 @@ function WorkoutRow({ workout }: { workout: DashboardWorkout }) {
 
 // ── Body check ────────────────────────────────
 
-const LOAD_COPY: Record<LoadStatus, { label: string; hint: string; color: string }> = {
-  none: { label: 'No recent load', hint: 'Log a few sessions to see how your body is handling training.', color: '#847E89' },
-  light: { label: 'Light week', hint: 'Below your 4-week average — good for recovery, or time to build back up.', color: '#60A5FA' },
-  balanced: { label: 'Balanced', hint: 'In line with your 4-week average. Keep it steady.', color: '#4ADE80' },
-  high: { label: 'High load', hint: 'Well above your 4-week average — watch for fatigue and plan recovery.', color: '#FBBF24' },
+const PERIOD_TABS: SwipeTab<BodyCheckPeriod>[] = [
+  { id: 'week', label: 'Week' },
+  { id: 'month', label: 'Month' },
+]
+
+const PERIOD_COPY: Record<BodyCheckPeriod, { range: string; average: string; light: string; prev: string }> = {
+  week: { range: 'Last 7 days', average: '4-week average', light: 'Light week', prev: 'prev week' },
+  month: { range: 'Last 30 days', average: '4-month average', light: 'Light month', prev: 'prev month' },
 }
 
-function BodyCheckCard({ body }: { body: BodyCheck }) {
-  const load = LOAD_COPY[body.loadStatus]
-  const painDelta =
-    body.avgPain7d != null && body.avgPainPrev7d != null ? body.avgPain7d - body.avgPainPrev7d : null
-  const PainIcon = painDelta == null || Math.abs(painDelta) < 0.25 ? Minus : painDelta > 0 ? ArrowUpRight : ArrowDownRight
+function loadCopy(status: LoadStatus, period: BodyCheckPeriod): { label: string; hint: string; color: string } {
+  const { average, light } = PERIOD_COPY[period]
+  switch (status) {
+    case 'none':
+      return { label: 'No recent load', hint: 'Log a few sessions to see how your body is handling training.', color: '#847E89' }
+    case 'light':
+      return { label: light, hint: `Below your ${average} — good for recovery, or time to build back up.`, color: '#60A5FA' }
+    case 'balanced':
+      return { label: 'Balanced', hint: `In line with your ${average}. Keep it steady.`, color: '#4ADE80' }
+    case 'high':
+      return { label: 'High load', hint: `Well above your ${average} — watch for fatigue and plan recovery.`, color: '#FBBF24' }
+  }
+}
+
+function BodyCheckCard({
+  body,
+  period,
+  onPeriodChange,
+}: {
+  body: BodyCheck
+  period: BodyCheckPeriod
+  onPeriodChange: (period: BodyCheckPeriod) => void
+}) {
+  const copy = PERIOD_COPY[period]
+  const load = loadCopy(body.loadStatus, period)
+  const perf = body.avgPerformance == null ? null : Math.round(body.avgPerformance)
+  const perfBand = performanceBand(perf)
+  const perfDelta =
+    perf != null && body.avgPerformancePrev != null ? perf - Math.round(body.avgPerformancePrev) : null
+  // Within ±2 points reads as steady; a drop is flagged in the "poor" colour.
+  const steady = perfDelta == null || Math.abs(perfDelta) <= 2
+  const DeltaIcon = steady ? Minus : perfDelta > 0 ? ArrowUpRight : ArrowDownRight
 
   return (
     <section aria-label="Body check" className="rounded-2xl bg-[#1E1B1F] p-4">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="text-[14px] font-normal text-white" style={display}>Body check</h2>
-        <span className="nh-label">Last 7 days</span>
-      </div>
-
-      {/* Load status */}
-      <div className="mb-3 rounded-xl bg-[#181519] p-3">
-        <span className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full" style={{ background: load.color }} aria-hidden />
-          <span className="text-[13px] font-semibold text-white" style={sans}>{load.label}</span>
-          {body.loadRatio != null ? (
-            <span className="ml-auto text-[12px] text-[#847E89]" style={sans}>{body.loadRatio.toFixed(2)}× avg</span>
-          ) : null}
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <span className="flex items-baseline gap-3">
+          <h2 className="text-[14px] font-normal text-white" style={display}>Body check</h2>
+          <span className="nh-label">{copy.range}</span>
         </span>
-        <p className="mt-1 text-[12px] leading-snug text-[#847E89]" style={sans}>{load.hint}</p>
+        <TabBar tabs={PERIOD_TABS} active={period} onChange={onPeriodChange} label="Body check period" compact />
       </div>
 
-      <dl className="grid grid-cols-2 gap-2">
-        <BodyStat label="Sessions" value={String(body.sessions7d)} sub={formatMinutes(body.acuteMinutes)} />
-        <BodyStat label="Rest days" value={String(body.restDays7d)} sub="of 7" />
-        <BodyStat
-          label="Avg pain"
-          value={body.avgPain7d == null ? '–' : body.avgPain7d.toFixed(1)}
-          sub={
-            painDelta == null ? 'out of 10' : (
-              <span className="flex items-center gap-0.5" style={painDelta > 0.25 ? { color: PAIN_COLOR } : undefined}>
-                <PainIcon size={12} /> vs prev week
+      <dl className="grid grid-cols-2 gap-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.5fr)]">
+        {/* Load status */}
+        <div className="col-span-2 flex flex-col gap-1 rounded-xl bg-[#181519] p-3 lg:col-span-1">
+          <dt className="nh-label !text-[10px]">Training load</dt>
+          <dd>
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full" style={{ background: load.color }} aria-hidden />
+              <span className="text-[13px] font-semibold text-white" style={sans}>{load.label}</span>
+              {body.loadRatio != null ? (
+                <span className="ml-auto text-[12px] text-[#847E89]" style={sans}>{body.loadRatio.toFixed(2)}× avg</span>
+              ) : null}
+            </span>
+            <p className="mt-1 text-[12px] leading-snug text-[#847E89]" style={sans}>{load.hint}</p>
+          </dd>
+        </div>
+
+        <BodyStat label="Sessions" value={String(body.sessions)} sub={formatMinutes(body.minutes)} />
+        <BodyStat label="Rest days" value={String(body.restDays)} sub={`of ${body.days}`} />
+
+        <div className="col-span-2 flex items-center gap-3 rounded-xl bg-[#181519] p-3 lg:col-span-1">
+          <div className="flex flex-1 flex-col gap-1">
+            <dt className="nh-label !text-[10px]">Avg performance</dt>
+            <dd className="flex items-baseline gap-2">
+              <span
+                className="text-[20px] font-bold leading-none"
+                style={{ ...display, color: perfBand ? PERFORMANCE_META[perfBand].color : '#FFFFFF' }}
+              >
+                {perf ?? '–'}
               </span>
-            )
-          }
-        />
-        <BodyStat label="Last feel" value={body.latestFeel ?? '–'} sub={body.latestFeelDate ? formatDayHeading(body.latestFeelDate).split(',')[0] : ''} small />
+              <span className="text-[12px] text-[#847E89]" style={sans}>
+                {perfBand
+                  ? `${PERFORMANCE_META[perfBand].label} · ${body.ratedSessions} rated session${body.ratedSessions === 1 ? '' : 's'}`
+                  : 'No rated sessions'}
+              </span>
+            </dd>
+          </div>
+          {perfDelta != null ? (
+            <span
+              className="flex shrink-0 items-center gap-0.5 text-[11px] text-[#847E89]"
+              style={{ ...sans, ...(!steady ? { color: PERFORMANCE_META[perfDelta > 0 ? 'good' : 'poor'].color } : null) }}
+            >
+              <DeltaIcon size={12} />
+              {steady ? 'Steady' : `${perfDelta > 0 ? '+' : ''}${perfDelta}`} vs {copy.prev}
+            </span>
+          ) : null}
+        </div>
       </dl>
     </section>
   )
 }
 
-function BodyStat({ label, value, sub, small }: { label: string; value: string; sub?: React.ReactNode; small?: boolean }) {
+function BodyStat({ label, value, sub }: { label: string; value: string; sub?: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-[#181519] p-3">
       <dt className="nh-label !text-[10px]">{label}</dt>
       <dd className="flex flex-col gap-0.5">
         <span
-          className={`truncate font-bold capitalize text-white ${small ? 'text-[15px]' : 'text-[20px] leading-none'}`}
+          className="truncate text-[20px] font-bold leading-none text-white"
           style={display}
         >
           {value}

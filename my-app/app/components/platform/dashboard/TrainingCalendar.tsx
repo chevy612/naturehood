@@ -1,18 +1,19 @@
 'use client'
 
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Utensils } from 'lucide-react'
 import { display, sans } from '@/lib/social/format'
 import { MONTH_NAMES, todayDateKey } from '@/lib/meals/utils'
 import type { MealListItem } from '@/lib/meals/types'
 import {
   CATEGORY_META,
-  MEAL_COLOR,
-  PAIN_COLOR,
-  PAIN_FLAG,
+  PERFORMANCE_META,
   monthOf,
   monthWeeks,
+  performanceBand,
+  performanceScore,
   workoutCategory,
   type DashboardWorkout,
+  type PerformanceBand,
   type WorkoutCategory,
 } from '@/lib/dashboard/utils'
 
@@ -21,7 +22,8 @@ import {
 //   Monday-first month grid. Each day shows:
 //     • a bar per session, coloured by category (training / competition / recovery),
 //       brighter for higher perceived intensity
-//     • a green dot when meals were logged, a red dot when pain ≥ PAIN_FLAG
+//     • a dot per session for its performance (good / average / poor, hollow when unrated)
+//     • a utensils mark when meals were logged
 //   The right-hand column counts training days per week.
 // ─────────────────────────────────────────────
 
@@ -140,11 +142,13 @@ export function TrainingCalendar({
             <span className="h-1.5 w-3 rounded-full" style={{ background: CATEGORY_META[cat].color }} />
           </LegendItem>
         ))}
+        {(Object.keys(PERFORMANCE_META) as PerformanceBand[]).map((band) => (
+          <LegendItem key={band} label={PERFORMANCE_META[band].label}>
+            <PerformanceDot band={band} />
+          </LegendItem>
+        ))}
         <LegendItem label="Meals">
-          <span className="h-1.5 w-1.5 rounded-full" style={{ background: MEAL_COLOR }} />
-        </LegendItem>
-        <LegendItem label={`Pain ${PAIN_FLAG}+`}>
-          <span className="h-1.5 w-1.5 rounded-full" style={{ background: PAIN_COLOR }} />
+          <Utensils size={10} className="text-[#847E89]" />
         </LegendItem>
       </div>
     </section>
@@ -157,6 +161,14 @@ function LegendItem({ label, children }: { label: string; children: React.ReactN
       {children}
       {label}
     </span>
+  )
+}
+
+function PerformanceDot({ band }: { band: PerformanceBand | null }) {
+  return band ? (
+    <span className="h-1.5 w-1.5 rounded-full" style={{ background: PERFORMANCE_META[band].color }} />
+  ) : (
+    <span className="h-1.5 w-1.5 rounded-full border border-[#6B6870]" />
   )
 }
 
@@ -182,13 +194,13 @@ function DayCell({
   const day = Number(dateKey.slice(8))
   const trained = !!workouts?.length
   const hasMeals = !!meals?.length
-  const painFlag = workouts?.some((w) => (w.readiness_pain_score ?? 0) >= PAIN_FLAG)
+  const bands = (workouts ?? []).slice(0, 3).map((w) => performanceBand(performanceScore(w)))
 
   const label = [
     dateKey,
     trained ? `${workouts!.length} session${workouts!.length > 1 ? 's' : ''}` : 'rest day',
     hasMeals ? `${meals!.length} meal${meals!.length > 1 ? 's' : ''}` : null,
-    painFlag ? 'pain reported' : null,
+    ...bands.map((band) => (band ? `${PERFORMANCE_META[band].label.toLowerCase()} session` : null)),
   ]
     .filter(Boolean)
     .join(', ')
@@ -218,14 +230,15 @@ function DayCell({
         >
           {day}
         </span>
-        <span className="flex gap-0.5">
-          {painFlag ? <span className="h-1.5 w-1.5 rounded-full" style={{ background: PAIN_COLOR }} aria-hidden /> : null}
-          {hasMeals ? <span className="h-1.5 w-1.5 rounded-full" style={{ background: MEAL_COLOR }} aria-hidden /> : null}
+        <span className="flex items-center gap-0.5" aria-hidden>
+          {bands.map((band, i) => <PerformanceDot key={i} band={band} />)}
         </span>
       </span>
 
+      {hasMeals ? <Utensils size={10} className="absolute bottom-1 right-1 text-[#6B6870] sm:bottom-1.5 sm:right-1.5" aria-hidden /> : null}
+
       {trained ? (
-        <span className="mt-auto flex flex-col gap-0.5" aria-hidden>
+        <span className={`mt-auto flex flex-col gap-0.5 ${hasMeals ? 'pr-3.5' : ''}`} aria-hidden>
           {workouts!.slice(0, 3).map((w) => (
             <span
               key={w.id}

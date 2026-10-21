@@ -18,14 +18,21 @@ export function TabBar<T extends string>({
   active,
   onChange,
   label,
+  compact = false,
 }: {
   tabs: SwipeTab<T>[]
   active: T
   onChange: (id: T) => void
   label: string
+  /** Inline, content-width variant (no bottom margin) for card headers. */
+  compact?: boolean
 }) {
   return (
-    <div className="mb-5 flex rounded-full bg-[#1E1B1F] p-1" role="tablist" aria-label={label}>
+    <div
+      className={`flex rounded-full p-1 ${compact ? 'bg-[#181519]' : 'mb-5 bg-[#1E1B1F]'}`}
+      role="tablist"
+      aria-label={label}
+    >
       {tabs.map((tab) => (
         <button
           key={tab.id}
@@ -34,7 +41,9 @@ export function TabBar<T extends string>({
           id={`tab-${tab.id}`}
           aria-selected={active === tab.id}
           onClick={() => onChange(tab.id)}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors ${
+          className={`flex items-center justify-center gap-2 rounded-full font-semibold uppercase transition-colors ${
+            compact ? 'px-3 py-1.5 text-[10px] tracking-[0.12em]' : 'flex-1 py-2.5 text-[11px] tracking-[0.16em]'
+          } ${
             active === tab.id ? 'bg-[#F5F5F5] text-[#141115]' : 'text-[#6B6870] hover:text-white'
           }`}
           style={sans}

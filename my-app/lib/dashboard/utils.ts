@@ -31,15 +31,47 @@ export function workoutCategory(type: SessionType | null): WorkoutCategory {
 
 export const CATEGORY_META: Record<WorkoutCategory, { label: string; color: string }> = {
   training: { label: 'Training', color: '#F5F5F5' },
-  competition: { label: 'Competition', color: '#FBBF24' },
+  competition: { label: 'Competition', color: '#FB923C' },
   recovery: { label: 'Recovery', color: '#60A5FA' },
 }
 
-export const MEAL_COLOR = '#4ADE80'
 export const PAIN_COLOR = '#FF4D4D'
 
-/** Pain score at or above this flags a day on the calendar. */
-export const PAIN_FLAG = 3
+// ── Session performance ───────────────────────
+
+export type PerformanceBand = 'good' | 'average' | 'poor'
+
+export const PERFORMANCE_META: Record<PerformanceBand, { label: string; color: string }> = {
+  good: { label: 'Good', color: '#4ADE80' },
+  average: { label: 'Average', color: '#FBBF24' },
+  poor: { label: 'Poor', color: PAIN_COLOR },
+}
+
+const FEEL_SCORE: Record<string, number> = { great: 100, good: 80, tired: 45, sore: 25 }
+
+/** Pain at or above this caps the session at "poor", whatever the athlete's feel. */
+const PAIN_POOR = 6
+
+/**
+ * 0–100 score from how the athlete felt and the pain they reported. Weighted towards the
+ * weaker of the two signals, so a great feel can't hide real pain. Null when neither was logged.
+ */
+export function performanceScore(
+  workout: Pick<DashboardWorkout, 'readiness_feel' | 'readiness_pain_score'>,
+): number | null {
+  const feel = workout.readiness_feel ? FEEL_SCORE[workout.readiness_feel] : undefined
+  const pain = workout.readiness_pain_score
+  const parts = [feel, pain == null ? undefined : 100 - pain * 12.5].filter((v): v is number => v != null)
+  if (!parts.length) return null
+
+  const score = Math.round(0.6 * Math.min(...parts) + 0.4 * Math.max(...parts))
+  return pain != null && pain >= PAIN_POOR ? Math.min(score, 39) : score
+}
+
+export function performanceBand(score: number | null): PerformanceBand | null {
+  if (score == null) return null
+  return score >= 70 ? 'good' : score >= 40 ? 'average' : 'poor'
+}
 
 const INTENSITY_WEIGHT: Record<PerceivedIntensity, number> = { low: 1, moderate: 2, high: 3, max: 4 }
 
@@ -114,56 +146,65 @@ export function weeklyStreak(trainedDays: ReadonlySet<string>, today = todayDate
 
 export type LoadStatus = 'none' | 'light' | 'balanced' | 'high'
 
+export type BodyCheckPeriod = 'week' | 'month'
+
+/** Window length in days for each Body check period. */
+export const PERIOD_DAYS: Record<BodyCheckPeriod, number> = { week: 7, month: 30 }
+
 export type BodyCheck = {
-  /** Load over the last 7 days ÷ average weekly load over the last 28 days (acute:chronic). */
+  /** Window length in days. */
+  days: number
+  /** Load over this window ÷ average load per window over the last four (acute:chronic). */
   loadRatio: number | null
   loadStatus: LoadStatus
-  acuteMinutes: number
-  sessions7d: number
-  restDays7d: number
-  avgPain7d: number | null
-  avgPainPrev7d: number | null
-  latestFeel: string | null
-  latestFeelDate: string | null
+  minutes: number
+  sessions: number
+  restDays: number
+  /** Mean performance score of rated sessions (see `performanceScore`). */
+  avgPerformance: number | null
+  avgPerformancePrev: number | null
+  ratedSessions: number
 }
 
 function average(values: number[]): number | null {
   return values.length ? values.reduce((sum, v) => sum + v, 0) / values.length : null
 }
 
-export function bodyCheck(workouts: DashboardWorkout[], today = todayDateKey()): BodyCheck {
-  const start7 = shiftDateKey(today, -6)
-  const start14 = shiftDateKey(today, -13)
-  const start28 = shiftDateKey(today, -27)
+/** Body check over the last `days` days (today included), compared with the window before it. */
+export function bodyCheck(workouts: DashboardWorkout[], today = todayDateKey(), days = 7): BodyCheck {
+  const start = shiftDateKey(today, -(days - 1))
+  const prevStart = shiftDateKey(today, -(days * 2 - 1))
+  const chronicStart = shiftDateKey(today, -(days * 4 - 1))
   const inRange = (w: DashboardWorkout, from: string) => w.logged_date >= from && w.logged_date <= today
 
-  const last7 = workouts.filter((w) => inRange(w, start7))
-  const prev7 = workouts.filter((w) => w.logged_date >= start14 && w.logged_date < start7)
-  const last28 = workouts.filter((w) => inRange(w, start28))
+  const current = workouts.filter((w) => inRange(w, start))
+  const previous = workouts.filter((w) => w.logged_date >= prevStart && w.logged_date < start)
+  const chronicWindow = workouts.filter((w) => inRange(w, chronicStart))
 
-  const acute = last7.reduce((sum, w) => sum + sessionLoad(w), 0)
-  const chronicWeekly = last28.reduce((sum, w) => sum + sessionLoad(w), 0) / 4
-  const loadRatio = chronicWeekly > 0 ? acute / chronicWeekly : null
+  const acute = current.reduce((sum, w) => sum + sessionLoad(w), 0)
+  // Average only over windows the athlete has history for, so a short history doesn't read as overload.
+  const firstLogged = workouts.reduce((min, w) => (w.logged_date < min ? w.logged_date : min), today)
+  let windowsWithHistory = 1
+  while (windowsWithHistory < 4 && shiftDateKey(today, -windowsWithHistory * days) >= firstLogged) windowsWithHistory++
+  const chronic = chronicWindow.reduce((sum, w) => sum + sessionLoad(w), 0) / windowsWithHistory
+  const loadRatio = chronic > 0 ? acute / chronic : null
   const loadStatus: LoadStatus =
     loadRatio == null ? 'none' : loadRatio > 1.3 ? 'high' : loadRatio < 0.8 ? 'light' : 'balanced'
 
-  const pains = (list: DashboardWorkout[]) =>
-    list.map((w) => w.readiness_pain_score).filter((p): p is number => p != null)
-
-  const latestWithFeel = [...last7]
-    .filter((w) => w.readiness_feel)
-    .sort((a, b) => b.logged_date.localeCompare(a.logged_date))[0]
+  const scores = (list: DashboardWorkout[]) =>
+    list.map(performanceScore).filter((p): p is number => p != null)
+  const currentScores = scores(current)
 
   return {
+    days,
     loadRatio,
     loadStatus,
-    acuteMinutes: last7.reduce((sum, w) => sum + (w.duration_minutes ?? 0), 0),
-    sessions7d: last7.length,
-    restDays7d: 7 - new Set(last7.map((w) => w.logged_date)).size,
-    avgPain7d: average(pains(last7)),
-    avgPainPrev7d: average(pains(prev7)),
-    latestFeel: latestWithFeel?.readiness_feel ?? null,
-    latestFeelDate: latestWithFeel?.logged_date ?? null,
+    minutes: current.reduce((sum, w) => sum + (w.duration_minutes ?? 0), 0),
+    sessions: current.length,
+    restDays: days - new Set(current.map((w) => w.logged_date)).size,
+    avgPerformance: average(currentScores),
+    avgPerformancePrev: average(scores(previous)),
+    ratedSessions: currentScores.length,
   }
 }
 
