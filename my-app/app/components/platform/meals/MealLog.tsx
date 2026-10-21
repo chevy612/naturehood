@@ -116,7 +116,6 @@ export function MealLog({ userId }: { userId: string }) {
       <div className="mx-auto max-w-2xl">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={display}>Meals</p>
             <h1 className="text-2xl font-bold text-white" style={{ ...display, letterSpacing: '-0.02em' }}>Meal log</h1>
             <p className="mt-1 text-[13px] text-[#6B6870]" style={sans}>{monthNameForKey(selectedDate)}</p>
           </div>

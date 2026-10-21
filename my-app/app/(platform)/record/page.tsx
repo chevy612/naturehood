@@ -8,13 +8,6 @@ export default async function RecordPage() {
     <div className="min-h-screen bg-[#141115] px-6 py-10">
       <div className="max-w-2xl mx-auto">
 
-        <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          Record
-        </p>
-
         <h1
           className="text-2xl font-bold text-white mb-8"
           style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}

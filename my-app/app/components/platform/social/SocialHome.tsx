@@ -76,9 +76,9 @@ export function SocialHome() {
     <div className="min-h-screen bg-[#141115] px-4 py-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-6 flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={display}>
+          <h1 className="text-2xl font-bold text-white" style={{ ...display, letterSpacing: '-0.02em' }}>
             Home
-          </p>
+          </h1>
           <Link href="/home/search" aria-label="Search posts and people" className="text-white">
             <Search size={20} />
           </Link>

@@ -57,7 +57,7 @@ export default async function PersonalDashboardPage() {
     <div className="min-h-screen bg-[#141115] px-4 pb-10 pt-6 sm:px-6">
       <div className="mx-auto max-w-5xl">
         <h1
-          className="mb-6 text-2xl font-normal leading-none text-white"
+          className="mb-6 text-2xl font-bold leading-none text-white"
           style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.01em' }}
         >
           Dashboard

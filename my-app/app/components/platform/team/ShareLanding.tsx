@@ -102,8 +102,7 @@ export function ShareLanding({ token }: { token: string }) {
       <div className="mb-5 flex justify-center">
         <Avatar name={athlete.name?.trim() || athlete.username || '?'} photoUrl={athlete.avatar_url} size="lg" />
       </div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]" style={display}>Share invite</p>
-      <h1 className="mt-2 text-[22px] font-bold text-white" style={display}>{handle} wants you as their Coach</h1>
+      <h1 className="text-[22px] font-bold text-white" style={display}>{handle} wants you as their Coach</h1>
       {athlete.name && athlete.name !== athlete.username ? (
         <p className="mt-1 text-[13px] text-[#6B6870]" style={sans}>{athlete.name}</p>
       ) : null}

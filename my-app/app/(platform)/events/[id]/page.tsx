@@ -62,13 +62,6 @@ export default async function EventDetailPage({
     <div className="min-h-screen bg-[#141115] px-4 py-10">
       <div className="max-w-2xl mx-auto">
 
-        <p
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-10"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          Event
-        </p>
-
         {/* Title */}
         <h1
           className="text-[28px] font-bold text-white leading-tight mb-6"

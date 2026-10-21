@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSyncExternalStore } from 'react'
@@ -15,7 +16,6 @@ export type SidebarProfile = { name: string; username: string | null; avatarUrl:
 const COLLAPSE_KEY = 'nh_sidebar_collapsed'
 const COLLAPSE_EVENT = 'nh_sidebar_collapsed_change'
 const ALL_HREFS = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href))
-const sans = { fontFamily: "'DM Sans', sans-serif" } as const
 const display = { fontFamily: "'Sk Modernist', sans-serif" } as const
 
 type CollapseMap = Record<string, boolean>
@@ -65,10 +65,10 @@ export function Sidebar({ profile }: { profile: SidebarProfile }) {
   return (
     <nav className="fixed left-0 top-0 z-50 hidden h-screen w-60 flex-col border-r border-[#3A373C] bg-[#141115] md:flex">
       {/* Brand */}
-      <div className="px-5 pb-6 pt-6">
-        <span className="text-[15px] font-bold uppercase tracking-[0.22em] text-[#F5F5F5]" style={display}>
-          Naturehood
-        </span>
+      <div className="px-5 pb-6 pt-7">
+        <Link href="/home" aria-label="Naturehood home" className="block w-fit">
+          <Image src="/naturehood.svg" alt="Naturehood" width={140} height={16} priority className="block h-auto w-[140px]" />
+        </Link>
       </div>
 
       {/* Groups */}
@@ -95,11 +95,11 @@ export function Sidebar({ profile }: { profile: SidebarProfile }) {
         >
           <Avatar name={profile.name} size="sm" photoUrl={profile.avatarUrl} />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[13px] font-semibold text-[#F5F5F5]" style={sans}>
+            <span className="block truncate text-[13px] font-bold text-[#F5F5F5]" style={display}>
               {profile.name}
             </span>
             {profile.username ? (
-              <span className="block truncate text-[11px] text-[#6B6870]" style={sans}>
+              <span className="block truncate text-[11px] font-bold text-[#6B6870]" style={display}>
                 @{profile.username}
               </span>
             ) : null}
@@ -108,7 +108,7 @@ export function Sidebar({ profile }: { profile: SidebarProfile }) {
         <form action={signOut}>
           <button
             type="submit"
-            className="mt-1 w-full px-2 py-1.5 text-left text-[11px] font-medium uppercase tracking-[0.12em] text-[#6B6870] transition-colors hover:text-[#F5F5F5]"
+            className="mt-1 w-full px-2 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.12em] text-[#6B6870] transition-colors hover:text-[#F5F5F5]"
             style={display}
           >
             Sign out
@@ -137,7 +137,7 @@ function Group({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center gap-1 px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6B6870] transition-colors hover:text-[#A09EA3]"
+        className="flex w-full items-center gap-1 px-2 py-1.5 text-[13px] font-bold text-[#6B6870] transition-colors hover:text-[#A09EA3]"
         style={display}
         aria-expanded={!collapsed}
       >
@@ -153,12 +153,12 @@ function Group({
               <Link
                 key={href}
                 href={href}
-                className={`relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
+                className={`relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-bold transition-colors ${
                   active
                     ? 'bg-[#1E1B1F] text-[#F5F5F5]'
                     : 'text-[#6B6870] hover:bg-[#1A1719] hover:text-[#A09EA3]'
                 }`}
-                style={sans}
+                style={display}
               >
                 {active && <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-full bg-[#F5F5F5]" />}
                 <span className="relative flex">

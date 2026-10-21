@@ -36,8 +36,8 @@ export function NotificationsScreen() {
       <div className="mx-auto max-w-2xl">
         <div className="mb-6 flex items-center justify-between gap-3">
           <h1
-            className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#F5F5F5]"
-            style={display}
+            className="flex items-center gap-2 text-2xl font-bold text-white"
+            style={{ ...display, letterSpacing: '-0.02em' }}
           >
             Notifications
             {unreadCount > 0 ? (
