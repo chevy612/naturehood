@@ -1,6 +1,6 @@
 import type { WorkoutPostRecord } from '@/lib/social/post-content'
 import { formatShortDate, sans, display } from '@/lib/social/format'
-import { PillTag } from '@/app/components/ui/tags'
+import { Tag } from '@/app/components/ui/tags'
 
 export function WorkoutAttachmentCard({ workout, expanded = false }: { workout: WorkoutPostRecord; expanded?: boolean }) {
   const meta = [
@@ -20,7 +20,7 @@ export function WorkoutAttachmentCard({ workout, expanded = false }: { workout: 
       {workout.workout_types.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {workout.workout_types.map((type) => (
-            <PillTag key={type} label={type} variant="ghost-green" size="sm" />
+            <Tag key={type} variant="green" size="sm">{type}</Tag>
           ))}
         </div>
       )}

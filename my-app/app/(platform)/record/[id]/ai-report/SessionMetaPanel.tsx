@@ -1,39 +1,10 @@
 'use client'
 
-import {
-  Dumbbell, Zap, HeartPulse, Trophy, Stethoscope, Bandage, Waves, Shuffle,
-  SignalLow, SignalMedium, SignalHigh, Signal, Gauge,
-  Laugh, Smile, BatteryLow, Frown, Activity, Sparkles, TriangleAlert,
-} from 'lucide-react'
-import type { ReactNode } from 'react'
-import type { SessionDetailsRow, SessionType, PerceivedIntensity } from '@/lib/types'
+import { Gauge, Smile, Activity, Sparkles, TriangleAlert } from 'lucide-react'
+import type { SessionDetailsRow } from '@/lib/types'
+import { SESSION_TYPES, INTENSITIES, READINESS_FEELS } from '@/app/components/platform/ReportSection'
 import { ButtonPropertySelect } from '@/app/components/ui/buttons'
 import { TextAreaInline } from '@/app/components/ui/inputs'
-
-const SESSION_TYPES: { value: SessionType; label: string; icon: ReactNode }[] = [
-  { value: 'strength',     label: 'Strength',     icon: <Dumbbell /> },
-  { value: 'sprint',       label: 'Sprint',       icon: <Zap /> },
-  { value: 'conditioning', label: 'Conditioning', icon: <HeartPulse /> },
-  { value: 'competition',  label: 'Competition',  icon: <Trophy /> },
-  { value: 'physio',       label: 'Physio',       icon: <Stethoscope /> },
-  { value: 'rehab',        label: 'Rehab',        icon: <Bandage /> },
-  { value: 'recovery',     label: 'Recovery',     icon: <Waves /> },
-  { value: 'mixed',        label: 'Mixed',        icon: <Shuffle /> },
-]
-
-const INTENSITIES: { value: PerceivedIntensity; label: string; icon: ReactNode }[] = [
-  { value: 'low',      label: 'Low',      icon: <SignalLow /> },
-  { value: 'moderate', label: 'Moderate', icon: <SignalMedium /> },
-  { value: 'high',     label: 'High',     icon: <SignalHigh /> },
-  { value: 'max',      label: 'Max',      icon: <Signal /> },
-]
-
-const READINESS_FEELS = [
-  { value: 'great', label: 'Great', icon: <Laugh /> },
-  { value: 'good',  label: 'Good',  icon: <Smile /> },
-  { value: 'tired', label: 'Tired', icon: <BatteryLow /> },
-  { value: 'sore',  label: 'Sore',  icon: <Frown /> },
-] as const
 
 const PAIN_SCORES = Array.from({ length: 11 }, (_, n) => ({
   value: String(n),

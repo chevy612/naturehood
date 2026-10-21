@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { Button } from '@/app/components/ui/buttons'
+import { Pencil } from 'lucide-react'
+import { Tag } from '@/app/components/ui/tags'
+import { ReportSection, ReportCard } from '@/app/components/platform/ReportSection'
 import type { AiStructuredWorkout, AiStructuredExercise, AthleteSessionLog } from '@/lib/types'
 import { SessionResult } from '@/app/components/platform/SessionResult'
 
@@ -24,12 +27,6 @@ function formatExerciseMetrics(ex: AiStructuredExercise): string {
   if (ex.distance_km) parts.push(`${ex.distance_km} km`)
   if (ex.duration_seconds) parts.push(`${Math.round(ex.duration_seconds / 60)} min`)
   return parts.join(' · ')
-}
-
-const INTENSITY_COLOR: Record<string, string> = {
-  high: '#F5F5F5',
-  moderate: '#A09EA3',
-  low: '#A09EA3',
 }
 
 // ─────────────────────────────────────────────
@@ -71,14 +68,9 @@ function AnalyzeButton({ id }: { id: string }) {
   if (state === 'done') return null
 
   return (
-    <button
-      onClick={handleAnalyze}
-      disabled={state === 'loading'}
-      className="px-5 py-2.5 bg-[#F5F5F5] text-[#141115] text-[12px] font-bold uppercase tracking-[0.15em] hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
-    >
+    <Button onClick={handleAnalyze} disabled={state === 'loading'}>
       {state === 'loading' ? 'Analyzing…' : 'Analyze with AI'}
-    </button>
+    </Button>
   )
 }
 
@@ -106,20 +98,21 @@ function StaleBanner({ id }: { id: string }) {
 
   return (
     <div
-      className="flex items-start justify-between gap-4 border border-[#5C4A1E] bg-[#2A1F0A] px-4 py-3"
+      className="flex items-start justify-between gap-4 rounded-lg border border-[#5C4A1E] bg-[#2A1F0A] px-4 py-3"
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       <p className="text-[12px] text-[#F0B429] leading-snug">
         Your workout log was edited. This AI report may be outdated.
       </p>
-      <button
+      <Button
+        variant="outline"
+        size="sm"
         onClick={handleReanalyze}
         disabled={state === 'loading'}
-        className="shrink-0 text-[11px] font-bold uppercase tracking-[0.15em] text-[#F0B429] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="border-[#F0B429] text-[#F0B429] hover:bg-[#F0B429]/10"
       >
         {state === 'loading' ? 'Analysing…' : 'Re-analyse'}
-      </button>
+      </Button>
     </div>
   )
 }
@@ -128,78 +121,53 @@ function StaleBanner({ id }: { id: string }) {
 // AI SECTION
 // ─────────────────────────────────────────────
 
-function AiSection({ ai }: { ai: AiStructuredWorkout }) {
-  const intensityColor = ai.estimated_intensity
-    ? INTENSITY_COLOR[ai.estimated_intensity]
-    : '#A09EA3'
-
+function AiSection({ ai, editHref }: { ai: AiStructuredWorkout; editHref: string }) {
   return (
-    <div className="border border-[#3A373C] bg-[#1A1719] p-5">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-4">
-        <span
-          className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5]"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          AI Analysis
-        </span>
-        {ai.estimated_intensity && (
-          <span
-            className="text-[11px] font-medium uppercase tracking-[0.1em]"
-            style={{ fontFamily: "'Sk Modernist', sans-serif", color: intensityColor }}
-          >
-            {ai.estimated_intensity} intensity
-          </span>
-        )}
-      </div>
-
-      {/* Summary */}
-      {ai.summary && (
-        <p
-          className="text-[13px] text-[#A09EA3] leading-relaxed italic mb-4"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {ai.summary}
-        </p>
+    <ReportSection title="AI report" action={<EditAiButton href={editHref} />}>
+      {(ai.summary || ai.estimated_intensity) && (
+        <div className="flex flex-wrap items-start gap-2">
+          {ai.summary && (
+            <p className="flex-1 text-[14px] leading-relaxed text-[#E8E8E8]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              {ai.summary}
+            </p>
+          )}
+          {ai.estimated_intensity && (
+            <Tag variant={ai.estimated_intensity === 'high' ? 'destructive' : 'secondary'} size="sm">
+              {ai.estimated_intensity} intensity
+            </Tag>
+          )}
+        </div>
       )}
 
-      {/* Exercises */}
       {(ai.exercises ?? []).length > 0 && (
-        <div className="space-y-2">
+        <ReportCard>
           {ai.exercises.map((ex, i) => {
             const metrics = formatExerciseMetrics(ex)
             return (
-              <div key={i} className="flex items-baseline justify-between gap-4 py-2 border-t border-[#3A373C]">
-                <span
-                  className="text-[13px] text-white"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  {ex.name}
-                </span>
-                <div className="flex flex-col items-end gap-0.5 shrink-0">
-                  {metrics && (
-                    <span
-                      className="text-[12px] text-[#6B6870]"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {metrics}
-                    </span>
-                  )}
-                  {ex.notes && (
-                    <span
-                      className="text-[11px] text-[#6B6870] italic"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {ex.notes}
-                    </span>
-                  )}
+              <div
+                key={i}
+                className="flex items-baseline justify-between gap-4 border-t border-[#2A272C] px-4 py-2.5 first:border-t-0"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                <div className="min-w-0">
+                  <p className="text-[14px] font-medium text-white">{ex.name}</p>
+                  {ex.notes && <p className="mt-0.5 text-[12px] text-[#847E89]">{ex.notes}</p>}
                 </div>
+                {metrics && <span className="shrink-0 text-[13px] tabular-nums text-[#A09EA3]">{metrics}</span>}
               </div>
             )
           })}
-        </div>
+        </ReportCard>
       )}
-    </div>
+    </ReportSection>
+  )
+}
+
+function EditAiButton({ href }: { href: string }) {
+  return (
+    <Button href={href} variant="ghost" size="sm">
+      <Pencil size={14} /> Edit report
+    </Button>
   )
 }
 
@@ -215,6 +183,8 @@ type Props = {
 }
 
 export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeedsRefresh }: Props) {
+  const editHref = `/record/${id}/ai-report`
+
   return (
     <div className="space-y-4">
       {/* Stale banner — shown when workout_log was edited after AI analysis */}
@@ -225,30 +195,16 @@ export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeeds
       {/* AI section */}
       {aiStructured ? (
         isV2(aiStructured)
-          ? <SessionResult session={aiStructured} />
-          : <AiSection ai={aiStructured} />
+          ? <SessionResult session={aiStructured} action={<EditAiButton href={editHref} />} />
+          : <AiSection ai={aiStructured} editHref={editHref} />
       ) : hasWorkoutLog ? (
-        <div>
-          <p
-            className="text-[12px] text-[#6B6870] mb-3"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
+        <ReportCard className="flex items-center justify-between gap-4 px-4 py-3">
+          <p className="text-[13px] text-[#847E89]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             No AI analysis yet.
           </p>
           <AnalyzeButton id={id} />
-        </div>
+        </ReportCard>
       ) : null}
-
-      {/* Re-review AI report */}
-      {aiStructured && (
-        <Link
-          href={`/record/${id}/ai-report`}
-          className="inline-block text-[12px] font-medium text-[#F5F5F5] hover:text-white transition-colors"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Edit AI report →
-        </Link>
-      )}
     </div>
   )
 }

@@ -587,3 +587,89 @@ export function ButtonPropertySelect<T extends string>({
     </div>
   );
 }
+
+// ─────────────────────────────────────────────
+// BUTTON — MENU (Linear-style "…" overflow / action menu)
+//    Use: secondary page actions in a header toolbar (delete, edit AI…)
+// ─────────────────────────────────────────────
+
+interface MenuItem {
+  label: string;
+  icon?: ReactNode;
+  href?: string;
+  onSelect?: () => void;
+  tone?: "default" | "destructive";
+}
+
+interface ButtonMenuProps {
+  trigger: ReactNode;
+  ariaLabel: string;
+  items: MenuItem[];
+  align?: "left" | "right";
+}
+
+export function ButtonMenu({ trigger, ariaLabel, items, align = "right" }: ButtonMenuProps) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: globalThis.KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const itemClass = (tone: MenuItem["tone"]) =>
+    cn(
+      "flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-[13px] outline-none hover:bg-[#2B282C] focus:bg-[#2B282C] [&_svg]:size-3.5 [&_svg]:shrink-0",
+      tone === "destructive" ? "text-[#FF4D4D]" : "text-[#E8E8E8]",
+    );
+
+  return (
+    <div ref={rootRef} className="relative inline-flex">
+      <Button variant="ghost" size="icon" ariaLabel={ariaLabel} onClick={() => setOpen((o) => !o)} className={open ? "bg-[#2B282C] text-white" : undefined}>
+        {trigger}
+      </Button>
+      {open && (
+        <div
+          role="menu"
+          className={cn(
+            "absolute top-full z-30 mt-1 min-w-[180px] rounded-lg border border-[#3D3940] bg-[#1E1B1F] p-1 shadow-xl shadow-black/50",
+            align === "right" ? "right-0" : "left-0",
+          )}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {items.map((item) =>
+            item.href ? (
+              <Link key={item.label} href={item.href} role="menuitem" className={itemClass(item.tone)} onClick={() => setOpen(false)}>
+                {item.icon}
+                {item.label}
+              </Link>
+            ) : (
+              <button
+                key={item.label}
+                type="button"
+                role="menuitem"
+                className={itemClass(item.tone)}
+                onClick={() => {
+                  setOpen(false);
+                  item.onSelect?.();
+                }}
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ),
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

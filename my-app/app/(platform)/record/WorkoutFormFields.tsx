@@ -1,6 +1,255 @@
-import { ChangeEvent } from 'react'
-import { X } from 'lucide-react'
-import { InputDark, TextAreaDark } from '@/app/components/ui/inputs'
+'use client'
+
+import { ChangeEvent, useState, useSyncExternalStore } from 'react'
+import { CalendarDays, Check, Plus } from 'lucide-react'
+import { InputDark, SwitchDark } from '@/app/components/ui/inputs'
+import { shiftDateKey, todayDateKey } from '@/lib/meals/utils'
+
+// ─────────────────────────────────────────────
+// WORKOUT FORM FIELDS
+//   Tap-first building blocks shared by Log, Edit and the Create-post workout attachment.
+//   Mirrors naturehood-mobile `WorkoutThread`: title · date · duration · type · notes.
+//   `WorkoutFormFields` stacks them; the Log page arranges them in its own responsive layout.
+// ─────────────────────────────────────────────
+
+const sans = { fontFamily: "'DM Sans', sans-serif" }
+
+/** Shown when the athlete has no labels of their own yet. */
+const STARTER_TYPES = ['Strength', 'Sprint', 'Conditioning', 'Mobility', 'Recovery']
+const DURATION_PRESETS = [30, 45, 60, 90]
+const VISIBLE_TYPE_SUGGESTIONS = 8
+
+export function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
+  return (
+    <label htmlFor={htmlFor} className="nh-label mb-2 block !text-[11px] !text-[#6B6870]">
+      {children}
+    </label>
+  )
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+  ariaLabel,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+  ariaLabel?: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      aria-label={ariaLabel}
+      className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-medium transition-colors ${
+        active
+          ? 'border-[#F5F5F5] bg-[#F5F5F5] text-[#141115]'
+          : 'border-[#3D3940] bg-transparent text-[#A09EA3] hover:border-[#6B6870] hover:text-white'
+      }`}
+      style={sans}
+    >
+      {children}
+    </button>
+  )
+}
+
+function formatShortDate(key: string): string {
+  const date = new Date(`${key}T12:00`)
+  if (Number.isNaN(date.getTime())) return key
+  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+// ── Date ──────────────────────────────────────
+
+const noopSubscribe = () => () => {}
+
+export function DateField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  // Null while server-rendering (Edit, Create post): the server's UTC day can differ from the
+  // viewer's, so Today/Yesterday only light up once the browser's date is known.
+  const today = useSyncExternalStore(noopSubscribe, todayDateKey, () => null)
+  const yesterday = today ? shiftDateKey(today, -1) : null
+  const isOther = value !== today && value !== yesterday
+
+  return (
+    <div>
+      <FieldLabel>Date</FieldLabel>
+      <div className="flex flex-wrap gap-2">
+        <Chip active={value === today} onClick={() => onChange(today ?? todayDateKey())}>Today</Chip>
+        <Chip active={value === yesterday} onClick={() => onChange(yesterday ?? shiftDateKey(todayDateKey(), -1))}>
+          Yesterday
+        </Chip>
+        {/* Native picker under a chip: the OS calendar on phones, the browser one on desktop. */}
+        <label
+          className={`relative inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-medium transition-colors focus-within:ring-1 focus-within:ring-white/40 ${
+            isOther
+              ? 'border-[#F5F5F5] bg-[#F5F5F5] text-[#141115]'
+              : 'border-[#3D3940] text-[#A09EA3] hover:border-[#6B6870] hover:text-white'
+          }`}
+          style={sans}
+        >
+          <CalendarDays size={14} />
+          {isOther ? formatShortDate(value) : 'Pick date'}
+          <input
+            type="date"
+            name="logged_date"
+            value={value}
+            max={today ?? undefined}
+            onChange={(e) => e.target.value && onChange(e.target.value)}
+            onClick={(e) => e.currentTarget.showPicker?.()}
+            aria-label="Workout date"
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+        </label>
+      </div>
+    </div>
+  )
+}
+
+// ── Duration ──────────────────────────────────
+
+export function DurationField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  // The free-entry box only echoes values the chips don't already show.
+  const isPreset = DURATION_PRESETS.some((mins) => String(mins) === value)
+  return (
+    <div>
+      <FieldLabel htmlFor="duration_minutes">Duration</FieldLabel>
+      <div className="flex flex-wrap items-center gap-2">
+        {DURATION_PRESETS.map((mins) => (
+          <Chip
+            key={mins}
+            active={value === String(mins)}
+            onClick={() => onChange(value === String(mins) ? '' : String(mins))}
+            ariaLabel={`${mins} minutes`}
+          >
+            {mins}
+          </Chip>
+        ))}
+        <span
+          className={`inline-flex h-9 items-center gap-1 rounded-full border pl-3.5 pr-3 focus-within:border-[#F5F5F5] ${
+            value && !isPreset ? 'border-[#F5F5F5]' : 'border-[#3D3940]'
+          }`}
+        >
+          <input
+            id="duration_minutes"
+            name="duration_minutes"
+            inputMode="numeric"
+            value={isPreset ? '' : value}
+            onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="Other"
+            className="w-11 bg-transparent text-[13px] text-white outline-none placeholder:text-[#6B6870]"
+            style={sans}
+          />
+          <span className="text-[12px] text-[#6B6870]" style={sans}>min</span>
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ── Type ──────────────────────────────────────
+
+export function TypeField({
+  workoutTypes,
+  typeInput,
+  onTypeInputChange,
+  onTypeKeyDown,
+  onTypeBlur,
+  onRemoveType,
+  onAddType,
+  previousTypes = [],
+}: {
+  workoutTypes: string[]
+  typeInput: string
+  onTypeInputChange: (v: string) => void
+  onTypeKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  onTypeBlur: () => void
+  onRemoveType: (label: string) => void
+  onAddType: (label: string) => void
+  previousTypes?: string[]
+}) {
+  const [showAll, setShowAll] = useState(false)
+  const suggestions = previousTypes.length ? previousTypes : STARTER_TYPES
+  // Selected labels first, so they stay visible when the list is collapsed.
+  const options = Array.from(new Set([...workoutTypes, ...suggestions]))
+  const hidden = Math.max(0, options.length - VISIBLE_TYPE_SUGGESTIONS)
+  const visible = showAll ? options : options.slice(0, VISIBLE_TYPE_SUGGESTIONS)
+
+  return (
+    <div>
+      <FieldLabel htmlFor="workout_type_input">Type</FieldLabel>
+      <div className="flex flex-wrap gap-2">
+        {visible.map((label) => {
+          const active = workoutTypes.includes(label)
+          return (
+            <Chip key={label} active={active} onClick={() => (active ? onRemoveType(label) : onAddType(label))}>
+              {active ? <Check size={13} /> : null}
+              {label}
+            </Chip>
+          )
+        })}
+        {hidden > 0 ? (
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            className="h-9 px-2 text-[12px] font-semibold text-[#847E89] hover:text-white"
+            style={sans}
+          >
+            {showAll ? 'Show less' : `+${hidden} more`}
+          </button>
+        ) : null}
+      </div>
+      <span className="mt-2 flex h-9 items-center gap-1.5 rounded-full border border-dashed border-[#3D3940] px-3.5 focus-within:border-solid focus-within:border-[#F5F5F5] sm:max-w-[260px]">
+        <Plus size={14} className="shrink-0 text-[#6B6870]" />
+        <input
+          id="workout_type_input"
+          type="text"
+          value={typeInput}
+          onChange={(e) => onTypeInputChange(e.target.value)}
+          onKeyDown={onTypeKeyDown}
+          onBlur={onTypeBlur}
+          placeholder="New label, press Enter"
+          className="min-w-0 flex-1 bg-transparent text-[13px] text-white outline-none placeholder:text-[#6B6870]"
+          style={sans}
+        />
+      </span>
+    </div>
+  )
+}
+
+// ── Notes ─────────────────────────────────────
+
+export function NotesField({
+  value,
+  onChange,
+  className = '',
+}: {
+  value: string
+  onChange: (v: string) => void
+  className?: string
+}) {
+  return (
+    <div className="flex flex-col">
+      <FieldLabel htmlFor="workout_log">Notes</FieldLabel>
+      <textarea
+        id="workout_log"
+        name="workout_log"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={`Squat 4x8 @ 100kg\nBench Press 3x10 @ 80kg\n6 x 60m sprints, full recovery\nFelt strong, left hamstring a bit tight`}
+        className={`field-sizing-content min-h-[200px] w-full resize-none rounded-2xl bg-[#1E1B1F] px-4 py-3.5 text-[15px] leading-relaxed text-white outline-none transition-shadow placeholder:text-[#4A464C] focus:ring-1 focus:ring-white/20 ${className}`}
+        style={sans}
+      />
+      <p className="mt-2 text-[12px] text-[#6B6870]" style={sans}>
+        Write it however you like — sets, reps, times, how you felt. We&apos;ll structure it for you.
+      </p>
+    </div>
+  )
+}
+
+// ── Stacked form (Edit · Create post) ─────────
 
 export interface WorkoutFormFieldsProps {
   // Scalar field values
@@ -58,127 +307,30 @@ export function WorkoutFormFields({
         value={title}
         onChange={(e: ChangeEvent<HTMLInputElement>) => onTitleChange(e.target.value)}
         placeholder="e.g. Push Day, Leg Day"
+        maxLength={100}
         required
       />
 
-      <InputDark
-        label="Date"
-        name="logged_date"
-        type="date"
-        value={loggedDate}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => onDateChange(e.target.value)}
+      <DateField value={loggedDate} onChange={onDateChange} />
+      <DurationField value={duration} onChange={onDurationChange} />
+      <TypeField
+        workoutTypes={workoutTypes}
+        typeInput={typeInput}
+        onTypeInputChange={onTypeInputChange}
+        onTypeKeyDown={onTypeKeyDown}
+        onTypeBlur={onTypeBlur}
+        onRemoveType={onRemoveType}
+        onAddType={onAddType}
+        previousTypes={previousTypes}
       />
-
-      <InputDark
-        label="Duration (minutes)"
-        name="duration_minutes"
-        type="number"
-        value={duration}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => onDurationChange(e.target.value)}
-        placeholder="e.g. 60"
-      />
-
-      {/* Workout Type Labels */}
-      <div>
-        <p
-          className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#6B6870] mb-2"
-          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-        >
-          Workout Type
-        </p>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {workoutTypes.map((label) => (
-            <span
-              key={label}
-              className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium rounded-full border border-[#F5F5F5] text-[#F5F5F5]"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {label}
-              <button
-                type="button"
-                onClick={() => onRemoveType(label)}
-                className="opacity-60 hover:opacity-100 transition-opacity"
-                aria-label={`Remove ${label}`}
-              >
-                <X size={10} />
-              </button>
-            </span>
-          ))}
-        </div>
-        <input
-          type="text"
-          value={typeInput}
-          onChange={(e) => onTypeInputChange(e.target.value)}
-          onKeyDown={onTypeKeyDown}
-          onBlur={onTypeBlur}
-          placeholder="e.g. Strength, Cardio, Outdoor — press Enter to add"
-          className="w-full bg-transparent border-b-2 border-[#3A373C] focus:border-[#F5F5F5] outline-none text-white text-[14px] pb-2 placeholder-[#3A373C] transition-colors duration-150"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        />
-        <p
-          className="text-[11px] text-[#6B6870] mt-1"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Press Enter or comma to add a label. You can create any label you want.
-        </p>
-        {previousTypes.filter((t) => !workoutTypes.includes(t)).length > 0 && (
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span
-              className="text-[11px] text-[#6B6870] shrink-0"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Your labels:
-            </span>
-            {previousTypes
-              .filter((t) => !workoutTypes.includes(t))
-              .map((label) => (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() => onAddType(label)}
-                  className="px-3 py-1 text-[11px] font-medium rounded-full border border-[#3A373C] text-[#A09EA3] hover:border-[#F5F5F5] hover:text-[#F5F5F5] transition-colors duration-150"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  {label}
-                </button>
-              ))}
-          </div>
-        )}
-      </div>
-
-      <TextAreaDark
-        label="Workout Log"
-        name="workout_log"
-        value={workoutLog}
-        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onWorkoutLogChange(e.target.value)}
-        placeholder={`Squat 4x8 @ 100kg\nBench Press 3x10 @ 80kg\nDeadlift 3x5 @ 140kg`}
-        rows={8}
-      />
+      <NotesField value={workoutLog} onChange={onWorkoutLogChange} />
 
       {showVisibility && (
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          role="switch"
-          aria-checked={isPublic}
-          onClick={() => onIsPublicChange(!isPublic)}
-          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-            isPublic ? 'bg-[#F5F5F5]' : 'bg-[#3A373C]'
-          }`}
-        >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-[#141115] shadow transition-transform duration-200 ${
-              isPublic ? 'translate-x-5' : 'translate-x-1'
-            }`}
-          />
-        </button>
-        <span
-          className="text-[13px] text-[#6B6870]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {isPublic ? 'Visible to the community' : 'Private — only you can see this'}
-        </span>
-      </div>
+        <SwitchDark
+          checked={isPublic}
+          onChange={onIsPublicChange}
+          label={isPublic ? 'Visible to the community' : 'Private — only you can see this'}
+        />
       )}
     </>
   )

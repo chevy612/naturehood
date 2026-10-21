@@ -5,7 +5,7 @@ import type { PhysioBodyAreaRow, SessionDetailsRow } from '@/lib/types'
 import { Button, ButtonPropertySelect } from '@/app/components/ui/buttons'
 import { InputInline, TextAreaInline } from '@/app/components/ui/inputs'
 import StrengthPanel, { type DraftBlock } from './StrengthPanel'
-import { ReportSection, ReportCard, PropertyRow } from './ReportSection'
+import { ReportSection, ReportCard, PropertyRow } from '@/app/components/platform/ReportSection'
 
 export type DraftBodyArea = Omit<PhysioBodyAreaRow, 'id' | 'training_log_id' | 'user_id'>
 

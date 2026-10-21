@@ -5,7 +5,7 @@ import { useState } from 'react'
 import type { SessionBlockRow, SessionExerciseRow, ExerciseSetRow, BlockType } from '@/lib/types'
 import { Button, ButtonPropertySelect, ButtonToggle } from '@/app/components/ui/buttons'
 import { InputInline } from '@/app/components/ui/inputs'
-import { ReportSection, ReportCard, ColumnLabel, toNum } from './ReportSection'
+import { ReportSection, ReportCard, ColumnLabel, toNum } from '@/app/components/platform/ReportSection'
 
 // ── Types used locally for draft state ───────────────────────────────────────
 

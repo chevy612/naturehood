@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { PillTag } from '@/app/components/ui/tags'
+import { ChevronRight } from 'lucide-react'
+import { Tag } from '@/app/components/ui/tags'
 import WorkoutDetail from './WorkoutDetail'
 import WorkoutLogToggle from './WorkoutLogToggle'
 import WorkoutActions from './WorkoutActions'
@@ -37,62 +38,60 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
   if (!log) redirect('/account')
 
   return (
-    <div className="min-h-screen bg-[#141115] px-6 py-10">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#141115] px-4 pt-6 pb-16 sm:px-6 sm:pt-8">
+      <div className="max-w-2xl mx-auto" style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
-        {/* Back */}
-        <Link
-          href="/account"
-          className="inline-flex items-center gap-1 text-[11px] text-[#6B6870] hover:text-white transition-colors mb-8"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          ← My Training
-        </Link>
+        {/* Breadcrumb + actions toolbar */}
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1 text-[13px] text-[#847E89]">
+            <Link href="/account" className="shrink-0 rounded px-1 -ml-1 hover:text-white transition-colors">
+              My training
+            </Link>
+            <ChevronRight size={14} className="shrink-0 text-[#4A464D]" />
+            <span className="min-w-0 truncate px-1 text-[#E8E8E8]">{log.title}</span>
+          </nav>
+          <WorkoutActions id={log.id} hasAiReport={!!log.ai_structured} />
+        </div>
 
-        {/* Title */}
+        {/* Title + meta */}
         <h1
-          className="text-[22px] font-bold text-white leading-tight mb-2"
+          className="text-[22px] font-bold text-white leading-tight"
           style={{ fontFamily: "'Sk Modernist', sans-serif", letterSpacing: '-0.02em' }}
         >
           {log.title}
         </h1>
-
-        {/* Meta row */}
-        <div className="flex flex-wrap items-center gap-2 mb-6">
-          <span
-            className="text-[12px] text-[#6B6870]"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            {formatDate(log.logged_date)}
-          </span>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[#847E89]">
+          <span>{formatDate(log.logged_date)}</span>
           {log.duration_minutes && (
-            <PillTag label={`${log.duration_minutes} min`} variant="ghost-green" size="sm" />
-          )}
-          {log.is_public === false && (
-            <PillTag label="Private" variant="ghost-dark" size="sm" />
+            <>
+              <span className="text-[#4A464D]">·</span>
+              <span>{log.duration_minutes} min</span>
+            </>
           )}
           {log.workout_types?.map((type: string) => (
-            <PillTag key={type} label={type} variant="ghost-dark" size="sm" />
+            <Tag key={type} variant="secondary" size="sm">{type}</Tag>
           ))}
+          {log.is_public === false && (
+            <Tag variant="outline" size="sm">Private</Tag>
+          )}
         </div>
 
         {/* AI analysis */}
-        <WorkoutDetail
-          id={log.id}
-          hasWorkoutLog={!!log.workout_log}
-          aiStructured={log.ai_structured}
-          aiNeedsRefresh={log.ai_needs_refresh ?? false}
-        />
+        <div className="mt-5">
+          <WorkoutDetail
+            id={log.id}
+            hasWorkoutLog={!!log.workout_log}
+            aiStructured={log.ai_structured}
+            aiNeedsRefresh={log.ai_needs_refresh ?? false}
+          />
+        </div>
 
         {/* Training log (collapsible) */}
         {log.workout_log && (
-          <div className="mb-6">
+          <div className="mt-10">
             <WorkoutLogToggle workoutLog={log.workout_log} />
           </div>
         )}
-
-        {/* Edit / Delete */}
-        <WorkoutActions id={log.id} />
 
       </div>
     </div>

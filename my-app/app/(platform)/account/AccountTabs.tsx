@@ -151,7 +151,7 @@ export default function AccountTabs({ userId, workouts }: { userId: string; work
         ) : (
           <div className="flex flex-col gap-4 px-4">
             {workouts.map((log) => (
-              <WorkoutCard key={log.id} log={log} variant="account" showEdit showAnalyze />
+              <WorkoutCard key={log.id} log={log} variant="account" showEdit />
             ))}
           </div>
         ))}

@@ -4,7 +4,7 @@ import { Plus, X, Flag, CircleCheck, CircleSlash, CircleX, Ban } from 'lucide-re
 import type { CompetitionResultRow, CompetitionRoundRow } from '@/lib/types'
 import { Button, ButtonPropertySelect, ButtonToggle } from '@/app/components/ui/buttons'
 import { InputInline } from '@/app/components/ui/inputs'
-import { ReportSection, ReportCard, ColumnLabel, PropertyRow, toNum } from './ReportSection'
+import { ReportSection, ReportCard, ColumnLabel, PropertyRow, toNum } from '@/app/components/platform/ReportSection'
 
 export type DraftRound = Omit<CompetitionRoundRow, 'id' | 'competition_result_id' | 'training_log_id' | 'user_id'>
 export type DraftCompetitionResult = Omit<CompetitionResultRow, 'id' | 'training_log_id' | 'user_id'> & {

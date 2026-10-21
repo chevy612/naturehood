@@ -5,7 +5,7 @@ import { Plus, X, Zap } from 'lucide-react'
 import type { SprintEffortRow, SprintRepRow } from '@/lib/types'
 import { Button, ButtonPropertySelect, ButtonToggle } from '@/app/components/ui/buttons'
 import { InputInline } from '@/app/components/ui/inputs'
-import { ReportSection, ReportCard, ColumnLabel, PropertyRow, toNum } from './ReportSection'
+import { ReportSection, ReportCard, ColumnLabel, PropertyRow, toNum } from '@/app/components/platform/ReportSection'
 
 export type DraftSprintRep = Omit<SprintRepRow, 'id' | 'effort_id' | 'training_log_id' | 'user_id'>
 export type DraftSprintEffort = Omit<SprintEffortRow, 'id' | 'training_log_id' | 'user_id'> & {

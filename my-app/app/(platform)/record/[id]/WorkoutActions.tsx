@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { MoreHorizontal, Pencil, Sparkles, Trash2 } from 'lucide-react'
+import { Button, ButtonMenu } from '@/app/components/ui/buttons'
 import { deleteWorkout } from '../actions'
 
-export default function WorkoutActions({ id }: { id: string }) {
+// Header toolbar (Linear-style): primary Edit + "…" menu for secondary actions.
+// Delete swaps the toolbar for an inline confirm.
+export default function WorkoutActions({ id, hasAiReport }: { id: string; hasAiReport: boolean }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -20,60 +23,37 @@ export default function WorkoutActions({ id }: { id: string }) {
     // redirect happens inside the server action on success
   }
 
-  return (
-    <div className="pt-2 border-t border-[#3A373C]">
-      <div className="flex items-center gap-4">
-        <Link
-          href={`/record/${id}/edit`}
-          className="px-5 py-2.5 border border-[#3A373C] text-white text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#F5F5F5]/40 hover:text-[#F5F5F5] transition-colors"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Edit
-        </Link>
-
-        {!confirmDelete ? (
-          <button
-            onClick={() => setConfirmDelete(true)}
-            className="px-5 py-2.5 border border-[#3A373C] text-[#6B6870] text-[12px] font-semibold uppercase tracking-[0.1em] hover:border-[#FF4D4D]/40 hover:text-[#FF4D4D] transition-colors"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Delete
-          </button>
-        ) : (
-          <div className="flex items-center gap-3">
-            <span
-              className="text-[12px] text-[#FF4D4D]"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Are you sure?
-            </span>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="text-[12px] font-semibold text-[#FF4D4D] hover:text-white transition-colors disabled:opacity-50"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {deleting ? 'Deleting…' : 'Yes, delete'}
-            </button>
-            <button
-              onClick={() => setConfirmDelete(false)}
-              className="text-[12px] text-[#6B6870] hover:text-white transition-colors"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+  if (confirmDelete) {
+    return (
+      <div className="flex shrink-0 items-center gap-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <span className="hidden text-[12px] text-[#FF4D4D] sm:inline">
+          {deleteError ?? 'Delete this workout?'}
+        </span>
+        <Button variant="ghost" size="sm" onClick={() => { setConfirmDelete(false); setDeleteError(null) }}>
+          Cancel
+        </Button>
+        <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>
+          <Trash2 size={14} /> {deleting ? 'Deleting…' : 'Delete'}
+        </Button>
       </div>
+    )
+  }
 
-      {deleteError && (
-        <p
-          className="text-[12px] text-[#FF4D4D] mt-3"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {deleteError}
-        </p>
-      )}
+  return (
+    <div className="flex shrink-0 items-center gap-1">
+      <Button href={`/record/${id}/edit`} variant="outline" size="sm">
+        <Pencil size={14} /> Edit
+      </Button>
+      <ButtonMenu
+        ariaLabel="More actions"
+        trigger={<MoreHorizontal size={16} />}
+        items={[
+          ...(hasAiReport
+            ? [{ label: 'Edit AI report', icon: <Sparkles />, href: `/record/${id}/ai-report` }]
+            : []),
+          { label: 'Delete workout', icon: <Trash2 />, tone: 'destructive' as const, onSelect: () => setConfirmDelete(true) },
+        ]}
+      />
     </div>
   )
 }

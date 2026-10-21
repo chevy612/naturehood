@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Avatar } from './Avatar'
-import { PillTag } from '@/app/components/ui/tags'
+import { Tag } from '@/app/components/ui/tags'
+import { Button } from '@/app/components/ui/buttons'
 import type { AiStructuredWorkout, AiStructuredExercise } from '@/lib/types'
 
 // ─────────────────────────────────────────────
@@ -34,7 +34,6 @@ type WorkoutCardProps = {
   variant?: 'feed' | 'account' | 'grid'
   profile?: WorkoutCardProfile
   showEdit?: boolean
-  showAnalyze?: boolean
 }
 
 // ─────────────────────────────────────────────
@@ -59,20 +58,12 @@ function formatExerciseMetrics(ex: AiStructuredExercise): string {
 }
 
 const TRUNCATE_LENGTH = 120
-const INTENSITY_PILL_VARIANT: Record<string, 'ghost-green' | 'ghost-dark'> = {
-  high: 'ghost-green',
-  moderate: 'ghost-dark',
-  low: 'ghost-dark',
-}
 
 // ─────────────────────────────────────────────
 // AI SECTION — shared between both variants
 // ─────────────────────────────────────────────
 
 function AiSection({ ai, showExercises }: { ai: AiStructuredWorkout; showExercises: boolean }) {
-  const intensityVariant = ai.estimated_intensity
-    ? INTENSITY_PILL_VARIANT[ai.estimated_intensity]
-    : 'ghost-dark'
   const summary = ai.summary && ai.summary.length > 100
     ? ai.summary.slice(0, 100).trimEnd() + '…'
     : ai.summary
@@ -88,7 +79,9 @@ function AiSection({ ai, showExercises }: { ai: AiStructuredWorkout; showExercis
           AI
         </span>
         {ai.estimated_intensity && (
-          <PillTag label={ai.estimated_intensity} variant={intensityVariant} size="sm" />
+          <Tag variant={ai.estimated_intensity === 'high' ? 'destructive' : 'secondary'} size="sm">
+            {ai.estimated_intensity} intensity
+          </Tag>
         )}
         {ai.exercises.length > 0 && (
           <span
@@ -141,51 +134,10 @@ function AiSection({ ai, showExercises }: { ai: AiStructuredWorkout; showExercis
 }
 
 // ─────────────────────────────────────────────
-// ANALYZE WITH AI BUTTON
-// ─────────────────────────────────────────────
-
-function AnalyzeButton({ id }: { id: string }) {
-  const router = useRouter()
-  const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
-
-  const handleAnalyze = async () => {
-    setState('loading')
-    try {
-      const res = await fetch('/api/ai/format-workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      })
-      if (res.ok) {
-        setState('done')
-        router.refresh()
-      } else {
-        setState('idle')
-      }
-    } catch {
-      setState('idle')
-    }
-  }
-
-  if (state === 'done') return null
-
-  return (
-    <button
-      onClick={handleAnalyze}
-      disabled={state === 'loading'}
-      className="mt-2 text-[11px] font-medium text-[#F5F5F5] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
-    >
-      {state === 'loading' ? 'Analyzing…' : 'Analyze with AI →'}
-    </button>
-  )
-}
-
-// ─────────────────────────────────────────────
 // WORKOUT CARD
 // ─────────────────────────────────────────────
 
-export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, showAnalyze = false }: WorkoutCardProps) {
+export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false }: WorkoutCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   // ── Grid variant ──────────────────────────────────────────────────────────
@@ -197,7 +149,7 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
           {/* Top: AI indicator + type */}
           <div className="flex items-center justify-between gap-1">
             {firstType && (
-              <PillTag label={firstType} variant="ghost-green" size="sm" />
+              <Tag variant="green" size="sm">{firstType}</Tag>
             )}
             {log.ai_structured && (
               <span
@@ -293,12 +245,12 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
 
         {/* Pills */}
         <div className="flex flex-wrap gap-2 mb-3">
-          {log.duration_minutes && (
-            <PillTag label={`${log.duration_minutes} min`} variant="ghost-green" size="sm" />
-          )}
           {log.workout_types?.map((type) => (
-            <PillTag key={type} label={type} variant="ghost-dark" size="sm" />
+            <Tag key={type} variant="green">{type}</Tag>
           ))}
+          {log.duration_minutes && (
+            <Tag variant="secondary">{log.duration_minutes} min</Tag>
+          )}
         </div>
 
         {/* Log preview */}
@@ -312,13 +264,9 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
         )}
 
         {isTruncated && (
-          <button
-            onClick={() => setIsExpanded((v) => !v)}
-            className="mt-2 text-[11px] font-medium text-[#F5F5F5] hover:text-white transition-colors"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
+          <Button variant="link" onClick={() => setIsExpanded((v) => !v)} className="mt-2">
             {isExpanded ? 'Show less' : 'See more'}
-          </button>
+          </Button>
         )}
 
         {/* AI section */}
@@ -340,7 +288,6 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
   const loggedDate = new Date(log.logged_date + 'T00:00:00')
   const isoDate = `${loggedDate.getFullYear()}-${String(loggedDate.getMonth() + 1).padStart(2, '0')}-${String(loggedDate.getDate()).padStart(2, '0')}`
   const weekday = loggedDate.toLocaleDateString('en-US', { weekday: 'short' })
-  const tagClass = 'shrink-0 rounded-full border px-2.5 py-0.5 text-[12px]'
 
   const content = (
     <>
@@ -357,24 +304,18 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
       {((log.workout_types?.length ?? 0) > 0 || log.duration_minutes != null || ai?.estimated_intensity || log.is_public === false) && (
         <div className="mb-2 flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]">
           {log.workout_types?.map((type) => (
-            <span key={type} className={`${tagClass} border-[#4F9D69] bg-[#4F9D69] text-black`}>{type}</span>
+            <Tag key={type} variant="green">{type}</Tag>
           ))}
           {log.duration_minutes != null && (
-            <span className={`${tagClass} border-[#3D3940] bg-[#2B282C] text-[#847E89]`}>{log.duration_minutes} min</span>
+            <Tag variant="secondary">{log.duration_minutes} min</Tag>
           )}
           {ai?.estimated_intensity && (
-            <span
-              className={`${tagClass} ${
-                ai.estimated_intensity === 'high'
-                  ? 'border-[#FF4D4D]/40 bg-[#FF4D4D]/15 text-[#FF4D4D]'
-                  : 'border-[#3D3940] bg-[#2B282C] text-[#847E89]'
-              }`}
-            >
+            <Tag variant={ai.estimated_intensity === 'high' ? 'destructive' : 'secondary'}>
               {ai.estimated_intensity} intensity
-            </span>
+            </Tag>
           )}
           {log.is_public === false && (
-            <span className={`${tagClass} border-[#3D3940] bg-[#2B282C] text-[#847E89]`}>Private</span>
+            <Tag variant="secondary">Private</Tag>
           )}
         </div>
       )}
@@ -396,15 +337,12 @@ export function WorkoutCard({ log, variant = 'feed', profile, showEdit = false, 
   return (
     <div className="rounded-2xl bg-[#201D22] p-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       {showEdit ? (
-        <Link href={`/record/${log.id}/edit`} className="block transition-opacity hover:opacity-90">
+        <Link href={`/record/${log.id}`} className="block transition-opacity hover:opacity-90">
           {content}
         </Link>
       ) : (
         content
       )}
-
-      {/* No AI yet — offer analysis */}
-      {!ai && showAnalyze && log.workout_log ? <AnalyzeButton id={log.id} /> : null}
     </div>
   )
 }

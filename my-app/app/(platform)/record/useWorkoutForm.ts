@@ -1,9 +1,24 @@
-import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { saveWorkout } from './actions'
 import { workoutShareSearch, type WorkoutPostRecord } from '@/lib/social/post-content'
+import { todayDateKey } from '@/lib/meals/utils'
 
 const DRAFT_KEY = 'naturehood_draft_workout'
+
+type StoredDraft = Partial<WorkoutFields> & { workoutTypes?: string[] }
+
+/** The saved draft, or null when there is none worth restoring. */
+function readDraft(): StoredDraft | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY)
+    if (!raw) return null
+    const draft: StoredDraft = JSON.parse(raw)
+    return draft.title || draft.workoutLog || draft.workoutTypes?.length ? draft : null
+  } catch {
+    return null
+  }
+}
 
 export interface WorkoutFields {
   title: string
@@ -24,7 +39,6 @@ export interface UseWorkoutFormReturn {
 
   // UI status state
   submitting: boolean
-  aiSubmitting: boolean
   error: string | null
   showSuccess: boolean
   aiFormatting: boolean
@@ -34,7 +48,6 @@ export interface UseWorkoutFormReturn {
 
   // Handlers — workoutTypes injected at call time so this hook stays independent of useWorkoutTypes
   handleSubmit: (e: React.FormEvent, workoutTypes: string[]) => Promise<void>
-  handleLogWithAI: (workoutTypes: string[], commitPending: () => void) => Promise<void>
   handleSuccessClose: (resetTypes: () => void) => void
 }
 
@@ -42,49 +55,29 @@ export function useWorkoutForm(
   // Passed in so the draft save effect can include types without owning them
   workoutTypes: string[]
 ): UseWorkoutFormReturn {
-  const today = new Date().toISOString().split('T')[0]
-  const router = useRouter()
+  // Local day, not UTC — `toISOString()` gives yesterday's date before 8am in Hong Kong.
+  const today = todayDateKey()
 
-  const [title, setTitle] = useState('')
-  const [loggedDate, setLoggedDate] = useState(today)
-  const [duration, setDuration] = useState('')
-  const [workoutLog, setWorkoutLog] = useState('')
-  const [isPublic, setIsPublic] = useState(true)
+  // The Log page renders client-only (see RecordForm), so the draft can be read while state is
+  // created. Loading it in an effect raced the save effect below and could blank the stored draft.
+  const [draft] = useState(readDraft)
+
+  const [title, setTitle] = useState(draft?.title ?? '')
+  const [loggedDate, setLoggedDate] = useState(draft?.loggedDate ?? today)
+  const [duration, setDuration] = useState(draft?.duration ?? '')
+  const [workoutLog, setWorkoutLog] = useState(draft?.workoutLog ?? '')
+  const [isPublic, setIsPublic] = useState(draft?.isPublic ?? true)
 
   const [submitting, setSubmitting] = useState(false)
-  const [aiSubmitting, setAiSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
   const [aiFormatting, setAiFormatting] = useState(false)
-  const [draftRestored, setDraftRestored] = useState(false)
+  // workoutTypes are restored via initialTypes in useWorkoutTypes — handled by RecordForm
+  const [draftRestored, setDraftRestored] = useState(draft != null)
   const [shareHref, setShareHref] = useState<string | null>(null)
 
-  const isFirstRender = useRef(true)
-
-  // Load draft on mount
+  // Save draft on every change
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY)
-      if (raw) {
-        const draft = JSON.parse(raw)
-        if (draft.title || draft.workoutLog || draft.workoutTypes?.length) {
-          setTitle(draft.title ?? '')
-          setLoggedDate(draft.loggedDate ?? today)
-          setDuration(draft.duration ?? '')
-          setWorkoutLog(draft.workoutLog ?? '')
-          setIsPublic(draft.isPublic ?? true)
-          setDraftRestored(true)
-          // workoutTypes are restored via initialTypes in useWorkoutTypes — handled by RecordForm
-        }
-      }
-    } catch {}
-    isFirstRender.current = false
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Save draft on every change (skip first render)
-  useEffect(() => {
-    if (isFirstRender.current) return
     const draft = { title, loggedDate, duration, workoutTypes, workoutLog, isPublic }
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
   }, [title, loggedDate, duration, workoutTypes, workoutLog, isPublic])
@@ -143,35 +136,6 @@ export function useWorkoutForm(
     }
   }
 
-  const handleLogWithAI = async (workoutTypes: string[], commitPending: () => void) => {
-    if (!title.trim()) {
-      setError('Workout title is required.')
-      return
-    }
-    commitPending()
-    setAiSubmitting(true)
-    setError(null)
-
-    const result = await saveWorkout(buildFormData(workoutTypes))
-
-    if (result?.error) {
-      setError(result.error)
-      setAiSubmitting(false)
-      return
-    }
-
-    if (result.id && workoutLog.trim()) {
-      await fetch('/api/ai/format-workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: result.id }),
-      })
-    }
-
-    localStorage.removeItem(DRAFT_KEY)
-    router.push(`/record/${result.id}/ai-report`)
-  }
-
   const handleSuccessClose = (resetTypes: () => void) => {
     setShowSuccess(false)
     localStorage.removeItem(DRAFT_KEY)
@@ -193,7 +157,6 @@ export function useWorkoutForm(
     setWorkoutLog,
     setIsPublic,
     submitting,
-    aiSubmitting,
     error,
     showSuccess,
     aiFormatting,
@@ -201,7 +164,6 @@ export function useWorkoutForm(
     shareHref,
     clearError,
     handleSubmit,
-    handleLogWithAI,
     handleSuccessClose,
   }
 }
