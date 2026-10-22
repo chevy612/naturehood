@@ -72,7 +72,7 @@ export async function updateSession(request: NextRequest) {
   // Public routes (/, /signup, /business, /login, /auth/*) remain open.
   const PROTECTED_PATHS = [
     '/dashboard', '/profile', '/settings', '/home', '/record', '/meals', '/events',
-    '/account', '/my-team', '/share',
+    '/account', '/my-team', '/share', '/personal',
   ]
   const isProtected = PROTECTED_PATHS.some(p => pathname.startsWith(p))
 
