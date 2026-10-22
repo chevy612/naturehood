@@ -9,10 +9,13 @@ export function MealPhotoField({
   file,
   onChange,
   disabled = false,
+  compact = false,
 }: {
   file: File | null
   onChange: (file: File | null) => void
   disabled?: boolean
+  /** Square thumbnail tile for inline composers (Meals quick log). */
+  compact?: boolean
 }) {
   const [preview, setPreview] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -35,6 +38,56 @@ export function MealPhotoField({
     if (problem) return
     replacePreview(URL.createObjectURL(next))
     onChange(next)
+  }
+
+  const fileInput = (
+    <input
+      type="file"
+      accept="image/*"
+      aria-label="Meal photo"
+      className="hidden"
+      disabled={disabled}
+      onChange={(event) => {
+        handleSelect(event.target.files?.[0])
+        event.target.value = ''
+      }}
+    />
+  )
+
+  if (compact) {
+    return (
+      <div className="shrink-0">
+        {file && preview ? (
+          <div className="relative h-[84px] w-[84px] overflow-hidden rounded-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={preview} alt="Meal preview" className="h-full w-full object-cover" />
+            <button
+              type="button"
+              aria-label="Remove meal photo"
+              disabled={disabled}
+              onClick={() => {
+                setError(null)
+                replacePreview(null)
+                onChange(null)
+              }}
+              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white disabled:opacity-40"
+            >
+              <X size={12} />
+            </button>
+          </div>
+        ) : (
+          <label
+            className={`flex h-[84px] w-[84px] flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#3A373C] bg-[#181519] text-center ${disabled ? 'opacity-50' : 'cursor-pointer hover:border-[#6B6870]'}`}
+            style={sans}
+          >
+            <ImagePlus size={20} className="text-[#A09EA3]" />
+            <span className="text-[11px] text-[#847E89]">Photo</span>
+            {fileInput}
+          </label>
+        )}
+        {error ? <p className="mt-1 w-[84px] text-[11px] leading-tight text-[#FF4D4D]" style={sans} role="alert">{error}</p> : null}
+      </div>
+    )
   }
 
   return (
@@ -65,17 +118,7 @@ export function MealPhotoField({
           <ImagePlus size={22} className="text-[#A09EA3]" />
           <span className="text-[14px] text-[#A09EA3]">Snap or choose a meal photo</span>
           <span className="text-[11px] text-[#6B6870]">Cutlery in frame helps AI gauge portions</span>
-          <input
-            type="file"
-            accept="image/*"
-            aria-label="Meal photo"
-            className="hidden"
-            disabled={disabled}
-            onChange={(event) => {
-              handleSelect(event.target.files?.[0])
-              event.target.value = ''
-            }}
-          />
+          {fileInput}
         </label>
       )}
       {error ? (

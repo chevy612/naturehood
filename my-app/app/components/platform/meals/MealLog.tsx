@@ -1,18 +1,19 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, RefreshCw, SlidersHorizontal, X } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, SlidersHorizontal, X } from 'lucide-react'
 import { DailySummaryCard, type SummaryMode } from '@/app/components/platform/meals/DailySummaryCard'
 import { MealCard } from '@/app/components/platform/meals/MealCard'
 import { NutritionTargetsModal } from '@/app/components/platform/meals/NutritionTargetsModal'
+import { QuickMealLog } from '@/app/components/platform/meals/QuickMealLog'
 import { WeekDateBar } from '@/app/components/platform/meals/WeekDateBar'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import { countMeals, fetchMealsInRange } from '@/lib/meals/browser'
 import {
   dismissAnalysisNotice,
+  retryMealAnalysis,
   useAnalysisCompletedCount,
   useAnalysisNotices,
   useAnalyzingMealIds,
@@ -112,8 +113,8 @@ export function MealLog({ userId }: { userId: string }) {
   const hasNoMeals = !loading && !error && totalMeals === 0
 
   return (
-    <div className="min-h-screen bg-[#141115] px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-2xl">
+    <div className="min-h-screen bg-[#141115] px-4 pb-10 pt-6 sm:px-6">
+      <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white" style={{ ...display, letterSpacing: '-0.02em' }}>Meal log</h1>
@@ -169,77 +170,91 @@ export function MealLog({ userId }: { userId: string }) {
           </div>
         </div>
 
-        {notices.map((notice) => (
-          <div key={notice.id} role="alert" className="mb-4 flex items-start gap-3 rounded-xl border border-[#FF4D4D]/40 bg-[#FF4D4D]/10 p-4">
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-semibold text-[#FF4D4D]" style={sans}>{notice.title}</p>
-              <p className="mt-1 text-[13px] text-[#A09EA3]" style={sans}>{notice.message}</p>
-            </div>
-            <button type="button" aria-label="Dismiss" onClick={() => dismissAnalysisNotice(notice.id)} className="text-[#A09EA3] hover:text-white">
-              <X size={16} />
-            </button>
+        {/* Phone: log form first, then the day. Desktop: the day on the left, a sticky log panel on the right. */}
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
+          <div className="md:sticky md:top-6 md:col-start-2 md:row-start-1">
+            <QuickMealLog
+              userId={userId}
+              focusOnDesktop
+              onLogged={() => {
+                selectDate(todayDateKey())
+                setReloadToken((token) => token + 1)
+              }}
+            />
           </div>
-        ))}
 
-        <WeekDateBar selectedDate={selectedDate} onSelectDate={selectDate} mealDateKeys={mealDateKeys} />
-
-        <div className="mt-3">
-          <DailySummaryCard meals={summaryMeals} targets={summaryMode === 'weekly' ? targets.weekly : targets.daily} mode={summaryMode} onModeChange={setSummaryMode} />
-        </div>
-
-        <div className="mb-3 mt-6 flex items-center justify-between">
-          <h2 className="text-[13px] font-semibold text-white" style={display}>{formatDayHeading(selectedDate)}</h2>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Previous day"
-              onClick={() => selectDate(shiftDateKey(selectedDate, -1))}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-[#1E1B1F]"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              aria-label="Next day"
-              disabled={isToday}
-              onClick={() => selectDate(shiftDateKey(selectedDate, 1))}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-[#1E1B1F] disabled:opacity-30 disabled:hover:bg-transparent"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center py-16"><LogoSpinner size={48} /></div>
-        ) : error ? (
-          <StatusMessage tone="error">{error}</StatusMessage>
-        ) : hasNoMeals ? (
-          <div className="rounded-2xl border border-dashed border-[#3A373C] px-6 py-12 text-center">
-            <p className="text-[15px] text-white" style={sans}>No meals logged yet</p>
-            <p className="mt-1 text-[13px] text-[#6B6870]" style={sans}>Log your first meal to start tracking calories and macros.</p>
-          </div>
-        ) : dayMeals.length === 0 ? (
-          <StatusMessage>No meals logged for this day.</StatusMessage>
-        ) : (
-          <ul className="space-y-2.5">
-            {dayMeals.map((meal) => (
-              <li key={meal.meal_id}>
-                <MealCard meal={meal} isAnalyzing={analyzingIds.has(meal.meal_id)} />
-              </li>
+          <div className="min-w-0 md:col-start-1 md:row-start-1">
+            {notices.map((notice) => (
+              <div key={notice.id} role="alert" className="mb-4 flex items-start gap-3 rounded-xl border border-[#FF4D4D]/40 bg-[#FF4D4D]/10 p-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-semibold text-[#FF4D4D]" style={sans}>{notice.title}</p>
+                  <p className="mt-1 text-[13px] text-[#A09EA3]" style={sans}>{notice.message}</p>
+                  <button
+                    type="button"
+                    onClick={() => retryMealAnalysis(notice.id)}
+                    className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold text-white hover:opacity-80"
+                    style={sans}
+                  >
+                    <RefreshCw size={14} />
+                    Retry
+                  </button>
+                </div>
+                <button type="button" aria-label="Dismiss" onClick={() => dismissAnalysisNotice(notice.id)} className="text-[#A09EA3] hover:text-white">
+                  <X size={16} />
+                </button>
+              </div>
             ))}
-          </ul>
-        )}
 
-        <div className="sticky bottom-20 mt-6 md:bottom-6">
-          <Link
-            href="/meals/new"
-            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#F5F5F5] text-[12px] font-bold uppercase tracking-[0.16em] text-[#141115] shadow-lg shadow-black/40 hover:bg-white"
-            style={sans}
-          >
-            <Plus size={16} />
-            Log a meal
-          </Link>
+            <WeekDateBar selectedDate={selectedDate} onSelectDate={selectDate} mealDateKeys={mealDateKeys} />
+
+            <div className="mt-3">
+              <DailySummaryCard meals={summaryMeals} targets={summaryMode === 'weekly' ? targets.weekly : targets.daily} mode={summaryMode} onModeChange={setSummaryMode} />
+            </div>
+
+            <div className="mb-3 mt-6 flex items-center justify-between">
+              <h2 className="text-[13px] font-semibold text-white" style={display}>{formatDayHeading(selectedDate)}</h2>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  aria-label="Previous day"
+                  onClick={() => selectDate(shiftDateKey(selectedDate, -1))}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-[#1E1B1F]"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next day"
+                  disabled={isToday}
+                  onClick={() => selectDate(shiftDateKey(selectedDate, 1))}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-[#1E1B1F] disabled:opacity-30 disabled:hover:bg-transparent"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center py-16"><LogoSpinner size={48} /></div>
+            ) : error ? (
+              <StatusMessage tone="error">{error}</StatusMessage>
+            ) : hasNoMeals ? (
+              <div className="rounded-2xl border border-dashed border-[#3A373C] px-6 py-12 text-center">
+                <p className="text-[15px] text-white" style={sans}>No meals logged yet</p>
+                <p className="mt-1 text-[13px] text-[#6B6870]" style={sans}>Log your first meal to start tracking calories and macros.</p>
+              </div>
+            ) : dayMeals.length === 0 ? (
+              <StatusMessage>No meals logged for this day.</StatusMessage>
+            ) : (
+              <ul className="space-y-2.5">
+                {dayMeals.map((meal) => (
+                  <li key={meal.meal_id}>
+                    <MealCard meal={meal} isAnalyzing={analyzingIds.has(meal.meal_id)} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
 

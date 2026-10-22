@@ -62,7 +62,7 @@ async function handlePOST(req: NextRequest) {
   // ── Fetch the meal record (RLS enforces user_id = auth.uid()) ────────────
   const { data: meal, error: fetchError } = await supabase
     .from('meal_records')
-    .select('meal_id, s3_link, user_notes, weight, calories, title')
+    .select('meal_id, s3_link, user_notes, weight, calories, protein, carbs, fat, title')
     .eq('meal_id', meal_id)
     .eq('user_id', userId)
     .single();
@@ -157,14 +157,16 @@ async function handlePOST(req: NextRequest) {
   const aiFat = extractFat(analysis);
   logger.debug('[ai-food-route] Computed aiFat:', aiFat);
 
+  // Numbers the user typed (or scanned from a barcode) win: the AI only fills the
+  // columns that are still empty.
   const { data: updatedMeal, error: updateError } = await supabase
     .from('meal_records')
     .update({
       ai_analysis: analysis,
-      calories: aiCalories,
-      protein: aiProtein,
-      carbs: aiCarbs,
-      fat: aiFat,
+      calories: meal.calories ?? aiCalories,
+      protein: meal.protein ?? aiProtein,
+      carbs: meal.carbs ?? aiCarbs,
+      fat: meal.fat ?? aiFat,
       updated_at: new Date().toISOString(),
     })
     .eq('meal_id', meal_id)

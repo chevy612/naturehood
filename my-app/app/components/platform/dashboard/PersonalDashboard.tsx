@@ -251,7 +251,7 @@ function DayDetail({
       ) : meals.length === 0 ? (
         <div className="flex items-center justify-between rounded-xl bg-[#181519] px-3 py-2.5">
           <span className="text-[13px] text-[#847E89]" style={sans}>No meals logged</span>
-          <Link href="/meals/new" className="flex items-center gap-1 text-[12px] font-semibold text-white hover:opacity-75" style={sans}>
+          <Link href="/meals" className="flex items-center gap-1 text-[12px] font-semibold text-white hover:opacity-75" style={sans}>
             <Plus size={14} /> Log meal
           </Link>
         </div>

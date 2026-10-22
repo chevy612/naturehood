@@ -163,7 +163,7 @@ export default function AccountTabs({ userId, workouts }: { userId: string; work
         ) : meals.error ? (
           <div className="px-4"><StatusMessage tone="error">{meals.error}</StatusMessage></div>
         ) : meals.data.length === 0 ? (
-          <EmptyCTA message="No meals logged yet." href="/meals/new" cta="Log a meal" />
+          <EmptyCTA message="No meals logged yet." href="/meals" cta="Log a meal" />
         ) : (
           <ul className="space-y-4 px-4">
             {meals.data.map((meal) => (

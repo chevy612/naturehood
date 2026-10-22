@@ -69,6 +69,14 @@ export function startMealAnalysis(mealId: string) {
     })
 }
 
+/** Clears a failure notice and runs the analysis again for its meal. */
+export function retryMealAnalysis(noticeId: string) {
+  const notice = notices.find((item) => item.id === noticeId)
+  if (!notice) return
+  notices = notices.filter((item) => item.mealId !== notice.mealId)
+  startMealAnalysis(notice.mealId)
+}
+
 export function useAnalyzingMealIds(): ReadonlySet<string> {
   return useSyncExternalStore(subscribe, () => analyzingIds, () => EMPTY_IDS)
 }

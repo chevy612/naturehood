@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { compressImageForUpload } from '@/lib/meals/image'
 import { insertMealRecord, uploadImages } from '@/lib/social/browser'
+import type { BarcodeProduct } from '@/lib/meals/barcode'
 import { MEAL_LIMITS, type MealFormValues, type MealListItem } from '@/lib/meals/types'
 import { parseNullableNumber, startOfDayIso } from '@/lib/meals/utils'
 
@@ -138,4 +139,12 @@ export async function deleteMeal(input: { mealId: string; userId: string }): Pro
     .select('meal_id')
   if (error) throw new Error(error.message)
   if (!data?.length) throw new Error('Meal not found.')
+}
+
+/** Looks a packaged food up by its barcode (Open Food Facts, via our API so it can be cached). */
+export async function lookupBarcode(code: string): Promise<BarcodeProduct> {
+  const response = await fetch(`/api/meals/barcode/${encodeURIComponent(code)}`)
+  const payload = (await response.json().catch(() => null)) as { product?: BarcodeProduct; error?: string } | null
+  if (!response.ok || !payload?.product) throw new Error(payload?.error ?? 'Could not look up this barcode.')
+  return payload.product
 }

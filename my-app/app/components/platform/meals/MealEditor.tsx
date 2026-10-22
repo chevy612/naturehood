@@ -3,11 +3,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, X } from 'lucide-react'
+import { ArrowLeft, RefreshCw, X } from 'lucide-react'
 import { MealFormFields } from '@/app/components/platform/meals/MealFormFields'
 import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import { deleteMeal, updateMeal, validateMealForm } from '@/lib/meals/browser'
-import { useAnalysisCompletedCount, useAnalyzingMealIds } from '@/lib/meals/analysis-store'
+import {
+  dismissAnalysisNotice,
+  startMealAnalysis,
+  useAnalysisCompletedCount,
+  useAnalysisNotices,
+  useAnalyzingMealIds,
+} from '@/lib/meals/analysis-store'
 import {
   hasAiFoodData,
   type AiFoodAnalysis,
@@ -116,6 +122,7 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
   const analyzingIds = useAnalyzingMealIds()
   const completedCount = useAnalysisCompletedCount()
   const isAnalyzing = analyzingIds.has(meal.meal_id)
+  const failure = useAnalysisNotices().findLast((notice) => notice.mealId === meal.meal_id)
   const seenCompleted = useRef(completedCount)
 
   useEffect(() => {
@@ -128,6 +135,8 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
   const aiData = analysis?.data && hasAiFoodData(analysis.data) ? analysis.data : null
   const noFood = !!analysis && !aiData
   const confidence = aiData?.meal_summary?.confidence_score
+  // A photo with no stored result: the background analysis failed (or the meal predates silent AI).
+  const canRetryAi = !!meal.s3_link && !analysis && !isAnalyzing
 
   const isDirty = (Object.keys(initial) as (keyof MealFormValues)[]).some((key) => values[key] !== initial[key])
   const busy = saving || deleting || isAnalyzing
@@ -207,6 +216,27 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
           </button>
         ) : null}
         {viewerOpen && meal.s3_link ? <Lightbox src={meal.s3_link} onClose={() => setViewerOpen(false)} /> : null}
+
+        {canRetryAi ? (
+          <div role={failure ? 'alert' : 'status'} className="mt-3 flex items-center justify-between gap-4 rounded-lg border border-[#3A373C] bg-[#1E1B1F] px-4 py-3">
+            <span className="text-[13px] text-[#A09EA3]" style={sans}>
+              {failure ? failure.message : 'This photo has no AI nutrition estimate yet.'}
+            </span>
+            <button
+              type="button"
+              disabled={saving || deleting}
+              onClick={() => {
+                if (failure) dismissAnalysisNotice(failure.id)
+                startMealAnalysis(meal.meal_id)
+              }}
+              className="flex shrink-0 items-center gap-1.5 text-[13px] font-semibold text-white hover:opacity-80 disabled:opacity-40"
+              style={sans}
+            >
+              <RefreshCw size={14} />
+              {failure ? 'Retry' : 'Analyze'}
+            </button>
+          </div>
+        ) : null}
 
         {noFood ? (
           <p role="status" className="mt-3 rounded-lg border border-[#FF4D4D] bg-[#FF4D4D]/10 p-4 text-[13px] text-[#FF4D4D]" style={sans}>
