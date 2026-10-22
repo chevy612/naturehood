@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { useNotifications } from '@/app/components/platform/notifications/NotificationsProvider'
@@ -15,6 +15,11 @@ export type SidebarProfile = { name: string; username: string | null; avatarUrl:
 
 const COLLAPSE_KEY = 'nh_sidebar_collapsed'
 const COLLAPSE_EVENT = 'nh_sidebar_collapsed_change'
+const WIDTH_KEY = 'nh_sidebar_width'
+const WIDTH_VAR = '--nh-sidebar-w'
+const WIDTH_MIN = 200
+const WIDTH_MAX = 420
+const WIDTH_DEFAULT = 240
 const ALL_HREFS = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href))
 const display = { fontFamily: "'Sk Modernist', sans-serif" } as const
 
@@ -54,6 +59,67 @@ function toggleCollapse(key: string) {
   window.dispatchEvent(new Event(COLLAPSE_EVENT))
 }
 
+const clampWidth = (px: number) => Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, Math.round(px)))
+function applyWidth(px: number) {
+  document.documentElement.style.setProperty(WIDTH_VAR, `${px}px`)
+}
+
+// Drag handle on the sidebar's right edge. Updates the CSS variable live while
+// dragging (so both the sidebar and the content offset track it without a React
+// re-render) and persists the final width to localStorage. Double-click resets.
+function ResizeHandle() {
+  // Apply any persisted width on mount; the CSS default (240px) covers SSR.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(WIDTH_KEY)
+      if (raw != null) {
+        const n = Number(raw)
+        if (Number.isFinite(n)) applyWidth(clampWidth(n))
+      }
+    } catch {}
+  }, [])
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    e.preventDefault()
+    const startX = e.clientX
+    const styleW = getComputedStyle(document.documentElement).getPropertyValue(WIDTH_VAR)
+    const startW = parseFloat(styleW) || WIDTH_DEFAULT
+
+    const onMove = (ev: PointerEvent) => applyWidth(clampWidth(startW + (ev.clientX - startX)))
+    const onUp = (ev: PointerEvent) => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
+      const final = clampWidth(startW + (ev.clientX - startX))
+      try { localStorage.setItem(WIDTH_KEY, String(final)) } catch {}
+    }
+
+    document.body.style.userSelect = 'none'
+    document.body.style.cursor = 'col-resize'
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }
+
+  const reset = () => {
+    applyWidth(WIDTH_DEFAULT)
+    try { localStorage.setItem(WIDTH_KEY, String(WIDTH_DEFAULT)) } catch {}
+  }
+
+  return (
+    <div
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Resize sidebar (double-click to reset)"
+      onPointerDown={onPointerDown}
+      onDoubleClick={reset}
+      className="group absolute right-0 top-0 z-10 h-full w-2 translate-x-1/2 cursor-col-resize"
+    >
+      <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors group-hover:bg-[#6B6870]" />
+    </div>
+  )
+}
+
 export function Sidebar({ profile }: { profile: SidebarProfile }) {
   const pathname = usePathname()
   const { unreadCount } = useNotifications()
@@ -63,7 +129,11 @@ export function Sidebar({ profile }: { profile: SidebarProfile }) {
   const toggle = (key: string) => toggleCollapse(key)
 
   return (
-    <nav className="fixed left-0 top-0 z-50 hidden h-screen w-60 flex-col border-r border-[#3A373C] bg-[#141115] md:flex">
+    <nav
+      className="fixed left-0 top-0 z-50 hidden h-screen flex-col border-r border-[#3A373C] bg-[#141115] md:flex"
+      style={{ width: 'var(--nh-sidebar-w)' }}
+    >
+      <ResizeHandle />
       {/* Brand */}
       <div className="px-5 pb-6 pt-7">
         <Link href="/home" aria-label="Naturehood home" className="block w-fit">

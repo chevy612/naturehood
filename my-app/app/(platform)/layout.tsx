@@ -28,7 +28,7 @@ export default async function PlatformLayout({
     <NotificationsProvider userId={user.id}>
       <div className="min-h-screen bg-[#141115]">
         {/* Offset content so it isn't hidden under the nav */}
-        <main className="pb-14 md:pb-0 md:pl-60">
+        <main className="pb-14 md:pb-0 md:pl-[var(--nh-sidebar-w)]">
           {children}
         </main>
         <PlatformNav profile={navProfile} />

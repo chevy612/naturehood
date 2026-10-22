@@ -54,6 +54,9 @@
   --foreground: var(--color-cloud);
   --radius: 0.625rem;
   --third-color: #0CF574;
+
+  /* Desktop sidebar width — resizable at runtime via the drag handle in Sidebar.tsx */
+  --nh-sidebar-w: 240px;
 }
 
 /* ── BASE RESET ────────────────────────────────────────────── */
