@@ -12,6 +12,11 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "my-app", "run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "my-app-running",
+      "url": "http://localhost:3000",
+      "port": 3000
     }
   ]
 }
