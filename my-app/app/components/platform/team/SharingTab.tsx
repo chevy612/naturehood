@@ -1,9 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Ban, Check, Copy, Link2, Search, UserPlus, X } from 'lucide-react'
+import { Ban, Check, Copy, Link2, Search, Share2, UserPlus, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { ButtonSmall } from '@/app/components/ui/buttons'
+import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import { PeerRow } from '@/app/components/platform/team/PeerRow'
 import {
   EmptyCard,
@@ -13,10 +14,11 @@ import {
   StatusBadge,
   TeamLoading,
 } from '@/app/components/platform/team/shared'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import {
   createShareLink,
   deactivateShareLink,
+  rotateShareLink,
   endShare,
   fetchCurrentUserId,
   inviteCoach,
@@ -37,7 +39,7 @@ function errorText(error: unknown, fallback: string) {
   return teamErrorMessage(error instanceof Error ? error : null, fallback)
 }
 
-function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () => Promise<void> }) {
+export function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () => Promise<void> }) {
   const [input, setInput] = useState('')
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<PeerProfile[]>([])
@@ -126,7 +128,7 @@ function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () 
         <ScopeSwitches scope={scope} onChange={setScope} />
       </div>
 
-      {searching ? <p className="mt-4 text-[13px] text-[#6B6870]" style={sans}>Searching…</p> : null}
+      {searching ? <SocialLoading label="Searching coaches" /> : null}
       {!searching && query.replace(/^@/, '').length >= 2 && results.length === 0 && !error ? (
         <p className="mt-4 text-[13px] text-[#6B6870]" style={sans}>No users found for “{query}”.</p>
       ) : null}
@@ -164,7 +166,7 @@ function InviteCoach({ shares, onInvited }: { shares: ShareRow[]; onInvited: () 
   )
 }
 
-function ShareLinkPanel() {
+export function ShareLinkPanel() {
   const [scope, setScope] = useState<ShareScope>(BOTH)
   const [links, setLinks] = useState<ShareLink[]>([])
   const [loading, setLoading] = useState(true)
@@ -175,7 +177,10 @@ function ShareLinkPanel() {
 
   const load = useCallback(async () => {
     try {
-      setLinks(await listActiveShareLinks())
+      const next = await listActiveShareLinks()
+      setLinks(next)
+      const current = next[0]
+      if (current) setScope({ shareMeals: current.shareMeals, shareWorkouts: current.shareWorkouts })
     } catch (loadError) {
       setError(errorText(loadError, 'Could not load your share links.'))
     } finally {
@@ -212,6 +217,36 @@ function ShareLinkPanel() {
     }
   }
 
+  async function handleShare(link: ShareLink) {
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: 'Naturehood', url: link.url })
+        return
+      } catch (shareError) {
+        if (shareError instanceof DOMException && shareError.name === 'AbortError') return
+      }
+    }
+    await handleCopy(link)
+  }
+
+  async function handleScopeChange(next: ShareScope) {
+    setScope(next)
+    if (links.length === 0) return
+    setBusy(true)
+    setError(null)
+    try {
+      await rotateShareLink(next)
+    } catch (scopeError) {
+      setError(errorText(scopeError, 'Could not update the share link.'))
+    } finally {
+      try {
+        await load()
+      } finally {
+        setBusy(false)
+      }
+    }
+  }
+
   async function handleDeactivate(link: ShareLink) {
     setBusyLinkId(link.id)
     setError(null)
@@ -230,31 +265,52 @@ function ShareLinkPanel() {
       <SectionLabel>Share link</SectionLabel>
       <p className="mb-3 text-[13px] text-[#A09EA3]" style={sans}>
         Anyone who opens the link while signed in can accept and become your Coach. Share it only with people you trust.
-        Stopping a share does not turn a link off, so a Coach could accept again. Turn the link off to prevent that.
+        Changing Meal logs or Workout logs turns the current link off and creates a new one.
       </p>
-      <ScopeSwitches scope={scope} onChange={setScope} />
-      <div className="mt-3">
-        <ButtonSmall variant="accent" onClick={handleCreate} disabled={busy}>
-          <Link2 size={12} />
-          {busy ? 'Creating…' : 'Create share link'}
-        </ButtonSmall>
-      </div>
+      <ScopeSwitches scope={scope} busy={busy} onChange={(next) => void handleScopeChange(next)} />
+      {busy ? (
+        <div
+          className="mt-4 flex flex-col items-center gap-3 rounded-xl bg-[#1E1B1F] px-4 py-8"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+          data-testid="share-link-generating"
+        >
+          <LogoSpinner size={48} />
+          <p className="text-[13px] text-[#A09EA3]" style={sans}>Generating shareable link…</p>
+        </div>
+      ) : null}
+      {!busy && !loading && links.length === 0 ? (
+        <div className="mt-3">
+          <ButtonSmall variant="accent" onClick={handleCreate}>
+            <Link2 size={12} />
+            Create shareable link
+          </ButtonSmall>
+        </div>
+      ) : null}
 
-      {loading ? <p className="mt-4 text-[13px] text-[#6B6870]" style={sans}>Loading links…</p> : null}
-      {!loading && links.length > 0 ? (
+      {loading ? (
+        <div className="mt-4 flex justify-center py-6" aria-busy="true" aria-label="Loading share links">
+          <LogoSpinner size={40} />
+        </div>
+      ) : null}
+      {!loading && !busy && links.length > 0 ? (
         <ul className="mt-4 flex flex-col gap-3" aria-label="Active share links">
           {links.map((link) => (
             <li key={link.id} className="rounded-xl bg-[#1E1B1F] p-3" data-testid="team-share-link">
               <div className="mb-2"><ScopePills scope={link} /></div>
-              <div className="flex items-center gap-2">
-                <input
-                  readOnly
-                  value={link.url}
-                  aria-label="Share link URL"
-                  onFocus={(event) => event.currentTarget.select()}
-                  className="min-w-0 flex-1 rounded-lg bg-[#141115] px-3 py-2 text-[12px] text-[#A09EA3] outline-none"
-                  style={sans}
-                />
+              <a
+                href={link.url}
+                className="block break-all text-[13px] leading-[18px] text-[#F5F5F5] underline decoration-[#3A373C] underline-offset-2"
+                style={sans}
+              >
+                {link.url}
+              </a>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <ButtonSmall onClick={() => void handleShare(link)}>
+                  <Share2 size={12} />
+                  Share
+                </ButtonSmall>
                 <ButtonSmall onClick={() => void handleCopy(link)}>
                   {copiedId === link.id ? <Check size={12} /> : <Copy size={12} />}
                   {copiedId === link.id ? 'Copied' : 'Copy'}
@@ -264,16 +320,16 @@ function ShareLinkPanel() {
                 <span className="text-[11px] text-[#6B6870]" style={sans}>
                   Created {new Date(link.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </span>
-                <ButtonSmall variant="danger" disabled={busyLinkId === link.id} onClick={() => void handleDeactivate(link)}>
+                <ButtonSmall variant="danger" disabled={busyLinkId === link.id || busy} onClick={() => void handleDeactivate(link)}>
                   <Ban size={12} />
-                  {busyLinkId === link.id ? 'Turning off…' : 'Turn off link'}
+                  {busyLinkId === link.id ? 'Disabling…' : 'Disable link'}
                 </ButtonSmall>
               </div>
             </li>
           ))}
         </ul>
       ) : null}
-      {!loading && links.length === 0 ? (
+      {!loading && !busy && links.length === 0 ? (
         <p className="mt-4 text-[12px] text-[#6B6870]" style={sans}>No active links.</p>
       ) : null}
       {error ? <p className="mt-3 text-[13px] text-[#FF4D4D]" style={sans} role="alert">{error}</p> : null}

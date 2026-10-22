@@ -46,9 +46,12 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // app.naturehoodofficial.com — route to the platform regardless of path
+  // app.naturehoodofficial.com — route to the platform regardless of path.
+  // Share invites are exempt: this host used to send /share/:token to /home
+  // or /login and drop the token, so the link never opened on a phone.
   const host = request.headers.get('host') ?? ''
-  if (host.startsWith('app.')) {
+  const isSharePath = pathname === '/share' || pathname.startsWith('/share/')
+  if (host.startsWith('app.') && !isSharePath) {
     const target = pathname === '/home' || pathname === '/login' ? null : (user ? '/home' : '/login')
     if (target) {
       const url = request.nextUrl.clone()

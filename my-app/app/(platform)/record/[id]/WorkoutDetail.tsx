@@ -121,9 +121,9 @@ function StaleBanner({ id }: { id: string }) {
 // AI SECTION
 // ─────────────────────────────────────────────
 
-function AiSection({ ai, editHref }: { ai: AiStructuredWorkout; editHref: string }) {
+function AiSection({ ai, editHref }: { ai: AiStructuredWorkout; editHref?: string }) {
   return (
-    <ReportSection title="AI report" action={<EditAiButton href={editHref} />}>
+    <ReportSection title="AI report" action={editHref ? <EditAiButton href={editHref} /> : undefined}>
       {(ai.summary || ai.estimated_intensity) && (
         <div className="flex flex-wrap items-start gap-2">
           {ai.summary && (
@@ -180,29 +180,30 @@ type Props = {
   hasWorkoutLog: boolean
   aiStructured: AiStructuredWorkout | AthleteSessionLog | null
   aiNeedsRefresh: boolean
+  /** Coach view: show the same report, without analyze or edit actions. */
+  readOnly?: boolean
 }
 
-export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeedsRefresh }: Props) {
-  const editHref = `/record/${id}/ai-report`
+export default function WorkoutDetail({ id, hasWorkoutLog, aiStructured, aiNeedsRefresh, readOnly = false }: Props) {
+  // Coaches see the same report without analyze or edit actions.
+  const editHref = readOnly ? undefined : `/record/${id}/ai-report`
 
   return (
     <div className="space-y-4">
-      {/* Stale banner — shown when workout_log was edited after AI analysis */}
-      {aiStructured && aiNeedsRefresh && (
+      {aiStructured && aiNeedsRefresh && !readOnly ? (
         <StaleBanner id={id} />
-      )}
+      ) : null}
 
-      {/* AI section */}
       {aiStructured ? (
         isV2(aiStructured)
-          ? <SessionResult session={aiStructured} action={<EditAiButton href={editHref} />} />
+          ? <SessionResult session={aiStructured} action={editHref ? <EditAiButton href={editHref} /> : undefined} />
           : <AiSection ai={aiStructured} editHref={editHref} />
       ) : hasWorkoutLog ? (
         <ReportCard className="flex items-center justify-between gap-4 px-4 py-3">
           <p className="text-[13px] text-[#847E89]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             No AI analysis yet.
           </p>
-          <AnalyzeButton id={id} />
+          {readOnly ? null : <AnalyzeButton id={id} />}
         </ReportCard>
       ) : null}
     </div>

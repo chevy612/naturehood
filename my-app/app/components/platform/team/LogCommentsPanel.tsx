@@ -2,16 +2,17 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { Heart } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { CommentComposer } from '@/app/components/platform/social/CommentComposer'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
 import type { EnrichedComment } from '@/lib/social/browser'
 import { displayName, formatRelativeTime, profileHref, sans } from '@/lib/social/format'
 import { isVideoUrl, readPostBody } from '@/lib/social/post-content'
 import { fetchCurrentUserId } from '@/lib/team/browser'
-import { createLogComment, deleteLogComment, fetchLogComments, fetchLogReplies } from '@/lib/team/log-comments-browser'
+import { createLogComment, deleteLogComment, fetchLogComments, fetchLogReplies, toggleLogCommentLike } from '@/lib/team/log-comments-browser'
 import type { LogType } from '@/lib/team/types'
 
 function countAll(items: EnrichedComment[]): number {
@@ -116,6 +117,27 @@ export function LogCommentsPanel({
     }
   }
 
+  async function handleLike(comment: EnrichedComment) {
+    const previousLiked = comment.likedByMe
+    const previousCount = comment.likeCount ?? 0
+    updateComment(comment.id, (item) => ({
+      ...item,
+      likedByMe: !item.likedByMe,
+      likeCount: Math.max(0, (item.likeCount ?? 0) + (item.likedByMe ? -1 : 1)),
+    }))
+    try {
+      const result = await toggleLogCommentLike(logType, logId, comment.id)
+      updateComment(comment.id, (item) => ({
+        ...item,
+        likedByMe: result.liked,
+        likeCount: Math.max(0, previousCount + (result.liked === previousLiked ? 0 : result.liked ? 1 : -1)),
+      }))
+    } catch (likeError) {
+      updateComment(comment.id, (item) => ({ ...item, likedByMe: previousLiked, likeCount: previousCount }))
+      setActionError(likeError instanceof Error ? likeError.message : 'Could not update the like.')
+    }
+  }
+
   async function handleDelete(comment: EnrichedComment) {
     if (!window.confirm('Delete this comment?')) return
     try {
@@ -129,7 +151,7 @@ export function LogCommentsPanel({
 
   return (
     <div data-testid="log-comments">
-      {loading ? <StatusMessage>Loading comments…</StatusMessage> : null}
+      {loading ? <SocialLoading label="Loading comments" /> : null}
       {!loading && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
       {!loading && !error && comments.length === 0 ? (
         <StatusMessage>No comments yet. Start the conversation.</StatusMessage>
@@ -146,6 +168,7 @@ export function LogCommentsPanel({
               setReplyTo(target)
               setActionError(null)
             }}
+            onLike={(target) => void handleLike(target)}
             onDelete={handleDelete}
             onShowReplies={handleShowReplies}
           />
@@ -179,6 +202,7 @@ function CommentRow({
   userId,
   canDeleteAny,
   onReply,
+  onLike,
   onDelete,
   onShowReplies,
   nested = false,
@@ -187,6 +211,7 @@ function CommentRow({
   userId: string | null
   canDeleteAny: boolean
   onReply: (comment: EnrichedComment) => void
+  onLike: (comment: EnrichedComment) => void
   onDelete: (comment: EnrichedComment) => void
   onShowReplies: (comment: EnrichedComment) => void
   nested?: boolean
@@ -233,6 +258,17 @@ function CommentRow({
             </div>
           ) : null}
           <div className="mt-2 flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => onLike(comment)}
+              aria-label={comment.likedByMe ? 'Unlike comment' : 'Like comment'}
+              aria-pressed={comment.likedByMe}
+              className="inline-flex items-center gap-1 text-[12px] uppercase tracking-[0.12em] text-[#A09EA3]"
+              style={sans}
+            >
+              <Heart size={14} fill={comment.likedByMe ? '#FF4D4D' : 'none'} color={comment.likedByMe ? '#FF4D4D' : '#A09EA3'} />
+              {comment.likeCount > 0 ? comment.likeCount : null}
+            </button>
             <button type="button" onClick={() => onReply(comment)} className="text-[12px] uppercase tracking-[0.12em] text-[#A09EA3]" style={sans}>
               Reply{comment.replyCount > 0 ? ` ${comment.replyCount}` : ''}
             </button>
@@ -254,6 +290,7 @@ function CommentRow({
               userId={userId}
               canDeleteAny={canDeleteAny}
               onReply={onReply}
+              onLike={onLike}
               onDelete={onDelete}
               onShowReplies={onShowReplies}
               nested

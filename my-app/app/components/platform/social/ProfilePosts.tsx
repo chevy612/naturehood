@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { PostCard } from '@/app/components/platform/social/PostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { PillTag } from '@/app/components/ui/tags'
 import {
   fetchCurrentProfile,
@@ -19,7 +19,8 @@ import {
   type EnrichedPost,
   type ProfileDetail,
 } from '@/lib/social/browser'
-import { displayName, roleLabel, sans } from '@/lib/social/format'
+import { displayName, sans } from '@/lib/social/format'
+import { teamModeLabel } from '@/lib/team/mode'
 
 export function ProfilePosts({
   userId,
@@ -118,7 +119,7 @@ export function ProfilePosts({
           <ChevronLeft size={16} />
           Back
         </button>
-        {loading ? <StatusMessage>Loading profile…</StatusMessage> : null}
+        {loading ? <SocialLoading label="Loading profile" /> : null}
         {!loading && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
         {!loading && !error && (
           <>
@@ -131,7 +132,7 @@ export function ProfilePosts({
                 ) : null}
                 {profile ? (
                   <div className="mt-2">
-                    <PillTag label={roleLabel(profile.role)} size="sm" variant="ghost-green" />
+                    <PillTag label={teamModeLabel(profile.team_mode)} size="sm" variant="ghost-green" />
                   </div>
                 ) : null}
                 <p className="mt-1 text-[12px] text-[#6B6870]" style={sans}>

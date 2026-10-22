@@ -108,7 +108,7 @@ function AiBreakdown({ data }: { data: AiFoodAnalysisData }) {
   )
 }
 
-export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string }) {
+export function MealEditor({ meal, userId, readOnly = false }: { meal: MealRecord; userId?: string; readOnly?: boolean }) {
   const router = useRouter()
   const initial = useMemo(() => valuesFromMeal(meal), [meal])
   const [values, setValues] = useState<MealFormValues>(initial)
@@ -126,10 +126,10 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
   const seenCompleted = useRef(completedCount)
 
   useEffect(() => {
-    if (completedCount === seenCompleted.current) return
+    if (readOnly || completedCount === seenCompleted.current) return
     seenCompleted.current = completedCount
     router.refresh()
-  }, [completedCount, router])
+  }, [completedCount, readOnly, router])
 
   const analysis = useMemo(() => parseAnalysis(meal.ai_analysis), [meal.ai_analysis])
   const aiData = analysis?.data && hasAiFoodData(analysis.data) ? analysis.data : null
@@ -160,6 +160,7 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
       document.getElementById('meal-title')?.focus()
       return
     }
+    if (!userId) return
     setSaving(true)
     setError(null)
     try {
@@ -173,6 +174,7 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
   }
 
   async function handleDelete() {
+    if (!userId) return
     setDeleting(true)
     setError(null)
     try {
@@ -187,22 +189,27 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
 
   const key = dateKey(meal.created_at)
 
+  const shellClass = readOnly ? '' : 'min-h-screen bg-[#141115] px-4 py-6 sm:px-6'
+  const formClass = readOnly ? '' : 'mx-auto max-w-2xl'
+
   return (
-    <div className="min-h-screen bg-[#141115] px-4 py-6 sm:px-6">
-      <form onSubmit={handleSave} noValidate className="mx-auto max-w-2xl">
-        <div className="mb-6 flex items-center justify-between">
-          <Link href={backHref} aria-label="Back to meals" className="text-white">
-            <ArrowLeft size={22} />
-          </Link>
-          <h1 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={display}>Meal summary</h1>
-          <span className="w-[22px]" aria-hidden />
-        </div>
+    <div className={shellClass}>
+      <form onSubmit={readOnly ? (event) => event.preventDefault() : handleSave} noValidate className={formClass}>
+        {readOnly ? null : (
+          <div className="mb-6 flex items-center justify-between">
+            <Link href={backHref} aria-label="Back to meals" className="text-white">
+              <ArrowLeft size={22} />
+            </Link>
+            <h1 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white" style={display}>Meal summary</h1>
+            <span className="w-[22px]" aria-hidden />
+          </div>
+        )}
 
         <p className="mb-4 text-[12px] text-[#6B6870]" style={sans}>
           Logged {weekdayForKey(key)}, {key} at {formatTime(meal.created_at)}
         </p>
 
-        {isAnalyzing ? (
+        {!readOnly && isAnalyzing ? (
           <div role="status" className="mb-4 flex items-center gap-2 rounded-lg border border-[#3A373C] bg-[#1E1B1F] px-4 py-2.5">
             <LogoSpinner size={32} />
             <span className="text-[13px] text-[#A09EA3]" style={sans}>Analyzing your meal… This page will update when it finishes.</span>
@@ -240,7 +247,7 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
 
         {noFood ? (
           <p role="status" className="mt-3 rounded-lg border border-[#FF4D4D] bg-[#FF4D4D]/10 p-4 text-[13px] text-[#FF4D4D]" style={sans}>
-            No food was detected in the image. You can still edit the fields below manually.
+            {readOnly ? 'No food was detected in the image.' : 'No food was detected in the image. You can still edit the fields below manually.'}
           </p>
         ) : null}
 
@@ -252,7 +259,7 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
         ) : null}
 
         <fieldset disabled={busy} className="mt-6 min-w-0 border-0 p-0">
-          <MealFormFields values={values} onChange={patchValues} titleError={titleError} macroPlaceholder="e.g. 450" idPrefix="meal" />
+          <MealFormFields values={values} onChange={patchValues} titleError={titleError} macroPlaceholder="e.g. 450" idPrefix="meal" readOnly={readOnly} />
         </fieldset>
 
         {aiData ? <AiBreakdown data={aiData} /> : null}
@@ -263,42 +270,44 @@ export function MealEditor({ meal, userId }: { meal: MealRecord; userId: string 
           </p>
         ) : null}
 
-        <div className="mt-8 space-y-4">
-          <button
-            type="submit"
-            disabled={busy}
-            className="h-[52px] w-full rounded-full bg-[#F5F5F5] text-[12px] font-bold uppercase tracking-[0.16em] text-[#141115] hover:bg-white disabled:opacity-50"
-            style={sans}
-          >
-            {saving ? 'Saving…' : isDirty ? 'Save changes' : 'Done'}
-          </button>
+        {readOnly ? null : (
+          <div className="mt-8 space-y-4">
+            <button
+              type="submit"
+              disabled={busy}
+              className="h-[52px] w-full rounded-full bg-[#F5F5F5] text-[12px] font-bold uppercase tracking-[0.16em] text-[#141115] hover:bg-white disabled:opacity-50"
+              style={sans}
+            >
+              {saving ? 'Saving…' : isDirty ? 'Save changes' : 'Done'}
+            </button>
 
-          <div className="border-t border-[#3A373C] pt-4">
-            {!confirmDelete ? (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => setConfirmDelete(true)}
-                className="w-full rounded-full border border-[#3A373C] py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#6B6870] transition-colors hover:border-[#FF4D4D]/40 hover:text-[#FF4D4D] disabled:opacity-40"
-                style={sans}
-              >
-                Delete meal
-              </button>
-            ) : (
-              <div className="flex flex-wrap items-center justify-between gap-3" role="alertdialog" aria-label="Confirm delete">
-                <span className="text-[13px] text-[#FF4D4D]" style={sans}>Delete this meal? This can&apos;t be undone.</span>
-                <span className="flex items-center gap-4">
-                  <button type="button" onClick={handleDelete} disabled={deleting} className="text-[13px] font-semibold text-[#FF4D4D] hover:text-white disabled:opacity-50" style={sans}>
-                    {deleting ? 'Deleting…' : 'Yes, delete'}
-                  </button>
-                  <button type="button" onClick={() => setConfirmDelete(false)} disabled={deleting} className="text-[13px] text-[#6B6870] hover:text-white" style={sans}>
-                    Cancel
-                  </button>
-                </span>
-              </div>
-            )}
+            <div className="border-t border-[#3A373C] pt-4">
+              {!confirmDelete ? (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => setConfirmDelete(true)}
+                  className="w-full rounded-full border border-[#3A373C] py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#6B6870] transition-colors hover:border-[#FF4D4D]/40 hover:text-[#FF4D4D] disabled:opacity-40"
+                  style={sans}
+                >
+                  Delete meal
+                </button>
+              ) : (
+                <div className="flex flex-wrap items-center justify-between gap-3" role="alertdialog" aria-label="Confirm delete">
+                  <span className="text-[13px] text-[#FF4D4D]" style={sans}>Delete this meal? This can&apos;t be undone.</span>
+                  <span className="flex items-center gap-4">
+                    <button type="button" onClick={handleDelete} disabled={deleting} className="text-[13px] font-semibold text-[#FF4D4D] hover:text-white disabled:opacity-50" style={sans}>
+                      {deleting ? 'Deleting…' : 'Yes, delete'}
+                    </button>
+                    <button type="button" onClick={() => setConfirmDelete(false)} disabled={deleting} className="text-[13px] text-[#6B6870] hover:text-white" style={sans}>
+                      Cancel
+                    </button>
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </form>
     </div>
   )

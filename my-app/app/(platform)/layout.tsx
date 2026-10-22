@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { PlatformNav } from '@/app/components/platform/PlatformNav'
 import { NotificationsProvider } from '@/app/components/platform/notifications/NotificationsProvider'
+import { TeamModeProvider } from '@/app/components/platform/team/TeamModeProvider'
 
 export default async function PlatformLayout({
   children,
@@ -14,7 +15,7 @@ export default async function PlatformLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('name, username, avatar_url, email')
+    .select('name, username, avatar_url, email, team_mode')
     .eq('id', user.id)
     .single()
 
@@ -25,14 +26,16 @@ export default async function PlatformLayout({
   }
 
   return (
-    <NotificationsProvider userId={user.id}>
-      <div className="min-h-screen bg-[#141115]">
-        {/* Offset content so it isn't hidden under the nav */}
-        <main className="pb-14 md:pb-0 md:pl-[var(--nh-sidebar-w)]">
-          {children}
-        </main>
-        <PlatformNav profile={navProfile} />
-      </div>
-    </NotificationsProvider>
+    <TeamModeProvider userId={user.id} initialMode={profile?.team_mode ?? null}>
+      <NotificationsProvider userId={user.id}>
+        <div className="min-h-screen bg-[#141115]">
+          {/* Offset content so it isn't hidden under the nav */}
+          <main className="pb-14 md:pb-0 md:pl-[var(--nh-sidebar-w)]">
+            {children}
+          </main>
+          <PlatformNav profile={navProfile} />
+        </div>
+      </NotificationsProvider>
+    </TeamModeProvider>
   );
 }

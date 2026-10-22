@@ -10,6 +10,7 @@ import { MealPostCard } from '@/app/components/platform/social/MealPostCard'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { WorkoutAttachmentCard } from '@/app/components/platform/social/WorkoutAttachmentCard'
 import { ButtonSmall } from '@/app/components/ui/buttons'
+import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import {
   LOG_PAGE_SIZE,
   fetchAcceptedAccess,
@@ -223,7 +224,7 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
                   {!workoutsDone ? (
                     <div className="mt-6 flex justify-center">
                       <ButtonSmall disabled={workoutsLoading} onClick={() => void loadWorkouts(workouts.length)}>
-                        {workoutsLoading ? 'Loading…' : 'Load more'}
+                        {workoutsLoading ? <LogoSpinner size={22} /> : 'Load more'}
                       </ButtonSmall>
                     </div>
                   ) : null}
@@ -250,7 +251,7 @@ export function AthleteLogs({ athleteId }: { athleteId: string }) {
                 {!mealsDone ? (
                   <div className="mt-6 flex justify-center">
                     <ButtonSmall disabled={mealsLoading} onClick={() => void loadMeals(meals.length)}>
-                      {mealsLoading ? 'Loading…' : 'Load more'}
+                      {mealsLoading ? <LogoSpinner size={22} /> : 'Load more'}
                     </ButtonSmall>
                   </div>
                 ) : null}

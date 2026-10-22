@@ -1,3 +1,5 @@
+import type { AiFoodAnalysis } from '@/lib/meals/types'
+import type { AiStructuredWorkout, AthleteSessionLog } from '@/lib/types'
 import type { MealType, WorkoutPostRecord } from '@/lib/social/post-content'
 
 export type ShareRole = 'athlete' | 'coach'
@@ -56,11 +58,17 @@ export type ShareLinkPeek = {
   existing_status: ShareStatus | null
 }
 
-export type SharedWorkout = WorkoutPostRecord & { created_at: string }
+export type SharedWorkout = WorkoutPostRecord & {
+  created_at: string
+  ai_structured?: AiStructuredWorkout | AthleteSessionLog | null
+  ai_needs_refresh?: boolean
+}
 
 export type SharedMeal = {
   id: string
+  user_id?: string
   title: string | null
+  weight?: number | null
   calories: number | null
   protein: number | null
   carbs: number | null
@@ -68,7 +76,9 @@ export type SharedMeal = {
   meal_type: MealType | null
   image_url: string | null
   notes: string | null
+  ai_analysis?: AiFoodAnalysis | null
   created_at: string
+  updated_at?: string | null
 }
 
 export type LogType = 'workout' | 'meal'

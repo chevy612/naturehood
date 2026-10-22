@@ -1,13 +1,33 @@
 import type { LucideIcon } from 'lucide-react'
-import { Home, Bell, Calendar, Dumbbell, Utensils, Users, Share2, User, LayoutDashboard } from 'lucide-react'
+import { Home, Bell, Calendar, Dumbbell, Utensils, Users, Share2, User, LayoutDashboard, MessageCircle } from 'lucide-react'
+import type { TeamMode } from '@/lib/team/mode'
 
 export type NavItem = { label: string; href: string; Icon: LucideIcon; badge?: boolean }
 export type NavGroup = { key: 'community' | 'personal' | 'team'; label: string; items: NavItem[] }
 // A mobile master-tab owns several route prefixes (e.g. Personal → /meals + /record).
 export type MobileTab = NavItem & { match: string[] }
 
+// Team destinations depend on the athlete/coach mode, matching TeamTabs.
+const TEAM_ITEMS: Record<TeamMode, NavItem[]> = {
+  athlete: [
+    { label: 'Message', href: '/my-team/message', Icon: MessageCircle },
+    { label: 'Sharing', href: '/my-team/sharing', Icon: Share2 },
+  ],
+  coach: [
+    { label: 'Message', href: '/my-team/message', Icon: MessageCircle },
+    { label: 'Tracking', href: '/my-team/tracking', Icon: Users },
+  ],
+}
+
 // Master tabs → grouped destinations for the desktop sidebar.
-export const NAV_GROUPS: NavGroup[] = [
+export function navGroupsFor(mode: TeamMode): NavGroup[] {
+  return [
+    ...BASE_GROUPS,
+    { key: 'team', label: 'Team', items: TEAM_ITEMS[mode] },
+  ]
+}
+
+const BASE_GROUPS: NavGroup[] = [
   {
     key: 'community',
     label: 'Community',
@@ -24,14 +44,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: 'Dashboard', href: '/personal/dashboard', Icon: LayoutDashboard },
       { label: 'Workouts', href: '/record', Icon: Dumbbell },
       { label: 'Meals', href: '/meals', Icon: Utensils },
-    ],
-  },
-  {
-    key: 'team',
-    label: 'Team',
-    items: [
-      { label: 'Shared with you', href: '/my-team/tracking', Icon: Users },
-      { label: 'Sharing', href: '/my-team/sharing', Icon: Share2 },
     ],
   },
 ]

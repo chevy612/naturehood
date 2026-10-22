@@ -15,6 +15,7 @@ export type FeedProfile = {
 export type ProfileDetail = FeedProfile & {
   bio: string | null
   role: string | null
+  team_mode: string | null
 }
 
 export type UserSearchResult = FeedProfile
@@ -64,7 +65,7 @@ export async function fetchProfileDetail(userId: string): Promise<ProfileDetail 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, username, name, avatar_url, bio, role')
+    .select('id, username, name, avatar_url, bio, role, team_mode')
     .eq('id', userId)
     .maybeSingle()
   if (error) throw new Error(error.message)

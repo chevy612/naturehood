@@ -2,22 +2,32 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTeamMode } from '@/app/components/platform/team/TeamModeProvider'
 import { sans } from '@/lib/social/format'
+import type { TeamMode } from '@/lib/team/mode'
 
-const TABS = [
-  { label: 'Shared with you', href: '/my-team/tracking', hint: 'People who share their progress with you' },
-  { label: 'Sharing', href: '/my-team/sharing', hint: 'People who can see your logs' },
-]
+const TABS: Record<TeamMode, { label: string; href: string; hint: string }[]> = {
+  athlete: [
+    { label: 'Message', href: '/my-team/message', hint: 'Comments and likes on your logs' },
+    { label: 'Sharing', href: '/my-team/sharing', hint: 'Coaches who can see my logs' },
+  ],
+  coach: [
+    { label: 'Message', href: '/my-team/message', hint: 'Notifications, then invitations' },
+    { label: 'Tracking', href: '/my-team/tracking', hint: 'Athletes I follow as a Coach' },
+  ],
+}
 
 export function TeamTabs() {
   const pathname = usePathname()
-  const active = TABS.find((tab) => pathname.startsWith(tab.href)) ?? TABS[0]
+  const { mode } = useTeamMode()
+  const tabs = TABS[mode]
+  const active = tabs.find((tab) => pathname === tab.href || pathname.startsWith(`${tab.href}/`)) ?? tabs[0]
 
   return (
     <div className="mb-6">
       <div className="flex rounded-full bg-[#1E1B1F] p-1" role="tablist" aria-label="Team sections">
-        {TABS.map((tab) => {
-          const isActive = tab === active
+        {tabs.map((tab) => {
+          const isActive = tab.href === active.href
           return (
             <Link
               key={tab.href}

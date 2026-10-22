@@ -5,8 +5,8 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/app/components/ui/buttons'
 import { ReportSection, ReportCard } from '@/app/components/platform/ReportSection'
 
-export default function WorkoutLogToggle({ workoutLog }: { workoutLog: string }) {
-  const [show, setShow] = useState(false)
+export default function WorkoutLogToggle({ workoutLog, defaultOpen = false }: { workoutLog: string; defaultOpen?: boolean }) {
+  const [show, setShow] = useState(defaultOpen)
 
   return (
     <ReportSection

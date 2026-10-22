@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Search, X } from 'lucide-react'
 import { PostCard } from '@/app/components/platform/social/PostCard'
-import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
+import { LoadMoreButton, SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { UserSearchResults } from '@/app/components/platform/social/UserSearchResults'
 import {
   searchPostsPage,
@@ -166,7 +166,7 @@ export function SearchPosts() {
             <StatusMessage>Search posts, or people by username</StatusMessage>
           </div>
         ) : null}
-        {searching ? <StatusMessage>Searching…</StatusMessage> : null}
+        {searching ? <SocialLoading label="Searching" /> : null}
         {failed ? <StatusMessage tone="error">{error ?? usersError}</StatusMessage> : null}
         {empty ? <StatusMessage>No results for “{query}”</StatusMessage> : null}
 
@@ -191,17 +191,7 @@ export function SearchPosts() {
 
         {hasResults && usersError ? <StatusMessage tone="error">{usersError}</StatusMessage> : null}
         {hasResults && error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
-        {hasNext && (
-          <button
-            type="button"
-            onClick={handleLoadMore}
-            disabled={loadingMore}
-            className="mt-6 w-full border border-[#3A373C] py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#A09EA3] disabled:opacity-50"
-            style={sans}
-          >
-            {loadingMore ? 'Loading…' : 'Load more'}
-          </button>
-        )}
+        {hasNext ? <LoadMoreButton loading={loadingMore} onClick={() => void handleLoadMore()} /> : null}
       </div>
     </div>
   )

@@ -3,12 +3,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { useNotifications } from '@/app/components/platform/notifications/NotificationsProvider'
 import { UnreadBadge } from '@/app/components/platform/notifications/UnreadBadge'
-import { NAV_GROUPS, activeHrefFor, type NavGroup } from '@/app/components/platform/nav-config'
+import { activeHrefFor, navGroupsFor, type NavGroup } from '@/app/components/platform/nav-config'
+import { useTeamMode } from '@/app/components/platform/team/TeamModeProvider'
 import { signOut } from '@/app/(platform)/account/actions'
 
 export type SidebarProfile = { name: string; username: string | null; avatarUrl: string | null }
@@ -20,7 +21,6 @@ const WIDTH_VAR = '--nh-sidebar-w'
 const WIDTH_MIN = 200
 const WIDTH_MAX = 420
 const WIDTH_DEFAULT = 240
-const ALL_HREFS = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href))
 const display = { fontFamily: "'Sk Modernist', sans-serif" } as const
 
 type CollapseMap = Record<string, boolean>
@@ -123,7 +123,9 @@ function ResizeHandle() {
 export function Sidebar({ profile }: { profile: SidebarProfile }) {
   const pathname = usePathname()
   const { unreadCount } = useNotifications()
-  const activeHref = activeHrefFor(pathname, ALL_HREFS)
+  const { mode } = useTeamMode()
+  const groups = useMemo(() => navGroupsFor(mode), [mode])
+  const activeHref = activeHrefFor(pathname, groups.flatMap((g) => g.items.map((i) => i.href)))
 
   const collapsed = useSyncExternalStore(subscribeCollapse, getCollapseSnapshot, () => EMPTY_COLLAPSE)
   const toggle = (key: string) => toggleCollapse(key)
@@ -143,7 +145,7 @@ export function Sidebar({ profile }: { profile: SidebarProfile }) {
 
       {/* Groups */}
       <div className="flex-1 overflow-y-auto px-3">
-        {NAV_GROUPS.map((group) => (
+        {groups.map((group) => (
           <Group
             key={group.key}
             group={group}

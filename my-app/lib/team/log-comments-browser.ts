@@ -47,3 +47,7 @@ export async function createLogComment(
 export async function deleteLogComment(logType: LogType, logId: string, commentId: string): Promise<void> {
   await socialFetch<unknown>(`${base(logType, logId)}/${commentId}`, { method: 'DELETE' })
 }
+
+export async function toggleLogCommentLike(logType: LogType, logId: string, commentId: string): Promise<{ liked: boolean }> {
+  return socialFetch<{ liked: boolean }>(`${base(logType, logId)}/${commentId}/like`, { method: 'POST' })
+}
