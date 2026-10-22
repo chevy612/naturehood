@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { Target } from 'lucide-react'
 import { sans, display } from '@/lib/social/format'
 import type { MealListItem, NutritionTargets } from '@/lib/meals/types'
 import { sumMacros } from '@/lib/meals/utils'
@@ -20,11 +21,13 @@ export function DailySummaryCard({
   targets,
   mode,
   onModeChange,
+  onEditTargets,
 }: {
   meals: MealListItem[]
   targets: NutritionTargets
   mode: SummaryMode
   onModeChange: (mode: SummaryMode) => void
+  onEditTargets?: () => void
 }) {
   const totals = useMemo(() => sumMacros(meals), [meals])
 
@@ -37,23 +40,36 @@ export function DailySummaryCard({
 
   return (
     <section aria-label={mode === 'weekly' ? 'Weekly summary' : 'Daily summary'} className="rounded-2xl bg-[#1E1B1F] p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-[13px] font-semibold text-white" style={display}>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <h2 className="whitespace-nowrap text-[13px] font-semibold text-white" style={display}>
           {mode === 'weekly' ? 'Weekly summary' : 'Daily summary'}
         </h2>
-        <div className="flex rounded-lg bg-[#141115] p-[3px]" role="group" aria-label="Summary range">
-          {(['daily', 'weekly'] as const).map((option) => (
+        <div className="flex items-center gap-1">
+          {onEditTargets ? (
             <button
-              key={option}
               type="button"
-              aria-pressed={mode === option}
-              onClick={() => onModeChange(option)}
-              className={`rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${mode === option ? 'bg-[#2B282C] text-white' : 'text-[#6B6870]'}`}
+              onClick={onEditTargets}
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A09EA3] hover:bg-[#2B282C] hover:text-white"
               style={sans}
             >
-              {option === 'daily' ? 'Day' : 'Week'}
+              <Target size={14} />
+              Targets
             </button>
-          ))}
+          ) : null}
+          <div className="flex rounded-lg bg-[#141115] p-[3px]" role="group" aria-label="Summary range">
+            {(['daily', 'weekly'] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={mode === option}
+                onClick={() => onModeChange(option)}
+                className={`rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${mode === option ? 'bg-[#2B282C] text-white' : 'text-[#6B6870]'}`}
+                style={sans}
+              >
+                {option === 'daily' ? 'Day' : 'Week'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

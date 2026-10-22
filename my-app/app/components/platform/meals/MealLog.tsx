@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, SlidersHorizontal, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, RefreshCw, X } from 'lucide-react'
 import { DailySummaryCard, type SummaryMode } from '@/app/components/platform/meals/DailySummaryCard'
 import { MealCard } from '@/app/components/platform/meals/MealCard'
 import { NutritionTargetsModal } from '@/app/components/platform/meals/NutritionTargetsModal'
@@ -28,7 +28,6 @@ import {
   isValidDateKey,
   mealsForDate,
   mealsForWeek,
-  monthNameForKey,
   shiftDateKey,
   todayDateKey,
 } from '@/lib/meals/utils'
@@ -54,12 +53,10 @@ export function MealLog({ userId }: { userId: string }) {
   const [reloadToken, setReloadToken] = useState(0)
   const [meals, setMeals] = useState<MealListItem[]>([])
   const [totalMeals, setTotalMeals] = useState<number | null>(null)
-  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [summaryMode, setSummaryMode] = useState<SummaryMode>('daily')
   const [targets, setTargets] = useState<NutritionTargetsState>(DEFAULT_TARGETS_STATE)
   const [showTargets, setShowTargets] = useState(false)
-  const dateInput = useRef<HTMLInputElement>(null)
   const latestRequest = useRef(0)
 
   const analyzingIds = useAnalyzingMealIds()
@@ -81,9 +78,6 @@ export function MealLog({ userId }: { userId: string }) {
         if (request !== latestRequest.current) return
         setError(loadError instanceof Error ? loadError.message : 'Could not load your meals.')
         setLoadedStart(windowStart)
-      })
-      .finally(() => {
-        if (request === latestRequest.current) setRefreshing(false)
       })
   }, [userId, windowStart, reloadToken, completedCount])
 
@@ -115,60 +109,7 @@ export function MealLog({ userId }: { userId: string }) {
   return (
     <div className="min-h-screen bg-[#141115] px-4 pb-10 pt-6 sm:px-6">
       <div className="mx-auto max-w-5xl">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-white" style={{ ...display, letterSpacing: '-0.02em' }}>Meal log</h1>
-            <p className="mt-1 text-[13px] text-[#6B6870]" style={sans}>{monthNameForKey(selectedDate)}</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Refresh meals"
-              onClick={() => {
-                setRefreshing(true)
-                setReloadToken((token) => token + 1)
-              }}
-              disabled={refreshing || loading}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-[#1E1B1F] disabled:opacity-40"
-            >
-              <RefreshCw size={18} className={refreshing ? 'animate-spin' : ''} />
-            </button>
-            <div className="relative">
-              <button
-                type="button"
-                aria-label="Pick a date"
-                onClick={() => {
-                  const input = dateInput.current
-                  if (input?.showPicker) input.showPicker()
-                  else input?.focus()
-                }}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-[#1E1B1F]"
-              >
-                <CalendarDays size={20} />
-              </button>
-              <input
-                ref={dateInput}
-                type="date"
-                aria-label="Jump to date"
-                tabIndex={-1}
-                max={todayDateKey()}
-                value={selectedDate}
-                onChange={(event) => {
-                  if (isValidDateKey(event.target.value)) selectDate(event.target.value)
-                }}
-                className="pointer-events-none absolute inset-0 opacity-0"
-              />
-            </div>
-            <button
-              type="button"
-              aria-label="Nutrition targets"
-              onClick={() => setShowTargets(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-[#1E1B1F]"
-            >
-              <SlidersHorizontal size={20} />
-            </button>
-          </div>
-        </div>
+        <h1 className="mb-6 text-2xl font-bold text-white" style={{ ...display, letterSpacing: '-0.02em' }}>Meal log</h1>
 
         {/* Phone: log form first, then the day. Desktop: the day on the left, a sticky log panel on the right. */}
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
@@ -208,7 +149,7 @@ export function MealLog({ userId }: { userId: string }) {
             <WeekDateBar selectedDate={selectedDate} onSelectDate={selectDate} mealDateKeys={mealDateKeys} />
 
             <div className="mt-3">
-              <DailySummaryCard meals={summaryMeals} targets={summaryMode === 'weekly' ? targets.weekly : targets.daily} mode={summaryMode} onModeChange={setSummaryMode} />
+              <DailySummaryCard meals={summaryMeals} targets={summaryMode === 'weekly' ? targets.weekly : targets.daily} mode={summaryMode} onModeChange={setSummaryMode} onEditTargets={() => setShowTargets(true)} />
             </div>
 
             <div className="mb-3 mt-6 flex items-center justify-between">
