@@ -1,5 +1,5 @@
 import type { PerceivedIntensity, SessionType } from '@/lib/types'
-import { getWeekRange, shiftDateKey, todayDateKey } from '@/lib/meals/utils'
+import { dateKey, getWeekRange, shiftDateKey, todayDateKey } from '@/lib/meals/utils'
 
 // ─────────────────────────────────────────────
 // PERSONAL DASHBOARD — data shapes + derived stats
@@ -37,26 +37,31 @@ export const CATEGORY_META: Record<WorkoutCategory, { label: string; color: stri
 
 export const PAIN_COLOR = '#FF4D4D'
 
-// ── Session performance ───────────────────────
+/** Reported pain at or above this is flagged (red on rows, counted in the month's pain flags). */
+export const PAIN_FLAG = 3
 
-export type PerformanceBand = 'good' | 'average' | 'poor'
+// ── Session readiness ─────────────────────────
 
-export const PERFORMANCE_META: Record<PerformanceBand, { label: string; color: string }> = {
-  good: { label: 'Good', color: '#4ADE80' },
-  average: { label: 'Average', color: '#FBBF24' },
-  poor: { label: 'Poor', color: PAIN_COLOR },
+export type ReadinessBand = 'high' | 'moderate' | 'low'
+
+export const READINESS_META: Record<ReadinessBand, { label: string; color: string }> = {
+  high: { label: 'Ready', color: '#4ADE80' },
+  moderate: { label: 'Caution', color: '#FBBF24' },
+  low: { label: 'Low', color: PAIN_COLOR },
 }
 
 const FEEL_SCORE: Record<string, number> = { great: 100, good: 80, tired: 45, sore: 25 }
 
-/** Pain at or above this caps the session at "poor", whatever the athlete's feel. */
-const PAIN_POOR = 6
+/** Pain at or above this caps the session at "low", whatever the athlete's feel. */
+const PAIN_LOW = 6
 
 /**
- * 0–100 score from how the athlete felt and the pain they reported. Weighted towards the
- * weaker of the two signals, so a great feel can't hide real pain. Null when neither was logged.
+ * 0–100 readiness score from how the athlete felt and the pain they reported for the
+ * session. It describes the body, not the result, so it is not called "performance".
+ * Weighted towards the weaker of the two signals, so a great feel can't hide real pain.
+ * Null when neither was logged.
  */
-export function performanceScore(
+export function readinessScore(
   workout: Pick<DashboardWorkout, 'readiness_feel' | 'readiness_pain_score'>,
 ): number | null {
   const feel = workout.readiness_feel ? FEEL_SCORE[workout.readiness_feel] : undefined
@@ -65,12 +70,12 @@ export function performanceScore(
   if (!parts.length) return null
 
   const score = Math.round(0.6 * Math.min(...parts) + 0.4 * Math.max(...parts))
-  return pain != null && pain >= PAIN_POOR ? Math.min(score, 39) : score
+  return pain != null && pain >= PAIN_LOW ? Math.min(score, 39) : score
 }
 
-export function performanceBand(score: number | null): PerformanceBand | null {
+export function readinessBand(score: number | null): ReadinessBand | null {
   if (score == null) return null
-  return score >= 70 ? 'good' : score >= 40 ? 'average' : 'poor'
+  return score >= 70 ? 'high' : score >= 40 ? 'moderate' : 'low'
 }
 
 const INTENSITY_WEIGHT: Record<PerceivedIntensity, number> = { low: 1, moderate: 2, high: 3, max: 4 }
@@ -128,20 +133,45 @@ export function monthWeeks(month: string): string[][] {
 
 // ── Derived stats ─────────────────────────────
 
-/** Consecutive Mon–Sun weeks (ending this week, or last week if this one is still empty) with ≥1 session. */
-export function weeklyStreak(trainedDays: ReadonlySet<string>, today = todayDateKey()): number {
-  const hasSession = (weekStart: string) => {
-    for (let i = 0; i < 7; i++) if (trainedDays.has(shiftDateKey(weekStart, i))) return true
-    return false
+export type MonthSummary = {
+  sessions: number
+  byCategory: Record<WorkoutCategory, number>
+  minutes: number
+  /** Sessions with reported pain at or above `PAIN_FLAG`. */
+  painFlags: number
+}
+
+/** What an athlete's month looked like: session mix, time, and pain flags. */
+export function monthSummary(workouts: DashboardWorkout[], month: string): MonthSummary {
+  const inMonth = workouts.filter((w) => monthOf(w.logged_date) === month)
+  const byCategory: Record<WorkoutCategory, number> = { training: 0, competition: 0, recovery: 0 }
+  for (const w of inMonth) byCategory[workoutCategory(w.session_type)]++
+  return {
+    sessions: inMonth.length,
+    byCategory,
+    minutes: inMonth.reduce((sum, w) => sum + (w.duration_minutes ?? 0), 0),
+    painFlags: inMonth.filter((w) => (w.readiness_pain_score ?? 0) >= PAIN_FLAG).length,
   }
-  let weekStart = getWeekRange(today).start
-  if (!hasSession(weekStart)) weekStart = shiftDateKey(weekStart, -7)
-  let streak = 0
-  while (hasSession(weekStart)) {
-    streak++
-    weekStart = shiftDateKey(weekStart, -7)
-  }
-  return streak
+}
+
+/** Mean protein per day, over the days that have at least one meal; null with no meals. */
+export function averageDailyProtein(meals: { created_at: string; protein: number | null }[]): number | null {
+  const byDay = groupByDate(meals, (meal) => dateKey(meal.created_at))
+  if (!byDay.size) return null
+  let total = 0
+  for (const dayMeals of byDay.values()) total += dayMeals.reduce((sum, meal) => sum + (meal.protein ?? 0), 0)
+  return total / byDay.size
+}
+
+/** Training load per `days`-day window for the last `count` windows ending today, oldest first. */
+export function loadHistory(workouts: DashboardWorkout[], today: string, days: number, count: number): number[] {
+  return Array.from({ length: count }, (_, i) => {
+    const end = shiftDateKey(today, -(count - 1 - i) * days)
+    const start = shiftDateKey(end, -(days - 1))
+    return workouts
+      .filter((w) => w.logged_date >= start && w.logged_date <= end)
+      .reduce((sum, w) => sum + sessionLoad(w), 0)
+  })
 }
 
 export type LoadStatus = 'none' | 'light' | 'balanced' | 'high'
@@ -160,9 +190,9 @@ export type BodyCheck = {
   minutes: number
   sessions: number
   restDays: number
-  /** Mean performance score of rated sessions (see `performanceScore`). */
-  avgPerformance: number | null
-  avgPerformancePrev: number | null
+  /** Mean readiness score of rated sessions (see `readinessScore`). */
+  avgReadiness: number | null
+  avgReadinessPrev: number | null
   ratedSessions: number
 }
 
@@ -192,7 +222,7 @@ export function bodyCheck(workouts: DashboardWorkout[], today = todayDateKey(), 
     loadRatio == null ? 'none' : loadRatio > 1.3 ? 'high' : loadRatio < 0.8 ? 'light' : 'balanced'
 
   const scores = (list: DashboardWorkout[]) =>
-    list.map(performanceScore).filter((p): p is number => p != null)
+    list.map(readinessScore).filter((p): p is number => p != null)
   const currentScores = scores(current)
 
   return {
@@ -202,8 +232,8 @@ export function bodyCheck(workouts: DashboardWorkout[], today = todayDateKey(), 
     minutes: current.reduce((sum, w) => sum + (w.duration_minutes ?? 0), 0),
     sessions: current.length,
     restDays: days - new Set(current.map((w) => w.logged_date)).size,
-    avgPerformance: average(currentScores),
-    avgPerformancePrev: average(scores(previous)),
+    avgReadiness: average(currentScores),
+    avgReadinessPrev: average(scores(previous)),
     ratedSessions: currentScores.length,
   }
 }

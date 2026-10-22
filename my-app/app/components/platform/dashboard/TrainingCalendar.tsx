@@ -6,14 +6,14 @@ import { MONTH_NAMES, todayDateKey } from '@/lib/meals/utils'
 import type { MealListItem } from '@/lib/meals/types'
 import {
   CATEGORY_META,
-  PERFORMANCE_META,
+  READINESS_META,
   monthOf,
   monthWeeks,
-  performanceBand,
-  performanceScore,
+  readinessBand,
+  readinessScore,
   workoutCategory,
   type DashboardWorkout,
-  type PerformanceBand,
+  type ReadinessBand,
   type WorkoutCategory,
 } from '@/lib/dashboard/utils'
 
@@ -22,7 +22,7 @@ import {
 //   Monday-first month grid. Each day shows:
 //     • a bar per session, coloured by category (training / competition / recovery),
 //       brighter for higher perceived intensity
-//     • a dot per session for its performance (good / average / poor, hollow when unrated)
+//     • a dot per session for its readiness (ready / caution / low, hollow when unrated)
 //     • a utensils mark when meals were logged
 //   The right-hand column counts training days per week.
 // ─────────────────────────────────────────────
@@ -142,9 +142,9 @@ export function TrainingCalendar({
             <span className="h-1.5 w-3 rounded-full" style={{ background: CATEGORY_META[cat].color }} />
           </LegendItem>
         ))}
-        {(Object.keys(PERFORMANCE_META) as PerformanceBand[]).map((band) => (
-          <LegendItem key={band} label={PERFORMANCE_META[band].label}>
-            <PerformanceDot band={band} />
+        {(Object.keys(READINESS_META) as ReadinessBand[]).map((band) => (
+          <LegendItem key={band} label={READINESS_META[band].label}>
+            <ReadinessDot band={band} />
           </LegendItem>
         ))}
         <LegendItem label="Meals">
@@ -164,9 +164,9 @@ function LegendItem({ label, children }: { label: string; children: React.ReactN
   )
 }
 
-function PerformanceDot({ band }: { band: PerformanceBand | null }) {
+function ReadinessDot({ band }: { band: ReadinessBand | null }) {
   return band ? (
-    <span className="h-1.5 w-1.5 rounded-full" style={{ background: PERFORMANCE_META[band].color }} />
+    <span className="h-1.5 w-1.5 rounded-full" style={{ background: READINESS_META[band].color }} />
   ) : (
     <span className="h-1.5 w-1.5 rounded-full border border-[#6B6870]" />
   )
@@ -194,13 +194,13 @@ function DayCell({
   const day = Number(dateKey.slice(8))
   const trained = !!workouts?.length
   const hasMeals = !!meals?.length
-  const bands = (workouts ?? []).slice(0, 3).map((w) => performanceBand(performanceScore(w)))
+  const bands = (workouts ?? []).slice(0, 3).map((w) => readinessBand(readinessScore(w)))
 
   const label = [
     dateKey,
     trained ? `${workouts!.length} session${workouts!.length > 1 ? 's' : ''}` : 'rest day',
     hasMeals ? `${meals!.length} meal${meals!.length > 1 ? 's' : ''}` : null,
-    ...bands.map((band) => (band ? `${PERFORMANCE_META[band].label.toLowerCase()} session` : null)),
+    ...bands.map((band) => (band ? `${READINESS_META[band].label.toLowerCase()} session` : null)),
   ]
     .filter(Boolean)
     .join(', ')
@@ -231,7 +231,7 @@ function DayCell({
           {day}
         </span>
         <span className="flex items-center gap-0.5" aria-hidden>
-          {bands.map((band, i) => <PerformanceDot key={i} band={band} />)}
+          {bands.map((band, i) => <ReadinessDot key={i} band={band} />)}
         </span>
       </span>
 

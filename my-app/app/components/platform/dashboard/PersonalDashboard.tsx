@@ -10,25 +10,28 @@ import { TrainingCalendar } from '@/app/components/platform/dashboard/TrainingCa
 import { TabBar, type SwipeTab } from '@/app/components/platform/team/SwipeTabs'
 import { StatusMessage } from '@/app/components/platform/social/StatusMessage'
 import { fetchMealsInRange } from '@/lib/meals/browser'
-import { dateKey, formatDayHeading, sumMacros, todayDateKey } from '@/lib/meals/utils'
+import { loadNutritionTargets } from '@/lib/meals/targets'
+import { MONTH_NAMES, dateKey, formatDayHeading, sumMacros, todayDateKey } from '@/lib/meals/utils'
 import type { MealListItem } from '@/lib/meals/types'
 import { display, sans } from '@/lib/social/format'
 import type { PerceivedIntensity, SessionType } from '@/lib/types'
 import {
   CATEGORY_META,
   PAIN_COLOR,
+  PAIN_FLAG,
   PERIOD_DAYS,
-  PERFORMANCE_META,
+  READINESS_META,
+  averageDailyProtein,
   bodyCheck,
-  daysInMonth,
   firstOfMonth,
   formatMinutes,
   groupByDate,
+  loadHistory,
   monthOf,
-  performanceBand,
-  performanceScore,
+  monthSummary,
+  readinessBand,
+  readinessScore,
   shiftMonth,
-  weeklyStreak,
   workoutCategory,
   type BodyCheck,
   type BodyCheckPeriod,
@@ -38,7 +41,7 @@ import {
 
 // ─────────────────────────────────────────────
 // PERSONAL DASHBOARD (client)
-//   Body check (week / month) · month stats · training calendar · selected-day detail.
+//   Body check (week / month) · month at a glance · training calendar · selected-day detail.
 //   Workouts arrive from the server (12-month window); meals load per visible month
 //   because their day is the viewer's local day of `created_at`.
 // ─────────────────────────────────────────────
@@ -87,6 +90,8 @@ function DashboardBody({
   const [mealsByMonth, setMealsByMonth] = useState<Record<string, MealListItem[]>>({})
   const [mealsError, setMealsError] = useState<string | null>(null)
   const [bodyPeriod, setBodyPeriod] = useState<BodyCheckPeriod>('week')
+  // Only rendered in the browser (see PersonalDashboard), so localStorage is readable here.
+  const [proteinTarget] = useState(() => loadNutritionTargets().daily.protein)
 
   useEffect(() => {
     if (mealsByMonth[month]) return
@@ -110,18 +115,18 @@ function DashboardBody({
     () => groupByDate(Object.values(mealsByMonth).flat(), (meal) => dateKey(meal.created_at)),
     [mealsByMonth],
   )
-  const streak = useMemo(() => weeklyStreak(new Set(workoutsByDate.keys()), today), [workoutsByDate, today])
   const body = useMemo(() => bodyCheck(workouts, today, PERIOD_DAYS[bodyPeriod]), [workouts, today, bodyPeriod])
+  const loadTrend = useMemo(
+    () => loadHistory(workouts, today, PERIOD_DAYS[bodyPeriod], LOAD_TREND_WINDOWS[bodyPeriod]),
+    [workouts, today, bodyPeriod],
+  )
 
-  const monthStats = useMemo(() => {
-    const inMonth = workouts.filter((w) => monthOf(w.logged_date) === month)
-    const trainedDays = new Set(inMonth.map((w) => w.logged_date)).size
-    const elapsed = month === monthOf(today) ? Number(today.slice(8)) : daysInMonth(month)
-    const minutes = inMonth.reduce((sum, w) => sum + (w.duration_minutes ?? 0), 0)
-    const meals = mealsByMonth[month]
-    const mealDays = meals ? new Set(meals.map((meal) => dateKey(meal.created_at))).size : null
-    return { trainedDays, elapsed, sessions: inMonth.length, minutes, mealDays, mealCount: meals?.length ?? null }
-  }, [workouts, month, mealsByMonth, today])
+  const monthStats = useMemo(() => monthSummary(workouts, month), [workouts, month])
+  const monthProtein = useMemo(
+    () => (mealsByMonth[month] ? averageDailyProtein(mealsByMonth[month]) : undefined),
+    [mealsByMonth, month],
+  )
+  const monthLabel = `${MONTH_NAMES[Number(month.slice(5)) - 1]} ${month.slice(0, 4)}`
 
   function changeMonth(delta: number) {
     const next = shiftMonth(month, delta)
@@ -132,24 +137,55 @@ function DashboardBody({
 
   return (
     <div className="flex flex-col gap-4">
-      <BodyCheckCard body={body} period={bodyPeriod} onPeriodChange={setBodyPeriod} />
+      <BodyCheckCard body={body} period={bodyPeriod} onPeriodChange={setBodyPeriod} loadTrend={loadTrend} />
 
-      {/* ── Month at a glance ── */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <StatTile
-          label="Days trained"
-          value={String(monthStats.trainedDays)}
-          suffix={`/ ${monthStats.elapsed}`}
-          progress={monthStats.elapsed ? monthStats.trainedDays / monthStats.elapsed : 0}
-        />
-        <StatTile label="Training time" value={formatMinutes(monthStats.minutes)} suffix={`${monthStats.sessions} sessions`} />
-        <StatTile label="Weekly streak" value={String(streak)} suffix={streak === 1 ? 'week' : 'weeks'} />
-        <StatTile
-          label="Meals logged"
-          value={monthStats.mealCount == null ? '–' : String(monthStats.mealCount)}
-          suffix={monthStats.mealDays == null ? '' : `on ${monthStats.mealDays} days`}
-        />
-      </div>
+      {/* ── Month at a glance: follows the calendar's month, unlike Body check's rolling window ── */}
+      <section aria-label={`${monthLabel} at a glance`}>
+        <p className="nh-label mb-2">{monthLabel}</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <StatTile
+            label="Sessions"
+            value={String(monthStats.sessions)}
+            suffix={
+              <span className="flex flex-wrap gap-x-2">
+                {(Object.keys(CATEGORY_META) as (keyof typeof CATEGORY_META)[])
+                  .filter((cat) => monthStats.byCategory[cat] > 0)
+                  .map((cat) => (
+                    <span key={cat} className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: CATEGORY_META[cat].color }} aria-hidden />
+                      {monthStats.byCategory[cat]} {CATEGORY_META[cat].label.toLowerCase()}
+                    </span>
+                  ))}
+              </span>
+            }
+          />
+          <StatTile
+            label="Training time"
+            value={formatMinutes(monthStats.minutes)}
+            suffix={monthStats.sessions ? `~${formatMinutes(Math.round(monthStats.minutes / monthStats.sessions))} per session` : undefined}
+          />
+          <StatTile
+            label="Protein / day"
+            value={monthProtein == null ? '–' : `${Math.round(monthProtein)}g`}
+            suffix={
+              monthProtein === undefined
+                ? 'Loading…'
+                : monthProtein === null
+                  ? 'No meals logged'
+                  : proteinTarget != null
+                    ? `target ${Math.round(proteinTarget)}g`
+                    : 'on days with meals'
+            }
+            progress={monthProtein != null && proteinTarget ? monthProtein / proteinTarget : undefined}
+          />
+          <StatTile
+            label="Pain flags"
+            value={String(monthStats.painFlags)}
+            valueColor={monthStats.painFlags > 0 ? PAIN_COLOR : undefined}
+            suffix={`session${monthStats.painFlags === 1 ? '' : 's'} with pain ${PAIN_FLAG}+/10`}
+          />
+        </div>
+      </section>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex flex-col gap-4">
@@ -182,12 +218,27 @@ function DashboardBody({
 
 // ── Stat tile ─────────────────────────────────
 
-function StatTile({ label, value, suffix, progress }: { label: string; value: string; suffix?: string; progress?: number }) {
+function StatTile({
+  label,
+  value,
+  suffix,
+  progress,
+  valueColor,
+}: {
+  label: string
+  value: string
+  suffix?: React.ReactNode
+  progress?: number
+  valueColor?: string
+}) {
   return (
     <div className="flex flex-col gap-1.5 rounded-2xl bg-[#1E1B1F] p-4">
       <span className="nh-label">{label}</span>
       <span className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-        <span className="whitespace-nowrap text-[24px] font-bold leading-none text-white" style={{ ...display, letterSpacing: '-0.02em' }}>
+        <span
+          className="whitespace-nowrap text-[24px] font-bold leading-none text-white"
+          style={{ ...display, letterSpacing: '-0.02em', ...(valueColor ? { color: valueColor } : null) }}
+        >
           {value}
         </span>
         {suffix ? <span className="text-[12px] text-[#847E89]" style={sans}>{suffix}</span> : null}
@@ -228,10 +279,14 @@ function DayDetail({
       {/* Workouts */}
       <p className="nh-label mb-2">Training</p>
       {isRest ? (
+        // Rest is part of training, so a day without sessions is stated, not treated as a gap to fill.
         <div className="mb-4 flex items-center justify-between rounded-xl bg-[#181519] px-3 py-2.5">
-          <span className="text-[13px] text-[#847E89]" style={sans}>Rest day</span>
-          <Link href="/record" className="flex items-center gap-1 text-[12px] font-semibold text-white hover:opacity-75" style={sans}>
-            <Plus size={14} /> Log workout
+          <span className="flex items-center gap-2 text-[13px] text-[#A09EA3]" style={sans}>
+            <Waves size={14} className="text-[#60A5FA]" aria-hidden />
+            Rest day
+          </span>
+          <Link href="/record" className="text-[12px] text-[#6B6870] hover:text-white" style={sans}>
+            Log a session
           </Link>
         </div>
       ) : (
@@ -294,8 +349,8 @@ function WorkoutRow({ workout }: { workout: DashboardWorkout }) {
   const type = workout.session_type ? SESSION_TYPE_META[workout.session_type] : undefined
   const TypeIcon = type?.Icon ?? Dumbbell
   const color = CATEGORY_META[workoutCategory(workout.session_type)].color
-  const score = performanceScore(workout)
-  const band = performanceBand(score)
+  const score = readinessScore(workout)
+  const band = readinessBand(score)
   const meta = [
     workout.duration_minutes ? formatMinutes(workout.duration_minutes) : null,
     workout.perceived_intensity ? `${INTENSITY_LABELS[workout.perceived_intensity]} intensity` : null,
@@ -325,7 +380,7 @@ function WorkoutRow({ workout }: { workout: DashboardWorkout }) {
             {workout.readiness_feel ? `Felt ${workout.readiness_feel}` : null}
             {workout.readiness_feel && workout.readiness_pain_score != null ? ' · ' : null}
             {workout.readiness_pain_score != null ? (
-              <span style={workout.readiness_pain_score >= 3 ? { color: PAIN_COLOR } : undefined}>
+              <span style={workout.readiness_pain_score >= PAIN_FLAG ? { color: PAIN_COLOR } : undefined}>
                 Pain {workout.readiness_pain_score}/10
               </span>
             ) : null}
@@ -333,11 +388,11 @@ function WorkoutRow({ workout }: { workout: DashboardWorkout }) {
         ) : null}
       </span>
       {band ? (
-        <span className="flex shrink-0 flex-col items-end" title="Performance score: how you felt and the pain you reported">
-          <span className="text-[15px] font-bold leading-none" style={{ ...display, color: PERFORMANCE_META[band].color }}>
+        <span className="flex shrink-0 flex-col items-end" title="Readiness: how you felt and the pain you reported for this session">
+          <span className="text-[15px] font-bold leading-none" style={{ ...display, color: READINESS_META[band].color }}>
             {score}
           </span>
-          <span className="text-[10px] text-[#847E89]" style={sans}>{PERFORMANCE_META[band].label}</span>
+          <span className="text-[10px] text-[#847E89]" style={sans}>{READINESS_META[band].label}</span>
         </span>
       ) : null}
       <ChevronRight size={16} className="shrink-0 text-[#6B6870] group-hover:text-white" />
@@ -351,6 +406,9 @@ const PERIOD_TABS: SwipeTab<BodyCheckPeriod>[] = [
   { id: 'week', label: 'Week' },
   { id: 'month', label: 'Month' },
 ]
+
+/** How many past windows the load trend shows: 8 weeks, or 6 months of 30 days. */
+const LOAD_TREND_WINDOWS: Record<BodyCheckPeriod, number> = { week: 8, month: 6 }
 
 const PERIOD_COPY: Record<BodyCheckPeriod, { range: string; average: string; light: string; prev: string }> = {
   week: { range: 'Last 7 days', average: '4-week average', light: 'Light week', prev: 'prev week' },
@@ -375,18 +433,21 @@ function BodyCheckCard({
   body,
   period,
   onPeriodChange,
+  loadTrend,
 }: {
   body: BodyCheck
   period: BodyCheckPeriod
   onPeriodChange: (period: BodyCheckPeriod) => void
+  /** Load per window, oldest first; the last bar is the current window. */
+  loadTrend: number[]
 }) {
   const copy = PERIOD_COPY[period]
   const load = loadCopy(body.loadStatus, period)
-  const perf = body.avgPerformance == null ? null : Math.round(body.avgPerformance)
-  const perfBand = performanceBand(perf)
+  const perf = body.avgReadiness == null ? null : Math.round(body.avgReadiness)
+  const perfBand = readinessBand(perf)
   const perfDelta =
-    perf != null && body.avgPerformancePrev != null ? perf - Math.round(body.avgPerformancePrev) : null
-  // Within ±2 points reads as steady; a drop is flagged in the "poor" colour.
+    perf != null && body.avgReadinessPrev != null ? perf - Math.round(body.avgReadinessPrev) : null
+  // Within ±2 points reads as steady; a drop is flagged in the "low" colour.
   const steady = perfDelta == null || Math.abs(perfDelta) <= 2
   const DeltaIcon = steady ? Minus : perfDelta > 0 ? ArrowUpRight : ArrowDownRight
 
@@ -413,6 +474,7 @@ function BodyCheckCard({
               ) : null}
             </span>
             <p className="mt-1 text-[12px] leading-snug text-[#847E89]" style={sans}>{load.hint}</p>
+            <LoadTrend loads={loadTrend} currentColor={load.color} period={period} />
           </dd>
         </div>
 
@@ -421,17 +483,17 @@ function BodyCheckCard({
 
         <div className="col-span-2 flex items-center gap-3 rounded-xl bg-[#181519] p-3 lg:col-span-1">
           <div className="flex flex-1 flex-col gap-1">
-            <dt className="nh-label !text-[10px]">Avg performance</dt>
+            <dt className="nh-label !text-[10px]">Avg readiness</dt>
             <dd className="flex items-baseline gap-2">
               <span
                 className="text-[20px] font-bold leading-none"
-                style={{ ...display, color: perfBand ? PERFORMANCE_META[perfBand].color : '#FFFFFF' }}
+                style={{ ...display, color: perfBand ? READINESS_META[perfBand].color : '#FFFFFF' }}
               >
                 {perf ?? '–'}
               </span>
               <span className="text-[12px] text-[#847E89]" style={sans}>
                 {perfBand
-                  ? `${PERFORMANCE_META[perfBand].label} · ${body.ratedSessions} rated session${body.ratedSessions === 1 ? '' : 's'}`
+                  ? `${READINESS_META[perfBand].label} · ${body.ratedSessions} rated session${body.ratedSessions === 1 ? '' : 's'}`
                   : 'No rated sessions'}
               </span>
             </dd>
@@ -439,7 +501,7 @@ function BodyCheckCard({
           {perfDelta != null ? (
             <span
               className="flex shrink-0 items-center gap-0.5 text-[11px] text-[#847E89]"
-              style={{ ...sans, ...(!steady ? { color: PERFORMANCE_META[perfDelta > 0 ? 'good' : 'poor'].color } : null) }}
+              style={{ ...sans, ...(!steady ? { color: READINESS_META[perfDelta > 0 ? 'high' : 'low'].color } : null) }}
             >
               <DeltaIcon size={12} />
               {steady ? 'Steady' : `${perfDelta > 0 ? '+' : ''}${perfDelta}`} vs {copy.prev}
@@ -448,6 +510,40 @@ function BodyCheckCard({
         </div>
       </dl>
     </section>
+  )
+}
+
+/** Small bar chart of load per window, so a spike or a slide reads at a glance. */
+function LoadTrend({ loads, currentColor, period }: { loads: number[]; currentColor: string; period: BodyCheckPeriod }) {
+  const max = Math.max(...loads)
+  if (max <= 0) return null
+  const span = period === 'week' ? 'weeks' : 'months'
+  return (
+    <div className="mt-3">
+      <div
+        className="flex h-8 items-end gap-1"
+        role="img"
+        aria-label={`Training load per ${PERIOD_COPY[period].range.toLowerCase().replace('last ', '')} window, oldest first: ${loads.map((l) => Math.round(l)).join(', ')}`}
+      >
+        {loads.map((value, i) => {
+          const current = i === loads.length - 1
+          return (
+            <span
+              key={i}
+              className="flex-1 rounded-sm"
+              style={{
+                height: `${Math.max(value > 0 ? 8 : 4, (value / max) * 100)}%`,
+                background: current ? currentColor : value > 0 ? '#3A373C' : '#2B282C',
+              }}
+            />
+          )
+        })}
+      </div>
+      <div className="mt-1 flex justify-between text-[10px] text-[#6B6870]" style={sans}>
+        <span>{loads.length - 1} {span} ago</span>
+        <span>{PERIOD_COPY[period].range}</span>
+      </div>
+    </div>
   )
 }
 
