@@ -1,101 +1,105 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+import { stripLocalePrefix, withLocalePrefix } from "@/i18n/path";
+import type { AppLocale } from "@/i18n/routing";
 
-const THIRTY_DAYS = 60 * 60 * 24 * 30
+const THIRTY_DAYS = 60 * 60 * 24 * 30;
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+/**
+ * Refresh the Supabase session and enforce auth redirects.
+ * When an i18n response is provided, cookies are written onto it so locale
+ * rewrites/redirects from next-intl are preserved.
+ */
+export async function updateSession(
+  request: NextRequest,
+  i18nResponse: NextResponse,
+) {
+  let response = i18nResponse;
 
-  // With Fluid compute, don't put this client in a global environment
-  // variable. Always create a new one on each request.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!,
+    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!,
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          // Persist session for 30 days so users don't get logged out on browser close
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, {
+            response.cookies.set(name, value, {
               ...options,
               maxAge: options.maxAge ?? THIRTY_DAYS,
-            })
-          )
+            }),
+          );
         },
       },
+    },
+  );
+
+  // Do not run code between createServerClient and getClaims().
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  const { locale, pathname } = stripLocalePrefix(request.nextUrl.pathname);
+  const localize = (path: string) =>
+    withLocalePrefix(path, locale as AppLocale);
+
+  const redirectTo = (path: string, next?: string) => {
+    const url = request.nextUrl.clone();
+    url.pathname = localize(path);
+    if (next !== undefined) {
+      url.search = "";
+      url.searchParams.set("next", next);
     }
-  )
-
-  // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims()
-  const user = data?.claims
-
-  const { pathname } = request.nextUrl
+    const redirectResponse = NextResponse.redirect(url);
+    // Preserve any auth cookies already written onto the i18n response.
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
+  };
 
   // app.naturehoodofficial.com — route to the platform regardless of path.
-  // Share invites are exempt: this host used to send /share/:token to /home
-  // or /login and drop the token, so the link never opened on a phone.
-  const host = request.headers.get('host') ?? ''
-  const isSharePath = pathname === '/share' || pathname.startsWith('/share/')
-  if (host.startsWith('app.') && !isSharePath) {
-    const target = pathname === '/home' || pathname === '/login' ? null : (user ? '/home' : '/login')
-    if (target) {
-      const url = request.nextUrl.clone()
-      url.pathname = target
-      return NextResponse.redirect(url)
-    }
+  // Share invites are exempt so /share/:token is not dropped.
+  const host = request.headers.get("host") ?? "";
+  const isSharePath = pathname === "/share" || pathname.startsWith("/share/");
+  if (host.startsWith("app.") && !isSharePath) {
+    const target =
+      pathname === "/home" || pathname === "/login"
+        ? null
+        : user
+          ? "/home"
+          : "/login";
+    if (target) return redirectTo(target);
   }
 
-  // Redirect already-authenticated users away from auth pages
-  const AUTH_PATHS = ['/login', '/signup']
-  if (user && AUTH_PATHS.some(p => pathname.startsWith(p))) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/home'
-    return NextResponse.redirect(url)
+  const AUTH_PATHS = ["/login", "/signup"];
+  if (user && AUTH_PATHS.some((p) => pathname.startsWith(p))) {
+    return redirectTo("/home");
   }
 
-  // Only redirect unauthenticated users away from protected platform routes.
-  // Public routes (/, /signup, /business, /login, /auth/*) remain open.
   const PROTECTED_PATHS = [
-    '/dashboard', '/profile', '/settings', '/home', '/record', '/meals', '/events',
-    '/account', '/my-team', '/share', '/personal',
-  ]
-  const isProtected = PROTECTED_PATHS.some(p => pathname.startsWith(p))
+    "/dashboard",
+    "/profile",
+    "/settings",
+    "/home",
+    "/record",
+    "/meals",
+    "/events",
+    "/account",
+    "/my-team",
+    "/share",
+    "/personal",
+  ];
+  const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
 
   if (!user && isProtected) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.search = ''
-    url.searchParams.set('next', pathname + request.nextUrl.search)
-    return NextResponse.redirect(url)
+    return redirectTo("/login", pathname + request.nextUrl.search);
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
-  return supabaseResponse
+  return response;
 }

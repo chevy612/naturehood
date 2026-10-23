@@ -1570,8 +1570,6 @@ export function SuccessModal({
   );
 }
 
-
-
 // ─────────────────────────────────────────────
 // PREVIEW PAGE — remove in production
 // Place at: app/design-system/page.tsx

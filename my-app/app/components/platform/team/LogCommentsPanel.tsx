@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Heart } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { CommentComposer } from '@/app/components/platform/social/CommentComposer'

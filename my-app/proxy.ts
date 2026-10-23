@@ -1,19 +1,16 @@
-import { updateSession } from '@/lib/supabase/middleware'
-import { type NextRequest } from 'next/server'
+import createMiddleware from "next-intl/middleware";
+import { type NextRequest } from "next/server";
+import { routing } from "./i18n/routing";
+import { updateSession } from "@/lib/supabase/middleware";
 
-export async function proxy(request: NextRequest) {
-  return await updateSession(request)
+const handleI18nRouting = createMiddleware(routing);
+
+export default async function proxy(request: NextRequest) {
+  // Negotiate locale / rewrite first, then refresh Supabase session on that response.
+  const response = handleI18nRouting(request);
+  return updateSession(request, response);
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - images - .svg, .png, .jpg, .jpeg, .gif, .webp
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
-}
+  matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
+};

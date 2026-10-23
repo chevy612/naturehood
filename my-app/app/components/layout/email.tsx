@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ContentContainer } from "@/app/components/ui/container";
 import { ButtonPrimary } from "@/app/components/ui/buttons";
 
@@ -14,9 +15,12 @@ interface CTAEmailCaptureProps {
 export function CTAEmailCapture({
   headline,
   subtext,
-  placeholder = "Your email",
+  placeholder,
   onSubmit,
 }: CTAEmailCaptureProps) {
+  const t = useTranslations("EmailCapture");
+  const tHome = useTranslations("Home");
+  const tCommon = useTranslations("Common");
   const [email, setEmail] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -32,14 +36,14 @@ export function CTAEmailCapture({
       setMessage(
         typeof result === "string" && result
           ? result
-          : "You're in. We'll be in touch."
+          : t("success")
       );
       setSubmitted(true);
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : "Something went wrong. Please try again."
+          : t("error")
       );
     } finally {
       setSubmitting(false);
@@ -51,7 +55,7 @@ export function CTAEmailCapture({
       <ContentContainer as="div" className="py-16 md:py-24">
         <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-6">
           <h2 className="nh-h2 text-white">
-            {headline ?? "Join the community"}
+            {headline ?? tHome("subscribeHeadline")}
           </h2>
           {subtext && (
             <p
@@ -85,7 +89,7 @@ export function CTAEmailCapture({
                 type="email"
                 value={email}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                placeholder={placeholder}
+                placeholder={placeholder ?? tHome("subscribePlaceholder")}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                 className="w-full bg-[#1E1B1F] border-none rounded-full px-5 py-3 sm:px-6 sm:py-3.5 text-white placeholder:text-[#6B6870] text-[16px] leading-[22px] sm:leading-[24px] outline-none focus:ring-1 focus:ring-white/20 transition-all duration-200"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -104,7 +108,7 @@ export function CTAEmailCapture({
                 disabled={submitting}
                 fullWidth
               >
-                {submitting ? "Joining..." : "Join us"}
+                {submitting ? tCommon("loading") : tCommon("joinUs")}
               </ButtonPrimary>
             </div>
           )}

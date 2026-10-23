@@ -40,6 +40,5 @@ async function handleGET(request: NextRequest, { params }: Context) {
   }
 }
 
-
 export const OPTIONS = observeApiRoute('/api/users/[userId]/posts', 'OPTIONS', handleOPTIONS)
 export const GET = observeApiRoute('/api/users/[userId]/posts', 'GET', handleGET)

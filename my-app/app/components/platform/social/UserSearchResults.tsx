@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Avatar } from '@/app/components/platform/Avatar'
 import type { UserSearchResult } from '@/lib/social/browser'
 import { displayName, sans } from '@/lib/social/format'
