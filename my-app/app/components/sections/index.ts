@@ -8,3 +8,4 @@ export { default as ConceptSection } from "./concept";
 export { default as TrackAthleteSection } from "./track-athlete";
 export { default as WhatWeDoSection } from "./what-we-do";
 export { default as EmailSubscribe } from "./email-subscribe";
+export { default as FinalCTASection } from "./final-cta";

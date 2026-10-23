@@ -41,27 +41,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#141115] flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="mb-10">
-          <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-          >
-            Welcome Back
-          </p>
-          <h1
-            className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-          >
-            Log In
-          </h1>
-          <p
-            className="text-[15px] text-[#6B6870] leading-relaxed"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Sign in to your Naturehood account to continue.
-          </p>
-        </div>
+        <h1
+          className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-10"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+        >
+          Welcome back, Elite
+        </h1>
 
         {/* OAuth */}
         <OAuthButtons mode="login" />

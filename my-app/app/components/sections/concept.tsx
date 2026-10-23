@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ContentContainer } from "@/app/components/ui/container";
-import { ButtonPrimary } from "@/app/components/ui/buttons";
+import { ButtonSecondary } from "@/app/components/ui/buttons";
 import { landingImages } from "@/lib/landing-images";
 
 export default function ConceptSection() {
@@ -54,7 +54,7 @@ export default function ConceptSection() {
         {/* Button frame — self-stretch, centered CTA (Figma order 1, 80px above) */}
         <div className="relative z-10 flex w-full justify-center">
           <Link href="/about">
-            <ButtonPrimary variant="white">Explore more</ButtonPrimary>
+            <ButtonSecondary variant="white">Explore more</ButtonSecondary>
           </Link>
         </div>
       </div>

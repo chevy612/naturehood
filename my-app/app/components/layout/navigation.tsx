@@ -5,12 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { ButtonPrimary } from "@/app/components/ui/buttons";
+import { Button } from "@/app/components/ui/buttons";
 
 const navItems = [
   { label: "Home", href: "/" },
   { label: "About us", href: "/about" },
-  { label: "App", href: "/home" },
 ];
 
 export default function Navigation() {
@@ -109,9 +108,18 @@ export default function Navigation() {
             })}
           </div>
 
-          <Link href="/signup" className="shrink-0">
-            <ButtonPrimary variant="white">Join us</ButtonPrimary>
-          </Link>
+          {/* Quiet auth actions — the page's solid CTAs live in the hero + final section */}
+          <div className="flex shrink-0 items-center gap-6">
+            <Link
+              href="/login"
+              className="text-[17px] leading-[22px] font-medium text-white/60 hover:text-white transition-colors duration-200 whitespace-nowrap"
+            >
+              Log in
+            </Link>
+            <Button variant="outline" size="lg" href="/signup" className="text-[16px]">
+              Sign up
+            </Button>
+          </div>
         </nav>
 
         {/* Mobile Navbar */}
@@ -210,15 +218,18 @@ export default function Navigation() {
               })}
             </ul>
 
-            <div className="mt-8 pt-6 border-t border-white/10">
+            <div className="mt-8 pt-6 border-t border-white/10 flex flex-col gap-3">
+              <div onClick={closeMobileMenu}>
+                <Button variant="outline" size="lg" href="/signup" fullWidth>
+                  Sign up
+                </Button>
+              </div>
               <Link
-                href="/signup"
+                href="/login"
                 onClick={closeMobileMenu}
-                className="block"
+                className="block py-2 text-center text-[15px] font-medium text-white/70 hover:text-white transition-colors"
               >
-                <ButtonPrimary variant="white" fullWidth>
-                  Join us
-                </ButtonPrimary>
+                Log in
               </Link>
             </div>
           </nav>
