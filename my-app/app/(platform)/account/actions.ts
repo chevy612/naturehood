@@ -6,6 +6,14 @@ import { createClient } from '@/lib/supabase/server'
 import { RESERVED_SLUGS } from '@/lib/username'
 import { redirect } from 'next/navigation'
 import { tracedStorageUpload } from '@/lib/observability/dependencies'
+import {
+  isEthnicityValue,
+  isGenderValue,
+  parseHeightInput,
+  parseWeightInput,
+  type HeightUnit,
+  type WeightUnit,
+} from '@/lib/profile/body-metrics'
 
 async function updateProfileImpl(formData: FormData) {
   const supabase = await createClient()
@@ -16,6 +24,28 @@ async function updateProfileImpl(formData: FormData) {
   const name = (formData.get('name') as string ?? '').trim()
   const newUsername = (formData.get('username') as string ?? '').trim().toLowerCase()
   const bio = (formData.get('bio') as string ?? '').trim()
+  const genderRaw = (formData.get('gender') as string ?? '').trim()
+  const ethnicityRaw = (formData.get('ethnicity') as string ?? '').trim()
+  const weightRaw = (formData.get('weight') as string ?? '').trim()
+  const heightRaw = (formData.get('height') as string ?? '').trim()
+  const weightUnit = (formData.get('weight_unit') as WeightUnit) === 'lb' ? 'lb' : 'kg'
+  const heightUnit = (formData.get('height_unit') as HeightUnit) === 'in' ? 'in' : 'cm'
+
+  const gender = genderRaw === '' ? null : genderRaw
+  if (gender !== null && !isGenderValue(gender)) {
+    return { error: 'Please choose a valid gender option.' }
+  }
+
+  const ethnicity = ethnicityRaw === '' ? null : ethnicityRaw
+  if (ethnicity !== null && !isEthnicityValue(ethnicity)) {
+    return { error: 'Please choose a valid ethnicity option.' }
+  }
+
+  const weightParsed = parseWeightInput(weightRaw, weightUnit)
+  if ('error' in weightParsed) return { error: weightParsed.error }
+
+  const heightParsed = parseHeightInput(heightRaw, heightUnit)
+  if ('error' in heightParsed) return { error: heightParsed.error }
 
   if (!/^[a-z0-9]+$/.test(newUsername)) {
     return { error: 'Username can only contain lowercase letters and numbers.' }
@@ -39,7 +69,16 @@ async function updateProfileImpl(formData: FormData) {
 
   const { error } = await supabase
     .from('profiles')
-    .update({ name, username: newUsername, bio, updated_at: new Date().toISOString() })
+    .update({
+      name,
+      username: newUsername,
+      bio,
+      gender,
+      ethnicity,
+      weight_kg: weightParsed.kg,
+      height_cm: heightParsed.cm,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', userId)
 
   if (error) {

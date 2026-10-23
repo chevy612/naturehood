@@ -19,6 +19,10 @@ type Props = {
   username: string
   bio: string
   avatarUrl: string | null
+  gender: string | null
+  ethnicity: string | null
+  weightKg: number | null
+  heightCm: number | null
 }
 
 const buttonClass =
@@ -54,7 +58,16 @@ function ModeToggle() {
   )
 }
 
-export default function AccountProfile({ name, username, bio, avatarUrl }: Props) {
+export default function AccountProfile({
+  name,
+  username,
+  bio,
+  avatarUrl,
+  gender,
+  ethnicity,
+  weightKg,
+  heightCm,
+}: Props) {
   const [editOpen, setEditOpen] = useState(false)
   const [shareLabel, setShareLabel] = useState('Share Profile')
   const closeEdit = useCallback(() => setEditOpen(false), [])
@@ -133,6 +146,10 @@ export default function AccountProfile({ name, username, bio, avatarUrl }: Props
           initialUsername={username}
           initialBio={bio}
           initialAvatarUrl={avatarUrl}
+          initialGender={gender}
+          initialEthnicity={ethnicity}
+          initialWeightKg={weightKg}
+          initialHeightCm={heightCm}
         />
       )}
     </div>

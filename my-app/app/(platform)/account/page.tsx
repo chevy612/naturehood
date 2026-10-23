@@ -17,7 +17,7 @@ export default async function AccountPage() {
   const [{ data: profile }, { data: trainingLogs }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('name, username, bio, avatar_url, email')
+      .select('name, username, bio, avatar_url, email, gender, ethnicity, weight_kg, height_cm')
       .eq('id', userId)
       .single(),
     supabase
@@ -33,6 +33,10 @@ export default async function AccountPage() {
   const username = profile?.username ?? ''
   const bio = profile?.bio ?? ''
   const avatarUrl = profile?.avatar_url ?? null
+  const gender = profile?.gender ?? null
+  const ethnicity = profile?.ethnicity ?? null
+  const weightKg = profile?.weight_kg != null ? Number(profile.weight_kg) : null
+  const heightCm = profile?.height_cm != null ? Number(profile.height_cm) : null
   const logs = (trainingLogs ?? []) as WorkoutCardLog[]
 
   return (
@@ -57,7 +61,16 @@ export default async function AccountPage() {
         </div>
 
         {/* ── Profile header (client — handles edit modal + share) ── */}
-        <AccountProfile name={name} username={username} bio={bio} avatarUrl={avatarUrl} />
+        <AccountProfile
+          name={name}
+          username={username}
+          bio={bio}
+          avatarUrl={avatarUrl}
+          gender={gender}
+          ethnicity={ethnicity}
+          weightKg={weightKg}
+          heightCm={heightCm}
+        />
 
         {/* ── Separator ── */}
         <div className="h-px bg-[#3D3940]" />
