@@ -6,7 +6,20 @@ import { Camera, LogOut, X } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { LogoSpinner } from '@/app/components/ui/logo-spinner'
 import { sans } from '@/lib/social/format'
+import {
+  ETHNICITY_LABELS,
+  ETHNICITY_VALUES,
+  displayToCm,
+  displayToKg,
+  formatHeightDisplay,
+  formatWeightDisplay,
+  GENDER_LABELS,
+  GENDER_VALUES,
+  type HeightUnit,
+  type WeightUnit,
+} from '@/lib/profile/body-metrics'
 import { signOut, updateProfile, uploadAvatar } from './actions'
+import ProfileUnitToggle from './ProfileUnitToggle'
 
 // ─────────────────────────────────────────────
 // EDIT PROFILE MODAL
@@ -17,6 +30,8 @@ import { signOut, updateProfile, uploadAvatar } from './actions'
 const fieldLabel = 'text-[12px] text-[#847E89]'
 const fieldInput =
   'w-full bg-transparent text-[16px] leading-5 text-white outline-none placeholder:text-[#847E89]/50'
+const fieldSelect =
+  'w-full bg-transparent text-[16px] leading-5 text-white outline-none'
 
 // Mounted only while open, so fields start from the latest saved values each time.
 export default function EditProfileModal({
@@ -25,12 +40,20 @@ export default function EditProfileModal({
   initialUsername,
   initialBio,
   initialAvatarUrl,
+  initialGender,
+  initialEthnicity,
+  initialWeightKg,
+  initialHeightCm,
 }: {
   onClose: () => void
   initialName: string
   initialUsername: string
   initialBio: string
   initialAvatarUrl?: string | null
+  initialGender: string | null
+  initialEthnicity: string | null
+  initialWeightKg: number | null
+  initialHeightCm: number | null
 }) {
   const router = useRouter()
 
@@ -38,6 +61,12 @@ export default function EditProfileModal({
   const [username, setUsername] = useState(initialUsername)
   const [bio, setBio] = useState(initialBio)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl ?? null)
+  const [gender, setGender] = useState(initialGender ?? '')
+  const [ethnicity, setEthnicity] = useState(initialEthnicity ?? '')
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>('kg')
+  const [heightUnit, setHeightUnit] = useState<HeightUnit>('cm')
+  const [weight, setWeight] = useState(() => formatWeightDisplay(initialWeightKg, 'kg'))
+  const [height, setHeight] = useState(() => formatHeightDisplay(initialHeightCm, 'cm'))
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -92,6 +121,36 @@ export default function EditProfileModal({
     e.target.value = ''
   }
 
+  const handleWeightUnitChange = (unit: WeightUnit) => {
+    if (unit === weightUnit) return
+    const trimmed = weight.trim()
+    if (trimmed) {
+      const num = Number(trimmed)
+      if (Number.isFinite(num)) {
+        const kg = displayToKg(num, weightUnit)
+        setWeight(formatWeightDisplay(kg, unit))
+      }
+    } else if (initialWeightKg != null) {
+      setWeight(formatWeightDisplay(initialWeightKg, unit))
+    }
+    setWeightUnit(unit)
+  }
+
+  const handleHeightUnitChange = (unit: HeightUnit) => {
+    if (unit === heightUnit) return
+    const trimmed = height.trim()
+    if (trimmed) {
+      const num = Number(trimmed)
+      if (Number.isFinite(num)) {
+        const cm = displayToCm(num, heightUnit)
+        setHeight(formatHeightDisplay(cm, unit))
+      }
+    } else if (initialHeightCm != null) {
+      setHeight(formatHeightDisplay(initialHeightCm, unit))
+    }
+    setHeightUnit(unit)
+  }
+
   const handleSave = async () => {
     setSaving(true)
     setError(null)
@@ -100,6 +159,12 @@ export default function EditProfileModal({
     formData.append('name', name)
     formData.append('username', username)
     formData.append('bio', bio)
+    formData.append('gender', gender)
+    formData.append('ethnicity', ethnicity)
+    formData.append('weight', weight)
+    formData.append('height', height)
+    formData.append('weight_unit', weightUnit)
+    formData.append('height_unit', heightUnit)
     const result = await updateProfile(formData)
 
     setSaving(false)
@@ -198,6 +263,78 @@ export default function EditProfileModal({
                 className={`${fieldInput} min-h-[40px] resize-none`}
               />
             </label>
+            <div className="h-px bg-[#3D3940]" />
+            <label className="flex flex-col gap-1 px-4 py-3">
+              <span className={fieldLabel}>Gender</span>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className={fieldSelect}
+              >
+                <option value="" className="bg-[#2B282C] text-[#847E89]">Not set</option>
+                {GENDER_VALUES.map((value) => (
+                  <option key={value} value={value} className="bg-[#2B282C] text-white">
+                    {GENDER_LABELS[value]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="h-px bg-[#3D3940]" />
+            <label className="flex flex-col gap-1 px-4 py-3">
+              <span className={fieldLabel}>Ethnicity</span>
+              <select
+                value={ethnicity}
+                onChange={(e) => setEthnicity(e.target.value)}
+                className={fieldSelect}
+              >
+                <option value="" className="bg-[#2B282C] text-[#847E89]">Not set</option>
+                {ETHNICITY_VALUES.map((value) => (
+                  <option key={value} value={value} className="bg-[#2B282C] text-white">
+                    {ETHNICITY_LABELS[value]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="h-px bg-[#3D3940]" />
+            <div className="flex flex-col gap-2 px-4 py-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className={fieldLabel}>Weight</span>
+                <ProfileUnitToggle
+                  value={weightUnit}
+                  options={['kg', 'lb'] as const}
+                  onChange={handleWeightUnitChange}
+                  aria-label="Weight unit"
+                />
+              </div>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                placeholder={weightUnit === 'kg' ? 'e.g. 72' : 'e.g. 160'}
+                className={fieldInput}
+              />
+            </div>
+            <div className="h-px bg-[#3D3940]" />
+            <div className="flex flex-col gap-2 px-4 py-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className={fieldLabel}>Height</span>
+                <ProfileUnitToggle
+                  value={heightUnit}
+                  options={['cm', 'in'] as const}
+                  onChange={handleHeightUnitChange}
+                  aria-label="Height unit"
+                />
+              </div>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+                placeholder={heightUnit === 'cm' ? 'e.g. 175' : 'e.g. 69'}
+                className={fieldInput}
+              />
+            </div>
           </div>
 
           {error && (
