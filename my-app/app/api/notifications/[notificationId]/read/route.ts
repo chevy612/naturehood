@@ -26,6 +26,5 @@ async function handlePUT(request: NextRequest, { params }: Context) {
   return socialJson(ok(null))
 }
 
-
 export const OPTIONS = observeApiRoute('/api/notifications/[notificationId]/read', 'OPTIONS', handleOPTIONS)
 export const PUT = observeApiRoute('/api/notifications/[notificationId]/read', 'PUT', handlePUT)

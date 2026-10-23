@@ -1,23 +1,25 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import { ButtonPrimary } from "@/app/components/ui/buttons";
 import { landingImages } from "@/lib/landing-images";
 
-export default function HeroSection() {
+export default async function HeroSection() {
+  const t = await getTranslations("Home");
+  const tCommon = await getTranslations("Common");
+
   return (
     <section className="w-full bg-white px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-8 md:pt-[25px] md:pb-[25px]">
-      {/* 1370 × 738 hero with overlaid text + CTA (fixed height on mobile/tablet, aspect ratio on lg+) */}
       <div className="relative w-full max-w-[1370px] mx-auto h-[440px] sm:h-[500px] lg:h-auto lg:aspect-[16/9] overflow-hidden rounded-[30px]">
         <Image
           src={landingImages.hero}
-          alt="Athlete sprinting on the track"
+          alt={t("heroAlt")}
           fill
           sizes="(max-width: 1224px) 100vw, 1224px"
           className="object-cover object-left"
           priority
         />
 
-        {/* Overlay — mobile/tablet: bottom-left stack. Desktop (Figma): text left, CTA right, vertically centered */}
         <div className="absolute inset-0 flex flex-col justify-end gap-8 p-[30px] sm:p-10 lg:flex-row lg:items-center lg:justify-between lg:gap-6 lg:p-[50px]">
           <div
             className="flex flex-col items-start text-left gap-5 max-w-[560px]"
@@ -30,7 +32,7 @@ export default function HeroSection() {
                 letterSpacing: "-0.3px",
               }}
             >
-              Welcome to the home of track and field
+              {t("heroTitle")}
             </h1>
             <p
               className="text-white text-[16px] leading-[22px] sm:text-[18px] sm:leading-[24px] lg:text-[20px] lg:leading-[28px] font-medium"
@@ -39,12 +41,12 @@ export default function HeroSection() {
                 letterSpacing: "-0.3px",
               }}
             >
-              The leading athletes community in Hong Kong.
+              {t("heroSubtitle")}
             </p>
           </div>
           <div className="flex w-full justify-start lg:w-auto lg:shrink-0">
             <Link href="/signup">
-              <ButtonPrimary variant="white">Join us</ButtonPrimary>
+              <ButtonPrimary variant="white">{tCommon("joinUs")}</ButtonPrimary>
             </Link>
           </div>
         </div>

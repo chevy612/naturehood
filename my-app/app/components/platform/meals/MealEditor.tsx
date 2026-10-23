@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 import { ArrowLeft, RefreshCw, X } from 'lucide-react'
 import { MealFormFields } from '@/app/components/platform/meals/MealFormFields'
 import { LogoSpinner } from '@/app/components/ui/logo-spinner'

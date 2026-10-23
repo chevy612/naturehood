@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { signInWithOAuth } from "@/app/(auth)/login/oauth-actions";
+import { useTranslations } from "next-intl";
+import { signInWithOAuth } from "@/app/[locale]/(auth)/login/oauth-actions";
 
 function GoogleIcon() {
   return (
@@ -35,10 +36,10 @@ function AppleIcon() {
 }
 
 export function OAuthButtons({ mode = "login" }: { mode?: "login" | "signup" }) {
+  const t = useTranslations("Auth");
+  const tCommon = useTranslations("Common");
   const [loading, setLoading] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState("");
-
-  const label = mode === "signup" ? "Sign up" : "Continue";
 
   const handleOAuth = async (provider: "google" | "apple") => {
     setLoading(provider);
@@ -57,7 +58,7 @@ export function OAuthButtons({ mode = "login" }: { mode?: "login" | "signup" }) 
         window.location.href = result.url;
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(tCommon("errorGeneric"));
       setLoading(null);
     }
   };
@@ -73,11 +74,11 @@ export function OAuthButtons({ mode = "login" }: { mode?: "login" | "signup" }) 
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         {loading === "google" ? (
-          "Connecting..."
+          tCommon("loading")
         ) : (
           <>
             <GoogleIcon />
-            {label} with Google
+            {t("continueWithGoogle")}
           </>
         )}
       </button>
@@ -91,11 +92,11 @@ export function OAuthButtons({ mode = "login" }: { mode?: "login" | "signup" }) 
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         {loading === "apple" ? (
-          "Connecting..."
+          tCommon("loading")
         ) : (
           <>
             <AppleIcon />
-            {label} with Apple
+            {t("continueWithApple")}
           </>
         )}
       </button>
@@ -117,7 +118,7 @@ export function OAuthButtons({ mode = "login" }: { mode?: "login" | "signup" }) 
           className="text-[12px] text-[#6B6870] uppercase tracking-wider"
           style={{ fontFamily: "'Sk Modernist', sans-serif" }}
         >
-          or
+          {tCommon("or")}
         </span>
         <div className="flex-1 h-px bg-white/10" />
       </div>

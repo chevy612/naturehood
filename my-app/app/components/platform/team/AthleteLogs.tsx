@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { ChevronLeft, Dumbbell, Lock, MessageCircle, Utensils } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { SwipePanel, TabBar, type SwipeTab } from '@/app/components/platform/team/SwipeTabs'

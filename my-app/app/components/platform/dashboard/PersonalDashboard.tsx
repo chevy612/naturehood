@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import {
   ArrowDownRight, ArrowUpRight, Bandage, ChevronRight, Dumbbell, HeartPulse, Minus, Plus,
   Shield, Shuffle, Stethoscope, Trophy, Waves, Zap, type LucideIcon,

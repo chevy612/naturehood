@@ -1,8 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Link, usePathname } from '@/i18n/navigation'
+import LanguageSwitcher from '@/app/components/layout/language-switcher'
 import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
@@ -10,7 +11,7 @@ import { useNotifications } from '@/app/components/platform/notifications/Notifi
 import { UnreadBadge } from '@/app/components/platform/notifications/UnreadBadge'
 import { activeHrefFor, navGroupsFor, type NavGroup } from '@/app/components/platform/nav-config'
 import { useTeamMode } from '@/app/components/platform/team/TeamModeProvider'
-import { signOut } from '@/app/(platform)/account/actions'
+import { signOut } from '@/app/[locale]/(platform)/account/actions'
 
 export type SidebarProfile = { name: string; username: string | null; avatarUrl: string | null }
 
@@ -121,6 +122,7 @@ function ResizeHandle() {
 }
 
 export function Sidebar({ profile }: { profile: SidebarProfile }) {
+  const tCommon = useTranslations('Common')
   const pathname = usePathname()
   const { unreadCount } = useNotifications()
   const { mode } = useTeamMode()
@@ -183,9 +185,12 @@ export function Sidebar({ profile }: { profile: SidebarProfile }) {
             className="mt-1 w-full px-2 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.12em] text-[#6B6870] transition-colors hover:text-[#F5F5F5]"
             style={display}
           >
-            Sign out
+            {tCommon('signOut')}
           </button>
         </form>
+        <div className="mt-2 px-2">
+          <LanguageSwitcher variant="platform" />
+        </div>
       </div>
     </nav>
   )
@@ -204,6 +209,7 @@ function Group({
   activeHref: string | undefined
   unreadCount: number
 }) {
+  const t = useTranslations('Nav')
   return (
     <div className="mb-4">
       <button
@@ -214,12 +220,12 @@ function Group({
         aria-expanded={!collapsed}
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
-        {group.label}
+        {t(group.labelKey)}
       </button>
 
       {!collapsed && (
         <div className="mt-1 flex flex-col gap-0.5">
-          {group.items.map(({ label, href, Icon, badge }) => {
+          {group.items.map(({ labelKey, href, Icon, badge }) => {
             const active = href === activeHref
             return (
               <Link
@@ -237,7 +243,7 @@ function Group({
                   <Icon size={17} strokeWidth={active ? 2.2 : 1.8} />
                   {badge ? <UnreadBadge count={unreadCount} /> : null}
                 </span>
-                {label}
+                {t(labelKey)}
               </Link>
             )
           })}

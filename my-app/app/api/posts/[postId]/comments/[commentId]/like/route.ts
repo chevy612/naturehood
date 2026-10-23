@@ -25,6 +25,5 @@ async function handlePOST(request: NextRequest, { params }: Context) {
   return socialJson(ok({ liked: data }))
 }
 
-
 export const OPTIONS = observeApiRoute('/api/posts/[postId]/comments/[commentId]/like', 'OPTIONS', handleOPTIONS)
 export const POST = observeApiRoute('/api/posts/[postId]/comments/[commentId]/like', 'POST', handlePOST)

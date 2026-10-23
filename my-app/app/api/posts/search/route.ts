@@ -50,6 +50,5 @@ async function handleGET(request: NextRequest) {
   }
 }
 
-
 export const OPTIONS = observeApiRoute('/api/posts/search', 'OPTIONS', handleOPTIONS)
 export const GET = observeApiRoute('/api/posts/search', 'GET', handleGET)

@@ -1,11 +1,12 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ArrowUpRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { ContentContainer, SplitGrid } from "@/app/components/ui/container";
 import { landingImages } from "@/lib/landing-images";
 
 interface DiscoverCardProps {
-  href: string;
+  href: "/events" | "/about#featuring-athletes" | (string & {});
   image: string;
   title: string;
   hint: string;
@@ -14,7 +15,7 @@ interface DiscoverCardProps {
 function DiscoverCard({ href, image, title, hint }: DiscoverCardProps) {
   return (
     <Link
-      href={href}
+      href={href as "/events"}
       aria-label={`${title} — ${hint}`}
       className="group relative block w-full h-[330px] sm:h-[440px] md:h-auto md:aspect-[4/5] overflow-hidden rounded-[30px] focus:outline-none focus-visible:ring-4 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
     >
@@ -25,10 +26,8 @@ function DiscoverCard({ href, image, title, hint }: DiscoverCardProps) {
         sizes="(max-width: 768px) 100vw, 612px"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transform-none"
       />
-      {/* Gradient overlay — darkens on hover for legibility + feedback */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-black/10 transition-all duration-500 group-hover:from-black/70 group-hover:via-black/40" />
 
-      {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
         <h3
           className="text-white font-bold text-[30px] leading-[36px] sm:text-[40px] sm:leading-[44px] lg:text-[52px] lg:leading-[54px] xl:text-[56px] xl:leading-[56px] transition-transform duration-500 ease-out group-hover:-translate-y-1 motion-reduce:transform-none"
@@ -41,7 +40,6 @@ function DiscoverCard({ href, image, title, hint }: DiscoverCardProps) {
           {title}
         </h3>
 
-        {/* Reveal hint — always visible on touch, slides up + fades in on hover/focus for pointer devices */}
         <span
           className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-4 py-2 text-white text-[14px] font-medium
                      opacity-100 translate-y-0
@@ -59,21 +57,23 @@ function DiscoverCard({ href, image, title, hint }: DiscoverCardProps) {
   );
 }
 
-export default function TrackAthleteSection() {
+export default async function TrackAthleteSection() {
+  const t = await getTranslations("Home");
+
   return (
     <ContentContainer className="py-2.5 md:py-[25px]" maxWidth="max-w-[1370px]">
       <SplitGrid>
         <DiscoverCard
           href="/events"
           image={landingImages.trackMeet}
-          title="Track Meet"
-          hint="See upcoming meets"
+          title={t("trackMeet")}
+          hint={t("trackMeetHint")}
         />
         <DiscoverCard
-          href="/about#featuring-athletes"
+          href={"/about#featuring-athletes" as "/about"}
           image={landingImages.athletes}
-          title="Athlete"
-          hint="Meet the athletes"
+          title={t("athlete")}
+          hint={t("athleteHint")}
         />
       </SplitGrid>
     </ContentContainer>

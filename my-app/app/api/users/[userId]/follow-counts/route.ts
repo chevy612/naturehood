@@ -28,6 +28,5 @@ async function handleGET(request: NextRequest, { params }: Context) {
   return socialJson(ok({ followerCount: followerCount ?? 0, followingCount: followingCount ?? 0 }))
 }
 
-
 export const OPTIONS = observeApiRoute('/api/users/[userId]/follow-counts', 'OPTIONS', handleOPTIONS)
 export const GET = observeApiRoute('/api/users/[userId]/follow-counts', 'GET', handleGET)
