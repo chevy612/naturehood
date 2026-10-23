@@ -49,7 +49,8 @@
     "joinUs": "Join us",
     "signOut": "Sign out",
     "signIn": "Sign in",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "getStartedFree": "Get started free"
   },
   "Nav": {
     "home": "Home",
@@ -71,7 +72,8 @@
     "personal": "Personal",
     "team": "Team",
     "alerts": "Alerts",
-    "account": "Account"
+    "account": "Account",
+    "logIn": "Log in"
   },
   "Footer": {
     "tagline": "The home of track & field culture.",
@@ -88,14 +90,14 @@
     "accept": "Got it"
   },
   "Home": {
-    "heroTitle": "Welcome to the home of track and field",
+    "heroTitle": "Build for athletes and teams to achieve ambition goals",
     "heroSubtitle": "The leading athletes community in Hong Kong.",
-    "heroAlt": "Athlete sprinting on the track",
+    "heroAlt": "Black and white close-up of an athlete",
     "conceptTitle": "Our Concept",
     "conceptBody": "We believe athletes have a powerful voice in the modern era — and that track and field should be filled with excitement, not just on the track, but in the stands.",
     "conceptAlt": "Athlete close-up",
     "whatWeDoTitle": "What we do",
-    "whatWeDoBody": "We host track meets built as stages, not just competitions. Athletes come to race each other — and to connect with the crowd. A meet with an audience, never an empty stage.",
+    "whatWeDoBody": "We build software that bridges the gap between athletes and everyone around them. Athletes keep track of their training and diet, and coaches, trainers and physios keep track of their athletes — all in one place.",
     "whatWeDoAlt": "Track and field event",
     "trackMeet": "Track Meet",
     "trackMeetHint": "See upcoming meets",
@@ -103,7 +105,9 @@
     "athleteHint": "Meet the athletes",
     "subscribeHeadline": "Join the Naturehood community",
     "subscribeSubtext": "Get exclusive updates on athlete collaborations, brand partnerships, and product news",
-    "subscribePlaceholder": "Enter your email"
+    "subscribePlaceholder": "Enter your email",
+    "finalCtaTitle": "Train smarter with your team",
+    "finalCtaBody": "Log training and meals with AI, and keep your coach in the loop."
   },
   "EmailCapture": {
     "subscribe": "Subscribe",
@@ -150,7 +154,8 @@
     "backToLogin": "Back to log in",
     "continueWithGoogle": "Continue with Google",
     "continueWithApple": "Continue with Apple",
-    "orContinueWith": "Or continue with email"
+    "orContinueWith": "Or continue with email",
+    "welcomeBackElite": "Welcome back, Elite"
   },
   "Platform": {
     "homeTitle": "Feed",

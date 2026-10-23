@@ -5,7 +5,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ButtonPrimary } from "@/app/components/ui/buttons";
+import { Button } from "@/app/components/ui/buttons";
 import LanguageSwitcher from "@/app/components/layout/language-switcher";
 
 export default function Navigation() {
@@ -20,7 +20,6 @@ export default function Navigation() {
   const navItems = [
     { label: t("home"), href: "/" as const },
     { label: t("about"), href: "/about" as const },
-    { label: t("app"), href: "/home" as const },
   ];
 
   const isActive = (href: string) =>
@@ -110,9 +109,15 @@ export default function Navigation() {
 
             <div className="flex items-center gap-3 shrink-0">
               <LanguageSwitcher variant="marketing" />
-              <Link href="/signup">
-                <ButtonPrimary variant="white">{tCommon("joinUs")}</ButtonPrimary>
+              <Link
+                href="/login"
+                className="text-[17px] leading-[22px] font-medium text-white/60 hover:text-white transition-colors duration-200 whitespace-nowrap"
+              >
+                {t("logIn")}
               </Link>
+              <Button variant="outline" size="lg" href="/signup" className="text-[16px]">
+                {tCommon("signUp")}
+              </Button>
             </div>
           </nav>
 
@@ -214,11 +219,18 @@ export default function Navigation() {
               <LanguageSwitcher variant="marketing" />
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/10">
-              <Link href="/signup" onClick={closeMobileMenu} className="block">
-                <ButtonPrimary variant="white" fullWidth>
-                  {tCommon("joinUs")}
-                </ButtonPrimary>
+            <div className="mt-8 pt-6 border-t border-white/10 flex flex-col gap-3">
+              <div onClick={closeMobileMenu}>
+                <Button variant="outline" size="lg" href="/signup" fullWidth>
+                  {tCommon("signUp")}
+                </Button>
+              </div>
+              <Link
+                href="/login"
+                onClick={closeMobileMenu}
+                className="block py-2 text-center text-[15px] font-medium text-white/70 hover:text-white transition-colors"
+              >
+                {t("logIn")}
               </Link>
             </div>
           </nav>

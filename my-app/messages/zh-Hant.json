@@ -49,7 +49,8 @@
     "joinUs": "加入我們",
     "signOut": "登出",
     "signIn": "登入",
-    "signUp": "註冊"
+    "signUp": "註冊",
+    "getStartedFree": "免費開始"
   },
   "Nav": {
     "home": "首頁",
@@ -71,7 +72,8 @@
     "personal": "個人",
     "team": "團隊",
     "alerts": "提醒",
-    "account": "帳戶"
+    "account": "帳戶",
+    "logIn": "登入"
   },
   "Footer": {
     "tagline": "田徑文化的家。",
@@ -88,14 +90,14 @@
     "accept": "知道了"
   },
   "Home": {
-    "heroTitle": "歡迎來到田徑之家",
+    "heroTitle": "為運動員與團隊打造，助你實現雄心壯志",
     "heroSubtitle": "香港領先的運動員社群。",
-    "heroAlt": "運動員在跑道上衝刺",
+    "heroAlt": "運動員特寫黑白照",
     "conceptTitle": "我們的理念",
     "conceptBody": "我們相信運動員在現今時代擁有強大的聲音——田徑的精彩不應只在賽道上，也應存在於看台上。",
     "conceptAlt": "運動員特寫",
     "whatWeDoTitle": "我們在做什麼",
-    "whatWeDoBody": "我們把田徑賽事打造成舞台，而不只是比賽。運動員來這裡互相較量，也與觀眾連結。有觀眾的賽事，從不冷場。",
+    "whatWeDoBody": "我們開發軟件，連繫運動員與他們身邊的每一位。運動員記錄自己的訓練與飲食，教練、訓練員與物理治療師則追蹤他們的運動員——一切盡在同一處。",
     "whatWeDoAlt": "田徑賽事",
     "trackMeet": "田徑賽",
     "trackMeetHint": "查看即將舉行的賽事",
@@ -103,7 +105,9 @@
     "athleteHint": "認識運動員",
     "subscribeHeadline": "加入 Naturehood 社群",
     "subscribeSubtext": "獲取運動員合作、品牌夥伴關係與產品消息的獨家更新",
-    "subscribePlaceholder": "輸入你的電郵"
+    "subscribePlaceholder": "輸入你的電郵",
+    "finalCtaTitle": "與你的團隊一起更聰明地訓練",
+    "finalCtaBody": "用 AI 記錄訓練與飲食，讓教練隨時掌握進度。"
   },
   "EmailCapture": {
     "subscribe": "訂閱",
@@ -150,7 +154,8 @@
     "backToLogin": "返回登入",
     "continueWithGoogle": "使用 Google 繼續",
     "continueWithApple": "使用 Apple 繼續",
-    "orContinueWith": "或使用電郵繼續"
+    "orContinueWith": "或使用電郵繼續",
+    "welcomeBackElite": "歡迎回來，Elite"
   },
   "Platform": {
     "homeTitle": "動態",

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { ContentContainer } from "@/app/components/ui/container";
-import { ButtonPrimary } from "@/app/components/ui/buttons";
+import { ButtonSecondary } from "@/app/components/ui/buttons";
 import { landingImages } from "@/lib/landing-images";
 
 export default async function ConceptSection() {
@@ -47,7 +47,7 @@ export default async function ConceptSection() {
 
         <div className="relative z-10 flex w-full justify-center">
           <Link href="/about">
-            <ButtonPrimary variant="white">{tCommon("exploreMore")}</ButtonPrimary>
+            <ButtonSecondary variant="white">{tCommon("exploreMore")}</ButtonSecondary>
           </Link>
         </div>
       </div>

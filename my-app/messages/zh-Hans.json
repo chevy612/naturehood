@@ -49,7 +49,8 @@
     "joinUs": "加入我们",
     "signOut": "退出登录",
     "signIn": "登录",
-    "signUp": "注册"
+    "signUp": "注册",
+    "getStartedFree": "免费开始"
   },
   "Nav": {
     "home": "首页",
@@ -71,7 +72,8 @@
     "personal": "个人",
     "team": "团队",
     "alerts": "提醒",
-    "account": "账户"
+    "account": "账户",
+    "logIn": "登录"
   },
   "Footer": {
     "tagline": "田径文化的家。",
@@ -88,14 +90,14 @@
     "accept": "知道了"
   },
   "Home": {
-    "heroTitle": "欢迎来到田径之家",
+    "heroTitle": "为运动员与团队打造，助你实现雄心壮志",
     "heroSubtitle": "香港领先的运动员社区。",
-    "heroAlt": "运动员在跑道上冲刺",
+    "heroAlt": "运动员特写黑白照",
     "conceptTitle": "我们的理念",
     "conceptBody": "我们相信运动员在当今时代拥有强大的声音——田径的精彩不应只在赛道上，也应存在于看台上。",
     "conceptAlt": "运动员特写",
     "whatWeDoTitle": "我们在做什么",
-    "whatWeDoBody": "我们把田径赛事打造成舞台，而不只是比赛。运动员来这里互相较量，也与观众连接。有观众的赛事，从不冷场。",
+    "whatWeDoBody": "我们开发软件，连接运动员与他们身边的每一个人。运动员记录自己的训练与饮食，教练、训练员与物理治疗师则跟踪他们的运动员——一切尽在同一处。",
     "whatWeDoAlt": "田径赛事",
     "trackMeet": "田径赛",
     "trackMeetHint": "查看即将举行的赛事",
@@ -103,7 +105,9 @@
     "athleteHint": "认识运动员",
     "subscribeHeadline": "加入 Naturehood 社区",
     "subscribeSubtext": "获取运动员合作、品牌伙伴关系与产品消息的独家更新",
-    "subscribePlaceholder": "输入你的邮箱"
+    "subscribePlaceholder": "输入你的邮箱",
+    "finalCtaTitle": "与你的团队一起更聪明地训练",
+    "finalCtaBody": "用 AI 记录训练与饮食，让教练随时掌握进度。"
   },
   "EmailCapture": {
     "subscribe": "订阅",
@@ -150,7 +154,8 @@
     "backToLogin": "返回登录",
     "continueWithGoogle": "使用 Google 继续",
     "continueWithApple": "使用 Apple 继续",
-    "orContinueWith": "或使用邮箱继续"
+    "orContinueWith": "或使用邮箱继续",
+    "welcomeBackElite": "欢迎回来，Elite"
   },
   "Platform": {
     "homeTitle": "动态",

@@ -8,7 +8,7 @@
 const base = "/images/landing";
 
 export const landingImages = {
-  hero: `${base}/hero.jpg`,
+  hero: `${base}/alton.png`,
   concept: `${base}/concept.jpg`,
   trackMeet: `${base}/track-meet.jpg`,
   athletes: `${base}/athletes.jpg`,

@@ -1,19 +1,20 @@
+import type { Metadata } from "next";
 import {
   HeroSection,
-  ConceptSection,
-  TrackAthleteSection,
   WhatWeDoSection,
-  EmailSubscribe,
+  FinalCTASection,
 } from "@/app/components/sections";
+
+export const metadata: Metadata = {
+  description: "Build for athletes and teams to achieve ambition goals.",
+};
 
 export default function Page() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <HeroSection />
-      <ConceptSection />
-      <TrackAthleteSection />
       <WhatWeDoSection />
-      <EmailSubscribe />
+      <FinalCTASection />
     </div>
   );
 }

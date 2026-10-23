@@ -43,27 +43,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#141115] flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="mb-10">
-          <p
-            className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#F5F5F5] mb-3"
-            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-          >
-            {t("welcomeBack")}
-          </p>
-          <h1
-            className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-3"
-            style={{ fontFamily: "'Sk Modernist', sans-serif" }}
-          >
-            {t("logIn")}
-          </h1>
-          <p
-            className="text-[15px] text-[#6B6870] leading-relaxed"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            {t("logInSubtitle")}
-          </p>
-        </div>
+        <h1
+          className="text-[36px] sm:text-[44px] font-bold text-white leading-none mb-10"
+          style={{ fontFamily: "'Sk Modernist', sans-serif" }}
+        >
+          {t("welcomeBackElite")}
+        </h1>
 
         {/* OAuth */}
         <OAuthButtons mode="login" />

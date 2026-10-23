@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Link } from "@/i18n/navigation";
 import { ContentContainer } from "@/app/components/ui/container";
 import { ButtonPrimary } from "@/app/components/ui/buttons";
 
@@ -119,7 +120,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white text-black">
       {/* Our Story */}
-      <section className="pt-24 pb-10 md:pt-32 md:pb-0">
+      <section className="pt-10 pb-10 md:pt-16 md:pb-0">
         <ContentContainer as="div" maxWidth="max-w-[1370px]">
           <div className="max-w-[900px] mx-auto">
             <h1 className="nh-h1 text-center mb-10">Our Story</h1>
@@ -142,6 +143,20 @@ export default function AboutPage() {
                 behind the scenes to showcase the passion, grit, and culture of
                 the athletic community.
               </p>
+              <p>
+                As our content program reached more athletes and businesses, we
+                discovered something missing in between: a place where they
+                could connect, keep track of their progress and share what they
+                know. So we started building it. We believe this product can
+                grow into the backbone of the sport economy &mdash; where
+                knowledge and services can be exchanged, and athletes, coaches
+                and businesses grow together.
+              </p>
+            </div>
+            <div className="mt-10 flex justify-center">
+              <Link href="/signup">
+                <ButtonPrimary>Get started free</ButtonPrimary>
+              </Link>
             </div>
           </div>
         </ContentContainer>
