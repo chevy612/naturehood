@@ -369,3 +369,116 @@ export function newSubscriberNotificationEmailHtml(email: string): string {
 
   return emailShell('New Naturehood signup', card)
 }
+
+// ─────────────────────────────────────────────
+// 6. NEW ACCOUNT SIGNUP — INTERNAL TEAM NOTIFICATION
+// ─────────────────────────────────────────────
+
+export interface NewUserSignupDetails {
+  name: string
+  email: string
+  username?: string | null
+  role?: string | null
+  method: string
+  signedUpAt: Date
+  totalUsers: number | null
+}
+
+function detailRow(label: string, value: string, isLast = false): string {
+  return `
+      <tr>
+        <td style="
+          padding:14px 0;
+          ${isLast ? '' : 'border-bottom:1px solid #3A373C;'}
+          font-family:${DISPLAY_FONT};
+          font-size:11px;
+          color:rgba(255,255,255,0.5);
+          letter-spacing:0.04em;
+          text-transform:uppercase;
+          vertical-align:top;
+          width:120px;
+        ">${label}</td>
+        <td style="
+          padding:14px 0;
+          ${isLast ? '' : 'border-bottom:1px solid #3A373C;'}
+          font-family:${BODY_FONT};
+          font-size:15px;
+          color:#FFFFFF;
+          line-height:1.5;
+          word-break:break-all;
+        ">${value}</td>
+      </tr>`
+}
+
+export function newUserSignupNotificationEmailHtml(user: NewUserSignupDetails): string {
+  const signedUpAt = user.signedUpAt.toLocaleString('en-GB', {
+    timeZone: 'Asia/Hong_Kong',
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+
+  const rows: [string, string][] = [
+    ['Name', escapeHtml(user.name)],
+    ['Email', escapeHtml(user.email)],
+  ]
+  if (user.username) rows.push(['Username', `@${escapeHtml(user.username)}`])
+  if (user.role) rows.push(['Role', escapeHtml(user.role)])
+  rows.push(['Signed up via', escapeHtml(user.method)])
+  rows.push(['Time (HKT)', signedUpAt])
+
+  const card = `
+    ${cardHeader(
+      'New Account',
+      'New user signup',
+      'A new member just created a Naturehood account. Their details are below:'
+    )}
+
+    <!-- Total users box -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+      <tr>
+        <td style="
+          background-color:#000000;
+          border:1px solid #3A373C;
+          border-radius:12px;
+          padding:24px;
+          text-align:center;
+        ">
+          <span style="
+            display:block;
+            font-family:${BODY_FONT};
+            font-size:48px;
+            font-weight:700;
+            color:#F5F5F5;
+            line-height:1;
+          ">${user.totalUsers?.toLocaleString('en-US') ?? '—'}</span>
+          <span style="
+            display:block;
+            margin:10px 0 0;
+            font-family:${DISPLAY_FONT};
+            font-size:11px;
+            color:rgba(255,255,255,0.5);
+            letter-spacing:0.04em;
+            text-transform:uppercase;
+          ">Total users</span>
+        </td>
+      </tr>
+    </table>
+
+    <!-- User details -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+      style="margin:24px 0 0;">
+      ${rows.map(([label, value], i) => detailRow(label, value, i === rows.length - 1)).join('')}
+    </table>
+
+    <!-- Note -->
+    <p style="
+      margin:24px 0 0;
+      font-family:${BODY_FONT};
+      font-size:13px;
+      color:rgba(255,255,255,0.45);
+      line-height:1.6;
+    ">Sent automatically when a new account is created. Reply to this email to reach them directly.</p>
+  `
+
+  return emailShell('New Naturehood user signup', card)
+}

@@ -9,6 +9,8 @@ import { randomInt } from 'crypto'
 import { Resend } from 'resend'
 import { otpEmailHtml } from '@/app/components/email-template'
 import { tracedEmailSend } from '@/lib/observability/dependencies'
+import { notifyNewSignup } from '@/lib/services/signup-notification'
+import { after } from 'next/server'
 
 // ─────────────────────────────────────────────
 // SHARED INTERFACE
@@ -178,6 +180,14 @@ async function setUserPasswordImpl(data: SetPasswordData) {
   }
 
   await admin.from('otp_codes').delete().eq('email', email)
+
+  after(() => notifyNewSignup(admin, {
+    name: data.fullName,
+    email,
+    username,
+    role: data.role,
+    method: 'Website (email)',
+  }))
 
   return { success: true }
 }

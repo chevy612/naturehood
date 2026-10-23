@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   communityWelcomeEmailHtml,
   newSubscriberNotificationEmailHtml,
+  newUserSignupNotificationEmailHtml,
   otpEmailHtml,
   passwordResetEmailHtml,
   welcomeEmailHtml,
@@ -24,6 +25,19 @@ export default function EmailPreviewPage() {
       id: "team",
       label: "New subscriber (team)",
       html: newSubscriberNotificationEmailHtml("runner@example.com"),
+    },
+    {
+      id: "signup",
+      label: "New user signup (team)",
+      html: newUserSignupNotificationEmailHtml({
+        name: "Alex Chan",
+        email: "alex@example.com",
+        username: "alexchan",
+        role: "athlete",
+        method: "Website (email)",
+        signedUpAt: new Date(),
+        totalUsers: 1284,
+      }),
     },
     { id: "welcome", label: "Welcome", html: welcomeEmailHtml("Alex") },
     { id: "otp", label: "OTP verification", html: otpEmailHtml("184302") },

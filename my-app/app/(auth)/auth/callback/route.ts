@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { generateUniqueUsername } from '@/lib/username'
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
+import { notifyNewSignup } from '@/lib/services/signup-notification'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -33,7 +34,7 @@ export async function GET(request: Request) {
             'User'
           const username = await generateUniqueUsername(fullName)
 
-          await admin.from('profiles').insert({
+          const { error: insertError } = await admin.from('profiles').insert({
             id: user.id,
             email: user.email,
             name: fullName,
@@ -41,6 +42,19 @@ export async function GET(request: Request) {
             username,
             updated_at: new Date().toISOString(),
           })
+
+          if (!insertError) {
+            const provider: string | undefined = user.app_metadata?.provider
+            after(() => notifyNewSignup(admin, {
+              name: fullName,
+              email: user.email ?? '',
+              username,
+              role: 'athlete',
+              method: provider
+                ? `Website (${provider.charAt(0).toUpperCase()}${provider.slice(1)} sign-in)`
+                : 'Website (OAuth)',
+            }))
+          }
         }
       }
 
