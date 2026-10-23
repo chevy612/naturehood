@@ -40,6 +40,5 @@ async function handleGET(request: NextRequest) {
   }
 }
 
-
 export const OPTIONS = observeApiRoute('/api/feed', 'OPTIONS', handleOPTIONS)
 export const GET = observeApiRoute('/api/feed', 'GET', handleGET)

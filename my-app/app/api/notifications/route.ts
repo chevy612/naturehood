@@ -44,6 +44,5 @@ async function handleGET(request: NextRequest) {
   }
 }
 
-
 export const OPTIONS = observeApiRoute('/api/notifications', 'OPTIONS', handleOPTIONS)
 export const GET = observeApiRoute('/api/notifications', 'GET', handleGET)

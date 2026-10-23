@@ -1,10 +1,9 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState, KeyboardEvent } from "react";
-import Link from "next/link";
+import { Link } from '@/i18n/navigation';
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 
 // ─────────────────────────────────────────────
 // INTERFACES

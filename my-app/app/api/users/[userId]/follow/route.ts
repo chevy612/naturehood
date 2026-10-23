@@ -29,7 +29,6 @@ async function handleDELETE(request: NextRequest, { params }: Context) {
   return socialJson(ok({ following: false }))
 }
 
-
 export const OPTIONS = observeApiRoute('/api/users/[userId]/follow', 'OPTIONS', handleOPTIONS)
 export const PUT = observeApiRoute('/api/users/[userId]/follow', 'PUT', handlePUT)
 export const DELETE = observeApiRoute('/api/users/[userId]/follow', 'DELETE', handleDELETE)

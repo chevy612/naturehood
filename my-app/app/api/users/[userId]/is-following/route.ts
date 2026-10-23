@@ -24,6 +24,5 @@ async function handleGET(request: NextRequest, { params }: Context) {
   return socialJson(ok({ following: Boolean(data) }))
 }
 
-
 export const OPTIONS = observeApiRoute('/api/users/[userId]/is-following', 'OPTIONS', handleOPTIONS)
 export const GET = observeApiRoute('/api/users/[userId]/is-following', 'GET', handleGET)

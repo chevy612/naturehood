@@ -1,7 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import { useTeamMode } from '@/app/components/platform/team/TeamModeProvider'
 import { sans } from '@/lib/social/format'
 import type { TeamMode } from '@/lib/team/mode'

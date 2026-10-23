@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Heart, MessageCircle } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { MealPostCard } from '@/app/components/platform/social/MealPostCard'

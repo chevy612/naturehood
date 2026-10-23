@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { ChevronLeft } from 'lucide-react'
-import WorkoutDetail from '@/app/(platform)/record/[id]/WorkoutDetail'
-import WorkoutLogToggle from '@/app/(platform)/record/[id]/WorkoutLogToggle'
+import WorkoutDetail from '@/app/[locale]/(platform)/record/[id]/WorkoutDetail'
+import WorkoutLogToggle from '@/app/[locale]/(platform)/record/[id]/WorkoutLogToggle'
 import { LogCommentsPanel } from '@/app/components/platform/team/LogCommentsPanel'
 import { SwipePanel, TabBar, type SwipeTab } from '@/app/components/platform/team/SwipeTabs'
 import { EmptyCard, TeamLoading } from '@/app/components/platform/team/shared'

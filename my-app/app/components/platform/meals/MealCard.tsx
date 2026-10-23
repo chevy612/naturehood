@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { ImageIcon } from 'lucide-react'
 import { PillTag } from '@/app/components/ui/tags'
 import { LogoSpinner } from '@/app/components/ui/logo-spinner'

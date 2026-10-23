@@ -53,7 +53,6 @@ async function handleDELETE(request: NextRequest, { params }: Context) {
   return socialJson(ok(null))
 }
 
-
 export const OPTIONS = observeApiRoute('/api/posts/[postId]', 'OPTIONS', handleOPTIONS)
 export const GET = observeApiRoute('/api/posts/[postId]', 'GET', handleGET)
 export const DELETE = observeApiRoute('/api/posts/[postId]', 'DELETE', handleDELETE)

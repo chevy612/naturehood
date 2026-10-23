@@ -1,19 +1,20 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Link, usePathname } from '@/i18n/navigation'
 import { useNotifications } from '@/app/components/platform/notifications/NotificationsProvider'
 import { UnreadBadge } from '@/app/components/platform/notifications/UnreadBadge'
 import { MOBILE_TABS, activeMobileHref } from '@/app/components/platform/nav-config'
 
 export function BottomNav() {
+  const t = useTranslations('Nav')
   const pathname = usePathname()
   const { unreadCount } = useNotifications()
   const activeHref = activeMobileHref(pathname)
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-14 items-stretch border-t border-[#3A373C] bg-[#141115] md:hidden">
-      {MOBILE_TABS.map(({ label, href, Icon, badge }) => {
+      {MOBILE_TABS.map(({ labelKey, href, Icon, badge }) => {
         const active = href === activeHref
         return (
           <Link
@@ -32,7 +33,7 @@ export function BottomNav() {
               className="text-[9px] font-semibold uppercase tracking-[0.15em]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              {label}
+              {t(labelKey)}
             </span>
           </Link>
         )
