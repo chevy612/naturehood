@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Plus, Search } from 'lucide-react'
 import { PostCard } from '@/app/components/platform/social/PostCard'
 import { LoadMoreButton, SocialLoading, StatusMessage } from '@/app/components/platform/social/StatusMessage'

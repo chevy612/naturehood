@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Avatar } from './Avatar'
 import { Tag } from '@/app/components/ui/tags'
 import { Button } from '@/app/components/ui/buttons'

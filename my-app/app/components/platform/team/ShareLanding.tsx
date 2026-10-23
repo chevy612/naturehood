@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { ScopePills, TeamLoading } from '@/app/components/platform/team/shared'
 import { ButtonSmall } from '@/app/components/ui/buttons'

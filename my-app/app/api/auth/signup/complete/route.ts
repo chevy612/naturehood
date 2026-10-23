@@ -1,7 +1,8 @@
 import { observeApiRoute } from '@/lib/observability/with-api-route'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import logger from '@/lib/logger'
+import { notifyNewSignup } from '@/lib/services/signup-notification'
 
 async function handlePOST(req: NextRequest) {
   const { email, fullName, username, password } = await req.json()
@@ -97,6 +98,14 @@ async function handlePOST(req: NextRequest) {
   }
 
   await admin.from('otp_codes').delete().eq('email', normalizedEmail)
+
+  after(() => notifyNewSignup(admin, {
+    name: fullName,
+    email: normalizedEmail,
+    username: normalizedUsername,
+    role: 'athlete',
+    method: 'Mobile app (email)',
+  }))
 
   return NextResponse.json({ success: true })
 }

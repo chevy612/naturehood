@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Pencil } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { ButtonSmall } from '@/app/components/ui/buttons'

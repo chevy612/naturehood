@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Bell, Check, Heart, MessageCircle, Reply, Share2, UserPlus, X, type LucideIcon } from 'lucide-react'
 import { Avatar } from '@/app/components/platform/Avatar'
 import { PillTag } from '@/app/components/ui/tags'

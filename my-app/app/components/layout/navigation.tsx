@@ -1,30 +1,30 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { ButtonPrimary } from "@/app/components/ui/buttons";
-
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "About us", href: "/about" },
-  { label: "App", href: "/home" },
-];
+import { useTranslations } from "next-intl";
+import { Button } from "@/app/components/ui/buttons";
+import LanguageSwitcher from "@/app/components/layout/language-switcher";
 
 export default function Navigation() {
+  const t = useTranslations("Nav");
+  const tCommon = useTranslations("Common");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const lastScrollY = useRef(0);
   const pathname = usePathname();
 
+  const navItems = [
+    { label: t("home"), href: "/" as const },
+    { label: t("about"), href: "/about" as const },
+  ];
+
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  // Reveal on scroll up, hide on scroll down (always shown near the top).
-  // Past the hero, the pill gains subtle depth (shadow + stronger border).
   useEffect(() => {
     function onScroll() {
       const currentY = window.scrollY;
@@ -63,95 +63,100 @@ export default function Navigation() {
 
   return (
     <>
-      {/* MAIN NAVBAR — Sticky pill above the hero; reveals on scroll up */}
       <header
         className={`sticky top-0 z-50 w-full px-[15px] sm:px-[25px] md:px-[30px] lg:px-[35px] pt-5 md:pt-[25px] transition-transform duration-300 ${
           hidden ? "-translate-y-full" : "translate-y-0"
         }`}
       >
         <div className="max-w-[1370px] mx-auto">
-        {/* Desktop Navbar */}
-        <nav
-          className={`hidden md:flex items-center justify-between bg-black rounded-[100px] h-[72px] px-[50px] lg:px-[103px] transition-all duration-300 ${
-            scrolled ? "shadow-lg shadow-black/20" : ""
-          }`}
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
-          }}
-        >
-          <Link href="/" className="shrink-0">
-            <Image
-              src="/naturehood.svg"
-              alt="Naturehood"
-              width={208}
-              height={24}
-              priority
-              className="w-[150px] lg:w-[180px] h-auto"
-            />
-          </Link>
-
-          <div className="flex items-center gap-10 lg:gap-[60px]">
-            {navItems.map((item) => {
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`text-[17px] leading-[22px] font-medium transition-colors duration-200 whitespace-nowrap ${
-                    active ? "text-white" : "text-white/60 hover:text-white"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-
-          <Link href="/signup" className="shrink-0">
-            <ButtonPrimary variant="white">Join us</ButtonPrimary>
-          </Link>
-        </nav>
-
-        {/* Mobile Navbar */}
-        <nav
-          className={`flex md:hidden items-center justify-between bg-black rounded-full h-[48px] px-5 transition-all duration-300 ${
-            scrolled ? "shadow-lg shadow-black/20" : ""
-          }`}
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
-          }}
-        >
-          <Link href="/" className="shrink-0">
-            <Image
-              src="/naturehood.svg"
-              alt="Naturehood"
-              width={140}
-              height={18}
-              priority
-              className="w-[120px] h-auto"
-            />
-          </Link>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 hover:bg-white/10 active:bg-white/20 rounded-full transition-colors"
-            aria-label="Toggle menu"
-            aria-expanded={mobileMenuOpen}
+          <nav
+            className={`hidden md:flex items-center justify-between bg-black rounded-[100px] h-[72px] px-[50px] lg:px-[103px] transition-all duration-300 ${
+              scrolled ? "shadow-lg shadow-black/20" : ""
+            }`}
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
+            }}
           >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5 text-white" />
-            ) : (
-              <Menu className="h-5 w-5 text-white" />
-            )}
-          </button>
-        </nav>
+            <Link href="/" className="shrink-0">
+              <Image
+                src="/naturehood.svg"
+                alt="Naturehood"
+                width={208}
+                height={24}
+                priority
+                className="w-[150px] lg:w-[180px] h-auto"
+              />
+            </Link>
+
+            <div className="flex items-center gap-10 lg:gap-[60px]">
+              {navItems.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`text-[17px] leading-[22px] font-medium transition-colors duration-200 whitespace-nowrap ${
+                      active ? "text-white" : "text-white/60 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <LanguageSwitcher variant="marketing" />
+              <Link
+                href="/login"
+                className="text-[17px] leading-[22px] font-medium text-white/60 hover:text-white transition-colors duration-200 whitespace-nowrap"
+              >
+                {t("logIn")}
+              </Link>
+              <Button variant="outline" size="lg" href="/signup" className="text-[16px]">
+                {tCommon("signUp")}
+              </Button>
+            </div>
+          </nav>
+
+          <nav
+            className={`flex md:hidden items-center justify-between bg-black rounded-full h-[48px] px-5 transition-all duration-300 ${
+              scrolled ? "shadow-lg shadow-black/20" : ""
+            }`}
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              borderBottom: `1px solid rgba(230, 230, 230, ${scrolled ? 0.5 : 0.3})`,
+            }}
+          >
+            <Link href="/" className="shrink-0">
+              <Image
+                src="/naturehood.svg"
+                alt="Naturehood"
+                width={140}
+                height={18}
+                priority
+                className="w-[120px] h-auto"
+              />
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 hover:bg-white/10 active:bg-white/20 rounded-full transition-colors"
+              aria-label={t("toggleMenu")}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5 text-white" />
+              ) : (
+                <Menu className="h-5 w-5 text-white" />
+              )}
+            </button>
+          </nav>
         </div>
       </header>
 
-      {/* MOBILE MENU OVERLAY */}
       <div
         className={`fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 z-50 md:hidden ${
           mobileMenuOpen
@@ -181,7 +186,7 @@ export default function Navigation() {
             <button
               onClick={closeMobileMenu}
               className="p-2 hover:bg-white/10 rounded-full transition-colors"
-              aria-label="Close menu"
+              aria-label={t("closeMenu")}
             >
               <X className="h-5 w-5 text-white" />
             </button>
@@ -210,15 +215,22 @@ export default function Navigation() {
               })}
             </ul>
 
-            <div className="mt-8 pt-6 border-t border-white/10">
+            <div className="mt-6 px-4">
+              <LanguageSwitcher variant="marketing" />
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-white/10 flex flex-col gap-3">
+              <div onClick={closeMobileMenu}>
+                <Button variant="outline" size="lg" href="/signup" fullWidth>
+                  {tCommon("signUp")}
+                </Button>
+              </div>
               <Link
-                href="/signup"
+                href="/login"
                 onClick={closeMobileMenu}
-                className="block"
+                className="block py-2 text-center text-[15px] font-medium text-white/70 hover:text-white transition-colors"
               >
-                <ButtonPrimary variant="white" fullWidth>
-                  Join us
-                </ButtonPrimary>
+                {t("logIn")}
               </Link>
             </div>
           </nav>

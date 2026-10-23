@@ -244,8 +244,6 @@ export function Checkbox({ label, checked, onChange }: CheckboxProps) {
   );
 }
 
-
-
 // ─────────────────────────────────────────────
 // DARK MODE FORM COMPONENTS
 // Shared across signup, login, and other dark-themed pages

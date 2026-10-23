@@ -1,0 +1,74 @@
+'use server'
+
+import { redirect } from '@/i18n/redirect'
+import { withServerAction } from '@/lib/observability/with-server-action'
+import { createClient } from '@/lib/supabase/server'
+async function rsvpEventImpl(
+  eventId: string
+): Promise<{ error?: string; success?: boolean }> {
+  const supabase = await createClient()
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) return await redirect('/login')
+
+  // Verify event is published
+  const { data: event } = await supabase
+    .from('events')
+    .select('id, max_capacity, status')
+    .eq('id', eventId)
+    .eq('status', 'published')
+    .single()
+
+  if (!event) return { error: 'Event not found.' }
+
+  // Capacity check
+  if (event.max_capacity !== null) {
+    const { count } = await supabase
+      .from('event_signups')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', eventId)
+      .eq('status', 'confirmed')
+
+    if ((count ?? 0) >= event.max_capacity) {
+      return { error: 'This event is fully booked.' }
+    }
+  }
+
+  const { error } = await supabase
+    .from('event_signups')
+    .upsert(
+      { event_id: eventId, user_id: userId, status: 'confirmed' },
+      { onConflict: 'event_id,user_id' }
+    )
+
+  if (error) return { error: 'Failed to sign up. Please try again.' }
+
+  return { success: true }
+}
+
+async function cancelRsvpImpl(
+  eventId: string
+): Promise<{ error?: string; success?: boolean }> {
+  const supabase = await createClient()
+  const { data } = await supabase.auth.getClaims()
+  const userId = data?.claims?.sub
+  if (!userId) return await redirect('/login')
+
+  const { error } = await supabase
+    .from('event_signups')
+    .update({ status: 'cancelled' })
+    .eq('event_id', eventId)
+    .eq('user_id', userId)
+
+  if (error) return { error: 'Failed to cancel. Please try again.' }
+
+  return { success: true }
+}
+
+export async function rsvpEvent(...args: Parameters<typeof rsvpEventImpl>): Promise<Awaited<ReturnType<typeof rsvpEventImpl>>> {
+  return withServerAction('rsvpEvent', () => rsvpEventImpl(...args))
+}
+
+export async function cancelRsvp(...args: Parameters<typeof cancelRsvpImpl>): Promise<Awaited<ReturnType<typeof cancelRsvpImpl>>> {
+  return withServerAction('cancelRsvp', () => cancelRsvpImpl(...args))
+}
